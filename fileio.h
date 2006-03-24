@@ -3,6 +3,10 @@
 
 #include "universal.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * File i/o may go through multiple layers: the archive attached to the binary,
  *  then an archive in there that's being read entirely out of memory that's
@@ -57,7 +61,12 @@ struct MojoArchive
     void *opaque;
 };
 
+MojoArchive *MojoArchive_newFromDirectory(const char *dirname);
 MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

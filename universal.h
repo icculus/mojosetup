@@ -3,6 +3,10 @@
 
 /* Include this file from everywhere...it provides basic type sanity, etc. */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef char int8;
 typedef unsigned char uint8;
 typedef short int16;
@@ -13,6 +17,10 @@ typedef long long int64;
 typedef unsigned long long uint64;
 
 typedef int boolean;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
