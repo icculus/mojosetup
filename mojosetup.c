@@ -4,7 +4,7 @@
 #include "fileio.h"
 #include "gui.h"
 
-/* !!! FIXME: None of these should be here. */
+// !!! FIXME: None of these should be here.
 #include <dlfcn.h>
 #include <unistd.h>
 #include <time.h>
@@ -36,7 +36,7 @@ static boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
     {
         br = in->read(in, buf, sizeof (buf));
         STUBBED("how to detect read failures?");
-        if (br == 0)  /* we're done! */
+        if (br == 0)  // we're done!
             break;
         else if (br < 0)
             iofailure = true;
@@ -44,18 +44,18 @@ static boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
         {
             if (fwrite(buf, br, 1, out) != 1)
                 iofailure = true;
-        } /* else */
-    } /* while */
+        } // else
+    } // while
 
     fclose(out);
     if (iofailure)
     {
         unlink(fname);
         return false;
-    } /* if */
+    } // if
 
     return true;
-} /* mojoInputToPhysicalFile */
+} // mojoInputToPhysicalFile
 
 
 static void *loadGuiPlugin(MojoArchive *ar)
@@ -87,18 +87,18 @@ static void *loadGuiPlugin(MojoArchive *ar)
         {
             STUBBED("abstract out dlsym, too. :)");
             void *entry = dlsym(retval, MOJOGUI_ENTRY_POINT_STR);
-            if (entry == NULL)  /* not a compatible plugin. */
+            if (entry == NULL)  // not a compatible plugin.
             {
                 STUBBED("aaaaaaand, dlclose")
                 dlclose(retval);
                 unlink(fname);
                 retval = NULL;
-            } /* if */
-        } /* if */
-    } /* if */
+            } // if
+        } // if
+    } // if
 
     return retval;
-} /* loadGuiPlugin */
+} // loadGuiPlugin
 
 
 typedef struct S_DLLLIST { void *lib; struct S_DLLLIST *next; } DllList;
@@ -113,10 +113,8 @@ static boolean findGuiPlugin(void)
 
     STUBBED("DllList should track filename, isstatic, and entrypoint, too");
 
-    /*
-     * !!! FIXME: Have a global MojoArchive that represents the install
-     * !!! FIXME:  (either an archive, a physical dir, etc.)
-     */
+    // !!! FIXME: Have a global MojoArchive that represents the install
+    // !!! FIXME:  (either an archive, a physical dir, etc.)
     STUBBED("use a global MojoArchive for basedir");
     MojoArchive *dir = MojoArchive_newFromDirectory(".");
     if (dir == NULL)
@@ -128,11 +126,10 @@ static boolean findGuiPlugin(void)
         void *lib;
         DllList *item;
 
-        /* Not a file? */
         if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
             continue;
 
-        /* not in the gui dir? */
+        // not in the gui dir?
         if (strncmp(entinfo->filename, "guiplugins/", 4) != 0)
             continue;
 
@@ -147,7 +144,7 @@ static boolean findGuiPlugin(void)
         item->lib = lib;
         item->next = plugins.next;
         plugins.next = item;
-    } /* while */
+    } // while
 
     STUBBED("Add static plugins to the list");
     STUBBED("Choose plugin by priority");
@@ -161,9 +158,9 @@ static boolean findGuiPlugin(void)
             {
                 GGui = gui;
                 break;
-            } /* if */
-        } /* if */
-    } /* for */
+            } // if
+        } // if
+    } // for
 
     STUBBED("close libs, delete tmp files, free list.");
 
@@ -171,11 +168,10 @@ static boolean findGuiPlugin(void)
     dir->close(dir);
 
     return (GGui != NULL);
-} /* findGuiPlugin */
+} // findGuiPlugin
 
-/*
- * This is called from main()/WinMain()/whatever.
- */
+
+// This is called from main()/WinMain()/whatever.
 int MojoSetup_main(int argc, char **argv)
 {
     GArgc = argc;
@@ -189,7 +185,7 @@ int MojoSetup_main(int argc, char **argv)
     STUBBED("cleanup gui lib, etc.\n");
 
     return 0;
-} /* MojoSetup_main */
+} // MojoSetup_main
 
-/* end of mojosetup.c ... */
+// end of mojosetup.c ...
 

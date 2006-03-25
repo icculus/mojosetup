@@ -38,12 +38,12 @@ static boolean MojoGui_stdio_promptyn(MojoGui_rev1 *gui, const char *title, cons
             return 0;
         else if (c == 'Y')
             return 1;
-    } /* while */
+    } // while
 
     return 0;
 }
 
 CREATE_MOJOGUI_ENTRY_POINT(stdio)
 
-/* gui_stdio.c ... */
+// gui_stdio.c ...
 

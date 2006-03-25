@@ -19,17 +19,17 @@ extern "C" {
  *  abstraction could be extended to network connections and such, too.
  */
 
-/* Abstract input interface. Files, memory, archive entries, etc. */
+// Abstract input interface. Files, memory, archive entries, etc.
 typedef struct MojoInput MojoInput;
 struct MojoInput
 {
-    /*public*/
+    // public
     size_t (*read)(MojoInput *io, void *buf, size_t bufsize);
     boolean (*seek)(MojoInput *io, uint64 pos);
     uint64 (*tell)(MojoInput *io);
     void (*close)(MojoInput *io);
 
-    /*private*/
+    // private
     void *opaque;
 };
 
@@ -43,7 +43,7 @@ typedef enum
     MOJOARCHIVE_ENTRY_SYMLINK,
 } MojoArchiveEntryType;
 
-/* Abstract archive interface. Archives, directories, etc. */
+// Abstract archive interface. Archives, directories, etc.
 typedef struct MojoArchiveEntryInfo MojoArchiveEntryInfo;
 struct MojoArchiveEntryInfo
 {
@@ -55,13 +55,13 @@ struct MojoArchiveEntryInfo
 typedef struct MojoArchive MojoArchive;
 struct MojoArchive 
 {
-    /*public*/
+    // public
     void (*restartEnumeration)(MojoArchive *ar);
     const MojoArchiveEntryInfo* (*enumEntry)(MojoArchive *ar);
     MojoInput* (*openCurrentEntry)(MojoArchive *ar);
     void (*close)(MojoArchive *ar);
 
-    /*private*/
+    // private
     MojoInput *io;
     MojoArchiveEntryInfo lastEnumInfo;
     void *opaque;
@@ -76,5 +76,5 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname);
 
 #endif
 
-/* end of fileio.h ... */
+// end of fileio.h ...
 

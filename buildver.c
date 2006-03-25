@@ -50,5 +50,5 @@
 
 const char *GBuildVer = MAKEBUILDVERSTRINGLITERAL(APPID, APPREV);
 
-/* end of buildver.c ... */
+// end of buildver.c ...
 

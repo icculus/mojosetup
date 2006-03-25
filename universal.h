@@ -1,9 +1,9 @@
 #ifndef _INCL_UNIVERSAL_H_
 #define _INCL_UNIVERSAL_H_
 
-/* Include this file from everywhere...it provides basic type sanity, etc. */
+// Include this file from everywhere...it provides basic type sanity, etc.
 
-/* Include the Holy Trinity. */
+// Include the Holy Trinity...
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +36,7 @@ extern char **GArgv;
 #else
 #define __EXPORT__
 #endif
-#endif  /* DOXYGEN_SHOULD_IGNORE_THIS */
+#endif  // DOXYGEN_SHOULD_IGNORE_THIS
 
 #if 1
 #define STUBBED(x) \
@@ -52,7 +52,7 @@ extern char **GArgv;
 #define STUBBED(x)
 #endif
 
-/* !!! FIXME: make this a real function. */
+// !!! FIXME: make this a real function.
 #define dbgprintf printf
 
 #ifdef __cplusplus
@@ -61,5 +61,5 @@ extern char **GArgv;
 
 #endif
 
-/* end of universal.h ... */
+// end of universal.h ...
 

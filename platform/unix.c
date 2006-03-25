@@ -3,7 +3,7 @@
 int main(int argc, char **argv)
 {
     return MojoSetup_main(argc, argv);
-} /* main */
+} // main
 
-/* end of unix.c ... */
+// end of unix.c ...
 

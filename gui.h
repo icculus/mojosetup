@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-/* Increment this value when binary compatibility changes. */
+// Increment this value when binary compatibility changes.
 #define MOJOGUI_INTERFACE_REVISION 1
 
 typedef enum
@@ -28,19 +28,19 @@ typedef enum
 typedef struct MojoGui_rev1 MojoGui_rev1;
 struct MojoGui_rev1
 {
-    /*public*/
+    // public
     uint8 (*priority)(MojoGui_rev1 *gui);
     boolean (*init)(MojoGui_rev1 *gui);
     void (*deinit)(MojoGui_rev1 *gui);
     void (*msgbox)(MojoGui_rev1 *gui, const char *title, const char *text);
     boolean (*promptyn)(MojoGui_rev1 *gui, const char *title, const char *text);
 
-    /*private*/
+    // private
     void *opaque;
 };
 
 
-/* Tapdance to handle interface revisions... */
+// Tapdance to handle interface revisions...
 
 /*
  * The latest revision struct is just called "MojoGui" for convenience
@@ -87,5 +87,5 @@ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
 
 #endif
 
-/* end of gui.h ... */
+// end of gui.h ...
 
