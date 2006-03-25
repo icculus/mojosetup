@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+/* this is called by your mainline. */
+int MojoSetup_main(int argc, char **argv);
 
 #ifdef __cplusplus
 }

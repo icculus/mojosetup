@@ -95,16 +95,6 @@ CC := ccache gcc
 CXX := ccache g++
 LD := g++
 
-ifeq ($(iswindows),true)
-  EXEEXT := .exe
-endif
-#ifeq ($(isunix),true)
-#  EXEEXT := -bin
-#endif
-
-EXE := $(APPID)$(EXEEXT)
-EXES := $(EXE)
-
 #OPTS := -O3 -fno-strict-aliasing -falign-loops=16 -ffast-math -fno-math-errno
 OPTS := -O0
 
@@ -115,22 +105,35 @@ DEFINES := \
 INCLUDES := \
     -I. \
 
+SRCS := \
+    mojosetup.c \
+
+
 ifeq ($(isunix),true)
   DEFINES += -DPLATFORM_UNIX=1
+  SRCS += platform/unix.c
+  GUIPLUGINS += gui_stdio
 endif
 
 ifeq ($(islinux),true)
   DEFINES += -DPLATFORM_LINUX=1
+  EXEEXT := -bin
+  DLLEXT := .so
+  SHARED_LDFLAGS += -shared -fPIC
 endif
 
 ifeq ($(ismacosx),true)
   DEFINES += -DPLATFORM_MACOSX=1
   LIBS += -framework Carbon
-  #OPTS += -mdynamic-no-pic
+  EXEEXT := -bin
+  DLLEXT := .dylib
+  SHARED_LDFLAGS += -dynamiclib -fPIC
 endif
 
 ifeq ($(iswindows),true)
   DEFINES += -DPLATFORM_WINDOWS=1
+  EXEEXT := .exe
+  DLLEXT := .dll
 endif
 
 ifeq ($(is32bit),true)
@@ -150,50 +153,62 @@ else
   DEFINES += -DPLATFORM_LITTLEENDIAN=1
 endif
 
-ZLIBSRCS := \
-    $(PHYSFSDIR)/zlib123/adler32.c \
-    $(PHYSFSDIR)/zlib123/compress.c \
-    $(PHYSFSDIR)/zlib123/crc32.c \
-    $(PHYSFSDIR)/zlib123/deflate.c \
-    $(PHYSFSDIR)/zlib123/gzio.c \
-    $(PHYSFSDIR)/zlib123/infback.c \
-    $(PHYSFSDIR)/zlib123/inffast.c \
-    $(PHYSFSDIR)/zlib123/inflate.c \
-    $(PHYSFSDIR)/zlib123/inftrees.c \
-    $(PHYSFSDIR)/zlib123/trees.c \
-    $(PHYSFSDIR)/zlib123/uncompr.c \
-    $(PHYSFSDIR)/zlib123/zutil.c \
+EXE := bin/$(APPID)$(EXEEXT)
+EXES := $(EXE)
 
 # We force this to build every time, so it can't be an explicit dependency...
 LIBS += bin/buildver.o
 
 CFLAGS := -g -pipe -Wall -Werror -fexceptions -fsigned-char $(OPTS) $(INCLUDES) $(DEFINES)
 CXXFLAGS := $(CFLAGS)
+SHARED_CFLAGS := $(CFLAGS) -fPIC -DPIC
+SHARED_CXXFLAGS := $(SHARED_CFLAGS)
 
-.PHONY: clean all docs $(APPID)
+ifeq ($(ismacosx),true)
+  CFLAGS += -mdynamic-no-pic
+  CXXFLAGS += -mdynamic-no-pic
+endif
 
-all: $(APPID)
+OBJS := $(SRCS)
+OBJS := $(OBJS:.cpp=.o)
+OBJS := $(OBJS:.c=.o)
+OBJS := $(OBJS:.m=.o)
+OBJS := $(foreach f,$(OBJS),bin/$(f))
 
-$(APPID): $(EXE)
+.PHONY: clean all docs
+
+all: $(EXE) $(GUIPLUGINS)
 
 docs:
 	( cat $(ENGINEDIR)/Doxyfile ; echo 'PROJECT_NUMBER="Build Revision $(APPREV)"' ) | doxygen -
 
 clean:
-	rm -rf $(OBJS) $(EXES) bin/$(SDLDIR)/lib/$(target)/libSDLmain.a docs bin/test/*.o bin/tools/*/*.o
+	rm -rf bin docs
+
+.PHONY: gui_stdio
+gui_stdio: bin/gui/stdio$(DLLEXT)
+
+bin/gui/stdio$(DLLEXT): bin/gui/gui_stdio.o
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o bin/buildver.o buildver.c
+	$(LD) $(SHARED_LDFLAGS) -o $@ $^ $(LIBS)
+
+bin/gui/%.o : gui/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(SHARED_CFLAGS) -c -o $@ $<
 
 bin/%.o : %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 bin/%.o : %.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-#$(EXE) : $(OBJS) $(STATICLIBS)
-#	$(CXX) $(CXXFLAGS) -c -o bin/$(ENGINEDIR)/buildver.o $(ENGINEDIR)/buildver.cpp
-#	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-$(APPID)$(EXEEXT) : $(OBJS) $(STATICLIBS)
-	$(CXX) $(CXXFLAGS) -c -o bin/$(ENGINEDIR)/buildver.o $(ENGINEDIR)/buildver.cpp
+$(EXE) : $(OBJS) $(STATICLIBS)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o bin/buildver.o buildver.c
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 # end of makefile ...
+

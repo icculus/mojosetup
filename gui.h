@@ -47,11 +47,39 @@ struct MojoGui_rev1
  *  in places that don't care about backwards compatibility, and can avoid
  *  the Macro Salsa.
  */
-#define MOJOGUI_ENTRY_POINT_VER(v) MojoSetup_GUI_GetInterface_rev##v
-#define MOJOGUI_ENTRY_POINT MOJOGUI_ENTRY_POINT_VER(MOJOGUI_INTERFACE_REVISION)
 #define MOJOGUI_STRUCT_VER(v) MojoGui_rev##v
-#define MOJOGUI_STRUCT MOJOGUI_STRUCT_VER(MOJOGUI_INTERFACE_REVISION)
+#define MOJOGUI_STRUCT2(v) MOJOGUI_STRUCT_VER(v)
+#define MOJOGUI_STRUCT MOJOGUI_STRUCT2(MOJOGUI_INTERFACE_REVISION)
+#define MOJOGUI_ENTRY_POINT_VER(v) MojoSetup_GUI_GetInterface_rev##v
+#define MOJOGUI_ENTRY_POINT2(v) MOJOGUI_ENTRY_POINT_VER(v)
+#define MOJOGUI_ENTRY_POINT MOJOGUI_ENTRY_POINT2(MOJOGUI_INTERFACE_REVISION)
+#define MOJOGUI_ENTRY_POINT_STR3(v) #v
+#define MOJOGUI_ENTRY_POINT_STR2(v) MOJOGUI_ENTRY_POINT_STR3(v)
+#define MOJOGUI_ENTRY_POINT_STR_VER(v) MOJOGUI_ENTRY_POINT_STR2(MOJOGUI_ENTRY_POINT2(v))
+#define MOJOGUI_ENTRY_POINT_STR MOJOGUI_ENTRY_POINT_STR_VER(MOJOGUI_INTERFACE_REVISION)
+
 typedef MOJOGUI_STRUCT MojoGui;
+
+__EXPORT__ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void);
+extern MojoGui *GGui;
+
+/*
+ * We do this as a macro so we only have to update one place, and it
+ *  enforces some details in the plugins. Without effort, plugins don't
+ *  support anything but the latest version of the interface.
+ */
+#define CREATE_MOJOGUI_ENTRY_POINT(module) \
+MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
+{ \
+    static MOJOGUI_STRUCT retval; \
+    retval.priority = MojoGui_##module##_priority; \
+    retval.init = MojoGui_##module##_init; \
+    retval.deinit = MojoGui_##module##_deinit; \
+    retval.msgbox = MojoGui_##module##_msgbox; \
+    retval.promptyn = MojoGui_##module##_promptyn; \
+    retval.opaque = NULL; \
+    return &retval; \
+} \
 
 #ifdef __cplusplus
 }

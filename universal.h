@@ -3,6 +3,11 @@
 
 /* Include this file from everywhere...it provides basic type sanity, etc. */
 
+/* Include the Holy Trinity. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,6 +22,38 @@ typedef long long int64;
 typedef unsigned long long uint64;
 
 typedef int boolean;
+#define true 1
+#define false 0
+
+extern int GArgc;
+extern char **GArgv;
+
+#ifndef DOXYGEN_SHOULD_IGNORE_THIS
+#if (defined _MSC_VER)
+#define __EXPORT__ __declspec(dllexport)
+#elif (__GNUC__ >= 3)
+#define __EXPORT__ __attribute__((visibility("default")))
+#else
+#define __EXPORT__
+#endif
+#endif  /* DOXYGEN_SHOULD_IGNORE_THIS */
+
+#if 1
+#define STUBBED(x) \
+{ \
+    static boolean seen_this = false; \
+    if (!seen_this) \
+    { \
+        seen_this = true; \
+        fprintf(stderr, "STUBBED: %s at %s:%d\n", x, __FILE__, __LINE__); \
+    } \
+}
+#else
+#define STUBBED(x)
+#endif
+
+/* !!! FIXME: make this a real function. */
+#define dbgprintf printf
 
 #ifdef __cplusplus
 }

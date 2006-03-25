@@ -36,6 +36,12 @@ struct MojoInput
 MojoInput *MojoInput_newFromFile(const char *fname);
 MojoInput *MojoInput_newFromMemory(void *mem, size_t bytes);
 
+typedef enum
+{
+    MOJOARCHIVE_ENTRY_FILE = 0,
+    MOJOARCHIVE_ENTRY_DIR,
+    MOJOARCHIVE_ENTRY_SYMLINK,
+} MojoArchiveEntryType;
 
 /* Abstract archive interface. Archives, directories, etc. */
 typedef struct MojoArchiveEntryInfo MojoArchiveEntryInfo;
@@ -43,7 +49,7 @@ struct MojoArchiveEntryInfo
 {
     const char *filename;
     MojoArchiveEntryType type;
-    sint64 filesize;
+    int64 filesize;
 };
 
 typedef struct MojoArchive MojoArchive;
