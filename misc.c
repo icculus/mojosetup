@@ -25,5 +25,13 @@ void *xrealloc(void *ptr, size_t bytes)
     return retval;
 } // xrealloc
 
+#undef strdup
+char *xstrdup(const char *str)
+{
+    char *retval = (char *) xmalloc(strlen(str) + 1);
+    strcpy(retval, str);
+    return retval;
+} // xstrdup
+
 // end of misc.c ...
 

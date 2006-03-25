@@ -24,7 +24,7 @@ typedef struct MojoInput MojoInput;
 struct MojoInput
 {
     // public
-    size_t (*read)(MojoInput *io, void *buf, size_t bufsize);
+    uint32 (*read)(MojoInput *io, void *buf, uint32 bufsize);
     boolean (*seek)(MojoInput *io, uint64 pos);
     uint64 (*tell)(MojoInput *io);
     void (*close)(MojoInput *io);
@@ -34,7 +34,7 @@ struct MojoInput
 };
 
 MojoInput *MojoInput_newFromFile(const char *fname);
-MojoInput *MojoInput_newFromMemory(void *mem, size_t bytes);
+MojoInput *MojoInput_newFromMemory(void *mem, uint32 bytes);
 
 typedef enum
 {
