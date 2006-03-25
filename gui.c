@@ -53,15 +53,12 @@ static PluginList *loadGuiPlugin(MojoArchive *ar)
             entry = (MojoGuiEntryType) dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
             if ( (entry != NULL) && ((gui = entry()) != NULL) )
             {
-                retval = malloc(sizeof (PluginList));
-                if (retval != NULL)
-                {
-                    strcpy(retval->fname, fname);
-                    retval->lib = lib;
-                    retval->gui = gui;
-                    retval->priority = gui->priority(gui);
-                    retval->next = NULL;
-                } // if
+                retval = xmalloc(sizeof (PluginList));
+                strcpy(retval->fname, fname);
+                retval->lib = lib;
+                retval->gui = gui;
+                retval->priority = gui->priority(gui);
+                retval->next = NULL;
             } // if
         } // if
     } // if
@@ -129,16 +126,18 @@ MojoGui *MojoGui_initGuiPlugin(void)
     if (dir == NULL)
         return false;
 
-    dir->restartEnumeration(dir);
-    while ((entinfo = dir->enumEntry(dir)) != NULL)
+    if (!dir->enumerate(dir, "gui"))
+    {
+        STUBBED("Don't close this when it's a global.");
+        dir->close(dir);
+        return false;
+    } // if
+
+    while ((entinfo = dir->enumNext(dir)) != NULL)
     {
         PluginList *item;
 
         if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
-            continue;
-
-        // not in the gui dir?
-        if (strncmp(entinfo->filename, "guiplugins/", 4) != 0)
             continue;
 
         item = loadGuiPlugin(dir);

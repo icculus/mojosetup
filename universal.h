@@ -28,8 +28,20 @@ typedef int boolean;
 #define true 1
 #define false 0
 
+// Command line access outside of main().
 extern int GArgc;
 extern char **GArgv;
+
+// Malloc replacements that blow up on allocation failure.
+void *xmalloc(size_t bytes);
+void *xrealloc(void *ptr, size_t bytes);
+
+// External plugins won't link against misc.c ...
+#ifndef BUILDING_EXTERNAL_PLUGIN
+#define malloc(x) DO_NOT_CALL_MALLOC__USE_XMALLOC_INSTEAD
+#define calloc(x,y) DO_NOT_CALL_CALLOC__USE_XMALLOC_INSTEAD
+#define realloc(x,y) DO_NOT_CALL_REALLOC__USE_XREALLOC_INSTEAD
+#endif
 
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
 #if (defined _MSC_VER)

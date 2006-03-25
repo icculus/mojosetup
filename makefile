@@ -107,6 +107,7 @@ INCLUDES := \
 
 SRCS := \
     mojosetup.c \
+    misc.c \
     gui.c \
     fileio.c \
 

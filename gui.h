@@ -62,7 +62,6 @@ struct MojoGui_rev1
 
 typedef MOJOGUI_STRUCT MojoGui;
 typedef MOJOGUI_STRUCT * (*MojoGuiEntryType)(void);
-__EXPORT__ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void);
 
 /*
  * We do this as a macro so we only have to update one place, and it
@@ -83,10 +82,13 @@ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
     return &retval; \
 } \
 
-
+#ifndef BUILDING_EXTERNAL_PLUGIN
 extern MojoGui *GGui;
 MojoGui *MojoGui_initGuiPlugin(void);
 void MojoGui_deinitGuiPlugin(void);
+#else
+__EXPORT__ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void);
+#endif
 
 #ifdef __cplusplus
 }

@@ -38,7 +38,8 @@ MojoInput *MojoInput_newFromMemory(void *mem, size_t bytes);
 
 typedef enum
 {
-    MOJOARCHIVE_ENTRY_FILE = 0,
+    MOJOARCHIVE_ENTRY_UNKNOWN = 0,
+    MOJOARCHIVE_ENTRY_FILE,
     MOJOARCHIVE_ENTRY_DIR,
     MOJOARCHIVE_ENTRY_SYMLINK,
 } MojoArchiveEntryType;
@@ -47,7 +48,7 @@ typedef enum
 typedef struct MojoArchiveEntryInfo MojoArchiveEntryInfo;
 struct MojoArchiveEntryInfo
 {
-    const char *filename;
+    char *filename;
     MojoArchiveEntryType type;
     int64 filesize;
 };
@@ -56,8 +57,8 @@ typedef struct MojoArchive MojoArchive;
 struct MojoArchive 
 {
     // public
-    void (*restartEnumeration)(MojoArchive *ar);
-    const MojoArchiveEntryInfo* (*enumEntry)(MojoArchive *ar);
+    boolean (*enumerate)(MojoArchive *ar, const char *path);
+    const MojoArchiveEntryInfo* (*enumNext)(MojoArchive *ar);
     MojoInput* (*openCurrentEntry)(MojoArchive *ar);
     void (*close)(MojoArchive *ar);
 
