@@ -14,8 +14,9 @@ typedef enum
 {
     MOJOGUI_PRIORITY_NEVER_TRY = 0,
     MOJOGUI_PRIORITY_TRY_FIRST,
-    MOJOGUI_PRIORITY_TRY_LAST,
     MOJOGUI_PRIORITY_TRY_NORMAL,
+    MOJOGUI_PRIORITY_TRY_LAST,
+    MOJOGUI_PRIORITY_TOTAL
 } MojoGuiPluginPriority;
 
 /*
@@ -30,6 +31,7 @@ struct MojoGui_rev1
 {
     // public
     uint8 (*priority)(MojoGui_rev1 *gui);
+    const char* (*name)(MojoGui_rev1 *gui);
     boolean (*init)(MojoGui_rev1 *gui);
     void (*deinit)(MojoGui_rev1 *gui);
     void (*msgbox)(MojoGui_rev1 *gui, const char *title, const char *text);
@@ -59,9 +61,8 @@ struct MojoGui_rev1
 #define MOJOGUI_ENTRY_POINT_STR MOJOGUI_ENTRY_POINT_STR_VER(MOJOGUI_INTERFACE_REVISION)
 
 typedef MOJOGUI_STRUCT MojoGui;
-
+typedef MOJOGUI_STRUCT * (*MojoGuiEntryType)(void);
 __EXPORT__ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void);
-extern MojoGui *GGui;
 
 /*
  * We do this as a macro so we only have to update one place, and it
@@ -73,6 +74,7 @@ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
 { \
     static MOJOGUI_STRUCT retval; \
     retval.priority = MojoGui_##module##_priority; \
+    retval.name = MojoGui_##module##_name; \
     retval.init = MojoGui_##module##_init; \
     retval.deinit = MojoGui_##module##_deinit; \
     retval.msgbox = MojoGui_##module##_msgbox; \
@@ -80,6 +82,11 @@ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
     retval.opaque = NULL; \
     return &retval; \
 } \
+
+
+extern MojoGui *GGui;
+MojoGui *MojoGui_initGuiPlugin(void);
+void MojoGui_deinitGuiPlugin(void);
 
 #ifdef __cplusplus
 }

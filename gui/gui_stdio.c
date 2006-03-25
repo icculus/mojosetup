@@ -6,6 +6,11 @@ static uint8 MojoGui_stdio_priority(MojoGui_rev1 *gui)
     return MOJOGUI_PRIORITY_TRY_LAST;
 }
 
+static const char* MojoGui_stdio_name(MojoGui_rev1 *gui)
+{
+    return "stdio";
+}
+
 static boolean MojoGui_stdio_init(MojoGui_rev1 *gui)
 {
     return true;

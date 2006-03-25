@@ -107,6 +107,8 @@ INCLUDES := \
 
 SRCS := \
     mojosetup.c \
+    gui.c \
+    fileio.c \
 
 
 ifeq ($(isunix),true)

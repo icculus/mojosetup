@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// and some others...
+#include <assert.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
