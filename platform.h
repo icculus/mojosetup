@@ -10,6 +10,8 @@ extern "C" {
 // this is called by your mainline.
 int MojoSetup_main(int argc, char **argv);
 
+const char *MojoPlatform_appBinaryPath(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -32,6 +32,9 @@ typedef int boolean;
 extern int GArgc;
 extern char **GArgv;
 
+// Static, non-stack memory for scratch work...not thread safe!
+extern uint8 scratchbuf_128k[128 * 1024];
+
 // Malloc replacements that blow up on allocation failure.
 void *xmalloc(size_t bytes);
 void *xrealloc(void *ptr, size_t bytes);

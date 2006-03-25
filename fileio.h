@@ -71,6 +71,10 @@ struct MojoArchive
 MojoArchive *MojoArchive_newFromDirectory(const char *dirname);
 MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname);
 
+extern MojoArchive *GBaseArchive;
+MojoArchive *MojoArchive_initBaseArchive(void);
+void MojoArchive_deinitBaseArchive(void);
+
 boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname);
 
 #ifdef __cplusplus

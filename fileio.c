@@ -1,4 +1,5 @@
 #include "fileio.h"
+#include "platform.h"
 
 // !!! FIXME: don't have this here. (need unlink for now).
 #include <unistd.h>
@@ -7,10 +8,10 @@ boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
 {
     FILE *out = NULL;
     boolean iofailure = false;
-    char buf[1024];
     uint32 br;
 
     STUBBED("mkdir first?");
+    STUBBED("file permissions?");
 
     if (in == NULL)
         return false;
@@ -23,7 +24,7 @@ boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
 
     while (!iofailure)
     {
-        br = in->read(in, buf, sizeof (buf));
+        br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
         STUBBED("how to detect read failures?");
         if (br == 0)  // we're done!
             break;
@@ -31,7 +32,7 @@ boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
             iofailure = true;
         else
         {
-            if (fwrite(buf, br, 1, out) != 1)
+            if (fwrite(scratchbuf_128k, br, 1, out) != 1)
                 iofailure = true;
         } // else
     } // while
@@ -281,6 +282,41 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
     ar->opaque = inst;
     return ar;
 } // MojoArchive_newFromDirectory
+
+
+
+MojoArchive *GBaseArchive = NULL;
+
+MojoArchive *MojoArchive_initBaseArchive(void)
+{
+    if (GBaseArchive != NULL)
+        return GBaseArchive;
+    else
+    {
+        const char *basepath = MojoPlatform_appBinaryPath();
+        MojoInput *io = MojoInput_newFromFile(basepath);
+
+        STUBBED("chdir to path of binary");
+
+        if (io != NULL)
+            GBaseArchive = MojoArchive_newFromInput(io, basepath);
+
+        if (GBaseArchive == NULL)
+            GBaseArchive = MojoArchive_newFromDirectory(".");
+    } // else
+
+    return GBaseArchive;
+} // MojoArchive_initBaseArchive
+
+
+void MojoArchive_deinitBaseArchive(void)
+{
+    if (GBaseArchive != NULL)
+    {
+        GBaseArchive->close(GBaseArchive);
+        GBaseArchive = NULL;
+    } // if
+} // MojoArchive_deinitBaseArchive
 
 // end of fileio.c ...
 
