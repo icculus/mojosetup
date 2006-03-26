@@ -3,12 +3,72 @@
 
 // !!! FIXME: don't have this here. (need unlink for now).
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/param.h>
+
+
+typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
+
+MojoArchive *MojoArchive_createZIP(MojoInput *io);
+
+typedef struct
+{
+    const char *ext;
+    MojoArchiveCreateEntryPoint create;
+} MojoArchiveType;
+
+static const MojoArchiveType archives[] =
+{
+    { "zip", MojoArchive_createZIP },
+};
+
+MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
+{
+    int i;
+    MojoArchive *retval = NULL;
+    const char *ext = ((origfname != NULL) ? strrchr(origfname, '.') : NULL);
+    if (ext != NULL)
+    {
+        // Try for an exact match.
+        for (i = 0; i < STATICARRAYLEN(archives); i++)
+        {
+            if (strcasecmp(ext, archives[i].ext) == 0)
+                return archives[i].create(io);
+        } // for
+    } // if
+
+    // Try them all...
+    for (i = 0; i < STATICARRAYLEN(archives); i++)
+    {
+        if ((retval = archives[i].create(io)) != NULL)
+            return retval;
+    } // for
+
+    io->close(io);
+    return NULL;  // nothing can handle this data.
+} // MojoArchive_newFromInput
+
+
+void MojoArchive_resetEntryInfo(MojoArchiveEntryInfo *info, int basetoo)
+{
+    char *base = info->basepath;
+    free(info->filename);
+    memset(info, '\0', sizeof (MojoArchiveEntryInfo));
+
+    if (basetoo)
+        free(base);
+    else
+        info->basepath = base;
+} // MojoArchive_resetEntryInfo
+
+
 
 boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
 {
     FILE *out = NULL;
     boolean iofailure = false;
-    uint32 br;
+    int32 br;
 
     STUBBED("mkdir first?");
     STUBBED("file permissions?");
@@ -24,8 +84,7 @@ boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
 
     while (!iofailure)
     {
-        br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
-        STUBBED("how to detect read failures?");
+        br = (int32) in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
         if (br == 0)  // we're done!
             break;
         else if (br < 0)
@@ -48,53 +107,93 @@ boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
 } // mojoInputToPhysicalFile
 
 
+
 // MojoInputs from files on the OS filesystem.
 
-static uint32 MojoInput_file_read(MojoInput *io, void *buf, uint32 bufsize)
+typedef struct
 {
-    return (uint32) fread(buf, 1, bufsize, (FILE *) io->opaque);
+    FILE *handle;
+    char *path;
+} MojoInputFileInstance;
+
+static int64 MojoInput_file_read(MojoInput *io, void *buf, uint32 bufsize)
+{
+    MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
+    return (int64) fread(buf, 1, bufsize, inst->handle);
 } // MojoInput_file_read
 
 static boolean MojoInput_file_seek(MojoInput *io, uint64 pos)
 {
+    MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
 #if 0
-    FILE *f = (FILE *) io->opaque;
-    rewind(f);
+    rewind(inst->handle);
     while (pos)
     {
         // do in a loop to make sure we seek correctly in > 2 gig files.
-        if (fseek(f, (long) (pos & 0x7FFFFFFF), SEEK_CUR) == -1)
+        if (fseek(inst->handle, (long) (pos & 0x7FFFFFFF), SEEK_CUR) == -1)
             return false;
         pos -= (pos & 0x7FFFFFFF);
     } // while
 #else
-    return (fseeko((FILE *) io->opaque, pos, SEEK_SET) == 0);
+    return (fseeko(inst->handle, pos, SEEK_SET) == 0);
 #endif
 } // MojoInput_file_seek
 
-static uint64 MojoInput_file_tell(MojoInput *io)
+static int64 MojoInput_file_tell(MojoInput *io)
 {
-    return ftello((FILE *) io->opaque);
+    MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
+    return (int64) ftello(inst->handle);
 } // MojoInput_file_tell
+
+static int64 MojoInput_file_length(MojoInput *io)
+{
+    MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
+    int fd = fileno(inst->handle);
+    struct stat statbuf;
+    if ((fd == -1) || (fstat(fd, &statbuf) == -1))
+        return -1;
+    return((int64) statbuf.st_size);
+} // MojoInput_file_length
+
+static MojoInput *MojoInput_file_duplicate(MojoInput *io)
+{
+    MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
+    return MojoInput_newFromFile(inst->path);
+} // MojoInput_file_duplicate
 
 static void MojoInput_file_close(MojoInput *io)
 {
-    fclose((FILE *) io->opaque);
+    MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
+    fclose(inst->handle);
+    free(inst->path);
+    free(inst);
     free(io);
 } // MojoInput_file_close
 
 MojoInput *MojoInput_newFromFile(const char *fname)
 {
-    FILE *f = fopen(fname, "rb");
+    char path[PATH_MAX];
+    MojoInputFileInstance *inst;
+
+    if (realpath(fname, path) == NULL)
+        strcpy(path, fname);  // can this actually happen and fopen work?
+
+    FILE *f = fopen(path, "rb");
     if (f == NULL)
         return NULL;
+
+    inst = (MojoInputFileInstance *) xmalloc(sizeof (MojoInputFileInstance));
+    inst->path = xstrdup(path);
+    inst->handle = f;
 
     MojoInput *io = (MojoInput *) xmalloc(sizeof (MojoInput));
     io->read = MojoInput_file_read;
     io->seek = MojoInput_file_seek;
     io->tell = MojoInput_file_tell;
+    io->length = MojoInput_file_length;
+    io->duplicate = MojoInput_file_duplicate;
     io->close = MojoInput_file_close;
-    io->opaque = f;
+    io->opaque = inst;
     return io;
 } // MojoInput_newFromFile
 
@@ -109,7 +208,7 @@ typedef struct
     uint32 pos;
 } MojoInputMemInstance;
 
-static uint32 MojoInput_memory_read(MojoInput *io, void *buf, uint32 bufsize)
+static int64 MojoInput_memory_read(MojoInput *io, void *buf, uint32 bufsize)
 {
     MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
     uint32 left = inst->bytes - inst->pos;
@@ -133,11 +232,23 @@ static boolean MojoInput_memory_seek(MojoInput *io, uint64 pos)
     return true;
 } // MojoInput_memory_seek
 
-static uint64 MojoInput_memory_tell(MojoInput *io)
+static int64 MojoInput_memory_tell(MojoInput *io)
 {
     MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
     return inst->pos;
 } // MojoInput_memory_tell
+
+static int64 MojoInput_memory_length(MojoInput *io)
+{
+    MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
+    return(inst->bytes);
+} // MojoInput_memory_length
+
+static MojoInput *MojoInput_memory_duplicate(MojoInput *io)
+{
+    MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
+    return MojoInput_newFromMemory(inst->mem, inst->bytes);
+} // MojoInput_memory_duplicate
 
 static void MojoInput_memory_close(MojoInput *io)
 {
@@ -156,11 +267,12 @@ MojoInput *MojoInput_newFromMemory(void *mem, uint32 bytes)
     io->read = MojoInput_memory_read;
     io->seek = MojoInput_memory_seek;
     io->tell = MojoInput_memory_tell;
+    io->length = MojoInput_memory_length;
+    io->duplicate = MojoInput_memory_duplicate;
     io->close = MojoInput_memory_close;
     io->opaque = inst;
     return io;
 } // MojoInput_newFromMemory
-
 
 
 // MojoArchives from directories on the OS filesystem.
@@ -175,7 +287,6 @@ typedef struct
 {
     DIR *dir;
     char *base;
-    char *path;
 } MojoArchiveDirInstance;
 
 static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
@@ -185,15 +296,10 @@ static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
     if (inst->dir != NULL)
         closedir(inst->dir);
 
-    free(ar->lastEnumInfo.filename);
-    ar->lastEnumInfo.filename = NULL;
-    ar->lastEnumInfo.type = MOJOARCHIVE_ENTRY_UNKNOWN;
-    ar->lastEnumInfo.filesize = 0;
-
-    free(inst->path);
+    MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
     fullpath = (char *) alloca(strlen(inst->base) + strlen(path) + 2);
     sprintf(fullpath, "%s/%s", inst->base, path);
-    inst->path = xstrdup(fullpath);
+    ar->prevEnum.basepath = xstrdup(path);
     inst->dir = opendir(fullpath);
     return (inst->dir != NULL);
 } // MojoArchive_dir_enumerate
@@ -208,10 +314,7 @@ static const MojoArchiveEntryInfo *MojoArchive_dir_enumNext(MojoArchive *ar)
     if (inst->dir == NULL)
         return NULL;
 
-    free(ar->lastEnumInfo.filename);
-    ar->lastEnumInfo.filename = NULL;
-    ar->lastEnumInfo.type = MOJOARCHIVE_ENTRY_UNKNOWN;
-    ar->lastEnumInfo.filesize = 0;
+    MojoArchive_resetEntryInfo(&ar->prevEnum, 0);
 
     dent = readdir(inst->dir);
     if (dent == NULL)  // end of dir?
@@ -224,30 +327,42 @@ static const MojoArchiveEntryInfo *MojoArchive_dir_enumNext(MojoArchive *ar)
     if ((strcmp(dent->d_name, ".") == 0) || (strcmp(dent->d_name, "..") == 0))
         return MojoArchive_dir_enumNext(ar);
 
-    fullpath = (char *) alloca(strlen(inst->path) + strlen(dent->d_name) + 2);
-    sprintf(fullpath, "%s/%s", inst->path, dent->d_name);
+    ar->prevEnum.filename = xstrdup(dent->d_name);
+    fullpath = (char *) alloca(strlen(inst->base) +
+                               strlen(ar->prevEnum.basepath) +
+                               strlen(ar->prevEnum.filename) + 3);
+
+    sprintf(fullpath, "%s/%s/%s",
+                inst->base,
+                ar->prevEnum.basepath,
+                ar->prevEnum.filename);
+
     if (stat(fullpath, &statbuf) != -1)
     {
-        ar->lastEnumInfo.filesize = statbuf.st_size;
+        ar->prevEnum.filesize = statbuf.st_size;
         if (S_ISDIR(statbuf.st_mode))
-            ar->lastEnumInfo.type = MOJOARCHIVE_ENTRY_DIR;
+            ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
         else if (S_ISREG(statbuf.st_mode))
-            ar->lastEnumInfo.type = MOJOARCHIVE_ENTRY_FILE;
+            ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
         else if (S_ISLNK(statbuf.st_mode))
-            ar->lastEnumInfo.type = MOJOARCHIVE_ENTRY_SYMLINK;
+            ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
     } // if
 
-    ar->lastEnumInfo.filename = xstrdup(dent->d_name);
-    return &ar->lastEnumInfo;
+    return &ar->prevEnum;
 } // MojoArchive_dir_enumNext
 
 
 static MojoInput *MojoArchive_dir_openCurrentEntry(MojoArchive *ar)
 {
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    char *fullpath = (char *) alloca(strlen(inst->path) +
-                                     strlen(ar->lastEnumInfo.filename) + 2);
-    sprintf(fullpath, "%s/%s", inst->path, ar->lastEnumInfo.filename);
+    char *fullpath = (char *) alloca(strlen(inst->base) +
+                                     strlen(ar->prevEnum.basepath) +
+                                     strlen(ar->prevEnum.filename) + 3);
+    sprintf(fullpath, "%s/%s/%s",
+                inst->base,
+                ar->prevEnum.basepath,
+                ar->prevEnum.filename);
+
     return MojoInput_newFromFile(fullpath);
 } // MojoArchive_dir_openCurrentEntry
 
@@ -258,9 +373,8 @@ static void MojoArchive_dir_close(MojoArchive *ar)
     if (inst->dir != NULL)
         closedir(inst->dir);
     free(inst->base);
-    free(inst->path);
-    free(ar->lastEnumInfo.filename);
-    free(ar->opaque);
+    free(inst);
+    MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
     free(ar);
 } // MojoArchive_dir_close
 
@@ -282,6 +396,7 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
     ar->opaque = inst;
     return ar;
 } // MojoArchive_newFromDirectory
+
 
 
 

@@ -1,3 +1,6 @@
+support_zip := true
+
+# Generally you shouldn't touch anything below here.  :)
 
 APPID := mojosetup
 APPREV := $(shell head -n 1 BUILD_REVISION.txt)
@@ -101,6 +104,7 @@ OPTS := -O0
 DEFINES := \
     -DAPPID=$(APPID) \
     -DAPPREV=$(APPREV) \
+    -DZ_PREFIX=1 \
 
 INCLUDES := \
     -I. \
@@ -110,7 +114,29 @@ SRCS := \
     misc.c \
     gui.c \
     fileio.c \
+    archive_zip.c \
 
+ZLIBSRCS := \
+    zlib123/adler32.c \
+    zlib123/compress.c \
+    zlib123/crc32.c \
+    zlib123/deflate.c \
+    zlib123/inffast.c \
+    zlib123/inflate.c \
+    zlib123/inftrees.c \
+    zlib123/trees.c \
+    zlib123/uncompr.c \
+    zlib123/zutil.c \
+
+needzlib := false
+ifeq ($(support_zip),true)
+    needzlib := true
+endif
+
+ifeq ($(needzlib),true)
+    DEFINES += -DZ_PREFIX=1
+    SRCS += $(ZLIBSRCS)
+endif
 
 ifeq ($(isunix),true)
   DEFINES += -DPLATFORM_UNIX=1

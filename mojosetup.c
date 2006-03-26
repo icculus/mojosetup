@@ -34,6 +34,8 @@ int MojoSetup_main(int argc, char **argv)
     if (!initEverything())
         return 1;
 
+    GGui->msgbox(GGui, "test", "testing");
+
     deinitEverything();
     return 0;
 } // MojoSetup_main

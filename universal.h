@@ -15,6 +15,9 @@
 extern "C" {
 #endif
 
+// Just a define for when we have to glue to external code.
+#define __MOJOSETUP__ 1
+
 typedef char int8;
 typedef unsigned char uint8;
 typedef short int16;
@@ -74,6 +77,8 @@ char *xstrdup(const char *str);
 
 // !!! FIXME: make this a real function.
 #define dbgprintf printf
+
+#define STATICARRAYLEN(x) ( (sizeof ((x))) / (sizeof ((x)[0])) )
 
 #ifdef __cplusplus
 }

@@ -115,32 +115,20 @@ MojoGui *MojoGui_initGuiPlugin(void)
     if (pluginDetails != NULL)
         return pluginDetails->gui;
 
+    memset(&plugins, '\0', sizeof (plugins));
     assert(GGui == NULL);
 
-    memset(&plugins, '\0', sizeof (plugins));
-
-    // !!! FIXME: Have a global MojoArchive that represents the install
-    // !!! FIXME:  (either an archive, a physical dir, etc.)
-    STUBBED("use a global MojoArchive for basedir");
-    MojoArchive *dir = MojoArchive_newFromDirectory(".");
-    if (dir == NULL)
+    if (!GBaseArchive->enumerate(GBaseArchive, "gui"))
         return false;
 
-    if (!dir->enumerate(dir, "gui"))
-    {
-        STUBBED("Don't close this when it's a global.");
-        dir->close(dir);
-        return false;
-    } // if
-
-    while ((entinfo = dir->enumNext(dir)) != NULL)
+    while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)
     {
         PluginList *item;
 
         if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
             continue;
 
-        item = loadGuiPlugin(dir);
+        item = loadGuiPlugin(GBaseArchive);
         if (item == NULL)
             continue;
 
@@ -161,9 +149,6 @@ MojoGui *MojoGui_initGuiPlugin(void)
             deleteGuiPlugin(i);
         i = next;
     } // while
-
-    STUBBED("Don't close this when it's a global.");
-    dir->close(dir);
 
     if (pluginDetails != NULL)
     {

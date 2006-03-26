@@ -7,6 +7,10 @@
 extern "C" {
 #endif
 
+#ifndef SUPPORT_ZIP
+#define SUPPORT_ZIP 1
+#endif
+
 /*
  * File i/o may go through multiple layers: the archive attached to the binary,
  *  then an archive in there that's being read entirely out of memory that's
@@ -24,9 +28,11 @@ typedef struct MojoInput MojoInput;
 struct MojoInput
 {
     // public
-    uint32 (*read)(MojoInput *io, void *buf, uint32 bufsize);
+    int64 (*read)(MojoInput *io, void *buf, uint32 bufsize);
     boolean (*seek)(MojoInput *io, uint64 pos);
-    uint64 (*tell)(MojoInput *io);
+    int64 (*tell)(MojoInput *io);
+    int64 (*length)(MojoInput *io);
+    MojoInput* (*duplicate)(MojoInput *io);
     void (*close)(MojoInput *io);
 
     // private
@@ -49,9 +55,13 @@ typedef struct MojoArchiveEntryInfo MojoArchiveEntryInfo;
 struct MojoArchiveEntryInfo
 {
     char *filename;
+    char *basepath;
     MojoArchiveEntryType type;
     int64 filesize;
 };
+
+void MojoArchive_resetEntryInfo(MojoArchiveEntryInfo *info, int basetoo);
+
 
 typedef struct MojoArchive MojoArchive;
 struct MojoArchive 
@@ -64,7 +74,7 @@ struct MojoArchive
 
     // private
     MojoInput *io;
-    MojoArchiveEntryInfo lastEnumInfo;
+    MojoArchiveEntryInfo prevEnum;
     void *opaque;
 };
 
