@@ -51,6 +51,39 @@ static MojoGuiPluginPriority calcGuiPriority(MojoGui *gui)
 } // calcGuiPriority
 
 
+static PluginList *initGuiPluginsByPriority(PluginList *plugins)
+{
+    MojoGuiPluginPriority p;
+    for (p = MOJOGUI_PRIORITY_USER_REQUESTED; p < MOJOGUI_PRIORITY_TOTAL; p++)
+    {
+        PluginList *i;
+        for (i = plugins->next; i != NULL; i = i->next)
+        {
+            if ( (i->priority == p) && (i->gui->init(i->gui)) )
+                return i;
+        } // for
+    } // for
+
+    return NULL;
+} // initGuiPluginsByPriority
+
+
+static void deleteGuiPlugin(PluginList *plugin)
+{
+    if (plugin != NULL)
+    {
+        if (plugin->gui)
+            plugin->gui->deinit(plugin->gui);
+        if (plugin->lib)
+            dlclose(plugin->lib);
+        if (plugin->filename)
+            unlink(plugin->filename);
+        free(plugin->filename);
+        free(plugin);
+    } // if
+} // deleteGuiPlugin
+
+
 static void loadStaticGuiPlugins(PluginList *plugins)
 {
     int i;
@@ -70,7 +103,7 @@ static void loadStaticGuiPlugins(PluginList *plugins)
 } // loadStaticGuiPlugins
 
 
-static PluginList *loadGuiPlugin(MojoArchive *ar)
+static PluginList *loadDynamicGuiPlugin(MojoArchive *ar)
 {
     char fname[128] = { 0 };
     PluginList *retval = NULL;
@@ -122,45 +155,34 @@ static PluginList *loadGuiPlugin(MojoArchive *ar)
     } // if
 
     return retval;
-} // loadGuiPlugin
+} // loadDynamicGuiPlugin
 
 
-static PluginList *initGuiPluginsByPriority(PluginList *plugins)
+static void loadDynamicGuiPlugins(PluginList *plugins)
 {
-    MojoGuiPluginPriority p;
-    for (p = MOJOGUI_PRIORITY_USER_REQUESTED; p < MOJOGUI_PRIORITY_TOTAL; p++)
+    if (GBaseArchive->enumerate(GBaseArchive, "gui"))
     {
-        PluginList *i;
-        for (i = plugins->next; i != NULL; i = i->next)
+        const MojoArchiveEntryInfo *entinfo;
+        while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)
         {
-            if ( (i->priority == p) && (i->gui->init(i->gui)) )
-                return i;
-        } // for
-    } // for
+            PluginList *item;
 
-    return NULL;
-} // initGuiPluginsByPriority
+            if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
+                continue;
 
+            item = loadDynamicGuiPlugin(GBaseArchive);
+            if (item == NULL)
+                continue;
 
-static void deleteGuiPlugin(PluginList *plugin)
-{
-    if (plugin != NULL)
-    {
-        if (plugin->gui)
-            plugin->gui->deinit(plugin->gui);
-        if (plugin->lib)
-            dlclose(plugin->lib);
-        if (plugin->filename)
-            unlink(plugin->filename);
-        free(plugin->filename);
-        free(plugin);
+            item->next = plugins->next;
+            plugins->next = item;
+        } // while
     } // if
-} // deleteGuiPlugin
+} // loadDynamicGuiPlugins
 
 
 MojoGui *MojoGui_initGuiPlugin(void)
 {
-    const MojoArchiveEntryInfo *entinfo = NULL;
     PluginList plugins;
 
     if (pluginDetails != NULL)
@@ -169,24 +191,7 @@ MojoGui *MojoGui_initGuiPlugin(void)
     memset(&plugins, '\0', sizeof (plugins));
     assert(GGui == NULL);
 
-    if (!GBaseArchive->enumerate(GBaseArchive, "gui"))
-        return false;
-
-    while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)
-    {
-        PluginList *item;
-
-        if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
-            continue;
-
-        item = loadGuiPlugin(GBaseArchive);
-        if (item == NULL)
-            continue;
-
-        item->next = plugins.next;
-        plugins.next = item;
-    } // while
-
+    loadDynamicGuiPlugins(&plugins);
     loadStaticGuiPlugins(&plugins);
 
     pluginDetails = initGuiPluginsByPriority(&plugins);
