@@ -1,5 +1,18 @@
 #define BUILDING_EXTERNAL_PLUGIN 1
 #include "../gui.h"
+
+// Probably want to support this always, unless explicitly overridden.
+#ifndef SUPPORT_GUI_STDIO
+#define SUPPORT_GUI_STDIO 1
+#endif
+
+// Probably want to statically link it, too.
+#ifndef GUI_STDIO_STATIC_LINK
+#define GUI_STDIO_STATIC_LINK 1
+#endif
+
+#if SUPPORT_GUI_STDIO
+
 #include <ctype.h>
 
 static uint8 MojoGui_stdio_priority(MojoGui_rev1 *gui)
@@ -19,6 +32,7 @@ static boolean MojoGui_stdio_init(MojoGui_rev1 *gui)
 
 static void MojoGui_stdio_deinit(MojoGui_rev1 *gui)
 {
+    // no-op
 }
 
 static void MojoGui_stdio_msgbox(MojoGui_rev1 *gui, const char *title, const char *text)
@@ -49,7 +63,13 @@ static boolean MojoGui_stdio_promptyn(MojoGui_rev1 *gui, const char *title, cons
     return 0;
 }
 
-CREATE_MOJOGUI_ENTRY_POINT(stdio)
+MOJOGUI_PLUGIN(stdio)
 
-// gui_stdio.c ...
+#if !GUI_STDIO_STATIC_LINK
+CREATE_MOJOGUI_ENTRY_POINT(stdio)
+#endif
+
+#endif // SUPPORT_GUI_STDIO
+
+// end of gui_stdio.c ...
 

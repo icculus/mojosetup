@@ -13,6 +13,7 @@ extern "C" {
 typedef enum
 {
     MOJOGUI_PRIORITY_NEVER_TRY = 0,
+    MOJOGUI_PRIORITY_USER_REQUESTED,
     MOJOGUI_PRIORITY_TRY_FIRST,
     MOJOGUI_PRIORITY_TRY_NORMAL,
     MOJOGUI_PRIORITY_TRY_LAST,
@@ -43,6 +44,7 @@ struct MojoGui_rev1
 
 
 // Tapdance to handle interface revisions...
+//   (God, this is a mess.)
 
 /*
  * The latest revision struct is just called "MojoGui" for convenience
@@ -63,13 +65,22 @@ struct MojoGui_rev1
 typedef MOJOGUI_STRUCT MojoGui;
 typedef MOJOGUI_STRUCT * (*MojoGuiEntryType)(void);
 
+#ifndef BUILDING_EXTERNAL_PLUGIN
+extern MojoGui *GGui;
+MojoGui *MojoGui_initGuiPlugin(void);
+void MojoGui_deinitGuiPlugin(void);
+#else
+
+__EXPORT__ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void);
+
+
 /*
  * We do this as a macro so we only have to update one place, and it
  *  enforces some details in the plugins. Without effort, plugins don't
  *  support anything but the latest version of the interface.
  */
-#define CREATE_MOJOGUI_ENTRY_POINT(module) \
-MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
+#define MOJOGUI_PLUGIN(module) \
+MojoGui *MojoGuiPlugin_##module(void) \
 { \
     static MOJOGUI_STRUCT retval; \
     retval.priority = MojoGui_##module##_priority; \
@@ -82,12 +93,12 @@ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
     return &retval; \
 } \
 
-#ifndef BUILDING_EXTERNAL_PLUGIN
-extern MojoGui *GGui;
-MojoGui *MojoGui_initGuiPlugin(void);
-void MojoGui_deinitGuiPlugin(void);
-#else
-__EXPORT__ MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void);
+#define CREATE_MOJOGUI_ENTRY_POINT(module) \
+MOJOGUI_STRUCT *MOJOGUI_ENTRY_POINT(void) \
+{ \
+    return MOJOGUI_PLUGIN2(MOJOGUI_ENTRY_POINT,module) (); \
+} \
+
 #endif
 
 #ifdef __cplusplus

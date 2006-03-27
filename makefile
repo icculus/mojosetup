@@ -104,7 +104,6 @@ OPTS := -O0
 DEFINES := \
     -DAPPID=$(APPID) \
     -DAPPREV=$(APPREV) \
-    -DZ_PREFIX=1 \
 
 INCLUDES := \
     -I. \
@@ -115,6 +114,7 @@ SRCS := \
     gui.c \
     fileio.c \
     archive_zip.c \
+    gui/gui_stdio.c \
 
 ZLIBSRCS := \
     zlib123/adler32.c \
@@ -127,6 +127,9 @@ ZLIBSRCS := \
     zlib123/trees.c \
     zlib123/uncompr.c \
     zlib123/zutil.c \
+
+GUIPLUGINS := \
+	gui_stdio \
 
 needzlib := false
 ifeq ($(support_zip),true)
@@ -141,7 +144,6 @@ endif
 ifeq ($(isunix),true)
   DEFINES += -DPLATFORM_UNIX=1
   SRCS += platform/unix.c
-  GUIPLUGINS += gui_stdio
 endif
 
 ifeq ($(islinux),true)
@@ -188,8 +190,9 @@ EXES := $(EXE)
 # We force this to build every time, so it can't be an explicit dependency...
 LIBS += bin/buildver.o
 
-CFLAGS := -g -pipe -Wall -Werror -fexceptions -fsigned-char $(OPTS) $(INCLUDES) $(DEFINES)
-CXXFLAGS := $(CFLAGS)
+#CFLAGS += -fvisibility=hidden
+CFLAGS += -g -pipe -Wall -Werror -fexceptions -fsigned-char $(OPTS) $(INCLUDES) $(DEFINES)
+CXXFLAGS += $(CFLAGS)
 SHARED_CFLAGS := $(CFLAGS) -fPIC -DPIC
 SHARED_CXXFLAGS := $(SHARED_CFLAGS)
 

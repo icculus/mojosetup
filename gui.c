@@ -9,7 +9,7 @@
 
 typedef struct S_PLUGINLIST
 {
-    char fname[1024];
+    char *filename;
     void *lib;
     MojoGui *gui;
     MojoGuiPluginPriority priority;
@@ -20,9 +20,59 @@ MojoGui *GGui = NULL;
 PluginList *pluginDetails = NULL;
 
 
+typedef MojoGui* (*MojoGuiStaticEntryPoint)(void);
+MojoGui *MojoGuiPlugin_stdio(void);
+
+static const MojoGuiStaticEntryPoint staticGuiPlugins[] =
+{
+    MojoGuiPlugin_stdio,
+};
+
+
+static MojoGuiPluginPriority calcGuiPriority(MojoGui *gui)
+{
+    static char *envr = NULL;
+    MojoGuiPluginPriority retval;
+
+    if (envr == NULL)
+        envr = getenv("MOJOSETUP_GUI");
+
+    retval = gui->priority(gui);
+
+    // If the plugin isn't saying "don't try me at all" then see if the
+    //  user explicitly wants this one.
+    if (retval != MOJOGUI_PRIORITY_NEVER_TRY)
+    {
+        if ((envr != NULL) && (strcasecmp(envr, gui->name(gui)) == 0))
+            retval = MOJOGUI_PRIORITY_USER_REQUESTED;
+    } // if
+
+    return retval;
+} // calcGuiPriority
+
+
+static void loadStaticGuiPlugins(PluginList *plugins)
+{
+    int i;
+    for (i = 0; i < STATICARRAYLEN(staticGuiPlugins); i++)
+    {
+        PluginList *plug;
+        MojoGui *gui = staticGuiPlugins[i]();
+        if (gui == NULL)
+            continue;
+        plug = xmalloc(sizeof (PluginList));
+        plug->lib = NULL;
+        plug->gui = gui;
+        plug->priority = calcGuiPriority(gui);
+        plug->next = plugins->next;
+        plugins->next = plug;
+    } // for
+} // loadStaticGuiPlugins
+
+
 static PluginList *loadGuiPlugin(MojoArchive *ar)
 {
-    char fname[1024] = { 0 };
+    char fname[128] = { 0 };
     PluginList *retval = NULL;
     void *lib = NULL;
     MojoGuiEntryType entry = NULL;
@@ -54,10 +104,10 @@ static PluginList *loadGuiPlugin(MojoArchive *ar)
             if ( (entry != NULL) && ((gui = entry()) != NULL) )
             {
                 retval = xmalloc(sizeof (PluginList));
-                strcpy(retval->fname, fname);
+                retval->filename = xstrdup(fname);
                 retval->lib = lib;
                 retval->gui = gui;
-                retval->priority = gui->priority(gui);
+                retval->priority = calcGuiPriority(gui);
                 retval->next = NULL;
             } // if
         } // if
@@ -78,7 +128,7 @@ static PluginList *loadGuiPlugin(MojoArchive *ar)
 static PluginList *initGuiPluginsByPriority(PluginList *plugins)
 {
     MojoGuiPluginPriority p;
-    for (p = MOJOGUI_PRIORITY_TRY_FIRST; p < MOJOGUI_PRIORITY_TOTAL; p++)
+    for (p = MOJOGUI_PRIORITY_USER_REQUESTED; p < MOJOGUI_PRIORITY_TOTAL; p++)
     {
         PluginList *i;
         for (i = plugins->next; i != NULL; i = i->next)
@@ -100,8 +150,9 @@ static void deleteGuiPlugin(PluginList *plugin)
             plugin->gui->deinit(plugin->gui);
         if (plugin->lib)
             dlclose(plugin->lib);
-        if (plugin->fname[0])
-            unlink(plugin->fname);
+        if (plugin->filename)
+            unlink(plugin->filename);
+        free(plugin->filename);
         free(plugin);
     } // if
 } // deleteGuiPlugin
@@ -136,7 +187,7 @@ MojoGui *MojoGui_initGuiPlugin(void)
         plugins.next = item;
     } // while
 
-    STUBBED("Add static plugins to the list?");
+    loadStaticGuiPlugins(&plugins);
 
     pluginDetails = initGuiPluginsByPriority(&plugins);
 
