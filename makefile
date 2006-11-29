@@ -271,6 +271,10 @@ bin/gui/%.o : gui/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(SHARED_CFLAGS) -c -o $@ $<
 
+# !!! FIXME: the base app must be C-only to avoid the need for extra runtime
+# !!! FIXME:  dependencies before we get bootstrapped, but plugins (like the Qt
+# !!! FIXME:  GUI code) can use C++...it'll just fail if there's a dependency
+# !!! FIXME:  problem and and let the GTK+ code try.
 bin/%.o : %.cpp
 	@echo "Don't add C++ sources to this project! C only!"
 	@exit 1

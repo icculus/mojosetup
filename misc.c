@@ -1,12 +1,29 @@
 #include "universal.h"
+#include "gui.h"
 
 uint8 scratchbuf_128k[128 * 1024];
 int GArgc = 0;
 char **GArgv = NULL;
 
-static void panic(const char *err)
+void panic(const char *err)
 {
-    fprintf(stderr, "\n\n\nPANIC: %s\n\n\n", err);
+    static int panic_runs = 0;
+
+    panic_runs++;
+    if (panic_runs == 1)
+    {
+        if ((GGui != NULL) && (GGui->msgbox != NULL))
+            GGui->msgbox(GGui, "PANIC", err);
+        else
+            panic(err);  /* no GUI plugin...double-panic. */
+    } // if
+
+    else if (panic_runs == 2)  // no GUI or panic panicked...write to stderr...
+        fprintf(stderr, "\n\n\nPANIC: %s\n\n\n", err);
+
+    else  // panic is panicking in a loop, terminate without any cleanup...
+        _exit(22);
+
     exit(22);
 } // panic
 

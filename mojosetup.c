@@ -8,11 +8,15 @@ static boolean initEverything(void)
 {
     STUBBED("Init logging functionality.");
 
-    if (!MojoArchive_initBaseArchive())
-        return false;
+    // We have to panic on errors until the GUI is ready. Try to make things
+    //  "succeed" unless they are catastrophic, and report problems later.
 
-    if (!MojoGui_initGuiPlugin())
-        return false;
+    // Start with the base archive work, since it might have GUI plugins.
+    if (!MojoArchive_initBaseArchive())
+        panic("Initial setup failed. Cannot continue.");
+
+    else if (!MojoGui_initGuiPlugin())
+        panic("Initial GUI setup failed. Cannot continue.");
 
     return true;
 } // initEverything

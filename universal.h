@@ -28,6 +28,7 @@ typedef long long int64;
 typedef unsigned long long uint64;
 
 typedef int boolean;
+// !!! FIXME: this is begging for trouble.
 #define true 1
 #define false 0
 
@@ -36,7 +37,11 @@ extern int GArgc;
 extern char **GArgv;
 
 // Static, non-stack memory for scratch work...not thread safe!
+// !!! FIXME: maybe lose this.
 extern uint8 scratchbuf_128k[128 * 1024];
+
+// Call this for fatal errors that require app termination. Try to avoid this.
+void panic(const char *err);
 
 // Malloc replacements that blow up on allocation failure.
 void *xmalloc(size_t bytes);
