@@ -125,7 +125,7 @@ static int64 MojoInput_file_read(MojoInput *io, void *buf, uint32 bufsize)
 static boolean MojoInput_file_seek(MojoInput *io, uint64 pos)
 {
     MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
-#if 0
+#if 1
     rewind(inst->handle);
     while (pos)
     {
@@ -134,6 +134,7 @@ static boolean MojoInput_file_seek(MojoInput *io, uint64 pos)
             return false;
         pos -= (pos & 0x7FFFFFFF);
     } // while
+    return true;
 #else
     return (fseeko(inst->handle, pos, SEEK_SET) == 0);
 #endif
@@ -142,7 +143,9 @@ static boolean MojoInput_file_seek(MojoInput *io, uint64 pos)
 static int64 MojoInput_file_tell(MojoInput *io)
 {
     MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
-    return (int64) ftello(inst->handle);
+//    return (int64) ftello(inst->handle);
+    STUBBED("ftell is 32 bit!\n");
+    return (int64) ftell(inst->handle);
 } // MojoInput_file_tell
 
 static int64 MojoInput_file_length(MojoInput *io)
