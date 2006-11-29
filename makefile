@@ -98,8 +98,8 @@ endif
 CC := ccache gcc
 LD := gcc
 
-OPTS := -Os -fno-strict-aliasing -fomit-frame-pointer
-#OPTS := -O0
+#OPTS := -Os -fno-strict-aliasing -fomit-frame-pointer
+OPTS := -O0
 
 DEFINES := \
     -DAPPID=$(APPID) \

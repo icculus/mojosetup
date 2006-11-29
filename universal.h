@@ -80,6 +80,9 @@ char *xstrdup(const char *str);
 
 #define STATICARRAYLEN(x) ( (sizeof ((x))) / (sizeof ((x)[0])) )
 
+#define DEFINE_TO_STR2(x) #x
+#define DEFINE_TO_STR(x) DEFINE_TO_STR2(x)
+
 #ifdef __cplusplus
 }
 #endif

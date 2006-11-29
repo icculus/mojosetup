@@ -19,13 +19,18 @@ typedef struct S_PLUGINLIST
 MojoGui *GGui = NULL;
 PluginList *pluginDetails = NULL;
 
-
-typedef MojoGui* (*MojoGuiStaticEntryPoint)(void);
-MojoGui *MojoGuiPlugin_stdio(void);
-
-static const MojoGuiStaticEntryPoint staticGuiPlugins[] =
+static const MojoGuiEntryPoint staticGuiPlugins[] =
 {
+#if GUI_STATIC_LINK_STDIO
     MojoGuiPlugin_stdio,
+#endif
+#if GUI_STATIC_LINK_WINDOWS
+    MojoGuiPlugin_windows,
+#endif
+#if GUI_STATIC_LINK_GTK_PLUS
+    MojoGuiPlugin_gtkplus,
+#endif
+    NULL
 };
 
 
@@ -84,13 +89,16 @@ static void deleteGuiPlugin(PluginList *plugin)
 } // deleteGuiPlugin
 
 
+// !!! FIXME: merge this code with dynamic bits, so it retrieves a MojoGui*
+// !!! FIXME:  and then passes it to unified code...
 static void loadStaticGuiPlugins(PluginList *plugins)
 {
     int i;
-    for (i = 0; i < STATICARRAYLEN(staticGuiPlugins); i++)
+    STUBBED("See FIXME above.");
+    for (i = 0; staticGuiPlugins[i] != NULL; i++)
     {
         PluginList *plug;
-        MojoGui *gui = staticGuiPlugins[i]();
+        MojoGui *gui = staticGuiPlugins[i](MOJOGUI_INTERFACE_REVISION);
         if (gui == NULL)
             continue;
         plug = xmalloc(sizeof (PluginList));
@@ -108,7 +116,6 @@ static PluginList *loadDynamicGuiPlugin(MojoArchive *ar)
     char fname[128] = { 0 };
     PluginList *retval = NULL;
     void *lib = NULL;
-    MojoGuiEntryType entry = NULL;
     boolean rc;
     MojoInput *io = ar->openCurrentEntry(ar);
     if (io == NULL)
@@ -133,15 +140,20 @@ static PluginList *loadDynamicGuiPlugin(MojoArchive *ar)
         if (lib != NULL)
         {
             MojoGui *gui = NULL;
-            entry = (MojoGuiEntryType) dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
-            if ( (entry != NULL) && ((gui = entry()) != NULL) )
+            MojoGuiEntryPoint entry = NULL;
+            entry = (MojoGuiEntryPoint) dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
+            if (entry != NULL)
             {
-                retval = xmalloc(sizeof (PluginList));
-                retval->filename = xstrdup(fname);
-                retval->lib = lib;
-                retval->gui = gui;
-                retval->priority = calcGuiPriority(gui);
-                retval->next = NULL;
+                gui = entry(MOJOGUI_INTERFACE_REVISION);
+                if (gui != NULL)
+                {
+                    retval = xmalloc(sizeof (PluginList));
+                    retval->filename = xstrdup(fname);
+                    retval->lib = lib;
+                    retval->gui = gui;
+                    retval->priority = calcGuiPriority(gui);
+                    retval->next = NULL;
+                } // if
             } // if
         } // if
     } // if
