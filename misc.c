@@ -1,3 +1,5 @@
+#include <unistd.h>  // !!! FIXME: for _exit().
+
 #include "universal.h"
 #include "gui.h"
 
