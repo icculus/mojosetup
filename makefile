@@ -1,4 +1,5 @@
 support_zip := true
+use_internal_zlib := false
 
 # Generally you shouldn't touch anything below here.  :)
 
@@ -95,11 +96,10 @@ ifneq ($(strip $(settarget)),true)
 endif
 
 CC := ccache gcc
-CXX := ccache g++
-LD := g++
+LD := gcc
 
-#OPTS := -O3 -fno-strict-aliasing -falign-loops=16 -ffast-math -fno-math-errno
-OPTS := -O0
+OPTS := -Os -fno-strict-aliasing -fomit-frame-pointer
+#OPTS := -O0
 
 DEFINES := \
     -DAPPID=$(APPID) \
@@ -116,6 +116,38 @@ SRCS := \
     archive_zip.c \
     gui/gui_stdio.c \
 
+# !!! FIXME: Optionally strip out the parser and add-on libraries...
+LUASRCS := \
+    lua-5.1.1/src/lapi.c \
+    lua-5.1.1/src/lcode.c \
+    lua-5.1.1/src/ldebug.c \
+    lua-5.1.1/src/ldo.c \
+    lua-5.1.1/src/ldump.c \
+    lua-5.1.1/src/lfunc.c \
+    lua-5.1.1/src/lgc.c \
+    lua-5.1.1/src/llex.c \
+    lua-5.1.1/src/lmem.c \
+    lua-5.1.1/src/lobject.c \
+    lua-5.1.1/src/lopcodes.c \
+    lua-5.1.1/src/lparser.c \
+    lua-5.1.1/src/lstate.c \
+    lua-5.1.1/src/lstring.c \
+    lua-5.1.1/src/ltable.c \
+    lua-5.1.1/src/ltm.c \
+    lua-5.1.1/src/lundump.c \
+    lua-5.1.1/src/lvm.c \
+    lua-5.1.1/src/lzio.c \
+    lua-5.1.1/src/lauxlib.c \
+    lua-5.1.1/src/lbaselib.c \
+    lua-5.1.1/src/ldblib.c \
+    lua-5.1.1/src/liolib.c \
+    lua-5.1.1/src/lmathlib.c \
+    lua-5.1.1/src/loslib.c \
+    lua-5.1.1/src/ltablib.c \
+    lua-5.1.1/src/lstrlib.c \
+    lua-5.1.1/src/loadlib.c \
+    lua-5.1.1/src/linit.c \
+
 ZLIBSRCS := \
     zlib123/adler32.c \
     zlib123/compress.c \
@@ -129,7 +161,9 @@ ZLIBSRCS := \
     zlib123/zutil.c \
 
 GUIPLUGINS := \
-	gui_stdio \
+    gui_stdio \
+
+SRCS += $(LUASRCS)
 
 needzlib := false
 ifeq ($(support_zip),true)
@@ -137,17 +171,24 @@ ifeq ($(support_zip),true)
 endif
 
 ifeq ($(needzlib),true)
-    DEFINES += -DZ_PREFIX=1
-    SRCS += $(ZLIBSRCS)
+  	ifeq ($(use_internal_zlib),true)
+    	DEFINES += -DZ_PREFIX=1
+    	SRCS += $(ZLIBSRCS)
+    else
+    	LDFLAGS += -lz
+    endif
 endif
 
 ifeq ($(isunix),true)
   DEFINES += -DPLATFORM_UNIX=1
+  DEFINES += -DLUA_USE_POSIX=1
   SRCS += platform/unix.c
 endif
 
 ifeq ($(islinux),true)
   DEFINES += -DPLATFORM_LINUX=1
+  DEFINES += -DLUA_USE_DLOPEN=1
+  LIBS += -ldl -lm
   EXEEXT := -bin
   DLLEXT := .so
   SHARED_LDFLAGS += -shared -fPIC
@@ -155,6 +196,7 @@ endif
 
 ifeq ($(ismacosx),true)
   DEFINES += -DPLATFORM_MACOSX=1
+  DEFINES += -DLUA_DL_DYLD=1
   LIBS += -framework Carbon
   EXEEXT := -bin
   DLLEXT := .dylib
@@ -191,7 +233,7 @@ EXES := $(EXE)
 LIBS += bin/buildver.o
 
 #CFLAGS += -fvisibility=hidden
-CFLAGS += -g -pipe -Wall -Werror -fexceptions -fsigned-char $(OPTS) $(INCLUDES) $(DEFINES)
+CFLAGS += -g -pipe -Wall -Werror -fsigned-char $(OPTS) $(INCLUDES) $(DEFINES)
 CXXFLAGS += $(CFLAGS)
 SHARED_CFLAGS := $(CFLAGS) -fPIC -DPIC
 SHARED_CXXFLAGS := $(SHARED_CFLAGS)
@@ -229,13 +271,13 @@ bin/gui/%.o : gui/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(SHARED_CFLAGS) -c -o $@ $<
 
+bin/%.o : %.cpp
+	@echo "Don't add C++ sources to this project! C only!"
+	@exit 1
+
 bin/%.o : %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-bin/%.o : %.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(EXE) : $(OBJS) $(STATICLIBS)
 	@mkdir -p $(dir $@)
