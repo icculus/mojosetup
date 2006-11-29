@@ -1161,7 +1161,7 @@ static int zip_parse_end_of_central_dir(void *in, ZIPinfo *info,
 {
     PHYSFS_uint32 ui32;
     PHYSFS_uint16 ui16;
-    PHYSFS_sint64 len;
+    PHYSFS_sint64 len = 0;
     PHYSFS_sint64 pos;
 
     /* find the end-of-central-dir record, and seek to it. */
