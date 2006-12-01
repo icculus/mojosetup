@@ -60,6 +60,7 @@ __EXPORT__ MojoGui *MOJOGUI_ENTRY_POINT(int revision);
  *  support anything but the latest version of the interface.
  */
 #define MOJOGUI_PLUGIN(module) \
+static const char* MojoGui_##module##_name(MojoGui *gui) { return #module; } \
 MojoGui *MojoGuiPlugin_##module(int revision) \
 { \
     if (revision == MOJOGUI_INTERFACE_REVISION) { \
@@ -133,6 +134,21 @@ MojoGui *MojoGuiPlugin_gtkplus(int revision);
 #if SUPPORT_GUI_GTK_PLUS
 #  ifndef GUI_STATIC_LINK_GTK_PLUS
 #    define GUI_STATIC_LINK_GTK_PLUS 0
+#  endif
+#endif
+
+// Probably want to support this always on Mac OS X.
+MojoGui *MojoGuiPlugin_macosx(int revision);
+#ifndef SUPPORT_GUI_MACOSX
+#  if PLATFORM_MACOSX
+#    define SUPPORT_GUI_MACOSX 1
+#  endif
+#endif
+
+// Probably want to statically link it, too.
+#if SUPPORT_GUI_MACOSX
+#  ifndef GUI_STATIC_LINK_MACOSX
+#    define GUI_STATIC_LINK_MACOSX 1
 #  endif
 #endif
 

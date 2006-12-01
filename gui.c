@@ -27,6 +27,9 @@ static const MojoGuiEntryPoint staticGuiPlugins[] =
 #if GUI_STATIC_LINK_WINDOWS
     MojoGuiPlugin_windows,
 #endif
+#if GUI_STATIC_LINK_MACOSX
+    MojoGuiPlugin_macosx,
+#endif
 #if GUI_STATIC_LINK_GTK_PLUS
     MojoGuiPlugin_gtkplus,
 #endif

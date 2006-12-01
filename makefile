@@ -115,6 +115,7 @@ SRCS := \
     fileio.c \
     archive_zip.c \
     gui/gui_stdio.c \
+    gui/gui_macosx.c \
 
 # !!! FIXME: Optionally strip out the parser and add-on libraries...
 LUASRCS := \
@@ -162,6 +163,7 @@ ZLIBSRCS := \
 
 GUIPLUGINS := \
     gui_stdio \
+    gui_macosx \
 
 SRCS += $(LUASRCS)
 
@@ -263,6 +265,14 @@ clean:
 gui_stdio: bin/gui/stdio$(DLLEXT)
 
 bin/gui/stdio$(DLLEXT): bin/gui/gui_stdio.o
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o bin/buildver.o buildver.c
+	$(LD) $(SHARED_LDFLAGS) -o $@ $^ $(LIBS)
+
+.PHONY: gui_macosx
+gui_macosx: bin/gui/macosx$(DLLEXT)
+
+bin/gui/macosx$(DLLEXT): bin/gui/gui_macosx.o
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o bin/buildver.o buildver.c
 	$(LD) $(SHARED_LDFLAGS) -o $@ $^ $(LIBS)
