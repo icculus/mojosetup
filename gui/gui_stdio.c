@@ -55,7 +55,7 @@ static boolean MojoGui_stdio_promptyn(MojoGui *gui, const char *title, const cha
 
 MOJOGUI_PLUGIN(stdio)
 
-#if !GUI_STDIO_STATIC_LINK
+#if !GUI_STATIC_LINK_STDIO
 CREATE_MOJOGUI_ENTRY_POINT(stdio)
 #endif
 
