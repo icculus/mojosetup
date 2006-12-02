@@ -5,6 +5,8 @@
 
 #include <Carbon/Carbon.h>
 
+// (A lot of this is stolen from MojoPatch: http://icculus.org/mojopatch/ ...)
+
 static uint8 MojoGui_macosx_priority(MojoGui *gui)
 {
     return MOJOGUI_PRIORITY_TRY_FIRST;
