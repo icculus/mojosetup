@@ -1,5 +1,6 @@
 #include "../platform.h"
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
@@ -20,14 +21,19 @@ int main(int argc, char **argv)
  */
 static char *findBinaryInPath(const char *bin)
 {
-    const char *envr = getenv("PATH");
+    const char *_envr = getenv("PATH");
     size_t alloc_size = 0;
+    char *envr = NULL;
     char *exe = NULL;
-    char *start = envr;
+    char *start = NULL;
     char *ptr = NULL;
 
-    if ((envr == NULL) || (bin == NULL))
+    if ((_envr == NULL) || (bin == NULL))
         return NULL;
+
+    envr = (char *) alloca(strlen(_envr) + 1);
+    strcpy(envr, _envr);
+    start = envr;
 
     do
     {
@@ -82,7 +88,7 @@ const char *MojoPlatform_appBinaryPath(void)
 
     else  // slow path...have to search the whole $PATH for this one...
     {
-        const char *found = findBinaryInPath(argv0);
+        char *found = findBinaryInPath(argv0);
         if ( (found) && (realpath(found, resolved)) )
             retval = xstrdup(resolved);  // argv[0] contains a path
         free(found);
