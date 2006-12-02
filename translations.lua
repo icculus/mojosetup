@@ -1,3 +1,5 @@
+-- This file _MUST_ be UTF-8 encoded!
+
 MojoSetup.translations = {
     ["README.txt"] = {
         es = "README_spanish.txt";

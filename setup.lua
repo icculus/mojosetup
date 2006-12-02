@@ -7,7 +7,8 @@ require("schema");
 --
 -- All functionality supplied by the installer is encapsulated in the
 --  "MojoSetup" table, so you can use any other symbol name without
---  clashes.
+--  namespace clashes, assuming it's not a Lua keyword or a symbol supplied
+--  by the standard lua libraries.
 --
 -- So here's the actual configuration...we used loki_setup's xml schema
 --  as a rough guideline.
@@ -61,7 +62,7 @@ MojoSetup.Install
     };
 };
 
--- dumptable("_installs", MojoSetup.installs);
+-- MojoSetup.dumptable("_installs", MojoSetup.installs);
 
 -- end of setup.lua ...
 

@@ -3,6 +3,7 @@
 #include "platform.h"
 #include "fileio.h"
 #include "gui.h"
+#include "lua_glue.h"
 
 static boolean initEverything(void)
 {
@@ -18,13 +19,18 @@ static boolean initEverything(void)
     else if (!MojoGui_initGuiPlugin())
         panic("Initial GUI setup failed. Cannot continue.");
 
+    else if (!MojoLua_initLua())
+        panic("Initial Lua setup failed. Cannot continue.");
+
     return true;
 } // initEverything
 
 
 static void deinitEverything(void)
 {
+    MojoLua_deinitLua();
     MojoGui_deinitGuiPlugin();
+    MojoArchive_deinitBaseArchive();
     STUBBED("Deinit logging functionality.");
 } // deinitEverything
 
@@ -35,12 +41,17 @@ int MojoSetup_main(int argc, char **argv)
     GArgc = argc;
     GArgv = argv;
 
+    GLocale = xstrdup("en");   // !!! FIXME
+
     if (!initEverything())
         return 1;
 
     GGui->msgbox(GGui, "test", "testing");
 
     deinitEverything();
+
+    free(GLocale);   // !!! FIXME
+
     return 0;
 } // MojoSetup_main
 

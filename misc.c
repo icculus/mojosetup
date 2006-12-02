@@ -6,8 +6,15 @@
 uint8 scratchbuf_128k[128 * 1024];
 int GArgc = 0;
 char **GArgv = NULL;
+char *GLocale = NULL;
 
-void panic(const char *err)
+int fatal(const char *err)
+{
+    return panic(err);   // !!! FIXME
+} // fatal
+
+
+int panic(const char *err)
 {
     static int panic_runs = 0;
 
@@ -21,13 +28,22 @@ void panic(const char *err)
     } // if
 
     else if (panic_runs == 2)  // no GUI or panic panicked...write to stderr...
-        fprintf(stderr, "\n\n\nPANIC: %s\n\n\n", err);
+        fprintf(stderr, "\n\n\nMOJOSETUP PANIC: %s\n\n\n", err);
 
     else  // panic is panicking in a loop, terminate without any cleanup...
         _exit(22);
 
     exit(22);
+    return 0;  // shouldn't hit this.
 } // panic
+
+
+char *xstrncpy(char *dst, const char *src, size_t len)
+{
+    snprintf(dst, len, "%s", src);
+    return dst;
+} // xstrncpy
+
 
 #undef malloc
 #undef calloc

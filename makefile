@@ -114,6 +114,7 @@ SRCS := \
     gui.c \
     fileio.c \
     archive_zip.c \
+    lua_glue.c \
     gui/gui_stdio.c \
     gui/gui_macosx.c \
 

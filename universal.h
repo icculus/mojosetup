@@ -36,17 +36,38 @@ typedef int boolean;
 extern int GArgc;
 extern char **GArgv;
 
+// The current locale.
+extern char *GLocale;
+
 // Static, non-stack memory for scratch work...not thread safe!
 // !!! FIXME: maybe lose this.
 extern uint8 scratchbuf_128k[128 * 1024];
 
-// Call this for fatal errors that require app termination. Try to avoid this.
-void panic(const char *err);
+// Call this for fatal errors that require immediate app termination.
+//  Does not clean up, or translate the error string. Try to avoid this.
+//  These are for crucial lowlevel issues that preclude any meaningful
+//  recovery (GUI didn't initialize, etc)
+// Doesn't return, but if it did, you can assume it returns zero, so you can
+//  do:  'return panic("out of memory");' or whatnot.
+int panic(const char *err);
+
+// Call this for a fatal problem that attempts an orderly shutdown (system
+//  is fully working, but config file is hosed, etc). (str) will be localized
+//  if possible.
+//  do:  'return fatal("scripting error");' or whatnot.
+int fatal(const char *str);
+
+// Call this to pop up a warning dialog box and block until user hits OK.
+void warn(const char *str);
 
 // Malloc replacements that blow up on allocation failure.
 void *xmalloc(size_t bytes);
 void *xrealloc(void *ptr, size_t bytes);
 char *xstrdup(const char *str);
+
+// !!! FIXME: just use strlcpy/strlcat instead...
+// strncpy() that promises to null-terminate the string, even on overflow.
+char *xstrncpy(char *dst, const char *src, size_t len);
 
 // External plugins won't link against misc.c ...
 #ifndef BUILDING_EXTERNAL_PLUGIN
@@ -54,7 +75,15 @@ char *xstrdup(const char *str);
 #define calloc(x,y) DO_NOT_CALL_CALLOC__USE_XMALLOC_INSTEAD
 #define realloc(x,y) DO_NOT_CALL_REALLOC__USE_XREALLOC_INSTEAD
 #define strdup(x) DO_NOT_CALL_STRDUP__USE_XSTRDUP_INSTEAD
+#define strncpy(x) DO_NOT_CALL_STRNCPY__USE_XSTRNCPY_INSTEAD
 #endif
+
+// Localization support.
+const char *translate(const char *str);
+#ifdef _
+#undef _
+#endif
+#define _(x) translate(x)
 
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
 #if (defined _MSC_VER)

@@ -18,7 +18,7 @@ extern "C" {
  *  regular uncompressed file on physical media. It might be a single file
  *  compressed with bzip2. As such, we have to have an abstraction over the
  *  usual channels...basically what we need here is archives-within-archives,
- *  done transparently and with arbitrary depth (although usually not more
+ *  done transparently and with arbitrary depth, although usually not more
  *  than one deep. This also works as a general transport layer, so the
  *  abstraction could be extended to network connections and such, too.
  */

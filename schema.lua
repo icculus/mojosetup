@@ -1,5 +1,5 @@
---[[
-function dumptable(tabname, tab, depth)
+
+function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then depth = 1 end
     if tabname ~= nil then
         print(tabname .. " = {")
@@ -24,15 +24,7 @@ function dumptable(tabname, tab, depth)
         print("}")
     end
 end
-]]--
 
-
--- !!! FIXME: build this elsewhere.
-MojoSetup = {}
-function MojoSetup.translate(x) return x end
-
--- This gets filled in with fairly complex tables as the config file runs.
-MojoSetup.installs = {}
 
 -- Our namespace for this API...this is filled in with the rest of this file.
 MojoSetup.schema = {}
