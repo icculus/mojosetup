@@ -33,7 +33,7 @@ MojoSetup.Install
     MojoSetup.Eula { keepdirs = true, filename = "MyGame/PunkBuster_EULA.txt" };
 
     -- README file(s) to show and install. Note the "translate" call.
-    MojoSetup.Readme { filename = translate("README.txt") };
+    MojoSetup.Readme { filename = MojoSetup.translate("README.txt") };
 
     -- Specify media (discs) we may need for this install and how to find them.
     MojoSetup.Media { id = "cd1", name = "MyGame CD 1", uniquefile = "Sound/blip.wav" };
@@ -61,9 +61,7 @@ MojoSetup.Install
     };
 };
 
-print("_installs = {")
-    _dumptable(_installs,1)
-print("}")
+-- dumptable("_installs", MojoSetup.installs);
 
 -- end of setup.lua ...
 
