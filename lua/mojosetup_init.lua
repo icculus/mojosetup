@@ -20,22 +20,24 @@ if type(MojoSetup.localization) ~= "table" then
 end
 
 if MojoSetup.localization ~= nil then
-    MojoSetup.translations = {}
+    local at_least_one = false;
     local locale = MojoSetup.locale
     local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
+    MojoSetup.translations = {}
     for k,v in pairs(MojoSetup.localization) do
-
         if type(v) == "table" then
             if v[locale] ~= nil then
                 MojoSetup.translations[k] = v[locale]
+                at_least_one = true
             elseif v[lang] ~= nil then
                 MojoSetup.translations[k] = v[lang]
+                at_least_one = true
             end
         end
     end
 
     -- Delete the table if there's no actual useful translations for this run.
-    if (#MojoSetup.translations == 0) then
+    if (not at_least_one) then
         MojoSetup.translations = nil
     end
 
