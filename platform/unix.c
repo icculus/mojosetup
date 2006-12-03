@@ -97,5 +97,24 @@ const char *MojoPlatform_appBinaryPath(void)
     return retval;
 } // MojoPlatform_appBinaryPath
 
+
+// This implementation is a bit naive.
+boolean MojoPlatform_locale(char *buf, size_t len)
+{
+    boolean retval = false;
+    const char *envr = getenv("LANG");
+    if (envr != NULL)
+    {
+        char *ptr = NULL;
+        xstrncpy(buf, envr, len);
+        ptr = strchr(buf, '.');  // chop off encoding if explicitly listed.
+        if (ptr != NULL)
+            *ptr = '\0';
+        retval = true;
+    } // if
+
+    return retval;
+} // MojoPlatform_locale
+
 // end of unix.c ...
 

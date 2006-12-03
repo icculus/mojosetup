@@ -36,9 +36,6 @@ typedef int boolean;
 extern int GArgc;
 extern char **GArgv;
 
-// The current locale.
-extern char *GLocale;
-
 // Static, non-stack memory for scratch work...not thread safe!
 // !!! FIXME: maybe lose this.
 extern uint8 scratchbuf_128k[128 * 1024];

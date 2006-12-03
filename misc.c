@@ -6,7 +6,6 @@
 uint8 scratchbuf_128k[128 * 1024];
 int GArgc = 0;
 char **GArgv = NULL;
-char *GLocale = NULL;
 
 int fatal(const char *err)
 {

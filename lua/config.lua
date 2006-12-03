@@ -60,7 +60,5 @@ MojoSetup.Install
     };
 };
 
-MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs);
-
 -- end of config.lua ...
 

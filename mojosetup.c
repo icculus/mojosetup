@@ -41,16 +41,12 @@ int MojoSetup_main(int argc, char **argv)
     GArgc = argc;
     GArgv = argv;
 
-    GLocale = xstrdup("es");   // !!! FIXME
-
     if (!initEverything())
         return 1;
 
     GGui->msgbox(GGui, "translating...", _("Required for play"));
 
     deinitEverything();
-
-    free(GLocale);   // !!! FIXME
 
     return 0;
 } // MojoSetup_main

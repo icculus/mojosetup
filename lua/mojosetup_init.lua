@@ -5,16 +5,56 @@
 --  what the Lua runtime claims for itself.
 --
 -- This file is loaded and executed at MojoSetup startup. Lua is initialized,
---  the MojoSetup table is created and has its CFunctions inserted, then this
---  code executes to do the heavy lifting. Localization is not ready yet.
+--  the MojoSetup table is created and has some initial CFunctions and such
+--  inserted. The localization script runs, and then this code executes to do
+--  the heavy lifting. All Lua state should be sane for the rest of the app
+--  once this script successfully completes.
 
 -- This table gets filled by the config file. Just create an empty one for now.
 MojoSetup.installs = {}
 
--- Our namespace for this API...this is filled in with the rest of this file.
-MojoSetup.schema = {}
+-- Build the translations table from the localizations table supplied in
+--  localizations.lua...
+if type(MojoSetup.localization) ~= "table" then
+    MojoSetup.localization = nil
+end
 
--- Handy for debugging.
+if MojoSetup.localization ~= nil then
+    MojoSetup.translations = {}
+    local locale = MojoSetup.locale
+    local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
+    for k,v in pairs(MojoSetup.localization) do
+
+        if type(v) == "table" then
+            if v[locale] ~= nil then
+                MojoSetup.translations[k] = v[locale]
+            elseif v[lang] ~= nil then
+                MojoSetup.translations[k] = v[lang]
+            end
+        end
+    end
+
+    -- Delete the table if there's no actual useful translations for this run.
+    if (#MojoSetup.translations == 0) then
+        MojoSetup.translations = nil
+    end
+
+    -- This is eligible for garbage collection now. We're done with it.
+    MojoSetup.localization = nil
+end
+
+
+function MojoSetup.translate(str)
+    if MojoSetup.translations ~= nil then
+        if MojoSetup.translations[str] ~= nil then
+            return MojoSetup.translations[str]
+        end
+    end
+    return str
+end
+
+
+-- This is handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then depth = 1 end
     if tabname ~= nil then
@@ -26,13 +66,13 @@ function MojoSetup.dumptable(tabname, tab, depth)
         depthstr = depthstr .. " "
     end
 
-    for k in pairs(tab) do
-        if type(tab[k]) == "table" then
+    for k,v in pairs(tab) do
+        if type(v) == "table" then
             print(depthstr .. k .. " = {")
-            MojoSetup.dumptable(nil, tab[k], depth + 1)
+            MojoSetup.dumptable(nil, v, depth + 1)
             print(depthstr .. "}")
         else
-            print(depthstr .. k .. " = " .. tostring(tab[k]))
+            print(depthstr .. k .. " = " .. tostring(v))
         end
     end
 
@@ -40,6 +80,9 @@ function MojoSetup.dumptable(tabname, tab, depth)
         print("}")
     end
 end
+
+-- Our namespace for this API...this is filled in with the rest of this file.
+MojoSetup.schema = {}
 
 function MojoSetup.schema.assert(test, fnname, elem, error)
     assert(test, fnname .. "::" .. elem .. " -- " .. error .. ".")

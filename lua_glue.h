@@ -20,6 +20,8 @@ void MojoLua_deinitLua(void);
 //  chunk, as it will call fatal() instead.
 boolean MojoLua_runFile(const char *fname);
 
+void MojoLua_collectGarbage(void);
+
 #ifdef __cplusplus
 }
 #endif
