@@ -25,6 +25,50 @@ static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 } // MojoLua_reader
 
 
+boolean MojoLua_runFile(const char *basefname)
+{
+    boolean retval = false;
+    size_t alloclen = strlen(basefname) + 16;
+    char *fname = (char *) xmalloc(alloclen);
+    int rc = 0;
+    MojoInput *io = NULL;
+
+    // !!! FIXME: change this API to accept multiple filenames to search for,
+    // !!! FIXME:  since two full enumerations to discover the filename is
+    // !!! FIXME:  missing is just wasteful.
+    STUBBED("See FIXME above.");
+    snprintf(fname, alloclen, "lua/%s.luac", basefname);
+    io = MojoInput_newFromArchivePath(GBaseArchive, fname);
+
+    #if !DISABLE_LUA_PARSER
+    if (io == NULL)
+    {
+        snprintf(fname, alloclen, "lua/%s.lua", basefname);
+        io = MojoInput_newFromArchivePath(GBaseArchive, fname);
+    } // if
+    #endif
+
+    if (io != NULL)
+    {
+        rc = lua_load(luaState, MojoLua_reader, io, fname);
+        io->close(io);
+
+        if (rc != 0)
+            lua_error(luaState);
+        else
+        {
+            // !!! FIXME: use pcall instead so we can get error backtraces and localize.
+            // Call new chunk on top of the stack (lua_call will pop it off).
+            lua_call(luaState, 0, 0);  // return values are dumped.
+            retval = true;   // if this didn't panic, we succeeded.
+        } // if
+    } // if
+
+    free(fname);
+    return retval;
+} // MojoLua_runFile
+
+
 // Since localization is kept in Lua tables, I stuck this in the Lua glue.
 const char *translate(const char *str)
 {
@@ -132,13 +176,11 @@ boolean MojoLua_initLua(void)
         // Set up C functions we want to expose to Lua code...
         set_cfunc(luaState, MojoLua_translate, "translate");
         set_cfunc(luaState, MojoLua_locale, "locale");
-        // Create an empty table that the config file will fill in.
-        lua_newtable(luaState);
-        lua_setfield(luaState, -2, "installs");
     lua_setglobal(luaState, "MojoSetup");
 
-    // loadTranslations()
-    // loadConfigFile()
+    // Transfer control to Lua to setup some APIs and state...
+    if (!MojoLua_runFile("mojosetup_init"))
+        return false;
 
     return true;
 } // MojoLua_initLua

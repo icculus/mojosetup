@@ -16,4 +16,3 @@ MojoSetup.translations = {
         l33t = "bl4hbl4hbl4h";
     };
 }
-

@@ -81,6 +81,13 @@ struct MojoArchive
 MojoArchive *MojoArchive_newFromDirectory(const char *dirname);
 MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname);
 
+// This will reset enumeration in the archive, don't use it while iterating!
+// Also, this can be very slow depending on the archive in question, so
+//  try to limit your random access filename lookups to known-fast quantities
+//  (like directories on the physical filesystem or a zipfile...tarballs and
+//  zipfiles-in-zipfiles will bog down here, for example).
+MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname);
+
 extern MojoArchive *GBaseArchive;
 MojoArchive *MojoArchive_initBaseArchive(void);
 void MojoArchive_deinitBaseArchive(void);

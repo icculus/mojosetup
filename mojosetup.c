@@ -22,6 +22,11 @@ static boolean initEverything(void)
     else if (!MojoLua_initLua())
         panic("Initial Lua setup failed. Cannot continue.");
 
+    // Set up localization table, if possible.
+    MojoLua_runFile("translations");
+
+    // loadConfigFile()
+
     return true;
 } // initEverything
 
@@ -41,12 +46,12 @@ int MojoSetup_main(int argc, char **argv)
     GArgc = argc;
     GArgv = argv;
 
-    GLocale = xstrdup("en");   // !!! FIXME
+    GLocale = xstrdup("es");   // !!! FIXME
 
     if (!initEverything())
         return 1;
 
-    GGui->msgbox(GGui, "test", "testing");
+    GGui->msgbox(GGui, "translating...", _("Required for play"));
 
     deinitEverything();
 

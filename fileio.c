@@ -107,6 +107,39 @@ boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
 } // mojoInputToPhysicalFile
 
 
+MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname)
+{
+    MojoInput *retval = NULL;
+    char *fullpath = xstrdup(fname);
+    char *file = strrchr(fullpath, '/');
+    char *path = fullpath;
+    if (path != NULL)
+        *(file++) = '\0';
+    else
+    {
+        path = "";
+        file = fullpath;
+    } // else
+
+    if (ar->enumerate(ar, path))
+    {
+        const MojoArchiveEntryInfo *entinfo;
+        while ((entinfo = ar->enumNext(ar)) != NULL)
+        {
+            if (strcmp(entinfo->filename, file) == 0)
+            {
+                if (entinfo->type == MOJOARCHIVE_ENTRY_FILE)
+                    retval = ar->openCurrentEntry(ar);
+                break;
+            } // if
+        } // while
+    } // if
+
+    free(fullpath);
+    return retval;
+} // MojoInput_newFromArchivePath
+
+
 
 // MojoInputs from files on the OS filesystem.
 

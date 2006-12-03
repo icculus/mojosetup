@@ -1,4 +1,20 @@
 
+-- These are various things that need to be exposed to Lua, or are just
+--  better written in Lua than C. All work will be done in the "MojoSetup"
+--  table, so the rest of the namespace is available to end-user code, minus
+--  what the Lua runtime claims for itself.
+--
+-- This file is loaded and executed at MojoSetup startup. Lua is initialized,
+--  the MojoSetup table is created and has its CFunctions inserted, then this
+--  code executes to do the heavy lifting. Localization is not ready yet.
+
+-- This table gets filled by the config file. Just create an empty one for now.
+MojoSetup.installs = {}
+
+-- Our namespace for this API...this is filled in with the rest of this file.
+MojoSetup.schema = {}
+
+-- Handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then depth = 1 end
     if tabname ~= nil then
@@ -24,10 +40,6 @@ function MojoSetup.dumptable(tabname, tab, depth)
         print("}")
     end
 end
-
-
--- Our namespace for this API...this is filled in with the rest of this file.
-MojoSetup.schema = {}
 
 function MojoSetup.schema.assert(test, fnname, elem, error)
     assert(test, fnname .. "::" .. elem .. " -- " .. error .. ".")
@@ -416,5 +428,5 @@ function MojoSetup.Option(tab)
 ]]--
 end
 
--- end of schema.lua ...
+-- end of mojosetup_init.lua ...
 
