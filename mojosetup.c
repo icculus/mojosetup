@@ -22,11 +22,6 @@ static boolean initEverything(void)
     else if (!MojoLua_initLua())
         panic("Initial Lua setup failed. Cannot continue.");
 
-    // Set up localization table, if possible.
-    MojoLua_runFile("translations");
-
-    // loadConfigFile()
-
     return true;
 } // initEverything
 

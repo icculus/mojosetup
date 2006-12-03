@@ -178,8 +178,14 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, MojoLua_locale, "locale");
     lua_setglobal(luaState, "MojoSetup");
 
+    // Set up localization table, if possible.
+    MojoLua_runFile("translations");
+
     // Transfer control to Lua to setup some APIs and state...
     if (!MojoLua_runFile("mojosetup_init"))
+        return false;
+
+    if (!MojoLua_runFile("config"))
         return false;
 
     return true;
