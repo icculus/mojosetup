@@ -86,6 +86,8 @@ void MojoLua_collectGarbage(void)
 } // MojoLua_collectGarbage
 
 
+// !!! FIXME: God, I'm so torn about whether we should call Lua or lua should
+// !!! FIXME:  call us for this...
 // Since localization is kept in Lua tables, I stuck this in the Lua glue.
 const char *translate(const char *str)
 {
@@ -121,12 +123,21 @@ const char *translate(const char *str)
 // Hook into our error handling in case Lua throws a runtime error.
 static int MojoLua_panic(lua_State *L)
 {
-    int argc = lua_gettop(L);
-    const char *errstr = _("Unknown Lua error");
-    if (argc > 0)
-        errstr = lua_tostring(L, 1);
+    const char *errstr = lua_tostring(L, 1);
+    if (errstr == NULL)
+        errstr = _("Unknown Lua error");
     return fatal(errstr);  // doesn't actually return.
 } // MojoLua_panic
+
+
+// Lua interface to MojoLua_runFile(). This is needed instead of Lua's
+//  require(), since it can access scripts inside an archive.
+static int luahook_runfile(lua_State *L)
+{
+    const char *fname = luaL_checkstring(L, 1);
+    lua_pushboolean(L, MojoLua_runFile(fname));
+    return 1;
+} // luahook_runfile
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
@@ -171,6 +182,7 @@ boolean MojoLua_initLua(void)
     // Build MojoSetup namespace for Lua to access and fill in C bridges...
     lua_newtable(luaState);
         // Set up initial C functions, etc we want to expose to Lua code...
+        set_cfunc(luaState, luahook_runfile, "runfile");
         set_string(luaState, locale, "locale");
     lua_setglobal(luaState, "MojoSetup");
 
@@ -184,6 +196,18 @@ boolean MojoLua_initLua(void)
     // ...and run the installer-specific config file.
     if (!MojoLua_runFile("config"))
         return false;
+
+    // We don't need the MojoSetup.schema namespace anymore. Make it
+    //  eligible for garbage collection.
+    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
+    if (lua_istable(luaState, -1))
+    {
+        lua_pushnil(luaState);
+        lua_setfield(luaState, -2, "schema");
+    } // if
+    lua_pop(luaState, 1);
+
+    MojoLua_collectGarbage();  // get rid of old init crap we don't need.
 
     return true;
 } // MojoLua_initLua

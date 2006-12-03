@@ -10,8 +10,9 @@
 -- You should leave the existing strings here. They aren't hurting anything,
 --  and most are used by MojoSetup itself. Add your own, though.
 --
--- The table you create here goes away shortly after creation; you should
---  call MojoSetup.translate() to localize strings in your config file.
+-- The table you create here goes away shortly after creation, as the relevant
+--  parts of it get moved somewhere else. You should call MojoSetup.translate()
+--  to get the proper translation for a given string.
 
 MojoSetup.localization = {
     ["README.txt"] = {
