@@ -160,7 +160,6 @@ boolean MojoLua_initLua(void)
         return false;
 
     lua_atpanic(luaState, MojoLua_panic);
-    (void) MojoLua_reader; // !!! FIXME: just stop compiler whining for now.
 
     if (!lua_checkstack(luaState, 20))  // Just in case.
     {
@@ -185,6 +184,7 @@ boolean MojoLua_initLua(void)
     if (!MojoLua_runFile("mojosetup_init"))
         return false;
 
+    // ...and run the installer-specific config file.
     if (!MojoLua_runFile("config"))
         return false;
 
