@@ -29,7 +29,7 @@ function MojoSetup.dumptable(tabname, tab, depth)
     for k in pairs(tab) do
         if type(tab[k]) == "table" then
             print(depthstr .. k .. " = {")
-            dumptable(nil, tab[k], depth + 1)
+            MojoSetup.dumptable(nil, tab[k], depth + 1)
             print(depthstr .. "}")
         else
             print(depthstr .. k .. " = " .. tostring(tab[k]))

@@ -1,5 +1,3 @@
-require("schema");
-
 -- This is a setup file. Lines that start with "--" are comments.
 --  This config file is actually just lua code. Even though you'll only
 --  need a small subset of the language, there's a lot of flexibility
@@ -62,7 +60,7 @@ MojoSetup.Install
     };
 };
 
--- MojoSetup.dumptable("_installs", MojoSetup.installs);
+MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs);
 
--- end of setup.lua ...
+-- end of config.lua ...
 
