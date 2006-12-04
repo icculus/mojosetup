@@ -1,3 +1,7 @@
+#if PLATFORM_MACOSX
+#include <Carbon/Carbon.h>
+#endif
+
 #include "../platform.h"
 
 #include <unistd.h>
@@ -115,6 +119,53 @@ boolean MojoPlatform_locale(char *buf, size_t len)
 
     return retval;
 } // MojoPlatform_locale
+
+
+boolean MojoPlatform_osType(char *buf, size_t len)
+{
+#if PLATFORM_MACOSX
+    xstrncpy(buf, "macosx", len);  // !!! FIXME: better string?
+#elif defined(linux) || defined(__linux) || defined(__linux__)
+    xstrncpy(buf, "linux", len);
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+    xstrncpy(buf, "freebsd", len);
+#elif defined(__NetBSD__)
+    xstrncpy(buf, "netbsd", len);
+#elif defined(__OpenBSD__)
+    xstrncpy(buf, "openbsd", len);
+#elif defined(bsdi) || defined(__bsdi) || defined(__bsdi__)
+    xstrncpy(buf, "bsdi", len);
+#elif defined(_AIX)
+    xstrncpy(buf, "aix", len);
+#elif defined(hpux) || defined(__hpux) || defined(__hpux__)
+    xstrncpy(buf, "hpux", len);
+#elif defined(sgi) || defined(__sgi) || defined(__sgi__) || defined(_SGI_SOURCE)
+    xstrncpy(buf, "irix", len);
+#else
+#   error Please define your platform.
+#endif
+
+    return true;
+} // MojoPlatform_ostype
+
+
+boolean MojoPlatform_osVersion(char *buf, size_t len)
+{
+#if PLATFORM_MACOSX
+    long ver = 0x0000;
+	if (Gestalt(gestaltSystemVersion, &ver) == noErr)
+    {
+        char str[16];
+        snprintf(str, sizeof (str), "%X", (int) ver);
+        snprintf(buf, len, "%c%c.%c.%c", str[0], str[1], str[2], str[3]);
+        return true;
+    } // if
+#endif
+
+    // At this time, there isn't any way to determine the correct version of
+    //  the OS on Unix that works everywhere or necessarily means anything.
+    return false;
+} // MojoPlatform_osversion
 
 // end of unix.c ...
 

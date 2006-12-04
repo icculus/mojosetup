@@ -159,10 +159,17 @@ static inline void set_string(lua_State *L, const char *str, const char *sym)
 boolean MojoLua_initLua(void)
 {
     char locale[16];
-    assert(luaState == NULL);
+    char ostype[64];
+    char osversion[64];
 
     if (!MojoPlatform_locale(locale, sizeof (locale)))
         xstrncpy(locale, "???", sizeof (locale));
+    if (!MojoPlatform_osType(ostype, sizeof (ostype)))
+        xstrncpy(ostype, "???", sizeof (ostype));
+    if (!MojoPlatform_osVersion(osversion, sizeof (osversion)))
+        xstrncpy(osversion, "???", sizeof (osversion));
+
+    assert(luaState == NULL);
 
     luaState = luaL_newstate();   // !!! FIXME: define our own allocator?
     if (luaState == NULL)
@@ -184,6 +191,10 @@ boolean MojoLua_initLua(void)
         // Set up initial C functions, etc we want to expose to Lua code...
         set_cfunc(luaState, luahook_runfile, "runfile");
         set_string(luaState, locale, "locale");
+        set_string(luaState, PLATFORM_NAME, "platform");
+        set_string(luaState, PLATFORM_ARCH, "arch");
+        set_string(luaState, ostype, "ostype");
+        set_string(luaState, osversion, "osversion");
     lua_setglobal(luaState, "MojoSetup");
 
     // Set up localization table, if possible.
