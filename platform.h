@@ -15,6 +15,8 @@ int MojoSetup_main(int argc, char **argv);
 // !!! FIXME: is that a good idea?
 const char *MojoPlatform_appBinaryPath(void);
 
+uint32 MojoPlatform_ticks(void);
+
 // Get the current locale, in the format "xx_YY" where "xx" is the language
 //  (en, fr, de...) and "_YY" is the country. (_US, _CA, etc). The country
 //  can be omitted. Don't include encoding, it's always UTF-8 at this time.

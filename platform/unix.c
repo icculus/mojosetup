@@ -9,8 +9,12 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 
+static struct timeval startup_time;
+
+
 int main(int argc, char **argv)
 {
+    gettimeofday(&startup_time, NULL);
     return MojoSetup_main(argc, argv);
 } // main
 
@@ -166,6 +170,18 @@ boolean MojoPlatform_osVersion(char *buf, size_t len)
     //  the OS on Unix that works everywhere or necessarily means anything.
     return false;
 } // MojoPlatform_osversion
+
+
+uint32 MojoPlatform_ticks(void)
+{
+    uint64 then_ms, now_ms;
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    then_ms = (((uint64) startup_time.tv_sec) * 1000) +
+              (((uint64) startup_time.tv_usec) / 1000);
+    now_ms = (((uint64) now.tv_sec) * 1000) + (((uint64) now.tv_usec) / 1000);
+    return ((uint32) (now_ms - then_ms));
+} // MojoPlatform_ticks
 
 // end of unix.c ...
 

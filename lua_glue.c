@@ -73,14 +73,17 @@ boolean MojoLua_runFile(const char *basefname)
 void MojoLua_collectGarbage(void)
 {
     lua_State *L = luaState;
+    uint32 ticks = 0;
     int pre = 0;
     int post = 0;
 
     STUBBED("logging!");
     pre = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
     printf("Collecting garbage (currently using %d bytes).\n", pre);
+    ticks = MojoPlatform_ticks();
     lua_gc (L, LUA_GCCOLLECT, 0);
-    printf("Collection finished (took ??? milliseconds).\n"); // !!! FIXME
+    ticks = MojoPlatform_ticks() - ticks;
+    printf("Collection finished (took %d milliseconds).\n", (int) ticks);
     post = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
     printf("Now using %d bytes (%d bytes savings).\n", post, pre - post);
 } // MojoLua_collectGarbage
