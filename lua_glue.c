@@ -89,31 +89,28 @@ void MojoLua_collectGarbage(void)
 } // MojoLua_collectGarbage
 
 
-// !!! FIXME: God, I'm so torn about whether we should call Lua or lua should
-// !!! FIXME:  call us for this...
 // Since localization is kept in Lua tables, I stuck this in the Lua glue.
 const char *translate(const char *str)
 {
     const char *retval = str;
     int popcount = 0;
 
-    if (!lua_checkstack(luaState, 5))
-        return str;
-
-    lua_getglobal(luaState, MOJOSETUP_NAMESPACE); popcount++;
-    if (lua_istable(luaState, -1))  // namespace is sane?
+    if (lua_checkstack(luaState, 3))
     {
-        lua_getfield(luaState, -1, "translate"); popcount++;
-        if (lua_isfunction(luaState, -1))
+        lua_getglobal(luaState, MOJOSETUP_NAMESPACE); popcount++;
+        if (lua_istable(luaState, -1))  // namespace is sane?
         {
-            const char *tr = NULL;
-            lua_pushstring(luaState, str);
-            lua_call(luaState, 1, 1);  // popcount ends up the same...
-            tr = lua_tostring(luaState, -1);
-            if (tr != NULL)
+            lua_getfield(luaState, -1, "translations"); popcount++;
+            if (lua_istable(luaState, -1))  // translation table is sane?
             {
-                xstrncpy(scratchbuf_128k, tr, sizeof(scratchbuf_128k));
-                retval = scratchbuf_128k;
+                const char *tr = NULL;
+                lua_getfield(luaState, -1, str); popcount++;
+                tr = lua_tostring(luaState, -1);
+                if (tr != NULL)  // translated for this locale?
+                {
+                    xstrncpy(scratchbuf_128k, tr, sizeof(scratchbuf_128k));
+                    retval = scratchbuf_128k;
+                } // if
             } // if
         } // if
     } // if
@@ -141,6 +138,15 @@ static int luahook_runfile(lua_State *L)
     lua_pushboolean(L, MojoLua_runFile(fname));
     return 1;
 } // luahook_runfile
+
+
+// Lua interface to translate().
+static int luahook_translate(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    lua_pushstring(L, translate(str));
+    return 1;
+} // luahook_translate
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
@@ -193,6 +199,7 @@ boolean MojoLua_initLua(void)
     lua_newtable(luaState);
         // Set up initial C functions, etc we want to expose to Lua code...
         set_cfunc(luaState, luahook_runfile, "runfile");
+        set_cfunc(luaState, luahook_translate, "translate");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");

@@ -45,17 +45,6 @@ if MojoSetup.localization ~= nil then
     MojoSetup.localization = nil
 end
 
-
-function MojoSetup.translate(str)
-    if MojoSetup.translations ~= nil then
-        if MojoSetup.translations[str] ~= nil then
-            return MojoSetup.translations[str]
-        end
-    end
-    return str
-end
-
-
 -- This is handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then depth = 1 end
