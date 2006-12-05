@@ -149,6 +149,13 @@ static int luahook_translate(lua_State *L)
 } // luahook_translate
 
 
+static int luahook_ticks(lua_State *L)
+{
+    lua_pushnumber(L, MojoPlatform_ticks());
+    return 1;
+} // luahook_ticks
+
+
 // Sets t[sym]=f, where t is on the top of the Lua stack.
 static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
 {
@@ -200,6 +207,7 @@ boolean MojoLua_initLua(void)
         // Set up initial C functions, etc we want to expose to Lua code...
         set_cfunc(luaState, luahook_runfile, "runfile");
         set_cfunc(luaState, luahook_translate, "translate");
+        set_cfunc(luaState, luahook_ticks, "ticks");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");
