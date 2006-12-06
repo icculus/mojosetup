@@ -44,7 +44,8 @@ int MojoSetup_main(int argc, char **argv)
     if (!initEverything())
         return 1;
 
-    GGui->msgbox(GGui, "translating...", _("Required for play"));
+    // Jump into Lua for the heavy lifting.
+    MojoLua_runFile("mojosetup_mainline");
 
     deinitEverything();
 

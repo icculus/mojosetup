@@ -82,6 +82,12 @@ const char *translate(const char *str);
 #endif
 #define _(x) translate(x)
 
+// Call this with what you are profiling and the start time to log it:
+//   uint32 start = MojoPlatform_ticks();
+//     ...do something...
+//   profile("Something I did", start);
+uint32 profile(const char *what, uint32 start_time);
+
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
 #if (defined _MSC_VER)
 #define __EXPORT__ __declspec(dllexport)

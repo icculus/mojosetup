@@ -7,6 +7,15 @@ uint8 scratchbuf_128k[128 * 1024];
 int GArgc = 0;
 char **GArgv = NULL;
 
+uint32 profile(const char *what, uint32 start_time)
+{
+    uint32 retval = MojoPlatform_ticks() - *counter;
+    STUBBED("logging");
+    printf("PROFILE: %s took %lu ms.\n", (unsigned long) retval);
+    return retval;
+} // profile_start
+
+
 int fatal(const char *err)
 {
     return panic(err);   // !!! FIXME

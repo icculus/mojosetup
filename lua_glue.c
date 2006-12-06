@@ -4,6 +4,7 @@
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
+#include "gui.h"
 
 #define MOJOSETUP_NAMESPACE "MojoSetup"
 
@@ -130,6 +131,20 @@ static int MojoLua_panic(lua_State *L)
 } // MojoLua_panic
 
 
+// Use this instead of Lua's error() function if you don't have a
+//  programatic error, so you don't get stack callback stuff:
+// MojoSetup.fatal("You need the base game to install this expansion pack.")
+//  Doesn't actually return.
+static int luahook_fatal(lua_State *L)
+{
+    const char *err = luaL_checkstring(L, 1);
+    fatal(err);
+    return 0;
+} // luahook_runfile
+
+
+
+
 // Lua interface to MojoLua_runFile(). This is needed instead of Lua's
 //  require(), since it can access scripts inside an archive.
 static int luahook_runfile(lua_State *L)
@@ -154,6 +169,33 @@ static int luahook_ticks(lua_State *L)
     lua_pushnumber(L, MojoPlatform_ticks());
     return 1;
 } // luahook_ticks
+
+
+static int luahook_msgbox(lua_State *L)
+{
+    if (GGui != NULL)
+    {
+        const char *title = luaL_checkstring(L, 1);
+        const char *text = luaL_checkstring(L, 2);
+        GGui->msgbox(GGui, title, text);
+    } // if
+    return 0;
+} // luahook_msgbox
+
+
+static int luahook_promptyn(lua_State *L)
+{
+    boolean rc = false;
+    if (GGui != NULL)
+    {
+        const char *title = luaL_checkstring(L, 1);
+        const char *text = luaL_checkstring(L, 2);
+        rc = GGui->promptyn(GGui, title, text);
+    } // if
+
+    lua_pushboolean(L, rc);
+    return 1;
+} // luahook_msgbox
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
@@ -208,6 +250,9 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_runfile, "runfile");
         set_cfunc(luaState, luahook_translate, "translate");
         set_cfunc(luaState, luahook_ticks, "ticks");
+        set_cfunc(luaState, luahook_fatal, "fatal");
+        set_cfunc(luaState, luahook_msgbox, "msgbox");
+        set_cfunc(luaState, luahook_promptyn, "promptyn");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");
