@@ -31,11 +31,11 @@ static int do_msgbox(const char *_title, const char *str, AlertType alert_type,
     CFStringRef title = CFStringCreateWithBytes(NULL,
                                                 (const unsigned char *) _title,
                                                 strlen(_title),
-                                                kCFStringEncodingISOLatin1, 0);
+                                                kCFStringEncodingUTF8, 0);
     CFStringRef msg = CFStringCreateWithBytes(NULL,
                                               (const unsigned char *) str,
                                               strlen(str),
-                                              kCFStringEncodingISOLatin1, 0);
+                                              kCFStringEncodingUTF8, 0);
     if ((msg != NULL) && (title != NULL))
     {
         DialogRef dlg = NULL;
@@ -62,26 +62,36 @@ static void MojoGui_macosx_msgbox(MojoGui *gui, const char *title,
     do_msgbox(title, text, kAlertNoteAlert, NULL, NULL);
 } // MojoGui_macosx_msgbox
 
+
 static boolean do_promptyn(const char *title, const char *text, boolean yes)
 {
-    OSStatus err;
-    DialogItemIndex item;
+    boolean retval = false;
+    OSStatus err = noErr;
     AlertStdCFStringAlertParamRec params;
+
     err = GetStandardAlertDefaultParams(&params, kStdCFStringAlertVersionOne);
-    if (err != noErr)
-        return false;
+    if (err == noErr)
+    {
+        DialogItemIndex item;
+        CFStringRef yes, no;
+        yes = CFStringCreateWithCString(NULL, _("Yes"), kCFStringEncodingUTF8);
+        no = CFStringCreateWithCString(NULL, _("No"), kCFStringEncodingUTF8);
 
-    params.movable = TRUE;
-    params.helpButton = FALSE;
-    params.defaultText = CFSTR("Yes");  // !!! FIXME: localize
-    params.cancelText = CFSTR("No");
-    params.defaultButton = (yes) ? kAlertStdAlertOKButton :
-                                   kAlertStdAlertCancelButton;
-    params.cancelButton = kAlertStdAlertCancelButton;
-    if (!do_msgbox(title, text, kAlertCautionAlert, &params, &item))
-        return false; /* oh well. */
+        params.movable = TRUE;
+        params.helpButton = FALSE;
+        params.defaultText = yes;
+        params.cancelText = no;
+        params.defaultButton = (yes) ? kAlertStdAlertOKButton :
+                                       kAlertStdAlertCancelButton;
+        params.cancelButton = kAlertStdAlertCancelButton;
+        if (do_msgbox(title, text, kAlertCautionAlert, &params, &item))
+            retval = (item == kAlertStdAlertOKButton);
 
-    return(item == kAlertStdAlertOKButton);
+        CFRelease(yes);
+        CFRelease(no);
+    } // if
+
+    return retval;
 } // do_promptyn
 
 

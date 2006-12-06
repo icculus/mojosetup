@@ -94,29 +94,32 @@ void MojoLua_collectGarbage(void)
 const char *translate(const char *str)
 {
     const char *retval = str;
-    int popcount = 0;
 
-    if (lua_checkstack(luaState, 3))
+    if (luaState != NULL)  // No translations before Lua is initialized.
     {
-        lua_getglobal(luaState, MOJOSETUP_NAMESPACE); popcount++;
-        if (lua_istable(luaState, -1))  // namespace is sane?
+        if (lua_checkstack(luaState, 3))
         {
-            lua_getfield(luaState, -1, "translations"); popcount++;
-            if (lua_istable(luaState, -1))  // translation table is sane?
+            int popcount = 0;
+            lua_getglobal(luaState, MOJOSETUP_NAMESPACE); popcount++;
+            if (lua_istable(luaState, -1))  // namespace is sane?
             {
-                const char *tr = NULL;
-                lua_getfield(luaState, -1, str); popcount++;
-                tr = lua_tostring(luaState, -1);
-                if (tr != NULL)  // translated for this locale?
+                lua_getfield(luaState, -1, "translations"); popcount++;
+                if (lua_istable(luaState, -1))  // translation table is sane?
                 {
-                    xstrncpy(scratchbuf_128k, tr, sizeof(scratchbuf_128k));
-                    retval = scratchbuf_128k;
+                    const char *tr = NULL;
+                    lua_getfield(luaState, -1, str); popcount++;
+                    tr = lua_tostring(luaState, -1);
+                    if (tr != NULL)  // translated for this locale?
+                    {
+                        xstrncpy(scratchbuf_128k, tr, sizeof(scratchbuf_128k));
+                        retval = scratchbuf_128k;
+                    } // if
                 } // if
             } // if
+            lua_pop(luaState, popcount);   // remove our stack salsa.
         } // if
     } // if
 
-    lua_pop(luaState, popcount);   // remove our stack salsa.
     return retval;
 } // translate
 
@@ -258,7 +261,7 @@ boolean MojoLua_initLua(void)
         set_string(luaState, PLATFORM_ARCH, "arch");
         set_string(luaState, ostype, "ostype");
         set_string(luaState, osversion, "osversion");
-    lua_setglobal(luaState, "MojoSetup");
+    lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
     // Set up localization table, if possible.
     MojoLua_runFile("localization");

@@ -13,6 +13,8 @@ static boolean initEverything(void)
     //  "succeed" unless they are catastrophic, and report problems later.
 
     // Start with the base archive work, since it might have GUI plugins.
+    //  None of these panic() calls are localized, since localization isn't
+    //  functional until MojoLua_initLua() succeeds.
     if (!MojoArchive_initBaseArchive())
         panic("Initial setup failed. Cannot continue.");
 

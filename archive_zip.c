@@ -42,19 +42,19 @@ typedef struct
 
 static PHYSFS_Allocator allocator = { 0, 0, mallocWrap, reallocWrap, freeWrap };
 
-#define ERR_ZLIB_NEED_DICT     "need dictionary"
-#define ERR_ZLIB_DATA_ERROR    "data error"
-#define ERR_ZLIB_MEMORY_ERROR  "memory error"
-#define ERR_ZLIB_BUFFER_ERROR  "buffer error"
-#define ERR_ZLIB_VERSION_ERROR "version error"
-#define ERR_ZLIB_UNKNOWN_ERROR "unknown error"
+#define ERR_ZLIB_NEED_DICT     _("need dictionary")
+#define ERR_ZLIB_DATA_ERROR    _("data error")
+#define ERR_ZLIB_MEMORY_ERROR  _("memory error")
+#define ERR_ZLIB_BUFFER_ERROR  _("buffer error")
+#define ERR_ZLIB_VERSION_ERROR _("version error")
+#define ERR_ZLIB_UNKNOWN_ERROR _("unknown error")
 
 #define __PHYSFS_setError(x)
 
 #define fvoid void
 #define dvoid void
 
-#ifdef __POWERPC__
+#if PLATFORM_BIGENDIAN
 static PHYSFS_uint32 PHYSFS_swapULE32(PHYSFS_uint32 D)
 {
     return((D<<24)|((D<<8)&0x00FF0000)|((D>>8)&0x0000FF00)|(D>>24));

@@ -5,6 +5,8 @@
 #include "gui.h"
 
 uint8 scratchbuf_128k[128 * 1024];
+
+// !!! FIXME: move these to a lua table.
 int GArgc = 0;
 char **GArgv = NULL;
 
@@ -13,7 +15,7 @@ uint32 profile(const char *what, uint32 start_time)
     uint32 retval = MojoPlatform_ticks() - start_time;
     if (what != NULL)
     {
-        STUBBED("logging");
+        STUBBED("logging");  // !!! FIXME: and localize!
         printf("PROFILE: %s took %lu ms.\n", what, (unsigned long) retval);
     } // if
     return retval;
@@ -34,13 +36,13 @@ int panic(const char *err)
     if (panic_runs == 1)
     {
         if ((GGui != NULL) && (GGui->msgbox != NULL))
-            GGui->msgbox(GGui, "PANIC", err);
+            GGui->msgbox(GGui, _("PANIC"), err);
         else
             panic(err);  /* no GUI plugin...double-panic. */
     } // if
 
     else if (panic_runs == 2)  // no GUI or panic panicked...write to stderr...
-        fprintf(stderr, "\n\n\nMOJOSETUP PANIC: %s\n\n\n", err);
+        fprintf(stderr, "\n\n\n%s\n  %s\n\n\n", err, _("PANIC"));
 
     else  // panic is panicking in a loop, terminate without any cleanup...
         _exit(22);
@@ -57,13 +59,27 @@ char *xstrncpy(char *dst, const char *src, size_t len)
 } // xstrncpy
 
 
+static void out_of_memory(void)
+{
+    // Try to translate "out of memory", but not if it causes recursion.
+    static boolean already_panicked = false;
+    const char *errstr = "out of memory";
+    if (!already_panicked)
+    {
+        already_panicked = true;
+        errstr = translate(errstr);
+    } // if
+    panic(errstr);
+} // out_of_memory
+
+
 #undef malloc
 #undef calloc
 void *xmalloc(size_t bytes)
 {
     void *retval = calloc(1, bytes);
     if (retval == NULL)
-        panic("out of memory");
+        out_of_memory();
     return retval;
 } // xmalloc
 
@@ -72,7 +88,7 @@ void *xrealloc(void *ptr, size_t bytes)
 {
     void *retval = realloc(ptr, bytes);
     if (retval == NULL)
-        panic("out of memory");
+        out_of_memory();
     return retval;
 } // xrealloc
 

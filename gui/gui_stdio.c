@@ -22,7 +22,7 @@ static void MojoGui_stdio_deinit(MojoGui *gui)
 
 static void MojoGui_stdio_msgbox(MojoGui *gui, const char *title, const char *text)
 {
-    printf("NOTICE: %s\n[hit enter]", text);
+    printf(_("NOTICE: %s\n[hit enter]"), text);
     fflush(stdout);
     if (!feof(stdin))
         getchar();
@@ -36,10 +36,10 @@ static boolean MojoGui_stdio_promptyn(MojoGui *gui, const char *title, const cha
     while (1)
     {
         int c;
-        printf("%s\n[y/n]", text);
+        printf(_("%s\n[y/n]"), text);
         fflush(stdout);
         c = toupper(getchar());
-        if (c == 'N')
+        if (c == 'N')  // !!! FIXME: localize?
             return 0;
         else if (c == 'Y')
             return 1;
