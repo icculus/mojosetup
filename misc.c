@@ -1,6 +1,7 @@
 #include <unistd.h>  // !!! FIXME: for _exit().
 
 #include "universal.h"
+#include "platform.h"
 #include "gui.h"
 
 uint8 scratchbuf_128k[128 * 1024];
@@ -9,9 +10,12 @@ char **GArgv = NULL;
 
 uint32 profile(const char *what, uint32 start_time)
 {
-    uint32 retval = MojoPlatform_ticks() - *counter;
-    STUBBED("logging");
-    printf("PROFILE: %s took %lu ms.\n", (unsigned long) retval);
+    uint32 retval = MojoPlatform_ticks() - start_time;
+    if (what != NULL)
+    {
+        STUBBED("logging");
+        printf("PROFILE: %s took %lu ms.\n", what, (unsigned long) retval);
+    } // if
     return retval;
 } // profile_start
 
