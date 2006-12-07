@@ -261,6 +261,7 @@ boolean MojoLua_initLua(void)
         set_string(luaState, PLATFORM_ARCH, "arch");
         set_string(luaState, ostype, "ostype");
         set_string(luaState, osversion, "osversion");
+        set_string(luaState, GBuildVer, "buildver");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
     // Set up localization table, if possible.
