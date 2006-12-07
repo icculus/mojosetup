@@ -7,10 +7,6 @@
 extern "C" {
 #endif
 
-#ifndef SUPPORT_ZIP
-#define SUPPORT_ZIP 1
-#endif
-
 /*
  * File i/o may go through multiple layers: the archive attached to the binary,
  *  then an archive in there that's being read entirely out of memory that's

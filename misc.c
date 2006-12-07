@@ -5,6 +5,14 @@
 #include "gui.h"
 
 uint8 scratchbuf_128k[128 * 1024];
+MojoSetupEntryPoints GEntryPoints =
+{
+    xmalloc,
+    xrealloc,
+    xstrdup,
+    xstrncpy,
+    translate,
+};
 
 // !!! FIXME: move these to a lua table.
 int GArgc = 0;
@@ -36,13 +44,13 @@ int panic(const char *err)
     if (panic_runs == 1)
     {
         if ((GGui != NULL) && (GGui->msgbox != NULL))
-            GGui->msgbox(GGui, _("PANIC"), err);
+            GGui->msgbox(_("PANIC"), err);
         else
             panic(err);  /* no GUI plugin...double-panic. */
     } // if
 
     else if (panic_runs == 2)  // no GUI or panic panicked...write to stderr...
-        fprintf(stderr, "\n\n\n%s\n  %s\n\n\n", err, _("PANIC"));
+        fprintf(stderr, "\n\n\n%s\n  %s\n\n\n", _("PANIC"), err);
 
     else  // panic is panicking in a loop, terminate without any cleanup...
         _exit(22);

@@ -3,32 +3,38 @@
 
 #if SUPPORT_GUI_STDIO
 
+MOJOGUI_PLUGIN(stdio)
+
+#if !GUI_STATIC_LINK_STDIO
+CREATE_MOJOGUI_ENTRY_POINT(stdio)
+#endif
+
 #include <ctype.h>
 
-static uint8 MojoGui_stdio_priority(MojoGui *gui)
+static uint8 MojoGui_stdio_priority(void)
 {
     return MOJOGUI_PRIORITY_TRY_LAST;
 }
 
-static boolean MojoGui_stdio_init(MojoGui *gui)
+static boolean MojoGui_stdio_init(void)
 {
     return true;
 }
 
-static void MojoGui_stdio_deinit(MojoGui *gui)
+static void MojoGui_stdio_deinit(void)
 {
     // no-op
 }
 
-static void MojoGui_stdio_msgbox(MojoGui *gui, const char *title, const char *text)
+static void MojoGui_stdio_msgbox(const char *title, const char *text)
 {
-    printf(_("NOTICE: %s\n[hit enter]"), text);
+    printf(entry->_("NOTICE: %s\n[hit enter]"), text);
     fflush(stdout);
     if (!feof(stdin))
         getchar();
 }
 
-static boolean MojoGui_stdio_promptyn(MojoGui *gui, const char *title, const char *text)
+static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
 {
     if (feof(stdin))
         return 0;
@@ -36,7 +42,7 @@ static boolean MojoGui_stdio_promptyn(MojoGui *gui, const char *title, const cha
     while (1)
     {
         int c;
-        printf(_("%s\n[y/n]"), text);
+        printf(entry->_("%s\n[y/n]"), text);
         fflush(stdout);
         c = toupper(getchar());
         if (c == 'N')  // !!! FIXME: localize?
@@ -47,12 +53,6 @@ static boolean MojoGui_stdio_promptyn(MojoGui *gui, const char *title, const cha
 
     return 0;
 }
-
-MOJOGUI_PLUGIN(stdio)
-
-#if !GUI_STATIC_LINK_STDIO
-CREATE_MOJOGUI_ENTRY_POINT(stdio)
-#endif
 
 #endif // SUPPORT_GUI_STDIO
 

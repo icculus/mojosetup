@@ -66,14 +66,11 @@ char *xstrdup(const char *str);
 // strncpy() that promises to null-terminate the string, even on overflow.
 char *xstrncpy(char *dst, const char *src, size_t len);
 
-// External plugins won't link against misc.c ...
-#ifndef BUILDING_EXTERNAL_PLUGIN
 #define malloc(x) DO_NOT_CALL_MALLOC__USE_XMALLOC_INSTEAD
 #define calloc(x,y) DO_NOT_CALL_CALLOC__USE_XMALLOC_INSTEAD
 #define realloc(x,y) DO_NOT_CALL_REALLOC__USE_XREALLOC_INSTEAD
 #define strdup(x) DO_NOT_CALL_STRDUP__USE_XSTRDUP_INSTEAD
 #define strncpy(x) DO_NOT_CALL_STRNCPY__USE_XSTRNCPY_INSTEAD
-#endif
 
 // Localization support.
 const char *translate(const char *str);
@@ -87,6 +84,19 @@ const char *translate(const char *str);
 //     ...do something...
 //   profile("Something I did", start);
 uint32 profile(const char *what, uint32 start_time);
+
+// A pointer to this struct is passed to plugins, so they can access
+//  functionality in the base application. (Add to this as you need to.)
+typedef struct MojoSetupEntryPoints
+{
+    void *(*xmalloc)(size_t bytes);
+    void *(*xrealloc)(void *ptr, size_t bytes);
+    char *(*xstrdup)(const char *str);
+    char *(*xstrncpy)(char *dst, const char *src, size_t len);
+    const char *(*translate)(const char *str);
+} MojoSetupEntryPoints;
+extern MojoSetupEntryPoints GEntryPoints;
+
 
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
 #if (defined _MSC_VER)

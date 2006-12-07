@@ -3,21 +3,27 @@
 
 #if SUPPORT_GUI_MACOSX
 
+MOJOGUI_PLUGIN(macosx)
+
+#if !GUI_STATIC_LINK_MACOSX
+CREATE_MOJOGUI_ENTRY_POINT(macosx)
+#endif
+
 #include <Carbon/Carbon.h>
 
 // (A lot of this is stolen from MojoPatch: http://icculus.org/mojopatch/ ...)
 
-static uint8 MojoGui_macosx_priority(MojoGui *gui)
+static uint8 MojoGui_macosx_priority(void)
 {
     return MOJOGUI_PRIORITY_TRY_FIRST;
 } // MojoGui_macosx_priority
 
-static boolean MojoGui_macosx_init(MojoGui *gui)
+static boolean MojoGui_macosx_init(void)
 {
     return true;
 } // MojoGui_macosx_init
 
-static void MojoGui_macosx_deinit(MojoGui *gui)
+static void MojoGui_macosx_deinit(void)
 {
     // no-op
 } // MojoGui_macosx_deinit
@@ -56,8 +62,7 @@ static int do_msgbox(const char *_title, const char *str, AlertType alert_type,
     return(retval);
 } // do_msgbox
 
-static void MojoGui_macosx_msgbox(MojoGui *gui, const char *title,
-                                  const char *text)
+static void MojoGui_macosx_msgbox(const char *title, const char *text)
 {
     do_msgbox(title, text, kAlertNoteAlert, NULL, NULL);
 } // MojoGui_macosx_msgbox
@@ -74,8 +79,9 @@ static boolean do_promptyn(const char *title, const char *text, boolean yes)
     {
         DialogItemIndex item;
         CFStringRef yes, no;
-        yes = CFStringCreateWithCString(NULL, _("Yes"), kCFStringEncodingUTF8);
-        no = CFStringCreateWithCString(NULL, _("No"), kCFStringEncodingUTF8);
+        const CFStringEncoding enc = kCFStringEncodingUTF8;
+        yes = CFStringCreateWithCString(NULL, entry->_("Yes"), enc);
+        no = CFStringCreateWithCString(NULL, entry->_("No"), enc);
 
         params.movable = TRUE;
         params.helpButton = FALSE;
@@ -95,17 +101,10 @@ static boolean do_promptyn(const char *title, const char *text, boolean yes)
 } // do_promptyn
 
 
-static boolean MojoGui_macosx_promptyn(MojoGui *gui, const char *title,
-                                        const char *text)
+static boolean MojoGui_macosx_promptyn(const char *title, const char *text)
 {
     return do_promptyn(title, text, true);
 }
-
-MOJOGUI_PLUGIN(macosx)
-
-#if !GUI_STATIC_LINK_MACOSX
-CREATE_MOJOGUI_ENTRY_POINT(macosx)
-#endif
 
 #endif // SUPPORT_GUI_MACOSX
 

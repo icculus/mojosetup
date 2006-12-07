@@ -11,15 +11,15 @@ typedef struct S_PLUGINLIST
 {
     char *filename;
     void *lib;
-    MojoGui *gui;
+    const MojoGui *gui;
     MojoGuiPluginPriority priority;
     struct S_PLUGINLIST *next;
 } PluginList;
 
-MojoGui *GGui = NULL;
-PluginList *pluginDetails = NULL;
+const MojoGui *GGui = NULL;
+static PluginList *pluginDetails = NULL;
 
-static const MojoGuiEntryPoint staticGuiPlugins[] =
+static const MojoGuiEntryPoint staticGui[] =
 {
 #if GUI_STATIC_LINK_STDIO
     MojoGuiPlugin_stdio,
@@ -37,7 +37,7 @@ static const MojoGuiEntryPoint staticGuiPlugins[] =
 };
 
 
-static MojoGuiPluginPriority calcGuiPriority(MojoGui *gui)
+static MojoGuiPluginPriority calcGuiPriority(const MojoGui *gui)
 {
     static char *envr = NULL;
     MojoGuiPluginPriority retval;
@@ -45,13 +45,13 @@ static MojoGuiPluginPriority calcGuiPriority(MojoGui *gui)
     if (envr == NULL)
         envr = getenv("MOJOSETUP_GUI");
 
-    retval = gui->priority(gui);
+    retval = gui->priority();
 
     // If the plugin isn't saying "don't try me at all" then see if the
     //  user explicitly wants this one.
     if (retval != MOJOGUI_PRIORITY_NEVER_TRY)
     {
-        if ((envr != NULL) && (strcasecmp(envr, gui->name(gui)) == 0))
+        if ((envr != NULL) && (strcasecmp(envr, gui->name()) == 0))
             retval = MOJOGUI_PRIORITY_USER_REQUESTED;
     } // if
 
@@ -67,7 +67,7 @@ static PluginList *initGuiPluginsByPriority(PluginList *plugins)
         PluginList *i;
         for (i = plugins->next; i != NULL; i = i->next)
         {
-            if ( (i->priority == p) && (i->gui->init(i->gui)) )
+            if ( (i->priority == p) && (i->gui->init()) )
                 return i;
         } // for
     } // for
@@ -81,7 +81,7 @@ static void deleteGuiPlugin(PluginList *plugin)
     if (plugin != NULL)
     {
         if (plugin->gui)
-            plugin->gui->deinit(plugin->gui);
+            plugin->gui->deinit();
         if (plugin->lib)
             dlclose(plugin->lib);
         if (plugin->filename)
@@ -98,10 +98,11 @@ static void loadStaticGuiPlugins(PluginList *plugins)
 {
     int i;
     STUBBED("See FIXME above.");
-    for (i = 0; staticGuiPlugins[i] != NULL; i++)
+    for (i = 0; staticGui[i] != NULL; i++)
     {
         PluginList *plug;
-        MojoGui *gui = staticGuiPlugins[i](MOJOGUI_INTERFACE_REVISION);
+        const MojoGui *gui;
+        gui = staticGui[i](MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
         if (gui == NULL)
             continue;
         plug = xmalloc(sizeof (PluginList));
@@ -142,12 +143,12 @@ static PluginList *loadDynamicGuiPlugin(MojoArchive *ar)
         STUBBED("abstract out dlopen!");
         if (lib != NULL)
         {
-            MojoGui *gui = NULL;
+            const MojoGui *gui = NULL;
             MojoGuiEntryPoint entry = NULL;
             entry = (MojoGuiEntryPoint) dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
             if (entry != NULL)
             {
-                gui = entry(MOJOGUI_INTERFACE_REVISION);
+                gui = entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
                 if (gui != NULL)
                 {
                     retval = xmalloc(sizeof (PluginList));
@@ -196,7 +197,7 @@ static void loadDynamicGuiPlugins(PluginList *plugins)
 } // loadDynamicGuiPlugins
 
 
-MojoGui *MojoGui_initGuiPlugin(void)
+const MojoGui *MojoGui_initGuiPlugin(void)
 {
     PluginList plugins;
 

@@ -180,7 +180,7 @@ static int luahook_msgbox(lua_State *L)
     {
         const char *title = luaL_checkstring(L, 1);
         const char *text = luaL_checkstring(L, 2);
-        GGui->msgbox(GGui, title, text);
+        GGui->msgbox(title, text);
     } // if
     return 0;
 } // luahook_msgbox
@@ -193,7 +193,7 @@ static int luahook_promptyn(lua_State *L)
     {
         const char *title = luaL_checkstring(L, 1);
         const char *text = luaL_checkstring(L, 2);
-        rc = GGui->promptyn(GGui, title, text);
+        rc = GGui->promptyn(title, text);
     } // if
 
     lua_pushboolean(L, rc);
