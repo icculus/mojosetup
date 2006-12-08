@@ -111,8 +111,9 @@ const char *translate(const char *str)
                     tr = lua_tostring(luaState, -1);
                     if (tr != NULL)  // translated for this locale?
                     {
-                        xstrncpy(scratchbuf_128k, tr, sizeof(scratchbuf_128k));
-                        retval = scratchbuf_128k;
+                        char *dst = (char *) scratchbuf_128k;
+                        xstrncpy(dst, tr, sizeof(scratchbuf_128k));
+                        retval = dst;
                     } // if
                 } // if
             } // if
