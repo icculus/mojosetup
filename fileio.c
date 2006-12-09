@@ -64,7 +64,7 @@ void MojoArchive_resetEntryInfo(MojoArchiveEntryInfo *info, int basetoo)
 
 
 
-boolean mojoInputToPhysicalFile(MojoInput *in, const char *fname)
+boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname)
 {
     FILE *out = NULL;
     boolean iofailure = false;
@@ -450,6 +450,7 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         if (io != NULL)
             GBaseArchive = MojoArchive_newFromInput(io, basepath);
 
+        // !!! FIXME: use directory of binary, not cwd.
         if (GBaseArchive == NULL)
             GBaseArchive = MojoArchive_newFromDirectory(".");
 

@@ -65,7 +65,7 @@ char *xstrncpy(char *dst, const char *src, size_t len)
 } // xstrncpy
 
 
-static void out_of_memory(void)
+static void outOfMemory(void)
 {
     // Try to translate "out of memory", but not if it causes recursion.
     static boolean already_panicked = false;
@@ -76,7 +76,7 @@ static void out_of_memory(void)
         errstr = translate(errstr);
     } // if
     panic(errstr);
-} // out_of_memory
+} // outOfMemory
 
 
 #undef malloc
@@ -85,7 +85,7 @@ void *xmalloc(size_t bytes)
 {
     void *retval = calloc(1, bytes);
     if (retval == NULL)
-        out_of_memory();
+        outOfMemory();
     return retval;
 } // xmalloc
 
@@ -94,7 +94,7 @@ void *xrealloc(void *ptr, size_t bytes)
 {
     void *retval = realloc(ptr, bytes);
     if (retval == NULL)
-        out_of_memory();
+        outOfMemory();
     return retval;
 } // xrealloc
 
