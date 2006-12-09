@@ -11,10 +11,6 @@ IF(APPLE AND NOT MACOSX)
     SET(MACOSX TRUE)
 ENDIF(APPLE AND NOT MACOSX)
 
-
-# !!! FIXME: TODO:
-# GUI plugin building
-
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckLibraryExists)
 INCLUDE(CheckCSourceCompiles)
