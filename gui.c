@@ -91,7 +91,8 @@ static void deleteGuiPlugin(PluginList *plugin)
 } // deleteGuiPlugin
 
 
-static boolean tryGuiPlugin(PluginList *plugins, MojoGuiEntryPoint entry)
+static boolean tryGuiPlugin(PluginList *plugins, const char *fname,
+                            MojoGuiEntryPoint entry)
 {
     boolean retval = false;
     const MojoGui *gui = entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
@@ -101,6 +102,7 @@ static boolean tryGuiPlugin(PluginList *plugins, MojoGuiEntryPoint entry)
         plug->lib = NULL;
         plug->gui = gui;
         plug->priority = calcGuiPriority(gui);
+        plug->filename = ((fname != NULL) ? xstrdup(fname) : NULL);
         plug->next = plugins->next;
         plugins->next = plug;
         retval = true;
@@ -114,7 +116,7 @@ static void loadStaticGuiPlugins(PluginList *plugins)
 {
     int i;
     for (i = 0; staticGui[i] != NULL; i++)
-        tryGuiPlugin(plugins, staticGui[i]);
+        tryGuiPlugin(plugins, NULL, staticGui[i]);
 } // loadStaticGuiPlugins
 
 
@@ -148,7 +150,7 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
             void *addr = MojoPlatform_dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
             MojoGuiEntryPoint entry = (MojoGuiEntryPoint) addr;
             if (entry != NULL)
-                rc = tryGuiPlugin(plugins, entry);
+                rc = tryGuiPlugin(plugins, fname, entry);
         } // if
     } // if
 
