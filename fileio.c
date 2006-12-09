@@ -1,12 +1,6 @@
 #include "fileio.h"
 #include "platform.h"
 
-// !!! FIXME: don't have this here. (need unlink for now).
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/param.h>
-
 
 typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
@@ -77,7 +71,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname)
         return false;
 
     STUBBED("fopen?");
-    unlink(fname);
+    MojoPlatform_unlink(fname);
     out = fopen(fname, "wb");
     if (out == NULL)
         return false;
@@ -99,7 +93,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname)
     fclose(out);
     if (iofailure)
     {
-        unlink(fname);
+        MojoPlatform_unlink(fname);
         return false;
     } // if
 
