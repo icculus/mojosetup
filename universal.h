@@ -50,7 +50,6 @@ extern const char **GArgv;
 extern const char *GBuildVer;
 
 // Static, non-stack memory for scratch work...not thread safe!
-// !!! FIXME: maybe lose this.
 extern uint8 scratchbuf_128k[128 * 1024];
 
 // Call this for fatal errors that require immediate app termination.
@@ -75,7 +74,6 @@ void *xmalloc(size_t bytes);
 void *xrealloc(void *ptr, size_t bytes);
 char *xstrdup(const char *str);
 
-// !!! FIXME: just use strlcpy/strlcat instead...
 // strncpy() that promises to null-terminate the string, even on overflow.
 char *xstrncpy(char *dst, const char *src, size_t len);
 
@@ -134,9 +132,6 @@ extern MojoSetupEntryPoints GEntryPoints;
 #else
 #define STUBBED(x)
 #endif
-
-// !!! FIXME: make this a real function.
-#define dbgprintf printf
 
 #define STATICARRAYLEN(x) ( (sizeof ((x))) / (sizeof ((x)[0])) )
 
