@@ -1,4 +1,5 @@
 #include "universal.h"
+#include "lua_glue.h"
 #include "platform.h"
 #include "fileio.h"
 #include "lua.h"
@@ -217,6 +218,36 @@ static inline void set_string(lua_State *L, const char *str, const char *sym)
     lua_setfield(luaState, -2, sym);
 } // set_string
 
+static inline void set_string_array(lua_State *L, int argc, const char **argv,
+                                    const char *sym)
+{
+    int i;
+    lua_newtable(luaState);
+    for (i = 0; i < argc; i++)
+    {
+        lua_pushinteger(luaState, i+1);  // lua is option base 1!
+        lua_pushstring(luaState, argv[i]);
+        lua_settable(luaState, -3);
+    } // for
+    lua_setfield(luaState, -2, sym);
+} // set_string_array
+
+
+void MojoLua_setString(const char *str, const char *sym)
+{
+    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
+    set_string(luaState, str, sym);
+    lua_pop(luaState, 1);
+} // MojoLua_setString
+
+
+void MojoLua_setStringArray(int argc, const char **argv, const char *sym)
+{
+    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
+    set_string_array(luaState, argc, argv, sym);
+    lua_pop(luaState, 1);
+} // MojoLua_setStringArray
+
 
 boolean MojoLua_initLua(void)
 {
@@ -263,6 +294,8 @@ boolean MojoLua_initLua(void)
         set_string(luaState, ostype, "ostype");
         set_string(luaState, osversion, "osversion");
         set_string(luaState, GBuildVer, "buildver");
+        set_string(luaState, GLuaLicense, "lualicense");
+        set_string_array(luaState, GArgc, GArgv, "commandLine");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
     // Set up localization table, if possible.
@@ -300,6 +333,29 @@ void MojoLua_deinitLua(void)
         luaState = NULL;
     } // if
 } // MojoLua_deinitLua
+
+
+const char *GLuaLicense =
+"Copyright (C) 1994-2006 Lua.org, PUC-Rio.\n"
+"\n"
+"Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+"of this software and associated documentation files (the \"Software\"), to deal\n"
+"in the Software without restriction, including without limitation the rights\n"
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+"copies of the Software, and to permit persons to whom the Software is\n"
+"furnished to do so, subject to the following conditions:\n"
+"\n"
+"The above copyright notice and this permission notice shall be included in\n"
+"all copies or substantial portions of the Software.\n"
+"\n"
+"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
+"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE\n"
+"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
+"THE SOFTWARE.\n"
+"\n";
 
 // end of lua_glue.c ...
 

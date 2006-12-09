@@ -10,6 +10,33 @@
 --  the heavy lifting. All Lua state should be sane for the rest of the app
 --  once this script successfully completes.
 
+-- This is handy for debugging.
+function MojoSetup.dumptable(tabname, tab, depth)
+    if depth == nil then depth = 1 end
+    if tabname ~= nil then
+        print(tabname .. " = {")
+    end
+
+    local depthstr = ""
+    for i=1,(depth*4) do
+        depthstr = depthstr .. " "
+    end
+
+    for k,v in pairs(tab) do
+        if type(v) == "table" then
+            print(depthstr .. k .. " = {")
+            MojoSetup.dumptable(nil, v, depth + 1)
+            print(depthstr .. "}")
+        else
+            print(depthstr .. k .. " = " .. tostring(v))
+        end
+    end
+
+    if tabname ~= nil then
+        print("}")
+    end
+end
+
 -- This table gets filled by the config file. Just create an empty one for now.
 MojoSetup.installs = {}
 
@@ -45,32 +72,18 @@ if MojoSetup.localization ~= nil then
     MojoSetup.localization = nil
 end
 
--- This is handy for debugging.
-function MojoSetup.dumptable(tabname, tab, depth)
-    if depth == nil then depth = 1 end
-    if tabname ~= nil then
-        print(tabname .. " = {")
-    end
 
-    local depthstr = ""
-    for i=1,(depth*4) do
-        depthstr = depthstr .. " "
-    end
+-- !!! FIXME: Most of these print()s should become logging statements...
 
-    for k,v in pairs(tab) do
-        if type(v) == "table" then
-            print(depthstr .. k .. " = {")
-            MojoSetup.dumptable(nil, v, depth + 1)
-            print(depthstr .. "}")
-        else
-            print(depthstr .. k .. " = " .. tostring(v))
-        end
-    end
+print("Build string: " .. MojoSetup.buildver)
 
-    if tabname ~= nil then
-        print("}")
-    end
+print("command line:");
+for i,v in ipairs(MojoSetup.commandLine) do
+    print("  " .. i .. ": " .. v)
 end
+
+print("lua license:")
+print(MojoSetup.lualicense)
 
 -- Our namespace for this API...this is filled in with the rest of this file.
 MojoSetup.schema = {}

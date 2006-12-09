@@ -16,7 +16,7 @@ MojoSetupEntryPoints GEntryPoints =
 
 // !!! FIXME: move these to a lua table.
 int GArgc = 0;
-char **GArgv = NULL;
+const char **GArgv = NULL;
 
 uint32 profile(const char *what, uint32 start_time)
 {

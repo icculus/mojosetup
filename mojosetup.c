@@ -41,7 +41,7 @@ static void deinitEverything(void)
 int MojoSetup_main(int argc, char **argv)
 {
     GArgc = argc;
-    GArgv = argv;
+    GArgv = (const char **) argv;
 
     if (!initEverything())
         return 1;

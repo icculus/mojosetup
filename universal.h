@@ -34,7 +34,7 @@ typedef int boolean;
 
 // Command line access outside of main().
 extern int GArgc;
-extern char **GArgv;
+extern const char **GArgv;
 
 // Build-specific details.
 extern const char *GBuildVer;
