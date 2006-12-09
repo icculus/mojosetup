@@ -130,7 +130,7 @@ boolean MojoPlatform_locale(char *buf, size_t len)
 boolean MojoPlatform_osType(char *buf, size_t len)
 {
 #if PLATFORM_MACOSX
-    xstrncpy(buf, "macosx", len);  // !!! FIXME: better string?
+    xstrncpy(buf, "macosx", len);
 #elif defined(linux) || defined(__linux) || defined(__linux__)
     xstrncpy(buf, "linux", len);
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
