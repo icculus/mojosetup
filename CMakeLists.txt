@@ -15,15 +15,6 @@ INCLUDE(CheckIncludeFile)
 INCLUDE(CheckLibraryExists)
 INCLUDE(CheckCSourceCompiles)
 
-OPTION(MOJOSETUP_DEBUG "Enable debugging options" FALSE)
-
-# There are more cflags later in the compiler-specific bits.
-IF(DEBUG_BUILD)
-    ADD_DEFINITIONS(-DDEBUG=1 -D_DEBUG=1)
-ELSE(DEBUG_BUILD)
-    ADD_DEFINITIONS(-DNDEBUG=1 -D_NDEBUG=1)
-ENDIF(DEBUG_BUILD)
-
 ADD_DEFINITIONS(-DAPPID=mojosetup)
 ADD_DEFINITIONS(-DAPPREV=${MOJOSETUP_VERSION})
 ADD_DEFINITIONS(-D_REENTRANT)
@@ -54,11 +45,6 @@ ENDIF(UNIX)
 # See if -fvisibility=hidden is available to us.
 IF(CMAKE_COMPILER_IS_GNUCC)
     ADD_DEFINITIONS(-pipe -Wall -Werror -fsigned-char)
-    IF(DEBUG_BUILD)
-        ADD_DEFINITIONS(-O0 -g)
-    ELSE(DEBUG_BUILD)
-        ADD_DEFINITIONS(-Os -fno-strict-aliasing -fomit-frame-pointer)
-    ENDIF(DEBUG_BUILD)
 
     CHECK_C_SOURCE_COMPILES("
         #if ((defined(__GNUC__)) && (__GNUC__ >= 4))
@@ -98,7 +84,6 @@ SET(ZLIB_SRCS
     zlib123/zutil.c
 )
 
-# !!! FIXME: Optionally strip out the parser and add-on libraries...
 SET(LUA_SRCS
     lua-5.1.1/src/lapi.c
     lua-5.1.1/src/lcode.c
@@ -111,7 +96,6 @@ SET(LUA_SRCS
     lua-5.1.1/src/lmem.c
     lua-5.1.1/src/lobject.c
     lua-5.1.1/src/lopcodes.c
-    lua-5.1.1/src/lparser.c
     lua-5.1.1/src/lstate.c
     lua-5.1.1/src/lstring.c
     lua-5.1.1/src/ltable.c
@@ -130,6 +114,14 @@ SET(LUA_SRCS
     lua-5.1.1/src/loadlib.c
     lua-5.1.1/src/linit.c
 )
+
+OPTION(MOJOSETUP_LUA_PARSER "Bigger binary but scripts don't need to be compiled." TRUE)
+IF(MOJOSETUP_LUA_PARSER)
+    SET(LUA_SRCS ${LUA_SRCS} lua-5.1.1/src/lparser.c)
+ELSE(MOJOSETUP_LUA_PARSER)
+    SET(LUA_SRCS ${LUA_SRCS} lua-5.1.1/etc/noparser.c)
+    ADD_DEFINITIONS(-DDISABLE_LUA_PARSER=1)
+ENDIF(MOJOSETUP_LUA_PARSER)
 
 OPTION(MOJOSETUP_GUI_STDIO "Enable stdio GUI" TRUE)
 IF(MOJOSETUP_GUI_STDIO)
