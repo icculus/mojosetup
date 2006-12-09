@@ -27,7 +27,7 @@ static void *MojoLua_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 {
     MojoInput *in = (MojoInput *) data;
-    const char *retval = (const char *) scratchbuf_128k;
+    char *retval = (char *) scratchbuf_128k;
     int64 br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
     if (br <= 0)  // eof or error? (lua doesn't care which?!)
     {
