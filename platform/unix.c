@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <dlfcn.h>
 
 #include "../platform.h"
 
@@ -189,6 +190,47 @@ void MojoPlatform_die(void)
 {
     _exit(86);
 } // MojoPlatform_die
+
+
+boolean MojoPlatform_unlink(const char *fname)
+{
+    return (unlink(fname) == 0);
+} // MojoPlatform_unlink
+
+
+
+// pre-10.4 Mac OS X doesn't have dlopen(), etc. So on PowerPC Mac OS X, which
+//  can be an older version of the OS, we use Carbon calls instead.
+//  The Intel architecture switch started with 10.4.
+#if PLATFORM_MACOSX && defined(__POWERPC__)
+#define USE_LEGACY_MACOSX_DLOPEN 1
+#endif
+
+void *MojoPlatform_dlopen(const char *fname)
+{
+    #if USE_LEGACY_MACOSX_DLOPEN
+    #error !!! FIXME Write me.
+    #endif
+    return dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
+} // MojoPlatform_dlopen
+
+
+void *MojoPlatform_dlsym(void *lib, const char *sym)
+{
+    #if USE_LEGACY_MACOSX_DLOPEN
+    #error !!! FIXME Write me.
+    #endif
+    return dlsym(lib, sym);
+} // MojoPlatform_dlsym
+
+
+void MojoPlatform_dlclose(void *lib)
+{
+    #if USE_LEGACY_MACOSX_DLOPEN
+    #error !!! FIXME Write me.
+    #endif
+    dlclose(lib);
+} // MojoPlatform_dlclose
 
 // end of unix.c ...
 

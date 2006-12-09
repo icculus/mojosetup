@@ -22,6 +22,15 @@ uint32 MojoPlatform_ticks(void);
 //  avoid calling this.
 void MojoPlatform_die(void);
 
+// Delete a file from the physical filesystem. Returns true on success, false
+//  on failure.
+boolean MojoPlatform_unlink(const char *fname);
+
+// Wrappers for Unix dlopen/dlsym/dlclose ...
+void *MojoPlatform_dlopen(const char *fname);
+void *MojoPlatform_dlsym(void *lib, const char *sym);
+void MojoPlatform_dlclose(void *lib);
+
 // Get the current locale, in the format "xx_YY" where "xx" is the language
 //  (en, fr, de...) and "_YY" is the country. (_US, _CA, etc). The country
 //  can be omitted. Don't include encoding, it's always UTF-8 at this time.

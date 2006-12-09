@@ -1,9 +1,8 @@
 #include "gui.h"
+#include "platform.h"
 #include "fileio.h"
 
 // !!! FIXME: None of these should be here.
-#include <dlfcn.h>
-#include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
 
@@ -83,9 +82,9 @@ static void deleteGuiPlugin(PluginList *plugin)
         if (plugin->gui)
             plugin->gui->deinit();
         if (plugin->lib)
-            dlclose(plugin->lib);
+            MojoPlatform_dlclose(plugin->lib);
         if (plugin->filename)
-            unlink(plugin->filename);
+            MojoPlatform_unlink(plugin->filename);
         free(plugin->filename);
         free(plugin);
     } // if
@@ -143,12 +142,11 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
     if (rc)
     {
         rc = false;
-        lib = dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
-        STUBBED("abstract out dlopen!");
+        lib = MojoPlatform_dlopen(fname);
         if (lib != NULL)
         {
-            MojoGuiEntryPoint entry;
-            entry = (MojoGuiEntryPoint) dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
+            void *addr = MojoPlatform_dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
+            MojoGuiEntryPoint entry = (MojoGuiEntryPoint) addr;
             if (entry != NULL)
                 rc = tryGuiPlugin(plugins, entry);
         } // if
@@ -157,9 +155,9 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
     if (!rc)
     {
         if (lib != NULL)
-            dlclose(lib);
+            MojoPlatform_dlclose(lib);
         if (fname[0])
-            unlink(fname);
+            MojoPlatform_unlink(fname);
     } // if
 
     return rc;
