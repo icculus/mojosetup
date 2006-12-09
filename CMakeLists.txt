@@ -86,13 +86,11 @@ SET(ZLIB_SRCS
 
 SET(LUA_SRCS
     lua-5.1.1/src/lapi.c
-    lua-5.1.1/src/lcode.c
     lua-5.1.1/src/ldebug.c
     lua-5.1.1/src/ldo.c
     lua-5.1.1/src/ldump.c
     lua-5.1.1/src/lfunc.c
     lua-5.1.1/src/lgc.c
-    lua-5.1.1/src/llex.c
     lua-5.1.1/src/lmem.c
     lua-5.1.1/src/lobject.c
     lua-5.1.1/src/lopcodes.c
@@ -115,9 +113,20 @@ SET(LUA_SRCS
     lua-5.1.1/src/linit.c
 )
 
+# Disabling the parser cuts the Lua binary bits by about 35% (about 30 kbytes
+#  uncompressed on amd64 Linux), plus .luac files are almost always smaller
+#  than the original scripts. The downside is you (and end users in the field)
+#  can't just tweak a script without recompiling it, but even that's not an
+#  unclimbable obstacle.
+# In reality, you probably want to keep the parser, though, unless you REALLY
+#  must save every single byte in the download.
 OPTION(MOJOSETUP_LUA_PARSER "Bigger binary but scripts don't need to be compiled." TRUE)
 IF(MOJOSETUP_LUA_PARSER)
-    SET(LUA_SRCS ${LUA_SRCS} lua-5.1.1/src/lparser.c)
+    SET(LUA_SRCS ${LUA_SRCS}
+        lua-5.1.1/src/lparser.c
+        lua-5.1.1/src/llex.c
+        lua-5.1.1/src/lcode.c
+    )
 ELSE(MOJOSETUP_LUA_PARSER)
     SET(LUA_SRCS ${LUA_SRCS} lua-5.1.1/etc/noparser.c)
     ADD_DEFINITIONS(-DDISABLE_LUA_PARSER=1)
