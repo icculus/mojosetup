@@ -1,5 +1,3 @@
-#include <unistd.h>  // !!! FIXME: for _exit().
-
 #include "universal.h"
 #include "platform.h"
 #include "gui.h"
@@ -53,7 +51,7 @@ int panic(const char *err)
         fprintf(stderr, "\n\n\n%s\n  %s\n\n\n", _("PANIC"), err);
 
     else  // panic is panicking in a loop, terminate without any cleanup...
-        _exit(22);
+        MojoPlatform_die();
 
     exit(22);
     return 0;  // shouldn't hit this.

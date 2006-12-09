@@ -2,14 +2,14 @@
 #include <Carbon/Carbon.h>
 #endif
 
-#include "../platform.h"
-
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+
+#include "../platform.h"
 
 static struct timeval startup_time;
 
@@ -184,6 +184,12 @@ uint32 MojoPlatform_ticks(void)
     now_ms = (((uint64) now.tv_sec) * 1000) + (((uint64) now.tv_usec) / 1000);
     return ((uint32) (now_ms - then_ms));
 } // MojoPlatform_ticks
+
+
+void MojoPlatform_die(void)
+{
+    _exit(86);
+} // MojoPlatform_die
 
 // end of unix.c ...
 

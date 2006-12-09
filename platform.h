@@ -17,6 +17,13 @@ const char *MojoPlatform_appBinaryPath(void);
 
 uint32 MojoPlatform_ticks(void);
 
+// Make current process kill itself immediately, without any sort of internal
+//  cleanup, like atexit() handlers or static destructors...the OS will have
+//  to sort out the freeing of any resources, and no more code in this
+//  process than necessary should run. This function does not return. Try to
+//  avoid calling this.
+void MojoPlatform_die(void);
+
 // Get the current locale, in the format "xx_YY" where "xx" is the language
 //  (en, fr, de...) and "_YY" is the country. (_US, _CA, etc). The country
 //  can be omitted. Don't include encoding, it's always UTF-8 at this time.
