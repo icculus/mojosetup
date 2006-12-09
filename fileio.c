@@ -447,13 +447,13 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         const char *basepath = MojoPlatform_appBinaryPath();
         MojoInput *io = MojoInput_newFromFile(basepath);
 
-        STUBBED("chdir to path of binary");
-
         if (io != NULL)
             GBaseArchive = MojoArchive_newFromInput(io, basepath);
 
         if (GBaseArchive == NULL)
             GBaseArchive = MojoArchive_newFromDirectory(".");
+
+        free(basepath);   // caller free()s this string.
     } // else
 
     return GBaseArchive;

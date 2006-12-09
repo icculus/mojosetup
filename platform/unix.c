@@ -86,10 +86,7 @@ const char *MojoPlatform_appBinaryPath(void)
 {
     const char *argv0 = GArgv[0];
     char resolved[PATH_MAX];
-
-    static char *retval = NULL;
-    if (retval != NULL)
-        return retval;
+    char *retval = NULL;
 
     if (realpath("/proc/self/exe", resolved) != NULL)
         retval = xstrdup(resolved);  // fast path for Linux.

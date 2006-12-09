@@ -10,9 +10,7 @@ extern "C" {
 // this is called by your mainline.
 int MojoSetup_main(int argc, char **argv);
 
-// Caller should _NOT_ free returned string...it's calculated on the first
-//  call and reused for future calls.
-// !!! FIXME: is that a good idea?
+// Caller must free returned string!
 const char *MojoPlatform_appBinaryPath(void);
 
 uint32 MojoPlatform_ticks(void);
