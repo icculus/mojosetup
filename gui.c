@@ -92,33 +92,36 @@ static void deleteGuiPlugin(PluginList *plugin)
 } // deleteGuiPlugin
 
 
-// !!! FIXME: merge this code with dynamic bits, so it retrieves a MojoGui*
-// !!! FIXME:  and then passes it to unified code...
-static void loadStaticGuiPlugins(PluginList *plugins)
+static boolean tryGuiPlugin(PluginList *plugins, MojoGuiEntryPoint entry)
 {
-    int i;
-    STUBBED("See FIXME above.");
-    for (i = 0; staticGui[i] != NULL; i++)
+    boolean retval = false;
+    const MojoGui *gui = entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
+    if (gui != NULL)
     {
-        PluginList *plug;
-        const MojoGui *gui;
-        gui = staticGui[i](MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
-        if (gui == NULL)
-            continue;
-        plug = xmalloc(sizeof (PluginList));
+        PluginList *plug = xmalloc(sizeof (PluginList));
         plug->lib = NULL;
         plug->gui = gui;
         plug->priority = calcGuiPriority(gui);
         plug->next = plugins->next;
         plugins->next = plug;
-    } // for
+        retval = true;
+    } // if
+
+    return retval;
+} // tryGuiPlugin
+
+
+static void loadStaticGuiPlugins(PluginList *plugins)
+{
+    int i;
+    for (i = 0; staticGui[i] != NULL; i++)
+        tryGuiPlugin(plugins, staticGui[i]);
 } // loadStaticGuiPlugins
 
 
-static PluginList *loadDynamicGuiPlugin(MojoArchive *ar)
+static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
 {
     char fname[128] = { 0 };
-    PluginList *retval = NULL;
     void *lib = NULL;
     boolean rc;
     MojoInput *io = ar->openCurrentEntry(ar);
@@ -139,30 +142,19 @@ static PluginList *loadDynamicGuiPlugin(MojoArchive *ar)
 
     if (rc)
     {
+        rc = false;
         lib = dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
         STUBBED("abstract out dlopen!");
         if (lib != NULL)
         {
-            const MojoGui *gui = NULL;
-            MojoGuiEntryPoint entry = NULL;
+            MojoGuiEntryPoint entry;
             entry = (MojoGuiEntryPoint) dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
             if (entry != NULL)
-            {
-                gui = entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
-                if (gui != NULL)
-                {
-                    retval = xmalloc(sizeof (PluginList));
-                    retval->filename = xstrdup(fname);
-                    retval->lib = lib;
-                    retval->gui = gui;
-                    retval->priority = calcGuiPriority(gui);
-                    retval->next = NULL;
-                } // if
-            } // if
+                rc = tryGuiPlugin(plugins, entry);
         } // if
     } // if
 
-    if (!retval)
+    if (!rc)
     {
         if (lib != NULL)
             dlclose(lib);
@@ -170,7 +162,7 @@ static PluginList *loadDynamicGuiPlugin(MojoArchive *ar)
             unlink(fname);
     } // if
 
-    return retval;
+    return rc;
 } // loadDynamicGuiPlugin
 
 
@@ -181,17 +173,10 @@ static void loadDynamicGuiPlugins(PluginList *plugins)
         const MojoArchiveEntryInfo *entinfo;
         while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)
         {
-            PluginList *item;
-
             if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
                 continue;
 
-            item = loadDynamicGuiPlugin(GBaseArchive);
-            if (item == NULL)
-                continue;
-
-            item->next = plugins->next;
-            plugins->next = item;
+            loadDynamicGuiPlugin(plugins, GBaseArchive);
         } // while
     } // if
 } // loadDynamicGuiPlugins
