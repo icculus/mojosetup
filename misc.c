@@ -12,7 +12,6 @@ MojoSetupEntryPoints GEntryPoints =
     translate,
 };
 
-// !!! FIXME: move these to a lua table.
 int GArgc = 0;
 const char **GArgv = NULL;
 
