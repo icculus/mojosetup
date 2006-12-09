@@ -37,10 +37,6 @@ function MojoSetup.dumptable(tabname, tab, depth)
     end
 end
 
--- Use MojoSetup.runFile() instead!
-loadfile = nil
-dofile = nil
-
 -- This table gets filled by the config file. Just create an empty one for now.
 MojoSetup.installs = {}
 
