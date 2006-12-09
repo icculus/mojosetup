@@ -62,7 +62,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname)
 {
     FILE *out = NULL;
     boolean iofailure = false;
-    int32 br;
+    int32 br = 0;
 
     STUBBED("mkdir first?");
     STUBBED("file permissions?");
@@ -98,7 +98,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname)
     } // if
 
     return true;
-} // mojoInputToPhysicalFile
+} // MojoInput_toPhysicalFile
 
 
 MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname)
