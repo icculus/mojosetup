@@ -1,5 +1,7 @@
 #if PLATFORM_MACOSX
 #include <Carbon/Carbon.h>
+#undef true
+#undef false
 #endif
 
 #include <time.h>
