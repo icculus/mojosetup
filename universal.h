@@ -27,8 +27,18 @@ typedef unsigned int uint32;
 typedef long long int64;
 typedef unsigned long long uint64;
 
+// These are likely to get stolen by some overzealous library header...
+#ifdef boolean
+#error Something is defining boolean. Resolve this before including universal.h.
+#endif
+#ifdef true
+#error Something is defining true. Resolve this before including universal.h.
+#endif
+#ifdef false
+#error Something is defining false. Resolve this before including universal.h.
+#endif
+
 typedef int boolean;
-// !!! FIXME: this is begging for trouble.
 #define true 1
 #define false 0
 
