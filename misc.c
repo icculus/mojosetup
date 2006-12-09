@@ -29,7 +29,8 @@ uint32 profile(const char *what, uint32 start_time)
 
 int fatal(const char *err)
 {
-    return panic(err);   // !!! FIXME
+    STUBBED("fatal is not a panic scenario...do an orderly cleanup and exit.");
+    return panic(err);
 } // fatal
 
 
