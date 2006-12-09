@@ -444,7 +444,7 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         return GBaseArchive;
     else
     {
-        const char *basepath = MojoPlatform_appBinaryPath();
+        char *basepath = MojoPlatform_appBinaryPath();
         MojoInput *io = MojoInput_newFromFile(basepath);
 
         if (io != NULL)

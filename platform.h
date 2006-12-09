@@ -11,7 +11,7 @@ extern "C" {
 int MojoSetup_main(int argc, char **argv);
 
 // Caller must free returned string!
-const char *MojoPlatform_appBinaryPath(void);
+char *MojoPlatform_appBinaryPath(void);
 
 uint32 MojoPlatform_ticks(void);
 

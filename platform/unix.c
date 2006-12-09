@@ -82,7 +82,7 @@ static char *findBinaryInPath(const char *bin)
 } // findBinaryInPath
 
 
-const char *MojoPlatform_appBinaryPath(void)
+char *MojoPlatform_appBinaryPath(void)
 {
     const char *argv0 = GArgv[0];
     char resolved[PATH_MAX];
