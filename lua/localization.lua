@@ -15,21 +15,48 @@
 --  to get the proper translation for a given string.
 
 MojoSetup.localization = {
-    ["README.txt"] = {
-        es = "README_spanish.txt";
-        l33t = "README_l33t.txt";
+    -- zlib errors
+    ["need dictionary"] = {
     };
 
-    ["Required for play"] = {
-        es = "Requerido para el juego";
-        l33t = "r3qu1r3d 4 pl4y";
+    ["data error"] = {
     };
 
-    ["blahblahblah"] = {
-        es = "blaho blaho blaho";
-        l33t = "bl4hbl4hbl4h";
+    ["memory error"] = {
     };
-}
+
+    ["buffer error"] = {
+    };
+
+    ["version error"] = {
+    };
+
+    ["unknown error"] = {
+    };
+
+    -- stdio GUI plugin says this for msgboxes (printf format string).
+    ["NOTICE: %s\n[hit enter]"] = {
+    };
+
+    -- stdio GUI plugin says this for yes/no prompts (printf format string).
+    ["%s\n[y/n]"] = {
+    };
+
+    ["Yes"] = {
+    };
+
+    ["No"] = {
+    };
+
+    ["Nothing to do!"] = {
+    };
+
+    ["Unknown error"] = {
+    };
+
+    ["PANIC"] = {
+    };
+};
 
 -- end of localization.lua ...
 
