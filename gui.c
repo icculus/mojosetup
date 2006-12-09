@@ -8,7 +8,6 @@
 
 typedef struct S_PLUGINLIST
 {
-    char *filename;
     void *lib;
     const MojoGui *gui;
     MojoGuiPluginPriority priority;
@@ -83,16 +82,12 @@ static void deleteGuiPlugin(PluginList *plugin)
             plugin->gui->deinit();
         if (plugin->lib)
             MojoPlatform_dlclose(plugin->lib);
-        if (plugin->filename)
-            MojoPlatform_unlink(plugin->filename);
-        free(plugin->filename);
         free(plugin);
     } // if
 } // deleteGuiPlugin
 
 
-static boolean tryGuiPlugin(PluginList *plugins, const char *fname,
-                            MojoGuiEntryPoint entry)
+static boolean tryGuiPlugin(PluginList *plugins, MojoGuiEntryPoint entry)
 {
     boolean retval = false;
     const MojoGui *gui = entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
@@ -102,7 +97,6 @@ static boolean tryGuiPlugin(PluginList *plugins, const char *fname,
         plug->lib = NULL;
         plug->gui = gui;
         plug->priority = calcGuiPriority(gui);
-        plug->filename = ((fname != NULL) ? xstrdup(fname) : NULL);
         plug->next = plugins->next;
         plugins->next = plug;
         retval = true;
@@ -116,50 +110,35 @@ static void loadStaticGuiPlugins(PluginList *plugins)
 {
     int i;
     for (i = 0; staticGui[i] != NULL; i++)
-        tryGuiPlugin(plugins, NULL, staticGui[i]);
+        tryGuiPlugin(plugins, staticGui[i]);
 } // loadStaticGuiPlugins
 
 
 static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
 {
-    char fname[128] = { 0 };
+    boolean rc = false;
     void *lib = NULL;
-    boolean rc;
     MojoInput *io = ar->openCurrentEntry(ar);
-    if (io == NULL)
-        return false;
-
-    STUBBED("Don't copy if it's a physical file already?");
-
-    STUBBED("Filename creation has to change");
+    if (io != NULL)
     {
-        struct timeval tv;
-        gettimeofday(&tv, NULL);
-        snprintf(fname, sizeof (fname), "/tmp/mojosetup-gui-%ld.so", tv.tv_sec);
-    }
-
-    rc = mojoInputToPhysicalFile(io, fname);
-    io->close(io);
-
-    if (rc)
-    {
-        rc = false;
-        lib = MojoPlatform_dlopen(fname);
-        if (lib != NULL)
-        {
-            void *addr = MojoPlatform_dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
-            MojoGuiEntryPoint entry = (MojoGuiEntryPoint) addr;
-            if (entry != NULL)
-                rc = tryGuiPlugin(plugins, fname, entry);
-        } // if
+        const uint32 imglen = (uint32) io->length(io);
+        uint8 *img = (uint8 *) xmalloc(imglen);
+        const uint32 br = io->read(io, img, imglen);
+        io->close(io);
+        if (br == imglen)
+            lib = MojoPlatform_dlopen(img, imglen);
+        free(img);
     } // if
 
-    if (!rc)
+    if (lib != NULL)
     {
-        if (lib != NULL)
-            MojoPlatform_dlclose(lib);
-        if (fname[0])
-            MojoPlatform_unlink(fname);
+        void *addr = MojoPlatform_dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
+        MojoGuiEntryPoint entry = (MojoGuiEntryPoint) addr;
+        if (entry != NULL)
+        {
+            if ((rc = tryGuiPlugin(plugins, entry)) == false)
+                MojoPlatform_dlclose(lib);
+        } // if
     } // if
 
     return rc;

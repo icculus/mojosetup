@@ -4,12 +4,12 @@
 #undef false
 #endif
 
-#include <time.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <time.h>
+#include <unistd.h>
 #include <dlfcn.h>
 
 #include "../platform.h"
@@ -206,12 +206,70 @@ boolean MojoPlatform_unlink(const char *fname)
 #define USE_LEGACY_MACOSX_DLOPEN 1
 #endif
 
-void *MojoPlatform_dlopen(const char *fname)
+static boolean testTmpDir(const char *dname, char *buf,
+                          size_t len, const char *tmpl)
 {
-    #if USE_LEGACY_MACOSX_DLOPEN
-    #error !!! FIXME Write me.
+    boolean retval = false;
+    if ( (dname != NULL) && (access(dname, R_OK | W_OK | X_OK) == 0) )
+    {
+        struct stat statbuf;
+        if ( (stat(dname, &statbuf) == 0) && (S_ISDIR(statbuf.st_mode)) )
+        {
+            const size_t rc = snprintf(buf, len, "%s/%s", dname, tmpl);
+            if (rc < len)
+                retval = true;
+        } // if
+    } // if
+
+    return retval;
+} // testTmpDir
+
+
+static inline boolean chooseTempFile(char *fname, size_t len, const char *tmpl)
+{
+    #ifndef P_tmpdir  // glibc defines this, maybe others.
+    #define P_tmpdir NULL
     #endif
-    return dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
+
+    if (!testTmpDir(getenv("TMPDIR"), fname, len, tmpl))
+    {
+        if (!testTmpDir(P_tmpdir, fname, len, tmpl))
+        {
+            if (!testTmpDir("/tmp", fname, len, tmpl))
+                return false;
+        } // if
+    } // if
+
+    return true;
+} // chooseTempFile
+
+
+void *MojoPlatform_dlopen(const uint8 *img, size_t len)
+{
+    // Write the image to a temporary file, dlopen() it, and delete it
+    //  immediately. The inode will be kept around by the Unix kernel until
+    //  we either dlclose() it or the process terminates, but we don't have
+    //  to worry about polluting the /tmp directory or cleaning this up later.
+
+    void *retval = NULL;
+    char fname[PATH_MAX];
+    if (chooseTempFile(fname, sizeof (fname), "mojosetup-gui-plugin-XXXXXX"))
+    {
+        const int fd = mkstemp(fname);
+        if (fd != -1)
+        {
+            const size_t bw = write(fd, img, len);
+            const int rc = close(fd);
+            #if USE_LEGACY_MACOSX_DLOPEN
+            #error !!! FIXME Write me.
+            #endif
+            if ((bw == len) && (rc != -1))
+                retval = dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
+            unlink(fname);
+        } // if
+    } // if
+
+    return retval;
 } // MojoPlatform_dlopen
 
 

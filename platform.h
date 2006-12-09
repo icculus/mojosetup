@@ -26,8 +26,13 @@ void MojoPlatform_die(void);
 //  on failure.
 boolean MojoPlatform_unlink(const char *fname);
 
-// Wrappers for Unix dlopen/dlsym/dlclose ...
-void *MojoPlatform_dlopen(const char *fname);
+// Wrappers for Unix dlopen/dlsym/dlclose, sort of. Instead of a filename,
+//  these take a memory buffer for the library. If you can't load this
+//  directly in RAM, the platform should write it to a temporary file first,
+//  and deal with cleanup in MojoPlatform_dlclose(). The memory buffer must be
+//  dereferenced in MojoPlatform_dlopen(), as the caller may free() it upon
+//  return. Everything else works like the usual Unix calls.
+void *MojoPlatform_dlopen(const uint8 *img, size_t len);
 void *MojoPlatform_dlsym(void *lib, const char *sym);
 void MojoPlatform_dlclose(void *lib);
 
@@ -48,7 +53,7 @@ boolean MojoPlatform_osVersion(char *buf, size_t len);
 #elif PLATFORM_UNIX
 #define PLATFORM_NAME "unix"
 #else
-#error Unknown processor architecture.
+#error Unknown platform.
 #endif
 
 // Basic architecture detection.

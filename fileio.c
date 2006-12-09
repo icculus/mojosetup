@@ -1,3 +1,6 @@
+#include <sys/stat.h>  // !!! FIXME: unix dependency for stat().
+#include <limits.h>  // !!! FIXME: unix dependency for realpath().
+
 #include "fileio.h"
 #include "platform.h"
 
