@@ -42,30 +42,42 @@ static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 
 boolean MojoLua_runFile(const char *basefname)
 {
+    MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
+    const MojoArchiveEntryInfo *entinfo;
     boolean retval = false;
-    size_t alloclen = strlen(basefname) + 16;
-    char *fname = (char *) xmalloc(alloclen);
+    char clua[128];  // compiled filename.
+    char ulua[128];  // uncompiled filename.
     int rc = 0;
     MojoInput *io = NULL;
 
-    // !!! FIXME: change this API to accept multiple filenames to search for,
-    // !!! FIXME:  since two full enumerations to discover the filename is
-    // !!! FIXME:  missing is just wasteful.
-    STUBBED("See FIXME above.");
-    snprintf(fname, alloclen, "lua/%s.luac", basefname);
-    io = MojoInput_newFromArchivePath(GBaseArchive, fname);
+    if (snprintf(clua, sizeof (clua), "%s.luac", basefname) >= sizeof (clua))
+        return false;
 
-    #if !DISABLE_LUA_PARSER
-    if (io == NULL)
+    if (snprintf(ulua, sizeof (ulua), "%s.lua", basefname) >= sizeof (ulua))
+        return false;
+
+    if (ar->enumerate(ar, "lua"))
     {
-        snprintf(fname, alloclen, "lua/%s.lua", basefname);
-        io = MojoInput_newFromArchivePath(GBaseArchive, fname);
+        while ((entinfo = ar->enumNext(ar)) != NULL)
+        {
+            boolean match = (strcmp(entinfo->filename, clua) == 0);
+            #if !DISABLE_LUA_PARSER
+            if (!match)
+                match = (strcmp(entinfo->filename, ulua) == 0);
+            #endif
+
+            if (match)
+            {
+                if (entinfo->type == MOJOARCHIVE_ENTRY_FILE)
+                    io = ar->openCurrentEntry(ar);
+                break;
+            } // if
+        } // while
     } // if
-    #endif
 
     if (io != NULL)
     {
-        rc = lua_load(luaState, MojoLua_reader, io, fname);
+        rc = lua_load(luaState, MojoLua_reader, io, entinfo->filename);
         io->close(io);
 
         if (rc != 0)
@@ -79,7 +91,6 @@ boolean MojoLua_runFile(const char *basefname)
         } // if
     } // if
 
-    free(fname);
     return retval;
 } // MojoLua_runFile
 
