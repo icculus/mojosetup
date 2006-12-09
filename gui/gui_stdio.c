@@ -1,7 +1,9 @@
+#if !SUPPORT_GUI_STDIO
+#error Something is wrong in the build system.
+#endif
+
 #define BUILDING_EXTERNAL_PLUGIN 1
 #include "../gui.h"
-
-#if SUPPORT_GUI_STDIO
 
 MOJOGUI_PLUGIN(stdio)
 
@@ -53,8 +55,6 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
 
     return 0;
 }
-
-#endif // SUPPORT_GUI_STDIO
 
 // end of gui_stdio.c ...
 

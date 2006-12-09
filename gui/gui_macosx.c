@@ -1,15 +1,19 @@
+#if !SUPPORT_GUI_MACOSX
+#error Something is wrong in the build system.
+#endif
+
+#include <Carbon/Carbon.h>
+#undef true
+#undef false
+
 #define BUILDING_EXTERNAL_PLUGIN 1
 #include "../gui.h"
-
-#if SUPPORT_GUI_MACOSX
 
 MOJOGUI_PLUGIN(macosx)
 
 #if !GUI_STATIC_LINK_MACOSX
 CREATE_MOJOGUI_ENTRY_POINT(macosx)
 #endif
-
-#include <Carbon/Carbon.h>
 
 // (A lot of this is stolen from MojoPatch: http://icculus.org/mojopatch/ ...)
 
@@ -105,8 +109,6 @@ static boolean MojoGui_macosx_promptyn(const char *title, const char *text)
 {
     return do_promptyn(title, text, true);
 }
-
-#endif // SUPPORT_GUI_MACOSX
 
 // end of gui_macosx.c ...
 
