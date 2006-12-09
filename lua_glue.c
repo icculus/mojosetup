@@ -11,6 +11,18 @@
 
 static lua_State *luaState = NULL;
 
+// Allocator interface for internal Lua use.
+static void *MojoLua_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+{
+    if (nsize == 0)
+    {
+        free(ptr);
+        return NULL;
+    } // if
+    return xrealloc(ptr, nsize);
+} // MojoLua_alloc
+
+
 // Read data from a MojoInput when loading Lua code.
 static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 {
@@ -264,7 +276,7 @@ boolean MojoLua_initLua(void)
 
     assert(luaState == NULL);
 
-    luaState = luaL_newstate();   // !!! FIXME: define our own allocator?
+    luaState = lua_newstate(MojoLua_alloc, NULL);
     if (luaState == NULL)
         return false;
 
