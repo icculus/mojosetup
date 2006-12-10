@@ -108,6 +108,8 @@ static int luahook_stackwalk(lua_State *L)
             snprintfcat(&ptr, &len, "in native code");
         else if (strcmp(ldbg.what, "tail") == 0)
             snprintfcat(&ptr, &len, "in Lua code");
+        else if ( (strcmp(ldbg.source, "=?") == 0) && (ldbg.currentline == 0) )
+            snprintfcat(&ptr, &len, "in Lua code (debug info stripped)");
         else
         {
             snprintfcat(&ptr, &len, "in Lua code at %s", ldbg.source);
