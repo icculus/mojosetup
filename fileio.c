@@ -447,9 +447,17 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         if (io != NULL)
             GBaseArchive = MojoArchive_newFromInput(io, basepath);
 
-        // !!! FIXME: use directory of binary, not cwd.
         if (GBaseArchive == NULL)
-            GBaseArchive = MojoArchive_newFromDirectory(".");
+        {
+            // Just use the same directory as the binary instead.
+            const char *parentdir = basepath;
+            char *ptr = strrchr(basepath, '/');
+            if (ptr != NULL)
+                *ptr = '\0';
+            else
+                parentdir = ".";  // oh well.
+            GBaseArchive = MojoArchive_newFromDirectory(parentdir);
+        } // if
 
         free(basepath);   // caller free()s this string.
     } // else
