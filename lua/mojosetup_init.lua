@@ -14,7 +14,7 @@
 function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then depth = 1 end
     if tabname ~= nil then
-        print(tabname .. " = {")
+        MojoSetup.logdebug(tabname .. " = {")
     end
 
     local depthstr = ""
@@ -24,16 +24,16 @@ function MojoSetup.dumptable(tabname, tab, depth)
 
     for k,v in pairs(tab) do
         if type(v) == "table" then
-            print(depthstr .. k .. " = {")
+            MojoSetup.logdebug(depthstr .. k .. " = {")
             MojoSetup.dumptable(nil, v, depth + 1)
-            print(depthstr .. "}")
+            MojoSetup.logdebug(depthstr .. "}")
         else
-            print(depthstr .. k .. " = " .. tostring(v))
+            MojoSetup.logdebug(depthstr .. k .. " = " .. tostring(v))
         end
     end
 
     if tabname ~= nil then
-        print("}")
+        MojoSetup.logdebug("}")
     end
 end
 
@@ -72,18 +72,14 @@ if MojoSetup.localization ~= nil then
     MojoSetup.localization = nil
 end
 
+MojoSetup.loginfo("Build string: " .. MojoSetup.buildver)
 
--- !!! FIXME: Most of these print()s should become logging statements...
-
-print("Build string: " .. MojoSetup.buildver)
-
-print("command line:");
-for i,v in ipairs(MojoSetup.commandLine) do
-    print("  " .. i .. ": " .. v)
+MojoSetup.loginfo("command line:");
+for i,v in ipairs(MojoSetup.argv) do
+    MojoSetup.loginfo("  " .. i .. ": " .. v)
 end
 
-print("lua license:")
-print(MojoSetup.lualicense)
+--MojoSetup.loginfo(MojoSetup.lualicense)
 
 -- Our namespace for this API...this is filled in with the rest of this file.
 MojoSetup.schema = {}
@@ -156,7 +152,7 @@ function MojoSetup.schema.sanitize(fnname, tab, elems)
         local child = elem[1]
         local defval = elem[2]
 
-        -- print(child .. " isa " .. type(tab[child]) .. " equals " .. tostring(tab[child]));
+        MojoSetup.logdebug(child .. " isa " .. type(tab[child]) .. " equals " .. tostring(tab[child]));
         if tab[child] == nil then tab[child] = defval end
         local j = 3
         while elem[j] do

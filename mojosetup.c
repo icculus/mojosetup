@@ -7,7 +7,9 @@
 
 static boolean initEverything(void)
 {
-    STUBBED("Init logging functionality.");
+    MojoLog_initLogging();
+
+    logInfo("MojoSetup starting up...");
 
     // We have to panic on errors until the GUI is ready. Try to make things
     //  "succeed" unless they are catastrophic, and report problems later.
@@ -30,10 +32,11 @@ static boolean initEverything(void)
 
 static void deinitEverything(void)
 {
+    logInfo("MojoSetup shutting down...");
     MojoLua_deinitLua();
     MojoGui_deinitGuiPlugin();
     MojoArchive_deinitBaseArchive();
-    STUBBED("Deinit logging functionality.");
+    MojoLog_deinitLogging();
 } // deinitEverything
 
 
@@ -42,6 +45,12 @@ int MojoSetup_main(int argc, char **argv)
 {
     GArgc = argc;
     GArgv = (const char **) argv;
+
+    if (cmdline("buildver"))
+    {
+        printf("%s\n", GBuildVer);
+        return 0;
+    } // if
 
     if (!initEverything())
         return 1;

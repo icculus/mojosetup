@@ -96,6 +96,55 @@ const char *translate(const char *str);
 //   profile("Something I did", start);
 uint32 profile(const char *what, uint32 start_time);
 
+
+// See if a given flag was on the command line
+//
+// cmdline("nosound") will return true if "-nosound", "--nosound",
+//  etc was on the command line. The option must start with a '-' on the
+//  command line to be noticed by this function.
+//
+//  \param arg the command line flag to find
+// \return true if arg was on the command line, false otherwise.
+boolean cmdline(const char *arg);
+
+
+// Get robust command line options, with optional default for missing ones.
+//
+//  If the command line was ./myapp --a=b -c=d ----e f
+//    - cmdlinestr("a") will return "b"
+//    - cmdlinestr("c") will return "d"
+//    - cmdlinestr("e") will return "f"
+//    - cmdlinestr("g") will return the default string.
+//
+// Like cmdline(), the option must start with a '-'.
+//
+//  \param arg The command line option to find.
+//  \param envr optional environment var to check if command line wasn't found.
+//  \param deflt The return value if (arg) isn't on the command line.
+// \return The command line option, or (deflt) if the command line wasn't
+//         found. This return value is READ ONLY. Do not free it, either.
+const char *cmdlinestr(const char *arg, const char *envr, const char *deflt);
+
+
+// Logging functions.
+typedef enum
+{
+    MOJOSETUP_LOG_NOTHING,
+    MOJOSETUP_LOG_ERRORS,
+    MOJOSETUP_LOG_WARNINGS,
+    MOJOSETUP_LOG_INFO,
+    MOJOSETUP_LOG_DEBUG,
+    MOJOSETUP_LOG_EVERYTHING
+} MojoSetupLogLevel;
+
+void MojoLog_initLogging(void);
+void MojoLog_deinitLogging(void);
+void logWarning(const char *fmt, ...);
+void logError(const char *fmt, ...);
+void logInfo(const char *fmt, ...);
+void logDebug(const char *fmt, ...);
+
+
 // A pointer to this struct is passed to plugins, so they can access
 //  functionality in the base application. (Add to this as you need to.)
 typedef struct MojoSetupEntryPoints
@@ -105,6 +154,10 @@ typedef struct MojoSetupEntryPoints
     char *(*xstrdup)(const char *str);
     char *(*xstrncpy)(char *dst, const char *src, size_t len);
     const char *(*translate)(const char *str);
+    void (*logWarning)(const char *fmt, ...);
+    void (*logError)(const char *fmt, ...);
+    void (*logInfo)(const char *fmt, ...);
+    void (*logDebug)(const char *fmt, ...);
 } MojoSetupEntryPoints;
 extern MojoSetupEntryPoints GEntryPoints;
 

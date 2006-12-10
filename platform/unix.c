@@ -198,6 +198,11 @@ boolean MojoPlatform_unlink(const char *fname)
 } // MojoPlatform_unlink
 
 
+void MojoPlatform_log(const char *str)
+{
+    printf("%s\n", str);
+} // MojoPlatform_log
+
 
 // pre-10.4 Mac OS X doesn't have dlopen(), etc. So on PowerPC Mac OS X, which
 //  can be an older version of the OS, we use Carbon calls instead.
@@ -261,7 +266,7 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
             const size_t bw = write(fd, img, len);
             const int rc = close(fd);
             #if USE_LEGACY_MACOSX_DLOPEN
-            #error !!! FIXME Write me.
+            //#error !!! FIXME Write me.
             #endif
             if ((bw == len) && (rc != -1))
                 retval = dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
@@ -276,7 +281,7 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 void *MojoPlatform_dlsym(void *lib, const char *sym)
 {
     #if USE_LEGACY_MACOSX_DLOPEN
-    #error !!! FIXME Write me.
+    //#error !!! FIXME Write me.
     #endif
     return dlsym(lib, sym);
 } // MojoPlatform_dlsym
@@ -285,7 +290,7 @@ void *MojoPlatform_dlsym(void *lib, const char *sym)
 void MojoPlatform_dlclose(void *lib)
 {
     #if USE_LEGACY_MACOSX_DLOPEN
-    #error !!! FIXME Write me.
+    //#error !!! FIXME Write me.
     #endif
     dlclose(lib);
 } // MojoPlatform_dlclose

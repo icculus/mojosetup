@@ -36,6 +36,11 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len);
 void *MojoPlatform_dlsym(void *lib, const char *sym);
 void MojoPlatform_dlclose(void *lib);
 
+// Put a line of text to the the system log, whatever that might be on a
+//  given platform. (str) is a complete line, but won't end with any newline
+//  characters. You should supply if needed.
+void MojoPlatform_log(const char *str);
+
 // Get the current locale, in the format "xx_YY" where "xx" is the language
 //  (en, fr, de...) and "_YY" is the country. (_US, _CA, etc). The country
 //  can be omitted. Don't include encoding, it's always UTF-8 at this time.

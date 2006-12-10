@@ -33,11 +33,7 @@ static const MojoGuiEntryPoint staticGui[] =
 
 static MojoGuiPluginPriority calcGuiPriority(const MojoGui *gui)
 {
-    static char *envr = NULL;
     MojoGuiPluginPriority retval;
-
-    if (envr == NULL)
-        envr = getenv("MOJOSETUP_GUI");
 
     retval = gui->priority();
 
@@ -45,6 +41,9 @@ static MojoGuiPluginPriority calcGuiPriority(const MojoGui *gui)
     //  user explicitly wants this one.
     if (retval != MOJOGUI_PRIORITY_NEVER_TRY)
     {
+        static const char *envr = NULL;
+        if (envr == NULL)
+            envr = cmdlinestr("ui", "MOJOSETUP_UI", NULL);
         if ((envr != NULL) && (strcasecmp(envr, gui->name()) == 0))
             retval = MOJOGUI_PRIORITY_USER_REQUESTED;
     } // if

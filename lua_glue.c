@@ -40,63 +40,81 @@ static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 } // MojoLua_reader
 
 
+static inline int snprintfcat(char **ptr, size_t *len, const char *fmt, ...)
+{
+    int bw = 0;
+    va_list ap;
+    va_start(ap, fmt);
+    bw = vsnprintf(*ptr, *len, fmt, ap);
+    va_end(ap);
+    *ptr += bw;
+    *len -= bw;
+    return bw;
+} // snprintfcat
+
+
 static int luahook_stackwalk(lua_State *L)
 {
     const char *errstr = lua_tostring(L, 1);
     lua_Debug ldbg;
     int i = 0;
 
-    STUBBED("log this stuff");
-
     if (errstr != NULL)
-        printf("%s\n", errstr);
+        logDebug("%s\n", errstr);
 
-    printf("Lua stack backtrace:\n");
+    logDebug("Lua stack backtrace:");
 
     // start at 1 to skip this function.
     for (i = 1; lua_getstack(L, i, &ldbg); i++)
     {
-        int bw = printf("#%d", i-1);
+        char *ptr = (char *) scratchbuf_128k;
+        size_t len = sizeof (scratchbuf_128k);
+        int bw = snprintfcat(&ptr, &len, "#%d", i-1);
         const int maxspacing = 4;
         int spacing = maxspacing - bw;
         while (spacing-- > 0)
-            printf(" ");
+            snprintfcat(&ptr, &len, " ");
 
         if (!lua_getinfo(L, "nSl", &ldbg))
         {
-            printf("???\n");
+            snprintfcat(&ptr, &len, "???\n");
+            logDebug((const char *) scratchbuf_128k);
             continue;
         } // if
 
         if (ldbg.namewhat[0])
-            printf("%s ", ldbg.namewhat);
+            snprintfcat(&ptr, &len, "%s ", ldbg.namewhat);
 
         if ((ldbg.name) && (ldbg.name[0]))
-            printf("function %s ()\n", ldbg.name);
+            snprintfcat(&ptr, &len, "function %s ()", ldbg.name);
         else
         {
             if (strcmp(ldbg.what, "main") == 0)
-                printf("mainline of chunk\n");
+                snprintfcat(&ptr, &len, "mainline of chunk");
             else if (strcmp(ldbg.what, "tail") == 0)
-                printf("tail call\n");
+                snprintfcat(&ptr, &len, "tail call");
             else
-                printf("unidentifiable function\n");
+                snprintfcat(&ptr, &len, "unidentifiable function");
         } // if
 
+        logDebug((const char *) scratchbuf_128k);
+        ptr = (char *) scratchbuf_128k;
+        len = sizeof (scratchbuf_128k);
+
         for (spacing = 0; spacing < maxspacing; spacing++)
-            printf(" ");
+            snprintfcat(&ptr, &len, " ");
 
         if (strcmp(ldbg.what, "C") == 0)
-            printf("in native code");
+            snprintfcat(&ptr, &len, "in native code");
         else if (strcmp(ldbg.what, "tail") == 0)
-            printf("in Lua code");
+            snprintfcat(&ptr, &len, "in Lua code");
         else
         {
-            printf("in Lua code at %s", ldbg.source);
+            snprintfcat(&ptr, &len, "in Lua code at %s", ldbg.source);
             if (ldbg.currentline != -1)
-                printf(":%d", ldbg.currentline);
+                snprintfcat(&ptr, &len, ":%d", ldbg.currentline);
         } // else
-        printf("\n");
+        logDebug((const char *) scratchbuf_128k);
     } // for
 
     lua_pushstring(L, errstr ? errstr : "");
@@ -169,16 +187,23 @@ void MojoLua_collectGarbage(void)
     int pre = 0;
     int post = 0;
 
-    STUBBED("logging!");
     pre = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
-    printf("Collecting garbage (currently using %d bytes).\n", pre);
+    logDebug("Collecting garbage (currently using %d bytes).", pre);
     ticks = MojoPlatform_ticks();
     lua_gc (L, LUA_GCCOLLECT, 0);
-    ticks = MojoPlatform_ticks() - ticks;
-    printf("Collection finished (took %d milliseconds).\n", (int) ticks);
+    profile("Garbage collection", ticks);
     post = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
-    printf("Now using %d bytes (%d bytes savings).\n", post, pre - post);
+    logDebug("Now using %d bytes (%d bytes savings).\n", post, pre - post);
 } // MojoLua_collectGarbage
+
+
+static inline void pushStringOrNil(lua_State *L, const char *str)
+{
+    if (str != NULL)
+        lua_pushstring(L, str);
+    else
+        lua_pushnil(L);
+} // pushStringOrNil
 
 
 // Since localization is kept in Lua tables, I stuck this in the Lua glue.
@@ -235,9 +260,7 @@ static int luahook_fatal(lua_State *L)
     const char *err = luaL_checkstring(L, 1);
     fatal(err);
     return 0;
-} // luahook_runfile
-
-
+} // luahook_fatal
 
 
 // Lua interface to MojoLua_runFile(). This is needed instead of Lua's
@@ -291,6 +314,53 @@ static int luahook_promptyn(lua_State *L)
     lua_pushboolean(L, rc);
     return 1;
 } // luahook_msgbox
+
+
+static int luahook_logwarning(lua_State *L)
+{
+    logWarning(luaL_checkstring(L, 1));
+    return 0;
+} // luahook_logwarning
+
+
+static int luahook_logerror(lua_State *L)
+{
+    logError(luaL_checkstring(L, 1));
+    return 0;
+} // luahook_logerror
+
+
+static int luahook_loginfo(lua_State *L)
+{
+    logInfo(luaL_checkstring(L, 1));
+    return 0;
+} // luahook_loginfo
+
+
+static int luahook_logdebug(lua_State *L)
+{
+    logDebug(luaL_checkstring(L, 1));
+    return 0;
+} // luahook_logdebug
+
+
+static int luahook_cmdline(lua_State *L)
+{
+    const char *arg = luaL_checkstring(L, 1);
+    lua_pushboolean(L, cmdline(arg));
+    return 1;
+} // luahook_cmdline
+
+
+static int luahook_cmdlinestr(lua_State *L)
+{
+    int argc = lua_gettop(L);
+    const char *arg = luaL_checkstring(L, 1);
+    const char *envr = (argc < 2) ? NULL : lua_tostring(L, 2);
+    const char *deflt = (argc < 3) ? NULL : lua_tostring(L, 3);
+    pushStringOrNil(L, cmdlinestr(arg, envr, deflt));
+    return 1;
+} // luahook_cmdlinestr
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
@@ -379,6 +449,12 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_msgbox, "msgbox");
         set_cfunc(luaState, luahook_promptyn, "promptyn");
         set_cfunc(luaState, luahook_stackwalk, "stackwalk");
+        set_cfunc(luaState, luahook_logwarning, "logwarning");
+        set_cfunc(luaState, luahook_logerror, "logerror");
+        set_cfunc(luaState, luahook_loginfo, "loginfo");
+        set_cfunc(luaState, luahook_logdebug, "logdebug");
+        set_cfunc(luaState, luahook_cmdline, "cmdline");
+        set_cfunc(luaState, luahook_cmdlinestr, "cmdlinestr");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");
@@ -386,7 +462,7 @@ boolean MojoLua_initLua(void)
         set_string(luaState, osversion, "osversion");
         set_string(luaState, GBuildVer, "buildver");
         set_string(luaState, GLuaLicense, "lualicense");
-        set_string_array(luaState, GArgc, GArgv, "commandLine");
+        set_string_array(luaState, GArgc, GArgv, "argv");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
     // Set up localization table, if possible.
@@ -427,6 +503,8 @@ void MojoLua_deinitLua(void)
 
 
 const char *GLuaLicense =
+"Lua:\n"
+"\n"
 "Copyright (C) 1994-2006 Lua.org, PUC-Rio.\n"
 "\n"
 "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
