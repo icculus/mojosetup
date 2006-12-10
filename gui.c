@@ -2,10 +2,6 @@
 #include "platform.h"
 #include "fileio.h"
 
-// !!! FIXME: None of these should be here.
-#include <time.h>
-#include <sys/time.h>
-
 typedef struct S_PLUGINLIST
 {
     void *lib;
