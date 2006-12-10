@@ -92,7 +92,7 @@ const char *cmdlinestr(const char *arg, const char *envr, const char *deflt)
 } // cmdlinestr
 
 
-
+// !!! FIXME: change this later.
 #define DEFLOGLEV "everything"
 static MojoSetupLogLevel logLevel = MOJOSETUP_LOG_EVERYTHING;
 static FILE *logFile = NULL;
@@ -133,7 +133,7 @@ static inline void addLog(MojoSetupLogLevel level, char levelchar,
 {
     if (level <= logLevel)
     {
-        char buf[256];
+        char buf[512];
         //int len = vsnprintf(buf + 2, sizeof (buf) - 2, fmt, ap) + 2;
         //buf[0] = levelchar;
         //buf[1] = ' ';
