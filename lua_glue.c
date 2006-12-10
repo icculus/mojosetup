@@ -40,6 +40,70 @@ static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 } // MojoLua_reader
 
 
+static int luahook_stackwalk(lua_State *L)
+{
+    const char *errstr = lua_tostring(L, 1);
+    lua_Debug ldbg;
+    int i = 0;
+
+    STUBBED("log this stuff");
+
+    if (errstr != NULL)
+        printf("%s\n", errstr);
+
+    printf("Lua stack backtrace:\n");
+
+    // start at 1 to skip this function.
+    for (i = 1; lua_getstack(L, i, &ldbg); i++)
+    {
+        int bw = printf("#%d", i-1);
+        const int maxspacing = 4;
+        int spacing = maxspacing - bw;
+        while (spacing-- > 0)
+            printf(" ");
+
+        if (!lua_getinfo(L, "nSl", &ldbg))
+        {
+            printf("???\n");
+            continue;
+        } // if
+
+        if (ldbg.namewhat[0])
+            printf("%s ", ldbg.namewhat);
+
+        if ((ldbg.name) && (ldbg.name[0]))
+            printf("function %s ()\n", ldbg.name);
+        else
+        {
+            if (strcmp(ldbg.what, "main") == 0)
+                printf("mainline of chunk\n");
+            else if (strcmp(ldbg.what, "tail") == 0)
+                printf("tail call\n");
+            else
+                printf("unidentifiable function\n");
+        } // if
+
+        for (spacing = 0; spacing < maxspacing; spacing++)
+            printf(" ");
+
+        if (strcmp(ldbg.what, "C") == 0)
+            printf("in native code");
+        else if (strcmp(ldbg.what, "tail") == 0)
+            printf("in Lua code");
+        else
+        {
+            printf("in Lua code at %s", ldbg.source);
+            if (ldbg.currentline != -1)
+                printf(":%d", ldbg.currentline);
+        } // else
+        printf("\n");
+    } // for
+
+    lua_pushstring(L, errstr ? errstr : "");
+    return 1;
+} // luahook_stackwalk
+
+
 boolean MojoLua_runFile(const char *basefname)
 {
     MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
@@ -77,6 +141,7 @@ boolean MojoLua_runFile(const char *basefname)
 
     if (io != NULL)
     {
+        lua_pushcfunction(luaState, luahook_stackwalk);
         rc = lua_load(luaState, MojoLua_reader, io, entinfo->filename);
         io->close(io);
 
@@ -84,11 +149,13 @@ boolean MojoLua_runFile(const char *basefname)
             lua_error(luaState);
         else
         {
-            // !!! FIXME: use pcall instead so we can get error backtraces and localize.
             // Call new chunk on top of the stack (lua_call will pop it off).
-            lua_call(luaState, 0, 0);  // return values are dumped.
-            retval = true;   // if this didn't panic, we succeeded.
+            if (lua_pcall(luaState, 0, 0, -2) != 0)  // retvals are dumped.
+                lua_error(luaState);   // error on stack has debug info.
+            else
+                retval = true;   // if this didn't panic, we succeeded.
         } // if
+        lua_pop(luaState, 1);   // dump stackwalker.
     } // if
 
     return retval;
@@ -150,13 +217,13 @@ const char *translate(const char *str)
 
 
 // Hook into our error handling in case Lua throws a runtime error.
-static int MojoLua_panic(lua_State *L)
+static int luahook_panic(lua_State *L)
 {
     const char *errstr = lua_tostring(L, 1);
     if (errstr == NULL)
         errstr = _("Unknown error");
     return fatal(errstr);  // doesn't actually return.
-} // MojoLua_panic
+} // luahook_panic
 
 
 // Use this instead of Lua's error() function if you don't have a
@@ -291,7 +358,7 @@ boolean MojoLua_initLua(void)
     if (luaState == NULL)
         return false;
 
-    lua_atpanic(luaState, MojoLua_panic);
+    lua_atpanic(luaState, luahook_panic);
 
     if (!lua_checkstack(luaState, 20))  // Just in case.
     {
@@ -311,6 +378,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_fatal, "fatal");
         set_cfunc(luaState, luahook_msgbox, "msgbox");
         set_cfunc(luaState, luahook_promptyn, "promptyn");
+        set_cfunc(luaState, luahook_stackwalk, "stackwalk");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");
