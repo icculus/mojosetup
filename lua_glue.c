@@ -112,7 +112,7 @@ static int luahook_stackwalk(lua_State *L)
             snprintfcat(&ptr, &len, "in Lua code (debug info stripped)");
         else
         {
-            snprintfcat(&ptr, &len, "in Lua code at %s", ldbg.source);
+            snprintfcat(&ptr, &len, "in Lua code at %s", ldbg.short_src);
             if (ldbg.currentline != -1)
                 snprintfcat(&ptr, &len, ":%d", ldbg.currentline);
         } // else
@@ -122,6 +122,78 @@ static int luahook_stackwalk(lua_State *L)
     lua_pushstring(L, errstr ? errstr : "");
     return 1;
 } // luahook_stackwalk
+
+
+// This just lets you punch in one-liners and Lua will run them as individual
+//  chunks, but you can completely access all Lua state, including calling C
+//  functions and altering tables. At this time, it's more of a "console"
+//  than a debugger. You can do "p MojoLua_debugger()" from gdb to launch this
+//  from a breakpoint in native code, or call MojoSetup.debugger() to launch
+//  it from Lua code (with stacktrace intact, too: type 'bt' to see it).
+static int luahook_debugger(lua_State *L)
+{
+#if DISABLE_LUA_PARSER
+    logError("Lua debugger is disabled in this build (no parser).");
+#else
+    int origtop;
+
+    lua_pushcfunction(luaState, luahook_stackwalk);
+    origtop = lua_gettop(L);
+
+    printf("Quick and dirty Lua debugger. Type 'exit' to quit.\n");
+
+    while (true)
+    {
+        char *buf = (char *) scratchbuf_128k;
+        int len = 0;
+        printf("> ");
+        fflush(stdout);
+        if (fgets(buf, sizeof (scratchbuf_128k), stdin) == NULL)
+        {
+            printf("\n\n  fgets() on stdin failed: ");
+            break;
+        } // if
+
+        len = (int) (strlen(buf) - 1);
+        while ( (len >= 0) && ((buf[len] == '\n') || (buf[len] == '\r')) )
+            buf[len--] = '\0';
+
+        if (strcmp(buf, "q") == 0)
+            break;
+        else if (strcmp(buf, "exit") == 0)
+            break;
+        else if (strcmp(buf, "bt") == 0)
+            strcpy(buf, "MojoSetup.stackwalk()");
+
+        if ( (luaL_loadstring(L, buf) != 0) ||
+             (lua_pcall(luaState, 0, LUA_MULTRET, -2) != 0) )
+        {
+            printf("%s\n", lua_tostring(L, -1));
+            lua_pop(L, 1);
+        } // if
+        else
+        {
+            printf("Returned %d values.\n", lua_gettop(L) - origtop);
+            while (lua_gettop(L) != origtop)
+            {
+                // !!! FIXME: dump details of values to stdout here.
+                lua_pop(L, 1);
+            } // while
+            printf("\n");
+        } // else
+    } // while
+
+    lua_pop(L, 1);
+    printf("exiting debugger...\n");
+    return 0;
+#endif
+} // luahook_debugger
+
+
+void MojoLua_debugger(void)
+{
+    luahook_debugger(luaState);
+} // MojoLua_debugger
 
 
 boolean MojoLua_runFile(const char *basefname)
@@ -161,15 +233,18 @@ boolean MojoLua_runFile(const char *basefname)
 
     if (io != NULL)
     {
+        char *realfname = xmalloc(strlen(entinfo->filename) + 6);
+        sprintf(realfname, "@lua/%s", entinfo->filename);
         lua_pushcfunction(luaState, luahook_stackwalk);
-        rc = lua_load(luaState, MojoLua_reader, io, entinfo->filename);
+        rc = lua_load(luaState, MojoLua_reader, io, realfname);
+        free(realfname);
         io->close(io);
 
         if (rc != 0)
             lua_error(luaState);
         else
         {
-            // Call new chunk on top of the stack (lua_call will pop it off).
+            // Call new chunk on top of the stack (lua_pcall will pop it off).
             if (lua_pcall(luaState, 0, 0, -2) != 0)  // retvals are dumped.
                 lua_error(luaState);   // error on stack has debug info.
             else
@@ -197,6 +272,15 @@ void MojoLua_collectGarbage(void)
     post = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
     logDebug("Now using %d bytes (%d bytes savings).\n", post, pre - post);
 } // MojoLua_collectGarbage
+
+
+// You can trigger the garbage collector with more control in the standard
+//  Lua runtime, but this notes profiling and statistics via logDebug().
+static int luahook_collectgarbage(lua_State *L)
+{
+    MojoLua_collectGarbage();
+    return 0;
+} // luahook_collectgarbage
 
 
 static inline void pushStringOrNil(lua_State *L, const char *str)
@@ -457,6 +541,8 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_logdebug, "logdebug");
         set_cfunc(luaState, luahook_cmdline, "cmdline");
         set_cfunc(luaState, luahook_cmdlinestr, "cmdlinestr");
+        set_cfunc(luaState, luahook_collectgarbage, "collectgarbage");
+        set_cfunc(luaState, luahook_debugger, "debugger");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");

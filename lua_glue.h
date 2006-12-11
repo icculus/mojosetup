@@ -33,6 +33,8 @@ void MojoLua_setStringArray(int argc, const char **argv, const char *sym);
 
 void MojoLua_collectGarbage(void);
 
+void MojoLua_debugger(void);
+
 #ifdef __cplusplus
 }
 #endif
