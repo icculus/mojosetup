@@ -10,6 +10,8 @@
 --  the heavy lifting. All Lua state should be sane for the rest of the app
 --  once this script successfully completes.
 
+MojoSetup.loginfo(os.date());
+
 -- This is handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then depth = 1 end
@@ -142,7 +144,10 @@ function MojoSetup.schema.mustBeValidInteraction(fnname, elem, val)
 end
 
 function MojoSetup.schema.mustBeUrl(fnname, elem, val)
-    -- !!! FIXME: check for valid URL here.
+    MojoSetup.schema.mustBeString(fname, elem, val)
+    MojoSetup.schema.cantBeEmpty(fname, elem, val)
+    -- !!! FIXME: this doesn't work, need to test this regexp some more...
+    -- string.match(str, "^%w+://(.+(:.+)?@)?[%w-\.]*/")
 end
 
 function MojoSetup.schema.sanitize(fnname, tab, elems)
