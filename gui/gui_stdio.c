@@ -56,5 +56,17 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
     return 0;
 }
 
+static boolean MojoGui_stdio_startgui(const char *title, const char *splash)
+{
+    printf("%s\n", title);
+    return true;
+} // MojoGui_stdio_startgui
+
+
+static void MojoGui_stdio_endgui(void)
+{
+    // no-op.
+} // MojoGui_stdio_endgui
+
 // end of gui_stdio.c ...
 

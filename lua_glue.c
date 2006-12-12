@@ -185,8 +185,9 @@ static int luahook_debugger(lua_State *L)
 
     lua_pop(L, 1);
     printf("exiting debugger...\n");
-    return 0;
 #endif
+
+    return 0;
 } // luahook_debugger
 
 
@@ -449,6 +450,22 @@ static int luahook_cmdlinestr(lua_State *L)
 } // luahook_cmdlinestr
 
 
+static int luahook_startgui(lua_State *L)
+{
+    const char *title = luaL_checkstring(L, 1);
+    const char *splash = lua_tostring(L, 2);
+    lua_pushboolean(L, GGui->startgui(title, splash));
+    return 1;
+} // luahook_startgui
+
+
+static int luahook_endgui(lua_State *L)
+{
+    GGui->endgui();
+    return 0;
+} // luahook_endgui
+
+
 // Sets t[sym]=f, where t is on the top of the Lua stack.
 static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
 {
@@ -543,6 +560,8 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_cmdlinestr, "cmdlinestr");
         set_cfunc(luaState, luahook_collectgarbage, "collectgarbage");
         set_cfunc(luaState, luahook_debugger, "debugger");
+        set_cfunc(luaState, luahook_startgui, "startgui");
+        set_cfunc(luaState, luahook_endgui, "endgui");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");

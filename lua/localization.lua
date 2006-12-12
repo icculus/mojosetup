@@ -56,6 +56,9 @@ MojoSetup.localization = {
 
     ["PANIC"] = {
     };
+
+    ["GUI failed to start"] = {
+    };
 };
 
 -- end of localization.lua ...

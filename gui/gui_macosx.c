@@ -24,6 +24,17 @@ static uint8 MojoGui_macosx_priority(void)
 
 static boolean MojoGui_macosx_init(void)
 {
+    // This lets a stdio app become a GUI app. Otherwise, you won't get
+    //  GUI events from the system and other things will fail to work.
+    // Putting the app in an application bundle does the same thing.
+    //  TransformProcessType() is a 10.3+ API. SetFrontProcess() is 10.0+.
+    if (TransformProcessType != NULL)  // check it as a weak symbol.
+    {
+        ProcessSerialNumber psn = { 0, kCurrentProcess };
+        TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+        SetFrontProcess(&psn);
+    } // if
+
     return true;
 } // MojoGui_macosx_init
 
@@ -109,6 +120,17 @@ static boolean MojoGui_macosx_promptyn(const char *title, const char *text)
 {
     return do_promptyn(title, text, true);
 }
+
+static boolean MojoGui_macosx_startgui(const char *title, const char *splash)
+{
+    return false;  // !!! FIXME
+} // MojoGui_macosx_startgui
+
+
+static void MojoGui_macosx_endgui(void)
+{
+    // no-op.
+} // MojoGui_macosx_endgui
 
 // end of gui_macosx.c ...
 
