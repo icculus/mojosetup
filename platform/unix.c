@@ -30,9 +30,17 @@ extern __declspec(dllimport) status_t unload_add_on(image_id imid);
 extern __declspec(dllimport) status_t get_image_symbol(image_id imid,
                                 const char *name, int32 sclass, void **ptr);
 
-static void *beos_dlopen(const char *fname)
+#ifndef RTLD_NOW
+#define RTLD_NOW 0
+#endif
+#ifndef RTLD_GLOBAL
+#define RTLD_GLOBAL 0
+#endif
+
+static void *beos_dlopen(const char *fname, int unused)
 {
     const image_id lib = load_add_on(fname);
+    (void) unused;
     if (lib < 0)
         return NULL;
     return (void *) lib;
@@ -289,9 +297,6 @@ static inline boolean chooseTempFile(char *fname, size_t len, const char *tmpl)
 
 void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 {
-    if (dlopen == NULL)   // weak symbol on older Mac OS X
-        return NULL;
-
     // Write the image to a temporary file, dlopen() it, and delete it
     //  immediately. The inode will be kept around by the Unix kernel until
     //  we either dlclose() it or the process terminates, but we don't have
@@ -299,6 +304,10 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 
     void *retval = NULL;
     char fname[PATH_MAX];
+
+    if (dlopen == NULL)   // weak symbol on older Mac OS X
+        return NULL;
+
     if (chooseTempFile(fname, sizeof (fname), "mojosetup-gui-plugin-XXXXXX"))
     {
         const int fd = mkstemp(fname);
