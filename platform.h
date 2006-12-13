@@ -57,6 +57,8 @@ boolean MojoPlatform_osVersion(char *buf, size_t len);
 #define PLATFORM_NAME "macosx"
 #elif PLATFORM_UNIX
 #define PLATFORM_NAME "unix"
+#elif PLATFORM_BEOS
+#define PLATFORM_NAME "beos"
 #else
 #error Unknown platform.
 #endif

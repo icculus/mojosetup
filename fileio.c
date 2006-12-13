@@ -4,7 +4,7 @@
 #include "fileio.h"
 #include "platform.h"
 
-#ifdef __BEOS__   // !!! FIXME
+#if PLATFORM_BEOS  // !!! FIXME
 #define realpath(x,y) NULL
 #endif
 

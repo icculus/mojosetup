@@ -11,14 +11,29 @@
 #include <time.h>
 #include <unistd.h>
 
-#if !__BEOS__
+#if !PLATFORM_BEOS
 #include <dlfcn.h>
-#else
-#include <be/kernel/image.h>
+#endif
+
+#include "../platform.h"
+
+
+#if PLATFORM_BEOS
+// BeOS headers conflict badly with MojoSetup, so just chisel in the things
+//  we specifically need...
+typedef int32 image_id;
+typedef int32 status_t;
+extern __declspec(dllimport) image_id load_add_on(const char *path);
+extern __declspec(dllimport) status_t unload_add_on(image_id imid);
+extern __declspec(dllimport) status_t get_image_symbol(image_id imid,
+                                const char *name, int32 sclass, void **ptr);
 
 static void *beos_dlopen(const char *fname)
 {
-    return (void *) load_add_on(fname);
+    const image_id lib = load_add_on(fname);
+    if (lib < 0)
+        return NULL;
+    return (void *) lib;
 } // beos_dlopen
 
 static void *beos_dlsym(void *lib, const char *sym)
@@ -37,10 +52,9 @@ static void beos_dlclose(void *lib)
 #define dlopen(fname) beos_dlopen(fname)
 #define dlsym(lib, sym) beos_dlsym(lib, sym)
 #define dlclose(lib) beos_dlclose(lib)
-#endif  // __BEOS__
+#endif  // PLATFORM_BEOS
 
 
-#include "../platform.h"
 
 static struct timeval startup_time;
 
@@ -158,6 +172,8 @@ boolean MojoPlatform_osType(char *buf, size_t len)
 {
 #if PLATFORM_MACOSX
     xstrncpy(buf, "macosx", len);
+#elif PLATFORM_BEOS
+    xstrncpy(buf, "beos", len);   // !!! FIXME: zeta? haiku?
 #elif defined(linux) || defined(__linux) || defined(__linux__)
     xstrncpy(buf, "linux", len);
 #elif defined(__FreeBSD__) || defined(__DragonFly__)

@@ -37,8 +37,9 @@ IF(MACOSX)
     SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "-framework Carbon")
 ENDIF(MACOSX)
 
-# !!! FIXME: Workaround for lua issue...fix this better.
 IF(BEOS)
+    ADD_DEFINITIONS(-DPLATFORM_BEOS=1)
+    # !!! FIXME: Workaround for lua issue...fix this better.
     ADD_DEFINITIONS(-D_setjmp=setjmp)
     ADD_DEFINITIONS(-D_longjmp=longjmp)
 ENDIF(BEOS)
