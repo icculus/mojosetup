@@ -19,8 +19,11 @@
 
 
 #if PLATFORM_BEOS
+#define realpath(x,y) (NULL)  // !!! FIXME
 // BeOS headers conflict badly with MojoSetup, so just chisel in the things
 //  we specifically need...
+#define B_NO_ERROR 0
+#define B_SYMBOL_TYPE_TEXT 0
 typedef int32 image_id;
 typedef int32 status_t;
 extern __declspec(dllimport) image_id load_add_on(const char *path);
@@ -46,10 +49,10 @@ static void *beos_dlsym(void *lib, const char *sym)
 
 static void beos_dlclose(void *lib)
 {
-    unload_add_on(lib);
+    unload_add_on((image_id) lib);
 } // beos_dlclose
 
-#define dlopen(fname) beos_dlopen(fname)
+#define dlopen(fname, unused) beos_dlopen(fname)
 #define dlsym(lib, sym) beos_dlsym(lib, sym)
 #define dlclose(lib) beos_dlclose(lib)
 #endif  // PLATFORM_BEOS
