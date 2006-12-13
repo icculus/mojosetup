@@ -43,6 +43,7 @@ IF(BEOS)
     ADD_DEFINITIONS(-D_setjmp=setjmp)
     ADD_DEFINITIONS(-D_longjmp=longjmp)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} platform/beos.cpp)
+    SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "-lbe")
 ENDIF(BEOS)
 
 IF(UNIX)
@@ -56,7 +57,11 @@ ENDIF(UNIX)
 
 # See if -fvisibility=hidden is available to us.
 IF(CMAKE_COMPILER_IS_GNUCC)
-    ADD_DEFINITIONS(-pipe -Wall -Werror -fsigned-char)
+    ADD_DEFINITIONS(-pipe -Wall -fsigned-char)
+
+    IF(NOT BEOS)  # !!! FIXME: stupid system headers trigger warnings...
+        ADD_DEFINITIONS(-Werror)
+    ENDIF(NOT BEOS)
 
     CHECK_C_SOURCE_COMPILES("
         #if ((defined(__GNUC__)) && (__GNUC__ >= 4))

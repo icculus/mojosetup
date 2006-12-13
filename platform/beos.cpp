@@ -3,6 +3,7 @@
 //  are largely POSIX things that are missing from BeOS 5...keeping them here
 //  even on Zeta lets us be binary compatible across everything, I think.
 
+#include <stdio.h>
 #include <be/kernel/image.h>
 #include <be/storage/Path.h>
 
@@ -38,7 +39,7 @@ void beos_dlclose(void *lib)
 } // beos_dlclose
 
 
-char *beos_realpath(const char *_path, char *resolved_path)
+char *beos_realpath(const char *path, char *resolved_path)
 {
     BPath normalized(path, NULL, true);  // force normalization of path.
     const char *resolved = normalized.Path();

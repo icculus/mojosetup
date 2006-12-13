@@ -5,7 +5,8 @@
 #include "platform.h"
 
 #if PLATFORM_BEOS  // !!! FIXME
-#define realpath(x,y) NULL
+char *beos_realpath(const char *path, char *resolved_path);
+#define realpath(x,y) beos_realpath(x,y)
 #endif
 
 
