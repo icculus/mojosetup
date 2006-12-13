@@ -10,12 +10,39 @@
 #include <sys/param.h>
 #include <time.h>
 #include <unistd.h>
+
+#if !__BEOS__
 #include <dlfcn.h>
+#else
+#include <be/kernel/image.h>
+
+static void *beos_dlopen(const char *fname)
+{
+    return (void *) load_add_on(fname);
+} // beos_dlopen
+
+static void *beos_dlsym(void *lib, const char *sym)
+{
+    void *addr = NULL;
+    if (get_image_symbol(lib, sym, B_SYMBOL_TYPE_TEXT, &addr) != B_NO_ERROR)
+        return NULL;
+    return addr;
+} // beos_dlsym
+
+static void beos_dlclose(void *lib)
+{
+    unload_add_on(lib);
+} // beos_dlclose
+
+#define dlopen(fname) beos_dlopen(fname)
+#define dlsym(lib, sym) beos_dlsym(lib, sym)
+#define dlclose(lib) beos_dlclose(lib)
+#endif  // __BEOS__
+
 
 #include "../platform.h"
 
 static struct timeval startup_time;
-
 
 int main(int argc, char **argv)
 {
@@ -251,6 +278,9 @@ static inline boolean chooseTempFile(char *fname, size_t len, const char *tmpl)
 
 void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 {
+    if (dlopen == NULL)   // weak symbol on older Mac OS X
+        return NULL;
+
     // Write the image to a temporary file, dlopen() it, and delete it
     //  immediately. The inode will be kept around by the Unix kernel until
     //  we either dlclose() it or the process terminates, but we don't have
@@ -265,9 +295,6 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
         {
             const size_t bw = write(fd, img, len);
             const int rc = close(fd);
-            #if USE_LEGACY_MACOSX_DLOPEN
-            //#error !!! FIXME Write me.
-            #endif
             if ((bw == len) && (rc != -1))
                 retval = dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
             unlink(fname);
@@ -280,19 +307,16 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 
 void *MojoPlatform_dlsym(void *lib, const char *sym)
 {
-    #if USE_LEGACY_MACOSX_DLOPEN
-    //#error !!! FIXME Write me.
-    #endif
+    if (dlsym == NULL)   // weak symbol on older Mac OS X
+        return NULL;
     return dlsym(lib, sym);
 } // MojoPlatform_dlsym
 
 
 void MojoPlatform_dlclose(void *lib)
 {
-    #if USE_LEGACY_MACOSX_DLOPEN
-    //#error !!! FIXME Write me.
-    #endif
-    dlclose(lib);
+    if (dlclose != NULL)   // weak symbol on older Mac OS X
+        dlclose(lib);
 } // MojoPlatform_dlclose
 
 // end of unix.c ...
