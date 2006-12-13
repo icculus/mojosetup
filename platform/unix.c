@@ -22,7 +22,6 @@
 #define realpath(x,y) (NULL)  // !!! FIXME
 // BeOS headers conflict badly with MojoSetup, so just chisel in the things
 //  we specifically need...
-#define B_NO_ERROR 0
 #define B_SYMBOL_TYPE_TEXT 0
 typedef int32 image_id;
 typedef int32 status_t;
@@ -42,7 +41,7 @@ static void *beos_dlopen(const char *fname)
 static void *beos_dlsym(void *lib, const char *sym)
 {
     void *addr = NULL;
-    if (get_image_symbol(lib, sym, B_SYMBOL_TYPE_TEXT, &addr) != B_NO_ERROR)
+    if (get_image_symbol((image_id) lib, sym, B_SYMBOL_TYPE_TEXT, &addr))
         return NULL;
     return addr;
 } // beos_dlsym
@@ -52,9 +51,9 @@ static void beos_dlclose(void *lib)
     unload_add_on((image_id) lib);
 } // beos_dlclose
 
-#define dlopen(fname, unused) beos_dlopen(fname)
-#define dlsym(lib, sym) beos_dlsym(lib, sym)
-#define dlclose(lib) beos_dlclose(lib)
+#define dlopen beos_dlopen
+#define dlsym beos_dlsym
+#define dlclose beos_dlclose
 #endif  // PLATFORM_BEOS
 
 
@@ -249,13 +248,6 @@ void MojoPlatform_log(const char *str)
     printf("%s\n", str);
 } // MojoPlatform_log
 
-
-// pre-10.4 Mac OS X doesn't have dlopen(), etc. So on PowerPC Mac OS X, which
-//  can be an older version of the OS, we use Carbon calls instead.
-//  The Intel architecture switch started with 10.4.
-#if PLATFORM_MACOSX && defined(__POWERPC__)
-#define USE_LEGACY_MACOSX_DLOPEN 1
-#endif
 
 static boolean testTmpDir(const char *dname, char *buf,
                           size_t len, const char *tmpl)
