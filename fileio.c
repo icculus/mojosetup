@@ -4,6 +4,10 @@
 #include "fileio.h"
 #include "platform.h"
 
+#ifdef __BEOS__   // !!! FIXME
+#define realpath(x,y) NULL
+#endif
+
 
 typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
@@ -205,13 +209,15 @@ static void MojoInput_file_close(MojoInput *io)
 
 MojoInput *MojoInput_newFromFile(const char *fname)
 {
+    FILE *f = NULL;
+    MojoInput *io = NULL;
     char path[PATH_MAX];
     MojoInputFileInstance *inst;
 
     if (realpath(fname, path) == NULL)
         strcpy(path, fname);  // can this actually happen and fopen work?
 
-    FILE *f = fopen(path, "rb");
+    f = fopen(path, "rb");
     if (f == NULL)
         return NULL;
 
@@ -219,7 +225,7 @@ MojoInput *MojoInput_newFromFile(const char *fname)
     inst->path = xstrdup(path);
     inst->handle = f;
 
-    MojoInput *io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    io = (MojoInput *) xmalloc(sizeof (MojoInput));
     io->read = MojoInput_file_read;
     io->seek = MojoInput_file_seek;
     io->tell = MojoInput_file_tell;
@@ -291,12 +297,13 @@ static void MojoInput_memory_close(MojoInput *io)
 
 MojoInput *MojoInput_newFromMemory(void *mem, uint32 bytes)
 {
+    MojoInput *io = NULL;
     MojoInputMemInstance *inst;
     inst = (MojoInputMemInstance *) xmalloc(sizeof (MojoInputMemInstance));
     inst->mem = mem;
     inst->bytes = bytes;
 
-    MojoInput *io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    io = (MojoInput *) xmalloc(sizeof (MojoInput));
     io->read = MojoInput_memory_read;
     io->seek = MojoInput_memory_seek;
     io->tell = MojoInput_memory_tell;
@@ -414,6 +421,7 @@ static void MojoArchive_dir_close(MojoArchive *ar)
 
 MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
 {
+    MojoArchive *ar = NULL;
     char resolved[PATH_MAX];
     MojoArchiveDirInstance *inst;
     if (realpath(dirname, resolved) == NULL)
@@ -421,7 +429,7 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
 
     inst = (MojoArchiveDirInstance *) xmalloc(sizeof (MojoArchiveDirInstance));
     inst->base = xstrdup(resolved);
-    MojoArchive *ar = (MojoArchive *) xmalloc(sizeof (MojoArchive));
+    ar = (MojoArchive *) xmalloc(sizeof (MojoArchive));
     ar->enumerate = MojoArchive_dir_enumerate;
     ar->enumNext = MojoArchive_dir_enumNext;
     ar->openCurrentEntry = MojoArchive_dir_openCurrentEntry;

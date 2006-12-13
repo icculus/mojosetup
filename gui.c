@@ -159,6 +159,7 @@ static void loadDynamicGuiPlugins(PluginList *plugins)
 const MojoGui *MojoGui_initGuiPlugin(void)
 {
     PluginList plugins;
+    PluginList *i = NULL;
 
     if (pluginDetails != NULL)
         return pluginDetails->gui;
@@ -172,7 +173,7 @@ const MojoGui *MojoGui_initGuiPlugin(void)
     pluginDetails = initGuiPluginsByPriority(&plugins);
 
     // cleanout unused plugins...
-    PluginList *i = plugins.next;
+    i = plugins.next;
     while (i != NULL)
     {
         PluginList *next = i->next;
