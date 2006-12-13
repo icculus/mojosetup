@@ -42,6 +42,7 @@ IF(BEOS)
     # !!! FIXME: Workaround for lua issue...fix this better.
     ADD_DEFINITIONS(-D_setjmp=setjmp)
     ADD_DEFINITIONS(-D_longjmp=longjmp)
+    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} platform/beos.cpp)
 ENDIF(BEOS)
 
 IF(UNIX)

@@ -8,62 +8,26 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <sys/utsname.h>
 #include <time.h>
 #include <unistd.h>
 
-#if !PLATFORM_BEOS
-#include <dlfcn.h>
-#endif
-
-#include "../platform.h"
-
-
 #if PLATFORM_BEOS
-#define realpath(x,y) (NULL)  // !!! FIXME
-// BeOS headers conflict badly with MojoSetup, so just chisel in the things
-//  we specifically need...
-#define B_SYMBOL_TYPE_TEXT 0
-typedef int32 image_id;
-typedef int32 status_t;
-extern __declspec(dllimport) image_id load_add_on(const char *path);
-extern __declspec(dllimport) status_t unload_add_on(image_id imid);
-extern __declspec(dllimport) status_t get_image_symbol(image_id imid,
-                                const char *name, int32 sclass, void **ptr);
-
-#ifndef RTLD_NOW
-#define RTLD_NOW 0
-#endif
-#ifndef RTLD_GLOBAL
-#define RTLD_GLOBAL 0
-#endif
-
-static void *beos_dlopen(const char *fname, int unused)
-{
-    const image_id lib = load_add_on(fname);
-    (void) unused;
-    if (lib < 0)
-        return NULL;
-    return (void *) lib;
-} // beos_dlopen
-
-static void *beos_dlsym(void *lib, const char *sym)
-{
-    void *addr = NULL;
-    if (get_image_symbol((image_id) lib, sym, B_SYMBOL_TYPE_TEXT, &addr))
-        return NULL;
-    return addr;
-} // beos_dlsym
-
-static void beos_dlclose(void *lib)
-{
-    unload_add_on((image_id) lib);
-} // beos_dlclose
-
+#define DLOPEN_ARGS 0
+void *beos_dlopen(const char *fname, int unused);
+void *beos_dlsym(void *lib, const char *sym);
+void beos_dlclose(void *lib);
+char *beos_realpath(const char *path, char *resolved_path);
 #define dlopen beos_dlopen
 #define dlsym beos_dlsym
 #define dlclose beos_dlclose
-#endif  // PLATFORM_BEOS
+#define realpath beos_realpath
+#else
+#include <dlfcn.h>
+#define DLOPEN_ARGS (RTLD_NOW | RTLD_GLOBAL)
+#endif
 
+#include "../platform.h"
 
 
 static struct timeval startup_time;
@@ -219,10 +183,18 @@ boolean MojoPlatform_osVersion(char *buf, size_t len)
         snprintf(buf, len, "%c%c.%c.%c", str[0], str[1], str[2], str[3]);
         return true;
     } // if
+#else
+    // This information may or may not actually MEAN anything. On BeOS, it's
+    //  useful, but on other things, like Linux, it'll give you the kernel
+    //  version, which doesn't necessarily help.
+    struct utsname un;
+    if (uname(&un) == 0)
+    {
+        xstrncpy(buf, un.release, len);
+        return true;
+    } // if
 #endif
 
-    // At this time, there isn't any way to determine the correct version of
-    //  the OS on Unix that works everywhere or necessarily means anything.
     return false;
 } // MojoPlatform_osversion
 
@@ -316,7 +288,7 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
             const size_t bw = write(fd, img, len);
             const int rc = close(fd);
             if ((bw == len) && (rc != -1))
-                retval = dlopen(fname, RTLD_NOW | RTLD_GLOBAL);
+                retval = dlopen(fname, DLOPEN_ARGS);
             unlink(fname);
         } // if
     } // if
