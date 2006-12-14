@@ -56,11 +56,7 @@ ENDIF(UNIX)
 
 # See if -fvisibility=hidden is available to us.
 IF(CMAKE_COMPILER_IS_GNUCC)
-    ADD_DEFINITIONS(-pipe -Wall -fsigned-char)
-
-    IF(NOT BEOS)  # !!! FIXME: stupid system headers trigger warnings...
-        ADD_DEFINITIONS(-Werror)
-    ENDIF(NOT BEOS)
+    ADD_DEFINITIONS(-pipe -Wall -Werror -fsigned-char)
 
     CHECK_C_SOURCE_COMPILES("
         #if ((defined(__GNUC__)) && (__GNUC__ >= 4))

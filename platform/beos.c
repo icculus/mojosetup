@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <be/kernel/image.h>
-#include <be/storage/Path.h>
 
 void *beos_dlopen(const char *fname, int unused)
 {
