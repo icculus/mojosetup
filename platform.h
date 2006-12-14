@@ -26,6 +26,10 @@ void MojoPlatform_die(void);
 //  on failure.
 boolean MojoPlatform_unlink(const char *fname);
 
+// Resolve symlinks, relative paths, etc. Caller free()'s buffer. Returns
+//  NULL if path couldn't be resolved.
+char *MojoPlatform_realpath(const char *path);
+
 // Wrappers for Unix dlopen/dlsym/dlclose, sort of. Instead of a filename,
 //  these take a memory buffer for the library. If you can't load this
 //  directly in RAM, the platform should write it to a temporary file first,

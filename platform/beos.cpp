@@ -7,13 +7,6 @@
 #include <be/kernel/image.h>
 #include <be/storage/Path.h>
 
-extern "C" {
-    void *beos_dlopen(const char *fname, int unused);
-    void *beos_dlsym(void *lib, const char *sym);
-    void beos_dlclose(void *lib);
-    char *beos_realpath(const char *path, char *resolved_path);
-}
-
 void *beos_dlopen(const char *fname, int unused)
 {
     const image_id lib = load_add_on(fname);
@@ -38,17 +31,5 @@ void beos_dlclose(void *lib)
     unload_add_on((image_id) lib);
 } // beos_dlclose
 
-
-char *beos_realpath(const char *path, char *resolved_path)
-{
-    BPath normalized(path, NULL, true);  // force normalization of path.
-    const char *resolved = normalized.Path();
-    if (resolved == NULL)
-        return NULL;
-    if (snprintf(resolved_path, PATH_MAX, resolved) >= PATH_MAX)
-        return NULL;
-    return(resolved_path);
-} // beos_realpath
-
-// end of beos.cpp ...
+// end of beos.c ...
 

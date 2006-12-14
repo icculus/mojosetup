@@ -17,11 +17,9 @@
 void *beos_dlopen(const char *fname, int unused);
 void *beos_dlsym(void *lib, const char *sym);
 void beos_dlclose(void *lib);
-char *beos_realpath(const char *path, char *resolved_path);
 #define dlopen beos_dlopen
 #define dlsym beos_dlsym
 #define dlclose beos_dlclose
-#define realpath beos_realpath
 #else
 #include <dlfcn.h>
 #define DLOPEN_ARGS (RTLD_NOW | RTLD_GLOBAL)
@@ -37,6 +35,195 @@ int main(int argc, char **argv)
     gettimeofday(&startup_time, NULL);
     return MojoSetup_main(argc, argv);
 } // main
+
+
+static char *getCurrentWorkingDir(void)
+{
+    char *retval = NULL;
+    size_t len;
+
+    // loop a few times in case we don't have a large enough buffer.
+    for (len = 128; len <= (16*1024); len *= 2)
+    {
+        retval = (char *) xrealloc(retval, len);
+        if (getcwd(retval, len-1) != NULL)
+        {
+            size_t slen = strlen(retval);
+            if (retval[slen-1] != '/')   // make sure this ends with '/' ...
+            {
+                retval[slen] = '/';
+                retval[slen+1] = '\0';
+            } // if
+            return retval;
+        } // if
+    } // for
+
+    free(retval);
+    return NULL;
+} // getCurrentWorkingDir
+
+
+static void *guaranteeAllocation(void *ptr, size_t len, size_t *_alloclen)
+{
+    void *retval = NULL;
+    size_t alloclen = *_alloclen;
+    if (alloclen > len)
+        return ptr;
+
+    if (!alloclen)
+        alloclen = 1;
+
+    while (alloclen <= len)
+        alloclen *= 2;
+
+    retval = xrealloc(ptr, alloclen);
+    if (retval != NULL)
+        *_alloclen = alloclen;
+
+    return retval;
+} // guaranteeAllocation
+
+
+// This is a mess, but I'm not sure it can be done more cleanly.
+static char *realpathInternal(char *path, const char *cwd, int linkloop)
+{
+    char *linkname = NULL;
+    char *retval = NULL;
+    size_t len = 0;
+    size_t alloclen = 0;
+
+    if (*path == '/')   // absolute path.
+    {
+        retval = xstrdup("/");
+        path++;
+        len = 1;
+    } // if
+    else   // relative path.
+    {
+        if (cwd != NULL)
+            retval = xstrdup(cwd);
+        else
+        {
+            if ((retval = getCurrentWorkingDir()) == NULL)
+                return NULL;
+        } // else
+        len = strlen(retval);
+    } // else
+
+    while (true)
+    {
+        struct stat statbuf;
+        size_t newlen;
+
+        char *nextpath = strchr(path, '/');
+        if (nextpath != NULL)
+            *nextpath = '\0';
+
+        newlen = strlen(path);
+        retval = guaranteeAllocation(retval, len + newlen + 2, &alloclen);
+        strcpy(retval + len, path);
+
+        if (*path == '\0')
+            retval[--len] = '\0';  // chop ending "/" bit, it gets readded later.
+
+        else if (strcmp(path, ".") == 0)
+        {
+            retval[--len] = '\0';  // chop ending "/." bit
+            newlen = 0;
+        } // else if
+
+        else if (strcmp(path, "..") == 0)
+        {
+            char *ptr;
+            retval[--len] = '\0';  // chop ending "/.." bit
+            ptr = strrchr(retval, '/');
+            if ((ptr == NULL) || (ptr == retval))
+            {
+                strcpy(retval, "/");
+                len = 0;
+            } // if
+            else
+            {
+                *ptr = '\0';
+                len -= (size_t) ((retval+len)-ptr);
+            } // else
+            newlen = 0;
+        } // else if
+
+        // it may be a symlink...check it.
+        else if (lstat(retval, &statbuf) == -1)
+            goto realpathInternal_failed;
+
+        else if (S_ISLNK(statbuf.st_mode))
+        {
+            char *newresolve = NULL;
+            int br = 0;
+
+            if (linkloop > 255)
+                goto realpathInternal_failed;
+
+            linkname = (char *) xmalloc(statbuf.st_size + 1);
+            br = readlink(retval, linkname, statbuf.st_size);
+            if (br < 0)
+                goto realpathInternal_failed;
+
+            // readlink() doesn't null-terminate!
+            linkname[br] = '\0';
+
+            // chop off symlink name for its cwd.
+            retval[len] = '\0';
+
+            // resolve the link...
+            newresolve = realpathInternal(linkname, retval, linkloop + 1);
+            if (newresolve == NULL)
+                goto realpathInternal_failed;
+
+            len = strlen(newresolve);
+            retval = guaranteeAllocation(retval, len + 2, &alloclen);
+            strcpy(retval, newresolve);
+            free(newresolve);
+            free(linkname);
+        } // else if
+
+        else
+        {
+            len += newlen;
+        } // else
+
+        if (nextpath == NULL)
+            break;  // holy crap we're done!
+        else  // append a '/' before the next path element.
+        {
+            path = nextpath + 1;
+            retval[len++] = '/';
+            retval[len] = '\0';
+        } // else
+    } // while
+
+    // Shrink string if we're using more memory than necessary...
+    if (alloclen > len+1)
+        retval = (char *) xrealloc(retval, len+1);
+
+    return retval;
+
+realpathInternal_failed:
+    free(linkname);
+    free(retval);
+    return NULL;
+} // realpathInternal
+
+
+// Rolling my own realpath, even if the runtime has one, since apparently
+//  the spec is a little flakey, and it can overflow PATH_MAX. On BeOS <= 5,
+//  we'd have to resort to BPath to do this, too, and I'd rather avoid the C++
+//  dependencies and headers.
+char *MojoPlatform_realpath(const char *_path)
+{
+    char *path = xstrdup(_path);
+    char *retval = realpathInternal(path, NULL, 0);
+    free(path);
+    return retval;
+} // MojoPlatform_realpath
 
 
 // (Stolen from physicsfs: http://icculus.org/physfs/ ...)
@@ -103,19 +290,15 @@ static char *findBinaryInPath(const char *bin)
 char *MojoPlatform_appBinaryPath(void)
 {
     const char *argv0 = GArgv[0];
-    char resolved[PATH_MAX];
     char *retval = NULL;
 
-    if (realpath("/proc/self/exe", resolved) != NULL)
-        retval = xstrdup(resolved);  // fast path for Linux.
-    else if ( (strchr(argv0, '/')) && (realpath(argv0, resolved)) )
-        retval = xstrdup(resolved);  // argv[0] contains a path
-
+    if (strchr(argv0, '/') != NULL)  
+        retval = MojoPlatform_realpath(argv0); // argv[0] contains a path?
     else  // slow path...have to search the whole $PATH for this one...
     {
         char *found = findBinaryInPath(argv0);
-        if ( (found) && (realpath(found, resolved)) )
-            retval = xstrdup(resolved);  // argv[0] contains a path
+        if (found)
+            retval = MojoPlatform_realpath(found);
         free(found);
     } // else
 

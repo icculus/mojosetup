@@ -1,14 +1,7 @@
 #include <sys/stat.h>  // !!! FIXME: unix dependency for stat().
-#include <limits.h>  // !!! FIXME: unix dependency for realpath().
 
 #include "fileio.h"
 #include "platform.h"
-
-#if PLATFORM_BEOS  // !!! FIXME
-char *beos_realpath(const char *path, char *resolved_path);
-#define realpath(x,y) beos_realpath(x,y)
-#endif
-
 
 typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
@@ -212,18 +205,21 @@ MojoInput *MojoInput_newFromFile(const char *fname)
 {
     FILE *f = NULL;
     MojoInput *io = NULL;
-    char path[PATH_MAX];
     MojoInputFileInstance *inst;
-
-    if (realpath(fname, path) == NULL)
-        strcpy(path, fname);  // can this actually happen and fopen work?
+    char *path = MojoPlatform_realpath(fname);
+    
+    if (path == NULL)
+        return NULL;
 
     f = fopen(path, "rb");
     if (f == NULL)
+    {
+        free(path);
         return NULL;
+    } // if
 
     inst = (MojoInputFileInstance *) xmalloc(sizeof (MojoInputFileInstance));
-    inst->path = xstrdup(path);
+    inst->path = path;
     inst->handle = f;
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
@@ -423,13 +419,14 @@ static void MojoArchive_dir_close(MojoArchive *ar)
 MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
 {
     MojoArchive *ar = NULL;
-    char resolved[PATH_MAX];
     MojoArchiveDirInstance *inst;
-    if (realpath(dirname, resolved) == NULL)
+    char *resolved = MojoPlatform_realpath(dirname);
+
+    if (resolved == NULL)
         return NULL;
 
     inst = (MojoArchiveDirInstance *) xmalloc(sizeof (MojoArchiveDirInstance));
-    inst->base = xstrdup(resolved);
+    inst->base = resolved;
     ar = (MojoArchive *) xmalloc(sizeof (MojoArchive));
     ar->enumerate = MojoArchive_dir_enumerate;
     ar->enumNext = MojoArchive_dir_enumNext;
