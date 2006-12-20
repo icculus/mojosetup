@@ -197,11 +197,30 @@ uint32 profile(const char *what, uint32 start_time)
 } // profile_start
 
 
-int fatal(const char *err)
+int fatal(const char *fmt, ...)
 {
-    logError("FATAL: %s", err);
+    size_t len = 128;
+    char *buf = xmalloc(len);
+    int rc = 0;
+    va_list ap;
+
+    va_start(ap, fmt);
+    rc = vsnprintf(buf, len, fmt, ap);
+    va_end(ap);
+    if (rc >= len)
+    {
+        len = rc;
+        buf = xrealloc(buf, len);
+        va_start(ap, fmt);
+        vsnprintf(buf, len, fmt, ap);
+        va_end(ap);
+    } // if
+
+    logError("FATAL: %s", buf);
     STUBBED("fatal is not a panic scenario...do an orderly cleanup and exit.");
-    return panic(err);
+    rc = panic(buf);
+    free(buf);
+    return rc;
 } // fatal
 
 

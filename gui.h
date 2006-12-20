@@ -37,8 +37,10 @@ struct MojoGui
     void (*deinit)(void);
     void (*msgbox)(const char *title, const char *text);
     boolean (*promptyn)(const char *title, const char *text);
-    boolean (*startgui)(const char *title, const char *splash);
-    void (*endgui)(void);
+    boolean (*start)(const char *title, const char *splash);
+    void (*stop)(void);
+    boolean (*readme)(const char *name, const uint8 *data, size_t len,
+                      boolean can_go_back, boolean can_go_forward);
 };
 
 typedef const MojoGui* (*MojoGuiEntryPoint)(int revision,
@@ -66,8 +68,11 @@ static boolean MojoGui_##module##_init(void); \
 static void MojoGui_##module##_deinit(void); \
 static void MojoGui_##module##_msgbox(const char *title, const char *text); \
 static boolean MojoGui_##module##_promptyn(const char *t1, const char *t2); \
-static boolean MojoGui_##module##_startgui(const char *t, const char *s); \
-static void MojoGui_##module##_endgui(void); \
+static boolean MojoGui_##module##_start(const char *t, const char *s); \
+static void MojoGui_##module##_stop(void); \
+static boolean MojoGui_##module##_readme(const char *name, const uint8 *data, \
+                                    size_t len, boolean can_go_back, \
+                                    boolean can_go_forward); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \
     if (rev == MOJOGUI_INTERFACE_REVISION) { \
@@ -78,8 +83,9 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_deinit, \
             MojoGui_##module##_msgbox, \
             MojoGui_##module##_promptyn, \
-            MojoGui_##module##_startgui, \
-            MojoGui_##module##_endgui, \
+            MojoGui_##module##_start, \
+            MojoGui_##module##_stop, \
+            MojoGui_##module##_readme, \
         }; \
         entry = e; \
         return &retval; \

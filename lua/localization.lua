@@ -42,6 +42,14 @@ MojoSetup.localization = {
     ["%s\n[y/n]"] = {
     };
 
+    -- This is utf8casecmp()'d for "yes" answers in stdio GUI's promptyn().
+    ["Y"] = {
+    };
+
+    -- This is utf8casecmp()'d for "no" answers in stdio GUI's promptyn().
+    ["N"] = {
+    };
+
     ["Yes"] = {
     };
 
@@ -54,10 +62,22 @@ MojoSetup.localization = {
     ["Unknown error"] = {
     };
 
+    ["Internal error"] = {
+    };
+
     ["PANIC"] = {
     };
 
     ["GUI failed to start"] = {
+    };
+
+    ["Accept this license?"] = {
+    };
+
+    ["You must accept the license before you may install"] = {
+    };
+
+    ["failed to load file '%s'"] = {
     };
 };
 

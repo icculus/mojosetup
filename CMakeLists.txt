@@ -71,16 +71,6 @@ IF(CMAKE_COMPILER_IS_GNUCC)
     ENDIF(MOJOSETUP_IS_GCC4)
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
-SET(MOJOSETUP_SRCS
-    buildver.c
-    mojosetup.c
-    misc.c
-    gui.c
-    fileio.c
-    archive_zip.c
-    lua_glue.c
-)
-
 SET(ZLIB_SRCS
     zlib123/adler32.c
     zlib123/compress.c
@@ -125,6 +115,30 @@ SET(LUA_SRCS
     lua-5.1.1/src/linit.c
 )
 
+SET(LUA_PARSER_SRCS
+    lua-5.1.1/src/lparser.c
+    lua-5.1.1/src/llex.c
+    lua-5.1.1/src/lcode.c
+)
+
+SET(MOJOSETUP_SRCS
+    buildver.c
+    mojosetup.c
+    misc.c
+    gui.c
+    fileio.c
+    archive_zip.c
+    lua_glue.c
+    ${LUA_SRCS}
+)
+
+SET(MOJOLUAC_SRCS
+    ${LUA_SRCS}
+    ${LUA_PARSER_SRCS}
+    lua-5.1.1/src/luac.c
+    lua-5.1.1/src/print.c
+)
+
 # Disabling the parser cuts the Lua binary bits by about 35% (about 30 kbytes
 #  uncompressed on amd64 Linux), plus .luac files are almost always smaller
 #  than the original scripts. The downside is you (and end users in the field)
@@ -134,13 +148,9 @@ SET(LUA_SRCS
 #  must save every single byte in the download.
 OPTION(MOJOSETUP_LUA_PARSER "Bigger binary but scripts don't need to be compiled." TRUE)
 IF(MOJOSETUP_LUA_PARSER)
-    SET(LUA_SRCS ${LUA_SRCS}
-        lua-5.1.1/src/lparser.c
-        lua-5.1.1/src/llex.c
-        lua-5.1.1/src/lcode.c
-    )
+    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_PARSER_SRCS})
 ELSE(MOJOSETUP_LUA_PARSER)
-    SET(LUA_SRCS ${LUA_SRCS} lua-5.1.1/etc/noparser.c)
+    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} lua-5.1.1/etc/noparser.c)
     ADD_DEFINITIONS(-DDISABLE_LUA_PARSER=1)
 ENDIF(MOJOSETUP_LUA_PARSER)
 
@@ -243,8 +253,12 @@ IF(UNIX AND NOT MACOSX)
     ENDIF(HAVE_LIBM)
 ENDIF(UNIX AND NOT MACOSX)
 
+OPTION(MOJOSETUP_BUILD_LUAC "Build separate Lua compiler" TRUE)
+IF(MOJOSETUP_BUILD_LUAC)
+    ADD_EXECUTABLE(mojoluac ${MOJOLUAC_SRCS})
+ENDIF(MOJOSETUP_BUILD_LUAC)
 
-ADD_EXECUTABLE(mojosetup ${MOJOSETUP_SRCS} ${LUA_SRCS} ${OPTIONAL_SRCS})
+ADD_EXECUTABLE(mojosetup ${MOJOSETUP_SRCS} ${OPTIONAL_SRCS})
 TARGET_LINK_LIBRARIES(mojosetup ${OPTIONAL_LIBS})
 
 # end of CMakeLists.txt ...

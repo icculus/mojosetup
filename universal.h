@@ -64,10 +64,10 @@ int panic(const char *err);
 //  is fully working, but config file is hosed, etc). (str) will be localized
 //  if possible.
 //  do:  'return fatal("scripting error");' or whatnot.
-int fatal(const char *str);
+int fatal(const char *fmt, ...);
 
 // Call this to pop up a warning dialog box and block until user hits OK.
-void warn(const char *str);
+void warn(const char *fmt, ...);
 
 // Malloc replacements that blow up on allocation failure.
 void *xmalloc(size_t bytes);
@@ -81,7 +81,10 @@ char *xstrncpy(char *dst, const char *src, size_t len);
 #define calloc(x,y) DO_NOT_CALL_CALLOC__USE_XMALLOC_INSTEAD
 #define realloc(x,y) DO_NOT_CALL_REALLOC__USE_XREALLOC_INSTEAD
 #define strdup(x) DO_NOT_CALL_STRDUP__USE_XSTRDUP_INSTEAD
-#define strncpy(x) DO_NOT_CALL_STRNCPY__USE_XSTRNCPY_INSTEAD
+#define strncpy(x,y,z) DO_NOT_CALL_STRNCPY__USE_XSTRNCPY_INSTEAD
+//#define strcasecmp(x,y) DO_NOT_CALL_STRCASECMP__USE_UTF8STRICMP_INSTEAD
+//#define stricmp(x,y) DO_NOT_CALL_STRICMP__USE_UTF8STRICMP_INSTEAD
+//#define strcmpi(x,y) DO_NOT_CALL_STRCMPI__USE_UTF8STRICMP_INSTEAD
 
 // Localization support.
 const char *translate(const char *str);

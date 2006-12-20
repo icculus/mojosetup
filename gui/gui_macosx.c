@@ -121,16 +121,26 @@ static boolean MojoGui_macosx_promptyn(const char *title, const char *text)
     return do_promptyn(title, text, true);
 }
 
-static boolean MojoGui_macosx_startgui(const char *title, const char *splash)
+
+static boolean MojoGui_macosx_start(const char *title, const char *splash)
 {
     return false;  // !!! FIXME
-} // MojoGui_macosx_startgui
+} // MojoGui_macosx_start
 
 
-static void MojoGui_macosx_endgui(void)
+static void MojoGui_macosx_stop(void)
 {
     // no-op.
-} // MojoGui_macosx_endgui
+} // MojoGui_macosx_stop
+
+
+static boolean MojoGui_macosx_readme(const char *name, const uint8 *data,
+                                    size_t len, boolean can_go_back,
+                                    boolean can_go_forward)
+{
+    STUBBED("macosx readme");
+    return true;
+} // MojoGui_macosx_readme
 
 // end of gui_macosx.c ...
 

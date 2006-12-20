@@ -32,41 +32,61 @@ static void MojoGui_stdio_msgbox(const char *title, const char *text)
 {
     printf(entry->_("NOTICE: %s\n[hit enter]"), text);
     fflush(stdout);
-    if (!feof(stdin))
-        getchar();
-}
+    getchar();
+} // MojoGui_stdio_msgbox
 
 static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
 {
     if (feof(stdin))
         return 0;
-
-    while (1)
+    else
     {
-        int c;
-        printf(entry->_("%s\n[y/n]"), text);
-        fflush(stdout);
-        c = toupper(getchar());
-        if (c == 'N')  // !!! FIXME: localize?
-            return 0;
-        else if (c == 'Y')
-            return 1;
-    } // while
+        const char *localized_no = entry->_("N");
+        const char *localized_yes = entry->_("Y");
+        char buf[128];
+        size_t len = 0;
+        while (1)
+        {
+            printf(entry->_("%s\n[y/n]: "), text);
+            fflush(stdout);
+
+            if (fgets(buf, sizeof (buf), stdin) == NULL)
+                return 0;
+
+            len = strlen(buf) - 1;
+            while ( (len >= 0) && ((buf[len] == '\n') || (buf[len] == '\r')) )
+                buf[len--] = '\0';
+
+            if (strcasecmp(buf, localized_no) == 0)
+                return 0;
+            else if (strcasecmp(buf, localized_yes) == 0)
+                return 1;
+        } // while
+    } // else
 
     return 0;
-}
+} // MojoGui_stdio_promptyn
 
-static boolean MojoGui_stdio_startgui(const char *title, const char *splash)
+static boolean MojoGui_stdio_start(const char *title, const char *splash)
 {
     printf("%s\n", title);
     return true;
-} // MojoGui_stdio_startgui
+} // MojoGui_stdio_start
 
 
-static void MojoGui_stdio_endgui(void)
+static void MojoGui_stdio_stop(void)
 {
     // no-op.
-} // MojoGui_stdio_endgui
+} // MojoGui_stdio_stop
+
+
+static boolean MojoGui_stdio_readme(const char *name, const uint8 *data,
+                                    size_t len, boolean can_go_back,
+                                    boolean can_go_forward)
+{
+    printf("%s\n%s\n", name, (const char *) data);
+    return true;
+} // MojoGui_stdio_readme
 
 // end of gui_stdio.c ...
 

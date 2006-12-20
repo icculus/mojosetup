@@ -108,7 +108,7 @@ MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname)
     char *fullpath = xstrdup(fname);
     char *file = strrchr(fullpath, '/');
     char *path = fullpath;
-    if (path != NULL)
+    if (file != NULL)
         *(file++) = '\0';
     else
     {

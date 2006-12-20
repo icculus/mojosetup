@@ -450,20 +450,76 @@ static int luahook_cmdlinestr(lua_State *L)
 } // luahook_cmdlinestr
 
 
-static int luahook_startgui(lua_State *L)
+static int luahook_gui_start(lua_State *L)
 {
     const char *title = luaL_checkstring(L, 1);
     const char *splash = lua_tostring(L, 2);
-    lua_pushboolean(L, GGui->startgui(title, splash));
+    lua_pushboolean(L, GGui->start(title, splash));
     return 1;
-} // luahook_startgui
+} // luahook_gui_start
 
 
-static int luahook_endgui(lua_State *L)
+static const uint8 *loadFile(const char *fname, size_t *len)
 {
-    GGui->endgui();
+    uint8 *retval = NULL;
+    MojoInput *io = MojoInput_newFromArchivePath(GBaseArchive, fname);
+    if (io != NULL)
+    {
+        int64 len64 = io->length(io);
+        *len = (size_t) len64;
+        if (*len == len64)
+        {
+            retval = (uint8 *) xmalloc(*len + 1);
+            if (io->read(io, retval, *len) == *len)
+                retval[*len] = '\0';
+            else
+            {
+                free(retval);
+                retval = NULL;
+            } // else
+        } // if
+        io->close(io);
+    } // if
+
+    return retval;
+} // loadFile
+
+static inline boolean canGoBack(int thisstage)
+{
+    return (thisstage > 1);
+} // canGoBack
+
+static inline boolean canGoForward(int thisstage, int maxstage)
+{
+    return (thisstage < maxstage);
+} // canGoForward
+
+
+static int luahook_gui_readme(lua_State *L)
+{
+    size_t len = 0;
+    const char *name = luaL_checkstring(L, 1);
+    const char *fname = luaL_checkstring(L, 2);
+    const int thisstage = luaL_checkinteger(L, 3);
+    const int maxstage = luaL_checkinteger(L, 4);
+    const uint8 *data = loadFile(fname, &len);
+    const boolean can_go_back = canGoBack(thisstage);
+    const boolean can_go_fwd = canGoForward(thisstage, maxstage);
+
+    if (data == NULL)
+        fatal(_("failed to load file '%s'"), fname);
+
+    lua_pushboolean(L, GGui->readme(name, data, len, can_go_back, can_go_fwd));
+    free((void *) data);
+    return 1;
+} // luahook_gui_readme
+
+
+static int luahook_gui_stop(lua_State *L)
+{
+    GGui->stop();
     return 0;
-} // luahook_endgui
+} // luahook_gui_stop
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
@@ -514,12 +570,16 @@ void MojoLua_setStringArray(int argc, const char **argv, const char *sym)
 
 boolean MojoLua_initLua(void)
 {
+    const char *envr = cmdlinestr("locale", "MOJOSETUP_LOCALE", NULL);
     char locale[16];
     char ostype[64];
     char osversion[64];
 
-    if (!MojoPlatform_locale(locale, sizeof (locale)))
+    if (envr != NULL)
+        xstrncpy(locale, envr, sizeof (locale));
+    else if (!MojoPlatform_locale(locale, sizeof (locale)))
         xstrncpy(locale, "???", sizeof (locale));
+
     if (!MojoPlatform_osType(ostype, sizeof (ostype)))
         xstrncpy(ostype, "???", sizeof (ostype));
     if (!MojoPlatform_osVersion(osversion, sizeof (osversion)))
@@ -560,16 +620,22 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_cmdlinestr, "cmdlinestr");
         set_cfunc(luaState, luahook_collectgarbage, "collectgarbage");
         set_cfunc(luaState, luahook_debugger, "debugger");
-        set_cfunc(luaState, luahook_startgui, "startgui");
-        set_cfunc(luaState, luahook_endgui, "endgui");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");
         set_string(luaState, ostype, "ostype");
         set_string(luaState, osversion, "osversion");
+        set_string(luaState, GGui->name(), "ui");
         set_string(luaState, GBuildVer, "buildver");
         set_string(luaState, GLuaLicense, "lualicense");
         set_string_array(luaState, GArgc, GArgv, "argv");
+
+        // Set the GUI functions...
+        lua_newtable(luaState);
+            set_cfunc(luaState, luahook_gui_start, "start");
+            set_cfunc(luaState, luahook_gui_readme, "readme");
+            set_cfunc(luaState, luahook_gui_stop, "stop");
+        lua_setfield(luaState, -2, "gui");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
     // Set up localization table, if possible.
@@ -583,15 +649,10 @@ boolean MojoLua_initLua(void)
     if (!MojoLua_runFile("config"))
         return false;
 
-    // We don't need the MojoSetup.schema namespace anymore. Make it
+    // We don't need the "Setup" namespace anymore. Make it
     //  eligible for garbage collection.
-    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
-    if (lua_istable(luaState, -1))
-    {
-        lua_pushnil(luaState);
-        lua_setfield(luaState, -2, "schema");
-    } // if
-    lua_pop(luaState, 1);
+    lua_pushnil(luaState);
+    lua_setglobal(luaState, "Setup");
 
     MojoLua_collectGarbage();  // get rid of old init crap we don't need.
 

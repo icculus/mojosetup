@@ -1,16 +1,32 @@
 
 -- These are various things that need to be exposed to Lua, or are just
 --  better written in Lua than C. All work will be done in the "MojoSetup"
---  table, so the rest of the namespace is available to end-user code, minus
---  what the Lua runtime claims for itself.
+--  table (for generic functionality) or the "Setup" table (for config file
+--  elements), so the rest of the namespace is available to end-user code,
+--  minus what the Lua runtime claims for itself.
 --
--- This file is loaded and executed at MojoSetup startup. Lua is initialized,
---  the MojoSetup table is created and has some initial CFunctions and such
---  inserted. The localization script runs, and then this code executes to do
---  the heavy lifting. All Lua state should be sane for the rest of the app
---  once this script successfully completes.
+-- This file is loaded and executed at MojoSetup startup. The Base Archive,
+--  GUI, and Lua are initialized, the MojoSetup table is created and has some
+--  initial CFunctions and such inserted. The localization script runs, and
+--  then this code executes to do the heavy lifting. All Lua state should be
+--  sane for the rest of the app once this script successfully completes.
 
-MojoSetup.loginfo(os.date());
+MojoSetup.loginfo("MojoSetup Lua initialization at " .. os.date())
+MojoSetup.loginfo("buildver: " .. MojoSetup.buildver)
+MojoSetup.loginfo("locale: " .. MojoSetup.locale)
+MojoSetup.loginfo("platform: " .. MojoSetup.platform)
+MojoSetup.loginfo("arch: " .. MojoSetup.arch)
+MojoSetup.loginfo("ostype: " .. MojoSetup.ostype)
+MojoSetup.loginfo("osversion: " .. MojoSetup.osversion)
+MojoSetup.loginfo("ui: " .. MojoSetup.ui)
+
+MojoSetup.loginfo("command line:");
+for i,v in ipairs(MojoSetup.argv) do
+    MojoSetup.loginfo("  " .. i .. ": " .. v)
+end
+--MojoSetup.loginfo(MojoSetup.lualicense)
+
+
 
 -- This is handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
@@ -74,84 +90,91 @@ if MojoSetup.localization ~= nil then
     MojoSetup.localization = nil
 end
 
-MojoSetup.loginfo("Build string: " .. MojoSetup.buildver)
 
-MojoSetup.loginfo("command line:");
-for i,v in ipairs(MojoSetup.argv) do
-    MojoSetup.loginfo("  " .. i .. ": " .. v)
-end
-
---MojoSetup.loginfo(MojoSetup.lualicense)
 
 -- Our namespace for this API...this is filled in with the rest of this file.
-MojoSetup.schema = {}
+Setup = {}
+Setup.schema = {}
 
-function MojoSetup.schema.assert(test, fnname, elem, error)
-    assert(test, fnname .. "::" .. elem .. " -- " .. error .. ".")
-end
+-- Add known GUIs to this...
+Setup.schema.textfiles =
+{
+    { "name", nil, Setup.schema.mustExist, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
+    { "ui_generic", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
+    { "ui_stdio", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
+    { "ui_macosx", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
+    { "ui_windows", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
+    { "ui_gtkplus", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
+}
 
-function MojoSetup.schema.mustExist(fnname, elem, val)
-    MojoSetup.schema.assert(val ~= nil, fnname, elem,
-                            "Must be explicitly specified")
-end
-
-function MojoSetup.schema.mustBeSomething(fnname, elem, val, elemtype)
-    -- Can be nil...please use MojoSetup.schema.mustExist if this is a problem!
-    if val ~= nil then
-        MojoSetup.schema.assert(type(val) == elemtype, fnname, elem,
-                                "Must be a " .. elemtype)
+function Setup.schema.assert(test, fnname, elem, errstr)
+    if not test then
+        error(fnname .. "::" .. elem .. " " .. errstr .. ".", 0)
     end
 end
 
-function MojoSetup.schema.mustBeString(fnname, elem, val)
-    MojoSetup.schema.mustBeSomething(fnname, elem, val, "string");
+function Setup.schema.mustExist(fnname, elem, val)
+    Setup.schema.assert(val ~= nil, fnname, elem,
+                            "must be explicitly specified")
 end
 
-function MojoSetup.schema.mustBeBool(fnname, elem, val)
-    MojoSetup.schema.mustBeSomething(fnname, elem, val, "boolean");
-end
-
-function MojoSetup.schema.mustBeNumber(fnname, elem, val)
-    MojoSetup.schema.mustBeSomething(fnname, elem, val, "number");
-end
-
-function MojoSetup.schema.mustBeFunction(fnname, elem, val)
-    MojoSetup.schema.mustBeSomething(fnname, elem, val, "function")
-end
-
-function MojoSetup.schema.mustBeTable(fnname, elem, val)
-    MojoSetup.schema.mustBeSomething(fnname, elem, val, "table")
-end
-
-function MojoSetup.schema.cantBeEmpty(fnname, elem, val)
-    -- Can be nil...please use MojoSetup.schema.mustExist if this is a problem!
+function Setup.schema.mustBeSomething(fnname, elem, val, elemtype)
+    -- Can be nil...please use Setup.schema.mustExist if this is a problem!
     if val ~= nil then
-        MojoSetup.schema.assert(val ~= "", fnname, elem,
+        Setup.schema.assert(type(val) == elemtype, fnname, elem,
+                                "must be a " .. elemtype)
+    end
+end
+
+function Setup.schema.mustBeString(fnname, elem, val)
+    Setup.schema.mustBeSomething(fnname, elem, val, "string");
+end
+
+function Setup.schema.mustBeBool(fnname, elem, val)
+    Setup.schema.mustBeSomething(fnname, elem, val, "boolean");
+end
+
+function Setup.schema.mustBeNumber(fnname, elem, val)
+    Setup.schema.mustBeSomething(fnname, elem, val, "number");
+end
+
+function Setup.schema.mustBeFunction(fnname, elem, val)
+    Setup.schema.mustBeSomething(fnname, elem, val, "function")
+end
+
+function Setup.schema.mustBeTable(fnname, elem, val)
+    Setup.schema.mustBeSomething(fnname, elem, val, "table")
+end
+
+function Setup.schema.cantBeEmpty(fnname, elem, val)
+    -- Can be nil...please use Setup.schema.mustExist if this is a problem!
+    if val ~= nil then
+        Setup.schema.assert(val ~= "", fnname, elem,
                                 "Can't be empty string")
     end
 end
 
-function MojoSetup.schema.mustBeValidSplashPos(fnname, elem, val)
-    MojoSetup.schema.assert(val=="top" or val=="left", fnname, elem,
-                            "Must be 'top' or 'left'")
+function Setup.schema.mustBeValidSplashPos(fnname, elem, val)
+    Setup.schema.assert(val=="top" or val=="left", fnname, elem,
+                            "must be 'top' or 'left'")
 end
 
-function MojoSetup.schema.mustBeValidInteraction(fnname, elem, val)
+function Setup.schema.mustBeValidInteraction(fnname, elem, val)
     if (val ~= "expert") and (val ~= "normal") and (val ~= "none") then
-        MojoSetup.schema.assert(false, fnname, elem,
-                                "Must be 'normal' or 'expert' or 'none'")
+        Setup.schema.assert(false, fnname, elem,
+                                "must be 'normal' or 'expert' or 'none'")
     end
 end
 
-function MojoSetup.schema.mustBeUrl(fnname, elem, val)
-    MojoSetup.schema.mustBeString(fname, elem, val)
-    MojoSetup.schema.cantBeEmpty(fname, elem, val)
+function Setup.schema.mustBeUrl(fnname, elem, val)
+    Setup.schema.mustBeString(fname, elem, val)
+    Setup.schema.cantBeEmpty(fname, elem, val)
     -- !!! FIXME: this doesn't work, need to test this regexp some more...
     -- string.match(str, "^%w+://(.+(:.+)?@)?[%w-\.]*/")
 end
 
-function MojoSetup.schema.sanitize(fnname, tab, elems)
-    MojoSetup.schema.mustBeTable(fnname, "", tab)
+function Setup.schema.sanitize(fnname, tab, elems)
+    Setup.schema.mustBeTable(fnname, "", tab)
     tab._type_ = string.lower(fnname) .. "s";   -- "Eula" becomes "eulas".
     for i,elem in ipairs(elems) do
         local child = elem[1]
@@ -169,7 +192,7 @@ function MojoSetup.schema.sanitize(fnname, tab, elems)
     return tab
 end
 
-function MojoSetup.schema.reform_schema_table(tab)
+function Setup.schema.reform_schema_table(tab)
     for i in pairs(tab) do
         local typestr = type(i)
         if (typestr == "number") and (tab[i]._type_ ~= nil) then
@@ -179,7 +202,7 @@ function MojoSetup.schema.reform_schema_table(tab)
             table.insert(tab[typestr], tab[i])
             tab[i] = nil
         elseif typestr == "table" then
-            tab[i] = MojoSetup.schema.reform_schema_table(tab[i])
+            tab[i] = Setup.schema.reform_schema_table(tab[i])
         end
     end
 
@@ -189,22 +212,23 @@ end
 
 -- Actual schema elements are below...
 
-function MojoSetup.Install(tab)
-    local mustExist = MojoSetup.schema.mustExist;
-    local mustBeString = MojoSetup.schema.mustBeString;
-    local mustBeBool = MojoSetup.schema.mustBeBool;
-    local mustBeUrl = MojoSetup.schema.mustBeUrl;
-    local cantBeEmpty = MojoSetup.schema.cantBeEmpty;
-    local mustBeTable = MojoSetup.schema.mustBeTable;
-    local mustBeValidSplashPos = MojoSetup.schema.mustBeValidSplashPos;
-    local mustBeValidInteraction = MojoSetup.schema.mustBeValidInteraction;
+function Setup.Install(tab)
+    local mustExist = Setup.schema.mustExist;
+    local mustBeString = Setup.schema.mustBeString;
+    local mustBeBool = Setup.schema.mustBeBool;
+    local mustBeUrl = Setup.schema.mustBeUrl;
+    local cantBeEmpty = Setup.schema.cantBeEmpty;
+    local mustBeTable = Setup.schema.mustBeTable;
+    local mustBeValidSplashPos = Setup.schema.mustBeValidSplashPos;
+    local mustBeValidInteraction = Setup.schema.mustBeValidInteraction;
 
-    tab = MojoSetup.schema.sanitize("Install", tab,
+    tab = Setup.schema.sanitize("Install", tab,
     {
         { "product", nil, mustExist, mustBeString, cantBeEmpty },
         { "desc", nil, mustExist, mustBeString, cantBeEmpty },
         { "version", nil, mustExist, mustBeString, cantBeEmpty },
         { "path", "/usr/local/games", mustBeString, cantBeEmpty },
+        { "preflight", nil, mustBeFunction },
         { "preinstall", nil, mustBeFunction },
         { "postinstall", nil, mustBeFunction },
         { "splash", nil, mustBeString, cantBeEmpty },
@@ -223,7 +247,7 @@ function MojoSetup.Install(tab)
     })
 
     tab._type_ = nil
-    tab = MojoSetup.schema.reform_schema_table(tab)
+    tab = Setup.schema.reform_schema_table(tab)
     table.insert(MojoSetup.installs, tab)
     return tab
 
@@ -299,33 +323,19 @@ function MojoSetup.Install(tab)
 
 end
 
-function MojoSetup.Eula(tab)
-    local mustExist = MojoSetup.schema.mustExist;
-    local mustBeString = MojoSetup.schema.mustBeString;
-    local cantBeEmpty = MojoSetup.schema.cantBeEmpty;
-    return MojoSetup.schema.sanitize("Eula", tab,
-    {
-        { "keepdirs", false, _mustBeBool },
-        { "filename", nil, _mustExist, _mustBeString, _cantBeEmpty },
-    })
+function Setup.Eula(tab)
+    return Setup.schema.sanitize("Eula", tab, Setup.schema.textfiles);
 end
 
-function MojoSetup.Readme(tab)
-    local mustExist = MojoSetup.schema.mustExist;
-    local mustBeString = MojoSetup.schema.mustBeString;
-    local cantBeEmpty = MojoSetup.schema.cantBeEmpty;
-    return MojoSetup.schema.sanitize("Readme", tab,
-    {
-        { "keepdirs", false, MojoSetup.schema.mustBeBool },
-        { "filename", nil, mustExist, mustBeString, cantBeEmpty },
-    })
+function Setup.Readme(tab)
+    return Setup.schema.sanitize("Readme", tab, Setup.schema.textfiles);
 end
 
-function MojoSetup.Media(tab)
-    local mustExist = MojoSetup.schema.mustExist;
-    local mustBeString = MojoSetup.schema.mustBeString;
-    local cantBeEmpty = MojoSetup.schema.cantBeEmpty;
-    return MojoSetup.schema.sanitize("Media", tab,
+function Setup.Media(tab)
+    local mustExist = Setup.schema.mustExist;
+    local mustBeString = Setup.schema.mustBeString;
+    local cantBeEmpty = Setup.schema.cantBeEmpty;
+    return Setup.schema.sanitize("Media", tab,
     {
         { "id", nil, mustExist, mustBeString, cantBeEmpty },
         { "name", nil, mustExist, mustBeString, cantBeEmpty },
@@ -333,8 +343,8 @@ function MojoSetup.Media(tab)
     })
 end
 
-function MojoSetup.File(tab)
-    return MojoSetup.schema.sanitize("File", tab,
+function Setup.File(tab)
+    return Setup.schema.sanitize("File", tab,
     {
     })
 
@@ -410,7 +420,7 @@ function MojoSetup.File(tab)
 ]]--
 end
 
-function MojoSetup.Option(tab)
+function Setup.Option(tab)
 --[[
  install    If this attribute is set to "true", then the option will
             be installed by default.  It may be deselected by the user.
@@ -474,6 +484,21 @@ function MojoSetup.Option(tab)
  reinstall  If this is a reinstallation, you can individually disable options that can
             be reinstalled with this attribute set to "false".
 ]]--
+end
+
+function Setup.UI(tab)
+    local mustBeString = Setup.schema.mustBeString;
+    local cantBeEmpty = Setup.schema.cantBeEmpty;
+
+    return Setup.schema.sanitize("UI", tab,
+    {
+        -- You should add all existing UIs to this table.
+        { "generic", nil, mustBeString, cantBeEmpty },
+        { "stdio", nil, mustBeString, cantBeEmpty },
+        { "macosx", nil, mustBeString, cantBeEmpty },
+        { "gtkplus", nil, mustBeString, cantBeEmpty },
+        { "windows", nil, mustBeString, cantBeEmpty },
+    })
 end
 
 -- end of mojosetup_init.lua ...
