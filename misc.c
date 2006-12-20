@@ -3,6 +3,8 @@
 #include "universal.h"
 #include "platform.h"
 #include "gui.h"
+#include "lua_glue.h"
+#include "fileio.h"
 
 uint8 scratchbuf_128k[128 * 1024];
 MojoSetupEntryPoints GEntryPoints =
@@ -217,10 +219,21 @@ int fatal(const char *fmt, ...)
     } // if
 
     logError("FATAL: %s", buf);
-    STUBBED("fatal is not a panic scenario...do an orderly cleanup and exit.");
-    rc = panic(buf);
+    if ( (GGui == NULL) || (!MojoLua_initialized()) )
+    {
+        logError("fatal() called before app is initialized! Panicking...");
+        panic(buf);   // Shouldn't call fatal() before app is initialized!
+    } // if
+
+    GGui->msgbox(_("Fatal error"), buf);
     free(buf);
-    return rc;
+
+    //GGui->status(_("There were errors. Click 'OK' to clean up and exit."));
+    //MojoLua_runFunction("errorcleanup");
+
+    deinitEverything();
+    exit(23);
+    return 0;
 } // fatal
 
 
@@ -301,6 +314,42 @@ char *xstrdup(const char *str)
     strcpy(retval, str);
     return retval;
 } // xstrdup
+
+
+
+boolean initEverything(void)
+{
+    MojoLog_initLogging();
+
+    logInfo("MojoSetup starting up...");
+
+    // We have to panic on errors until the GUI is ready. Try to make things
+    //  "succeed" unless they are catastrophic, and report problems later.
+
+    // Start with the base archive work, since it might have GUI plugins.
+    //  None of these panic() calls are localized, since localization isn't
+    //  functional until MojoLua_initLua() succeeds.
+    if (!MojoArchive_initBaseArchive())
+        panic("Initial setup failed. Cannot continue.");
+
+    else if (!MojoGui_initGuiPlugin())
+        panic("Initial GUI setup failed. Cannot continue.");
+
+    else if (!MojoLua_initLua())
+        panic("Initial Lua setup failed. Cannot continue.");
+
+    return true;
+} // initEverything
+
+
+void deinitEverything(void)
+{
+    logInfo("MojoSetup shutting down...");
+    MojoLua_deinitLua();
+    MojoGui_deinitGuiPlugin();
+    MojoArchive_deinitBaseArchive();
+    MojoLog_deinitLogging();
+} // deinitEverything
 
 // end of misc.c ...
 

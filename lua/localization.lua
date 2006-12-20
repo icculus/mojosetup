@@ -68,6 +68,9 @@ MojoSetup.localization = {
     ["PANIC"] = {
     };
 
+    ["Fatal error"] = {
+    };
+
     ["GUI failed to start"] = {
     };
 

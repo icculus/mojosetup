@@ -61,9 +61,13 @@ extern uint8 scratchbuf_128k[128 * 1024];
 int panic(const char *err);
 
 // Call this for a fatal problem that attempts an orderly shutdown (system
-//  is fully working, but config file is hosed, etc). (str) will be localized
-//  if possible.
-//  do:  'return fatal("scripting error");' or whatnot.
+//  is fully working, but config file is hosed, etc).
+// This makes an attempt to clean up any files already created by the
+//  current installer (successfully run Setup.Install blocks in the config
+//  file are not cleaned up).
+// If there's no GUI or Lua isn't initialized, this calls panic(). That's bad.
+// Doesn't return, but if it did, you can assume it returns zero, so you can
+//  do:  'return fatal("missing config file");' or whatnot.
 int fatal(const char *fmt, ...);
 
 // Call this to pop up a warning dialog box and block until user hits OK.
@@ -147,6 +151,8 @@ void logError(const char *fmt, ...);
 void logInfo(const char *fmt, ...);
 void logDebug(const char *fmt, ...);
 
+boolean initEverything(void);
+void deinitEverything(void);
 
 // A pointer to this struct is passed to plugins, so they can access
 //  functionality in the base application. (Add to this as you need to.)

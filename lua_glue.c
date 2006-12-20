@@ -328,22 +328,16 @@ const char *translate(const char *str)
 } // translate
 
 
-// Hook into our error handling in case Lua throws a runtime error.
-static int luahook_panic(lua_State *L)
-{
-    const char *errstr = lua_tostring(L, 1);
-    if (errstr == NULL)
-        errstr = _("Unknown error");
-    return fatal(errstr);  // doesn't actually return.
-} // luahook_panic
-
-
 // Use this instead of Lua's error() function if you don't have a
 //  programatic error, so you don't get stack callback stuff:
 // MojoSetup.fatal("You need the base game to install this expansion pack.")
 //  Doesn't actually return.
 static int luahook_fatal(lua_State *L)
 {
+    const char *errstr = lua_tostring(L, 1);
+    if (errstr == NULL)
+        errstr = _("Unknown error");
+    return fatal(errstr);  // doesn't actually return.
     const char *err = luaL_checkstring(L, 1);
     fatal(err);
     return 0;
@@ -591,7 +585,7 @@ boolean MojoLua_initLua(void)
     if (luaState == NULL)
         return false;
 
-    lua_atpanic(luaState, luahook_panic);
+    lua_atpanic(luaState, luahook_fatal);
 
     if (!lua_checkstack(luaState, 20))  // Just in case.
     {
@@ -658,6 +652,12 @@ boolean MojoLua_initLua(void)
 
     return true;
 } // MojoLua_initLua
+
+
+boolean MojoLua_initialized(void)
+{
+    return (luaState != NULL);
+} // MojoLua_initialized
 
 
 void MojoLua_deinitLua(void)

@@ -100,6 +100,8 @@ local function do_install(install)
     -- Make the stages available elsewhere.
     MojoSetup.stages = stages
 
+    MojoSetup.installed_files = {}
+
     local i = 1
     while MojoSetup.stages[i] ~= nil do
         local stage = MojoSetup.stages[i]
@@ -118,6 +120,9 @@ local function do_install(install)
 
     -- Done with this. Make it eligible for garbage collection.
     MojoSetup.stages = nil
+
+    -- Don't let future errors delete files from successful installs...
+    MojoSetup.installed_files = nil
 
     MojoSetup.gui.stop()
 end

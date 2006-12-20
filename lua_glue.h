@@ -12,6 +12,7 @@ extern const char *GLuaLicense;
 
 boolean MojoLua_initLua(void);
 void MojoLua_deinitLua(void);
+boolean MojoLua_initialized(void);
 
 // Run the code in a given Lua file. This is JUST the base filename.
 //  We will look for it in GBaseArchive in the lua/ directory, both as
