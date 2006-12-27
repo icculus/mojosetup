@@ -42,6 +42,16 @@ typedef int boolean;
 #define true 1
 #define false 0
 
+// Compiler-enforced printf() safety helper.
+// This is appended to function declarations that use printf-style semantics,
+//  and will make sure your passed the right params to "..." for the
+//  format you specified, so gcc can catch programmer bugs at compile time.
+#ifdef __GNUC__
+#define ISPRINTF(x,y) __attribute__((format (printf, x, y)))
+#else
+#define ISPRINTF(x,y)
+#endif
+
 // Command line access outside of main().
 extern int GArgc;
 extern const char **GArgv;
@@ -68,10 +78,10 @@ int panic(const char *err);
 // If there's no GUI or Lua isn't initialized, this calls panic(). That's bad.
 // Doesn't return, but if it did, you can assume it returns zero, so you can
 //  do:  'return fatal("missing config file");' or whatnot.
-int fatal(const char *fmt, ...);
+int fatal(const char *fmt, ...) ISPRINTF(1,2);
 
 // Call this to pop up a warning dialog box and block until user hits OK.
-void warn(const char *fmt, ...);
+void warn(const char *fmt, ...) ISPRINTF(1,2);
 
 // Malloc replacements that blow up on allocation failure.
 void *xmalloc(size_t bytes);
@@ -146,10 +156,10 @@ typedef enum
 
 void MojoLog_initLogging(void);
 void MojoLog_deinitLogging(void);
-void logWarning(const char *fmt, ...);
-void logError(const char *fmt, ...);
-void logInfo(const char *fmt, ...);
-void logDebug(const char *fmt, ...);
+void logWarning(const char *fmt, ...) ISPRINTF(1,2);
+void logError(const char *fmt, ...) ISPRINTF(1,2);
+void logInfo(const char *fmt, ...) ISPRINTF(1,2);
+void logDebug(const char *fmt, ...) ISPRINTF(1,2);
 
 boolean initEverything(void);
 void deinitEverything(void);
@@ -163,10 +173,10 @@ typedef struct MojoSetupEntryPoints
     char *(*xstrdup)(const char *str);
     char *(*xstrncpy)(char *dst, const char *src, size_t len);
     const char *(*translate)(const char *str);
-    void (*logWarning)(const char *fmt, ...);
-    void (*logError)(const char *fmt, ...);
-    void (*logInfo)(const char *fmt, ...);
-    void (*logDebug)(const char *fmt, ...);
+    void (*logWarning)(const char *fmt, ...) ISPRINTF(1,2);
+    void (*logError)(const char *fmt, ...) ISPRINTF(1,2);
+    void (*logInfo)(const char *fmt, ...) ISPRINTF(1,2);
+    void (*logDebug)(const char *fmt, ...) ISPRINTF(1,2);
 } MojoSetupEntryPoints;
 extern MojoSetupEntryPoints GEntryPoints;
 
