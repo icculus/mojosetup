@@ -22,6 +22,17 @@ typedef enum
  * Abstract GUI interfaces.
  */
 
+typedef struct MojoGuiSetupOptions MojoGuiSetupOptions;
+struct MojoGuiSetupOptions
+{
+    const char *description;
+    boolean value;
+    boolean is_group_parent;
+    uint64 size;
+    MojoGuiSetupOptions *next_sibling;
+    MojoGuiSetupOptions *child;
+};
+
 #define MOJOGUI_ENTRY_POINT MojoSetup_Gui_GetInterface
 #define MOJOGUI_ENTRY_POINT_STR DEFINE_TO_STR(MOJOGUI_ENTRY_POINT)
 
@@ -41,6 +52,8 @@ struct MojoGui
     void (*stop)(void);
     boolean (*readme)(const char *name, const uint8 *data, size_t len,
                       boolean can_go_back, boolean can_go_forward);
+    boolean (*options)(MojoGuiSetupOptions *opts,
+                       boolean can_go_back, boolean can_go_forward);
 };
 
 typedef const MojoGui* (*MojoGuiEntryPoint)(int revision,
@@ -73,6 +86,8 @@ static void MojoGui_##module##_stop(void); \
 static boolean MojoGui_##module##_readme(const char *name, const uint8 *data, \
                                     size_t len, boolean can_go_back, \
                                     boolean can_go_forward); \
+static boolean MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
+                       boolean can_go_back, boolean can_go_forward); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \
     if (rev == MOJOGUI_INTERFACE_REVISION) { \
@@ -86,6 +101,7 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_start, \
             MojoGui_##module##_stop, \
             MojoGui_##module##_readme, \
+            MojoGui_##module##_options, \
         }; \
         entry = e; \
         return &retval; \

@@ -142,5 +142,15 @@ static boolean MojoGui_macosx_readme(const char *name, const uint8 *data,
     return true;
 } // MojoGui_macosx_readme
 
+
+static boolean MojoGui_macosx_options(MojoGuiSetupOptions *opts,
+                       boolean can_go_back, boolean can_go_forward)
+{
+    // !!! FIXME: write me.
+    STUBBED("macosx options");
+    return true;
+} // MojoGui_macosx_options
+
+
 // end of gui_macosx.c ...
 

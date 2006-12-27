@@ -35,24 +35,24 @@ local function do_install(install)
     --  either accept or reject and go to the next EULA or stage. Rejection
     --  of any EULA is considered fatal.
     for k,eula in pairs(install.eulas) do
-        local name = eula.name;
+        local desc = eula.description;
         local fname = eula["ui_" .. MojoSetup.ui]
         if fname == nil then
             fname = eula.generic
         end
         -- No EULA we can show. That's fatal, unfortunately.
         if fname == nil then
-            MojoSetup.logerror("No ui-specific or generic EULA for " .. name)
+            MojoSetup.logerror("No ui-specific or generic EULA for " .. desc)
             MojoSetup.fatal(_("Internal error"))
         end
 
-        -- (name) and (fname) become an upvalues in this function.
+        -- (desc) and (fname) become an upvalues in this function.
         stages[#stages+1] = function (thisstage, maxstage)
-            if not MojoSetup.gui.readme(name, fname, thisstage, maxstage) then
+            if not MojoSetup.gui.readme(desc, fname, thisstage, maxstage) then
                 return false
             end
 
-            if not MojoSetup.promptyn(name, _("Accept this license?")) then
+            if not MojoSetup.promptyn(desc, _("Accept this license?")) then
                 MojoSetup.fatal(_("You must accept the license before you may install"));
             end
             return true
@@ -61,25 +61,35 @@ local function do_install(install)
 
     -- Next stage: show any READMEs.
     for k,readme in pairs(install.readmes) do
-        local name = readme.name;
+        local desc = readme.description;
         local fname = readme["ui_" .. MojoSetup.ui]
         if fname == nil then
             fname = readme.generic
         end
         -- No README we can show. Log it and move on.
         if fname == nil then
-            MojoSetup.logerror("No ui-specific or generic README for " .. name)
+            MojoSetup.logerror("No ui-specific or generic README for " .. desc)
         else
-            -- (name) and (fname) become an upvalues in this function.
+            -- (desc) and (fname) become upvalues in this function.
             stages[#stages+1] = function(thisstage, maxstage)
-                return MojoSetup.gui.readme(name, fname, thisstage, maxstage)
+                return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
             end
         end
     end
 
     -- Next stage: let user choose install options.
+    if install.options ~= nil or install.optiongroups ~= nil then
+        local options = {
+            options = install.options,
+            optiongroups = install.optiongroups
+        }
 
-
+        -- (options) becomes an upvalue in this function.
+        stages[#stages+1] = function(thisstage, maxstage)
+            -- This does some complex stuff with a hierarchy of tables in C.
+            return MojoSetup.gui.options(options, thisstage, maxstage)
+        end
+    end
 
     -- Next stage: let user choose install destination.
         -- See if installer requires a specific installation location.
@@ -93,7 +103,7 @@ local function do_install(install)
         -- On failure, back out changes (make this part of fatal()).
 
     -- Now make all this happen.
-    if not MojoSetup.gui.start(install.desc, install.splash) then
+    if not MojoSetup.gui.start(install.description, install.splash) then
         MojoSetup.fatal(_("GUI failed to start"))
     end
 

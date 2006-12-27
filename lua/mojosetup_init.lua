@@ -104,94 +104,97 @@ end
 
 -- Our namespace for this API...this is filled in with the rest of this file.
 Setup = {}
-Setup.schema = {}
 
--- Add known GUIs to this...
-Setup.schema.textfiles =
-{
-    { "name", nil, Setup.schema.mustExist, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
-    { "ui_generic", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
-    { "ui_stdio", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
-    { "ui_macosx", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
-    { "ui_windows", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
-    { "ui_gtkplus", nil, Setup.schema.mustBeString, Setup.schema.cantBeEmpty },
-}
-
-function Setup.schema.assert(test, fnname, elem, errstr)
+local function schema_assert(test, fnname, elem, errstr)
     if not test then
         error(fnname .. "::" .. elem .. " " .. errstr .. ".", 0)
     end
 end
 
-function Setup.schema.mustExist(fnname, elem, val)
-    Setup.schema.assert(val ~= nil, fnname, elem,
+local function mustExist(fnname, elem, val)
+    schema_assert(val ~= nil, fnname, elem,
                             "must be explicitly specified")
 end
 
-function Setup.schema.mustBeSomething(fnname, elem, val, elemtype)
-    -- Can be nil...please use Setup.schema.mustExist if this is a problem!
+local function mustBeSomething(fnname, elem, val, elemtype)
+    -- Can be nil...please use mustExist if this is a problem!
     if val ~= nil then
-        Setup.schema.assert(type(val) == elemtype, fnname, elem,
+        schema_assert(type(val) == elemtype, fnname, elem,
                                 "must be a " .. elemtype)
     end
 end
 
-function Setup.schema.mustBeString(fnname, elem, val)
-    Setup.schema.mustBeSomething(fnname, elem, val, "string");
+local function mustBeString(fnname, elem, val)
+    mustBeSomething(fnname, elem, val, "string");
 end
 
-function Setup.schema.mustBeBool(fnname, elem, val)
-    Setup.schema.mustBeSomething(fnname, elem, val, "boolean");
+local function mustBeBool(fnname, elem, val)
+    mustBeSomething(fnname, elem, val, "boolean");
 end
 
-function Setup.schema.mustBeNumber(fnname, elem, val)
-    Setup.schema.mustBeSomething(fnname, elem, val, "number");
+local function mustBeNumber(fnname, elem, val)
+    mustBeSomething(fnname, elem, val, "number");
 end
 
-function Setup.schema.mustBeFunction(fnname, elem, val)
-    Setup.schema.mustBeSomething(fnname, elem, val, "function")
+local function mustBeFunction(fnname, elem, val)
+    mustBeSomething(fnname, elem, val, "function")
 end
 
-function Setup.schema.mustBeTable(fnname, elem, val)
-    Setup.schema.mustBeSomething(fnname, elem, val, "table")
+local function mustBeTable(fnname, elem, val)
+    mustBeSomething(fnname, elem, val, "table")
 end
 
-function Setup.schema.cantBeEmpty(fnname, elem, val)
-    -- Can be nil...please use Setup.schema.mustExist if this is a problem!
+local function cantBeEmpty(fnname, elem, val)
+    -- Can be nil...please use mustExist if this is a problem!
     if val ~= nil then
-        Setup.schema.assert(val ~= "", fnname, elem,
-                                "Can't be empty string")
+        schema_assert(val ~= "", fnname, elem, "can't be empty string")
     end
 end
 
-function Setup.schema.mustBeValidSplashPos(fnname, elem, val)
-    Setup.schema.assert(val=="top" or val=="left", fnname, elem,
+local function mustBeStringOrTableOfStrings(fnname, elem, val)
+    -- Can be nil...please use mustExist if this is a problem!
+    if val ~= nil then
+        if type(val) == "string" then
+            val = { val }
+        end
+        schema_assert(type(val) == "table", fnname, elem,
+                            "must be string or table of strings")
+        for k,v in pairs(val) do
+            schema_assert(type(v) == "string", fnname, elem,
+                                "must be string or table of strings")
+        end
+    end
+end
+
+local function mustBeValidSplashPos(fnname, elem, val)
+    schema_assert(val=="top" or val=="left", fnname, elem,
                             "must be 'top' or 'left'")
 end
 
-function Setup.schema.mustBeValidInteraction(fnname, elem, val)
+local function mustBeValidInteraction(fnname, elem, val)
     if (val ~= "expert") and (val ~= "normal") and (val ~= "none") then
-        Setup.schema.assert(false, fnname, elem,
+        schema_assert(false, fnname, elem,
                                 "must be 'normal' or 'expert' or 'none'")
     end
 end
 
-function Setup.schema.mustBeUrl(fnname, elem, val)
-    Setup.schema.mustBeString(fname, elem, val)
-    Setup.schema.cantBeEmpty(fname, elem, val)
+local function mustBeUrl(fnname, elem, val)
+    mustBeString(fname, elem, val)
+    cantBeEmpty(fname, elem, val)
     -- !!! FIXME: this doesn't work, need to test this regexp some more...
     -- string.match(str, "^%w+://(.+(:.+)?@)?[%w-\.]*/")
 end
 
-function Setup.schema.sanitize(fnname, tab, elems)
-    Setup.schema.mustBeTable(fnname, "", tab)
+local function sanitize(fnname, tab, elems)
+    mustBeTable(fnname, "", tab)
     tab._type_ = string.lower(fnname) .. "s";   -- "Eula" becomes "eulas".
     for i,elem in ipairs(elems) do
         local child = elem[1]
         local defval = elem[2]
 
-        MojoSetup.logdebug(child .. " isa " .. type(tab[child]) .. " equals " .. tostring(tab[child]));
-        if tab[child] == nil then tab[child] = defval end
+        if tab[child] == nil and defval ~= nil then
+            tab[child] = defval
+        end
         local j = 3
         while elem[j] do
             elem[j](fnname, child, tab[child]);  -- will assert on problem.
@@ -199,20 +202,43 @@ function Setup.schema.sanitize(fnname, tab, elems)
         end
     end
 
+    for k,v in pairs(tab) do
+        local found = false
+        if k == "_type_" then
+            found = true
+        elseif (type(k) == "number") and (type(v) == "table") then
+            found = true
+        else
+            for i,elem in ipairs(elems) do
+                local child = elem[1]
+                if (child == k) then
+                    found = true
+                    break
+                end
+            end
+        end
+        schema_assert(found, fnname, k, "is not a valid property")
+    end
+
     return tab
 end
 
-function Setup.schema.reform_schema_table(tab)
-    for i in pairs(tab) do
-        local typestr = type(i)
-        if (typestr == "number") and (tab[i]._type_ ~= nil) then
+local function reform_schema_table(tab)
+    for k,v in pairs(tab) do
+        local typestr = type(k)
+        if (typestr == "number") and (v._type_ ~= nil) then
             -- add element to proper named array.
-            typestr = tab[i]._type_
-            tab[i]._type_ = nil
-            table.insert(tab[typestr], tab[i])
-            tab[i] = nil
+            typestr = v._type_
+            v._type_ = nil
+            MojoSetup.logdebug("schema: reforming '" .. typestr .. "', '" .. k .. "'")
+            if tab[typestr] == nil then
+                tab[typestr] = { v }
+            else
+                table.insert(tab[typestr], v)
+            end
+            tab[k] = nil
         elseif typestr == "table" then
-            tab[i] = Setup.schema.reform_schema_table(tab[i])
+            tab[k] = reform_schema_table(v)
         end
     end
 
@@ -220,24 +246,27 @@ function Setup.schema.reform_schema_table(tab)
 end
 
 
+-- Add known GUIs to this...
+local textfile_schema =
+{
+    { "description", nil, mustExist, mustBeString, cantBeEmpty },
+    { "ui_generic", nil, mustBeString, cantBeEmpty },
+    { "ui_stdio", nil, mustBeString, cantBeEmpty },
+    { "ui_macosx", nil, mustBeString, cantBeEmpty },
+    { "ui_windows", nil, mustBeString, cantBeEmpty },
+    { "ui_gtkplus", nil, mustBeString, cantBeEmpty },
+}
+
 -- Actual schema elements are below...
 
-function Setup.Install(tab)
-    local mustExist = Setup.schema.mustExist;
-    local mustBeString = Setup.schema.mustBeString;
-    local mustBeBool = Setup.schema.mustBeBool;
-    local mustBeUrl = Setup.schema.mustBeUrl;
-    local cantBeEmpty = Setup.schema.cantBeEmpty;
-    local mustBeTable = Setup.schema.mustBeTable;
-    local mustBeValidSplashPos = Setup.schema.mustBeValidSplashPos;
-    local mustBeValidInteraction = Setup.schema.mustBeValidInteraction;
-
-    tab = Setup.schema.sanitize("Install", tab,
+function Setup.Package(tab)
+    tab = sanitize("Package", tab,
     {
-        { "product", nil, mustExist, mustBeString, cantBeEmpty },
-        { "desc", nil, mustExist, mustBeString, cantBeEmpty },
+        { "id", nil, mustExist, mustBeString, cantBeEmpty },
+        { "description", nil, mustExist, mustBeString, cantBeEmpty },
         { "version", nil, mustExist, mustBeString, cantBeEmpty },
         { "path", "/usr/local/games", mustBeString, cantBeEmpty },
+        { "precheck", nil, mustBeFunction },
         { "preflight", nil, mustBeFunction },
         { "preinstall", nil, mustBeFunction },
         { "postinstall", nil, mustBeFunction },
@@ -251,13 +280,10 @@ function Setup.Install(tab)
         { "update_url", nil, mustBeString, mustBeUrl },
         { "superuser", false, mustBeBool },
         { "interaction", "normal", mustBeString, mustBeValidInteraction },
-        { "eulas", {}, mustBeTable },  -- use the "Eula" function.
-        { "readmes", {}, mustBeTable }, -- use the "Readme" function.
-        { "medias", {}, mustBeTable }, -- use the "Media" function.
     })
 
     tab._type_ = nil
-    tab = Setup.schema.reform_schema_table(tab)
+    tab = reform_schema_table(tab)
     table.insert(MojoSetup.installs, tab)
     return tab
 
@@ -334,173 +360,54 @@ function Setup.Install(tab)
 end
 
 function Setup.Eula(tab)
-    return Setup.schema.sanitize("Eula", tab, Setup.schema.textfiles);
+    return sanitize("Eula", tab, textfile_schema);
 end
 
 function Setup.Readme(tab)
-    return Setup.schema.sanitize("Readme", tab, Setup.schema.textfiles);
+    return sanitize("Readme", tab, textfile_schema);
 end
 
 function Setup.Media(tab)
-    local mustExist = Setup.schema.mustExist;
-    local mustBeString = Setup.schema.mustBeString;
-    local cantBeEmpty = Setup.schema.cantBeEmpty;
-    return Setup.schema.sanitize("Media", tab,
+    return sanitize("Media", tab,
     {
         { "id", nil, mustExist, mustBeString, cantBeEmpty },
-        { "name", nil, mustExist, mustBeString, cantBeEmpty },
+        { "description", nil, mustExist, mustBeString, cantBeEmpty },
         { "uniquefile", nil, mustExist, mustBeString, cantBeEmpty },
     })
 end
 
 function Setup.File(tab)
-    return Setup.schema.sanitize("File", tab,
+    return sanitize("File", tab,
     {
+        { "source", nil, mustExist, mustBeStringOrTableOfStrings },
+        { "destination", nil, mustBeString, cantBeEmpty },
+        { "filter", nil, mustBeFunction },
+        { "unpackarchives", nil, mustBeBool },
+        { "mediaid", nil, mustBeString, cantBeEmpty },
     })
-
---[[
- path       This is a system path that these files should be installed into.
-            If the path is relative (i.e. does not begin with '/'), then it
-            is interpreted as being relative to the installation root for
-            the product. Thus an empty value ("") can be used to designate
-            the installation directory.
-
- arch       "any" is synonymous with the current architecture. You can also
-            use this attribute to force a precise architecture, for example
-            "ppc" or "sparc64".
-
- libc       "any" is synonymous with the current libc version. This can
-            also be used to force a libc version for the binary, i.e
-            "glibc-2.0" or "glibc-2.1".
-
- distro     Files are only installed with the specified OS distribution.
-            Look at the end of this file for a list of possible values.
-
- srcpath    This is a directory relative to the top of the CD where the files
-            for this element should be copied from.
-
- cdrom      If this attribute has a "yes" value, then setup will look for
-            the files on one of the mounted CDROMs on the system.
-            *OBSOLETE: Do not use. Use 'cdromid' instead.*
-
- cdromid    Specifies a CDROM from which the file will be pulled.
-
- mutable    If set to "yes", then the file will be considered mutable, i.e. it
-            will not be considered corrupted if its checksum changes.
- 
- lang       The files are only installed if the current locale matches the
-            string of this attribute. See 'About localization' below for
-            more details.
-
- relocate   If relocate="true" and an RPM package file is listed, the install
-            will force the RPM to be installed into the user-selected install 
-            directory. This is equivalent to installing the RPM like this: 
-              rpm -U --relocate /=INSTALLDIR --badreloc [rpmfile]
-            This will apply to all RPM files within this <files> tag.
-
- nodeps     If nodeps="true" and an RPM package file is listed,then the
-            --nodeps option will be added to the RPM command when the files 
-            are installed. This will force RPM to install the package, even if
-            its dependencies are not met. This will apply to all RPM files
-            within this <files> tag.
- 
- autoremove If autoremove="true" and an RPM package file is listed in the 
-            files section, then that RPM package will be automatically removed
-            ("rpm -e package") when the uninstall script is run. If the 
-            autoremove option is not set, then the uninstall script will list 
-            the package name at the end of the uninstall, but it will not 
-            remove it. This will apply to all RPM files within this <files> 
-            tag.
-
- md5sum     You can optionally specify a MD5 checksum string (32 characters from
-            the output of the 'md5sum' command), and the copied file will be verified
-            against this checksum. Installation will abort in the case of an invalid
-            checksum, indicating corruption.
-
- mode       Use an octal value to specify the permissions of the file once installed (644
-            is the default for regular files).
-            When specifying archives handled by a plugin, the plugin may choose to use this
-            mode for all files uncompressed from the archive.
-            NOTE: This doesn't apply to directories, which are currently always created with
-            mode 755.
-
- suffix     An optional file extension that is forced on all files. Can be used
-	    to make loki-setup recognize e.g. SFX ZIP archives as such even if
-	    they end in .exe.
-]]--
 end
 
 function Setup.Option(tab)
---[[
- install    If this attribute is set to "true", then the option will
-            be installed by default.  It may be deselected by the user.
-            Another possible value is "command", in which case the script specified
-            in the "command" attribute will determine the final value of this
-            property.
+    return sanitize("Option", tab,
+    {
+        { "value", false, mustBeBool },
+        { "required", false, mustBeBool },
+        { "disabled", false, mustBeBool },
+        { "size", nil, mustBeString, cantBeEmpty },
+        { "description", nil, mustExist, mustBeString, cantBeEmpty },
+    })
+end
 
- command    This attribute must be set to a shell script if "install" is "command".
-            If the command returns with a value of 0 (normal), then the option will
-            be selected (and unselected otherwise).
-            This can be used for auto-detection purposes.
-
- required   If this attribute is set to "true", the option will always
-            be installed. The user won't be able to disable it.
-
- show       If present, this attribute specifies a command to be run whose return
-            value will determine if this option will be presented to the user at all.
-            A 0 return value means that the option will be displayed.
-            A "false" string for this attribute will always hide the option from the user.
-            All suboptions are also affected by this setting. Note that default values
-            and actual selection of the option (with the above tags) is not affected.
-
- help       This attribute is a help string which is displayed to the
-            user if the user requests more information about the option.
-            This string can be translated to other languages using the 'help'
-            sub-element explained below.
-
- arch       This option is only available on the specified architectures.
-            The architecture can be any of:
-               x86, ppc, alpha, sparc64, etc.
-
- libc       This option is only available with the specified version of libC.
-            The version can be one of:
-               libc5, glibc-2.0, glibc-2.1, etc.
-
- distro     This option is only available with the specified OS distribution.
-            Look at the end of this file for a list of possible values.
-
- size       This is an optional size of the install option. The size can be
-            expressed in megabytes (with a M suffix), kilobytes (K), gigabytes
-            (G), or even bytes (B, or no suffix). Please note that versions of
-            setup earlier than 1.3.0 used to specify the size in MBs only.
-            If this element isn't specified, setup  will try to autodetect
-            the size of the install option itself.
-
- product    If this XML file describes a meta-installation (if the 'meta' attribute
-            to the root install element has been specified), then the value of this
-            attribute is used to specify the XML file that will be passed to setup
-            to install the product described by this option element. This attribute
-            is ignored if this is not a meta-installation, and required if it is.
-            See the section 'About Meta-Installations' below for more details.
-
- productdir Valid only together with the 'product' attribute. Specifies the
-            directory to change to before executing the installer for the new
-            product.
-
- tag        If specified, this string will be included in the SETUP_OPTIONTAGS
-            environment variable that is set before calling any scripts. This allows
-            scripts to know what user selections are active.
-
- reinstall  If this is a reinstallation, you can individually disable options that can
-            be reinstalled with this attribute set to "false".
-]]--
+function Setup.OptionGroup(tab)
+    return sanitize("OptionGroup", tab,
+    {
+        { "disabled", nil, mustBeBool },
+        { "description", nil, mustExist, mustBeString, cantBeEmpty },
+    })
 end
 
 function Setup.UI(tab)
-    local mustBeString = Setup.schema.mustBeString;
-    local cantBeEmpty = Setup.schema.cantBeEmpty;
-
-    return Setup.schema.sanitize("UI", tab,
+    return sanitize("UI", tab,
     {
         -- You should add all existing UIs to this table.
         { "generic", nil, mustBeString, cantBeEmpty },

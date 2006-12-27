@@ -88,5 +88,37 @@ static boolean MojoGui_stdio_readme(const char *name, const uint8 *data,
     return true;
 } // MojoGui_stdio_readme
 
+
+static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
+{
+    if (opts != NULL)
+    {
+        int i;
+        int spacing = 1;
+        if (opts->is_group_parent)
+            spacing += 10;
+        else
+            printf("%2d  [%c]", *line, opts->value ? 'X' : ' ');
+
+        for (i = 0; i < (level + spacing); i++)
+            putchar(' ');
+
+        puts(opts->description);
+
+        (*line)++;
+        print_options(opts->child, line, level+1);
+        print_options(opts->next_sibling, line, level);
+    } // if
+} // print_options
+
+
+static boolean MojoGui_stdio_options(MojoGuiSetupOptions *opts,
+                       boolean can_go_back, boolean can_go_forward)
+{
+    int line = 0;
+    print_options(opts, &line, 0);
+    return true;
+} // MojoGui_stdio_options
+
 // end of gui_stdio.c ...
 

@@ -516,6 +516,201 @@ static int luahook_gui_stop(lua_State *L)
 } // luahook_gui_stop
 
 
+typedef MojoGuiSetupOptions GuiOptions;   // a little less chatty.
+
+
+static inline uint64 file_size_from_string(const char *str)
+{
+    // !!! FIXME: this is WRONG
+    uint64 retval = (uint64) atoi(str);
+    size_t len = strlen(str);
+    if (len > 0)
+    {
+        const uint64 ui64_1024 = (uint64) 1024;
+        char ch = str[len-1];
+
+        if ((ch >= 'a') && (ch <= 'z'))
+            ch -= ('a' - 'A');
+
+        if (ch == 'K')
+            retval *= ui64_1024;
+        else if (ch == 'M')
+            retval *= ui64_1024 * ui64_1024;
+        else if (ch == 'G')
+            retval *= ui64_1024 * ui64_1024 * ui64_1024;
+        else if (ch == 'T')
+            retval *= ui64_1024 * ui64_1024 * ui64_1024 * ui64_1024;
+    } // if
+
+    return retval;
+} // file_size_from_string
+
+
+// forward declare this for recursive magic...
+static GuiOptions *build_gui_options(lua_State *L);
+
+// An option table (from Setup.Option{} or Setup.OptionGroup{}) must be at
+//  the top of the Lua stack.
+static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
+                                        boolean is_option_group)
+{
+    boolean required = false;
+    boolean skipopt = false;
+    GuiOptions *child = NULL;
+
+    lua_getfield(L, -1, "required");
+    if (lua_toboolean(L, -1))
+    {
+        lua_pushboolean(L, true);
+        lua_setfield(L, -3, "value");
+        required = skipopt = true;  // don't pass to GUI.
+    } // if
+    lua_pop(L, 1);  // remove "required" from stack.
+
+    // "disabled=true" trumps "required=true"
+    lua_getfield(L, -1, "disabled");
+    if (lua_toboolean(L, -1))
+    {
+        if (required)
+        {
+            lua_getfield(L, -2, "description");
+            logWarning("Option '%s' is both required and disabled!",
+                        lua_tostring(L, -1));
+            lua_pop(L, 1);
+        } // if
+        lua_pushboolean(L, false);
+        lua_setfield(L, -3, "value");
+        skipopt = true;  // don't pass to GUI.
+    } // if
+    lua_pop(L, 1);  // remove "disabled" from stack.
+
+    if (!skipopt)
+    {
+        child = build_gui_options(L);  // look for child options...
+        if ((is_option_group) && (child == NULL))
+            skipopt = true;  // skip empty groups.
+    } // if
+
+    if (!skipopt)
+    {
+        GuiOptions *newopt = (GuiOptions *) xmalloc(sizeof (GuiOptions));
+        newopt->is_group_parent = is_option_group;
+        newopt->child = child;
+
+        lua_getfield(L, -1, "description");
+        newopt->description = xstrdup(lua_tostring(L, -1));
+        lua_pop(L, 1);
+
+        if (!is_option_group)
+        {
+            lua_getfield(L, -1, "value");
+            newopt->value = (lua_toboolean(L, -1) ? true : false);
+            lua_pop(L, 1);
+            lua_getfield(L, -1, "size");
+            newopt->size = file_size_from_string(lua_tostring(L, -1));
+            lua_pop(L, 1);
+            newopt->next_sibling = opts;  // build list backwards...
+            opts = newopt;
+        } // if
+    } // if
+
+    return opts;
+} // build_one_gui_option
+
+
+static inline GuiOptions *reverse_gui_option_list(GuiOptions *opts)
+{
+    GuiOptions *prev = NULL;
+    while (opts != NULL)
+    {
+        GuiOptions *tmp = opts->next_sibling;
+        opts->next_sibling = prev;
+        prev = opts;
+        opts = tmp;
+    } // while
+    return prev;
+} // reverse_gui_option_list
+
+
+// the top of the stack must be the lua table with options/optiongroups.
+//  We build onto (opts) "child" field.
+static GuiOptions *build_gui_options(lua_State *L)
+{
+    int i = 0;
+    GuiOptions *opts = NULL;
+    struct { const char *fieldname; boolean is_group; } opttype[] =
+    {
+        { "options", false },
+        { "optiongroups", true }
+    };
+
+    for (i = 0; i < STATICARRAYLEN(opttype); i++)
+    {
+        lua_getfield(L, -1, opttype[i].fieldname);
+        if (!lua_isnil(L, -1))
+        {
+            lua_pushnil(L);  // first key for iteration...
+            while (lua_next(L, -2))  // replaces key, pushes value.
+            {
+                opts = build_one_gui_option(L, opts, opttype[i].is_group);
+                lua_pop(L, 1);  // removes value, keep key for next iteration
+            } // while
+            opts = reverse_gui_option_list(opts);
+        } // if
+        lua_pop(L, 1);  // pop options/optionsgroup table.
+    } // for
+
+    return opts;
+} // build_gui_options
+
+
+static void free_gui_options(GuiOptions *opts)
+{
+    if (opts != NULL)
+    {
+        GuiOptions *i = opts->next_sibling;
+        while (i != NULL)
+        {
+            GuiOptions *next = i->next_sibling;
+            free_gui_options(i);
+            i = next;
+        } // while
+
+        free_gui_options(opts->child);
+        free((void *) opts->description);
+        free(opts);
+    } // if
+} // free_gui_options
+
+
+static int luahook_gui_options(lua_State *L)
+{
+    // The options table is arg #1.
+    const int thisstage = luaL_checkint(L, 2);
+    const int maxstage = luaL_checkint(L, 3);
+    const boolean can_go_back = canGoBack(thisstage);
+    const boolean can_go_fwd = canGoForward(thisstage, maxstage);
+    GuiOptions *opts = NULL;
+
+    // Now we need to build a tree of C structs from the hierarchical table
+    //  we got from Lua...
+    lua_pushvalue(L, 1);  // get the Lua table onto the top of the stack...
+    opts = build_gui_options(L);
+    lua_pop(L, 1);  // pop the Lua table off the top of the stack...
+
+    if (opts == NULL)
+        lua_pushboolean(L, true);  // nothing to do, go directly to next stage.
+    else
+    {
+        boolean rc = GGui->options(opts, can_go_back, can_go_fwd);
+        lua_pushboolean(L, rc);
+        free_gui_options(opts);
+    } // else
+
+    return 1;  // returns one boolean value.
+} // luahook_gui_options
+
+
 // Sets t[sym]=f, where t is on the top of the Lua stack.
 static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
 {
@@ -628,6 +823,7 @@ boolean MojoLua_initLua(void)
         lua_newtable(luaState);
             set_cfunc(luaState, luahook_gui_start, "start");
             set_cfunc(luaState, luahook_gui_readme, "readme");
+            set_cfunc(luaState, luahook_gui_options, "options");
             set_cfunc(luaState, luahook_gui_stop, "stop");
         lua_setfield(luaState, -2, "gui");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
