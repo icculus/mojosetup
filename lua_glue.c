@@ -435,7 +435,7 @@ static int luahook_cmdline(lua_State *L)
 
 static int luahook_cmdlinestr(lua_State *L)
 {
-    int argc = lua_gettop(L);
+    const int argc = lua_gettop(L);
     const char *arg = luaL_checkstring(L, 1);
     const char *envr = (argc < 2) ? NULL : lua_tostring(L, 2);
     const char *deflt = (argc < 3) ? NULL : lua_tostring(L, 3);
@@ -547,16 +547,16 @@ static inline uint64 file_size_from_string(const char *str)
 
 
 // forward declare this for recursive magic...
-static GuiOptions *build_gui_options(lua_State *L);
+static GuiOptions *build_gui_options(lua_State *L, GuiOptions *parent);
 
 // An option table (from Setup.Option{} or Setup.OptionGroup{}) must be at
 //  the top of the Lua stack.
 static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
                                         boolean is_option_group)
 {
+    GuiOptions *newopt = NULL;
     boolean required = false;
     boolean skipopt = false;
-    GuiOptions *child = NULL;
 
     lua_getfield(L, -1, "required");
     if (lua_toboolean(L, -1))
@@ -584,18 +584,17 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
     } // if
     lua_pop(L, 1);  // remove "disabled" from stack.
 
-    if (!skipopt)
+    if (skipopt)  // Skip this option, but look for children in required opts.
     {
-        child = build_gui_options(L);  // look for child options...
-        if ((is_option_group) && (child == NULL))
-            skipopt = true;  // skip empty groups.
+        if (required)
+            newopt = build_gui_options(L, opts);
     } // if
 
-    if (!skipopt)
+    else  // add this option.
     {
-        GuiOptions *newopt = (GuiOptions *) xmalloc(sizeof (GuiOptions));
+        newopt = (GuiOptions *) xmalloc(sizeof (GuiOptions));
         newopt->is_group_parent = is_option_group;
-        newopt->child = child;
+        newopt->value = true;
 
         lua_getfield(L, -1, "description");
         newopt->description = xstrdup(lua_tostring(L, -1));
@@ -609,36 +608,79 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
             lua_getfield(L, -1, "size");
             newopt->size = file_size_from_string(lua_tostring(L, -1));
             lua_pop(L, 1);
-            newopt->next_sibling = opts;  // build list backwards...
-            opts = newopt;
+            newopt->opaque = ((int) lua_objlen(L, 4)) + 1;
+            lua_pushinteger(L, newopt->opaque);
+            lua_pushvalue(L, -2);
+            lua_settable(L, 4);  // position #4 is our local lookup table.
         } // if
+
+        newopt->child = build_gui_options(L, newopt);  // look for children...
+        if ((is_option_group) && (!newopt->child))  // skip empty groups.
+        {
+            free((void *) newopt->description);
+            free(newopt);
+            newopt = NULL;
+        } // if
+    } // else
+
+    if (newopt != NULL)
+    {
+        newopt->next_sibling = opts;
+        opts = newopt;  // prepend to list (we'll reverse it later...)
     } // if
 
     return opts;
 } // build_one_gui_option
 
 
-static inline GuiOptions *reverse_gui_option_list(GuiOptions *opts)
+static inline GuiOptions *cleanup_gui_option_list(GuiOptions *opts,
+                                                  GuiOptions *parent)
 {
+    const boolean is_group = ((parent) && (parent->is_group_parent));
+    GuiOptions *seen_enabled = NULL;
     GuiOptions *prev = NULL;
+    GuiOptions *tmp = NULL;
+
     while (opts != NULL)
     {
-        GuiOptions *tmp = opts->next_sibling;
+        if ((is_group) && (opts->value))
+        {
+            if (seen_enabled)
+            {
+                logWarning("Options '%s' and '%s' are both enabled in group '%s'.",
+                            seen_enabled->description, opts->description,
+                            parent->description);
+                seen_enabled->value = false;
+            } // if
+            seen_enabled = opts;
+        } // if
+
+        // Reverse the linked list, since we added these backwards before...
+        tmp = opts->next_sibling;
         opts->next_sibling = prev;
         prev = opts;
         opts = tmp;
     } // while
+
+    if ((prev) && (is_group) && (!seen_enabled))
+    {
+        logWarning("Option group '%s' has no enabled items, choosing first ('%s').",
+                    parent->description, prev->description);
+        prev->value = true;
+    } // if
+        
     return prev;
-} // reverse_gui_option_list
+} // cleanup_gui_option_list
 
 
 // the top of the stack must be the lua table with options/optiongroups.
-//  We build onto (opts) "child" field.
-static GuiOptions *build_gui_options(lua_State *L)
+//  We build onto (opts) "child" field. This function grows the Lua stack!
+//  You have to clean it up elsewhere. Use with care...
+static GuiOptions *build_gui_options(lua_State *L, GuiOptions *parent)
 {
     int i = 0;
     GuiOptions *opts = NULL;
-    struct { const char *fieldname; boolean is_group; } opttype[] =
+    const struct { const char *fieldname; boolean is_group; } opttype[] =
     {
         { "options", false },
         { "optiongroups", true }
@@ -646,25 +688,28 @@ static GuiOptions *build_gui_options(lua_State *L)
 
     for (i = 0; i < STATICARRAYLEN(opttype); i++)
     {
+        const boolean is_group = opttype[i].is_group;
         lua_getfield(L, -1, opttype[i].fieldname);
         if (!lua_isnil(L, -1))
         {
             lua_pushnil(L);  // first key for iteration...
             while (lua_next(L, -2))  // replaces key, pushes value.
             {
-                opts = build_one_gui_option(L, opts, opttype[i].is_group);
-                lua_pop(L, 1);  // removes value, keep key for next iteration
+                opts = build_one_gui_option(L, opts, is_group);
+                lua_pop(L, 1);  // remove table, keep key for next iteration.
             } // while
-            opts = reverse_gui_option_list(opts);
+            opts = cleanup_gui_option_list(opts, parent);
         } // if
-        lua_pop(L, 1);  // pop options/optionsgroup table.
+        lua_pop(L, 1);  // pop options/optiongroups table.
     } // for
 
     return opts;
 } // build_gui_options
 
 
-static void free_gui_options(GuiOptions *opts)
+// Free the tree of C structs we generated, and update the mirrored Lua tables
+//  with new values...
+static void done_gui_options(lua_State *L, GuiOptions *opts)
 {
     if (opts != NULL)
     {
@@ -672,41 +717,56 @@ static void free_gui_options(GuiOptions *opts)
         while (i != NULL)
         {
             GuiOptions *next = i->next_sibling;
-            free_gui_options(i);
+            done_gui_options(L, i);
             i = next;
         } // while
 
-        free_gui_options(opts->child);
+        done_gui_options(L, opts->child);
+
+        if (opts->opaque)
+        {
+            // Update Lua table for this option...
+            lua_pushinteger(L, opts->opaque);
+            lua_gettable(L, 4);  // #4 is our local table
+            lua_pushboolean(L, opts->value);
+            lua_setfield(L, -2, "value");
+            lua_pop(L, 1);
+        } // if
+
         free((void *) opts->description);
         free(opts);
     } // if
-} // free_gui_options
+} // done_gui_options
 
 
 static int luahook_gui_options(lua_State *L)
 {
     // The options table is arg #1.
+    const int argc = lua_gettop(L);
     const int thisstage = luaL_checkint(L, 2);
     const int maxstage = luaL_checkint(L, 3);
     const boolean can_go_back = canGoBack(thisstage);
     const boolean can_go_fwd = canGoForward(thisstage, maxstage);
+    boolean rc = true;
     GuiOptions *opts = NULL;
+
+    assert(argc == 3);
+
+    lua_newtable(L);  // we'll use this for updating the tree later.
 
     // Now we need to build a tree of C structs from the hierarchical table
     //  we got from Lua...
     lua_pushvalue(L, 1);  // get the Lua table onto the top of the stack...
-    opts = build_gui_options(L);
+    opts = build_gui_options(L, NULL);
     lua_pop(L, 1);  // pop the Lua table off the top of the stack...
 
-    if (opts == NULL)
-        lua_pushboolean(L, true);  // nothing to do, go directly to next stage.
-    else
-    {
-        boolean rc = GGui->options(opts, can_go_back, can_go_fwd);
-        lua_pushboolean(L, rc);
-        free_gui_options(opts);
-    } // else
+    if (opts != NULL)  // if nothing to do, we'll go directly to next stage.
+        rc = GGui->options(opts, can_go_back, can_go_fwd);
 
+    done_gui_options(L, opts);  // free C structs, update Lua tables...
+    lua_pop(L, 1);  // pop table we created.
+
+    lua_pushboolean(L, rc);
     return 1;  // returns one boolean value.
 } // luahook_gui_options
 

@@ -56,6 +56,26 @@ MojoSetup.localization = {
     ["No"] = {
     };
 
+    ["Press enter to continue."] = {
+    };
+
+    ["Choose number to change."] = {
+    };
+
+    ["Type '%s' to go back."] = {
+    };
+
+    -- This is the string used for the '%s' in the above string.
+    ["back"] = {
+    };
+
+    -- This is the prompt in the stdio driver when user input is expected.
+    ["> "] = {
+    };
+
+    ["Install options:"] = {
+    };
+
     ["Nothing to do!"] = {
     };
 

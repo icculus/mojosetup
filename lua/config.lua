@@ -72,7 +72,7 @@ Setup.Package
     Setup.Option
     {
         value = true,
-        required = false,
+        required = true,
         disabled = false,
         size = "600M",
         description = "Base Install",
@@ -97,17 +97,24 @@ Setup.Package
             description = "Language",
             Setup.Option
             {
-                value = string.match(MojoSetup.locale, "^en_") ~= nil,
+                value = true, --string.match(MojoSetup.locale, "^en_") ~= nil,
                 size = "10M",
                 description = "English",
                 Setup.File { source="Lang/English.zip" },
             },
             Setup.Option
             {
-                value = string.match(MojoSetup.locale, "^fr_") ~= nil,
+                value = true, --string.match(MojoSetup.locale, "^fr_") ~= nil,
                 size = "10M",
                 description = "French",
                 Setup.File { source="Lang/French.zip" },
+            },
+            Setup.Option
+            {
+                value = true, --string.match(MojoSetup.locale, "^de_") ~= nil,
+                size = "10M",
+                description = "German",
+                Setup.File { source="Lang/German.zip" },
             },
         },
     },

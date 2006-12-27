@@ -13,58 +13,101 @@ CREATE_MOJOGUI_ENTRY_POINT(stdio)
 
 #include <ctype.h>
 
+static int read_stdin(char *buf, int len)
+{
+    if (fgets(buf, len, stdin) == NULL)
+        return -1;
+
+    len = strlen(buf) - 1;
+    while ( (len >= 0) && ((buf[len] == '\n') || (buf[len] == '\r')) )
+        buf[len--] = '\0';
+
+    return len+1;
+} // read_stdin
+
+
+static int readstr(const char *prompt, char *buf, int len, boolean back)
+{
+    int retval = 0;
+    const char *backstr = entry->xstrdup(entry->_("back"));
+
+    if (prompt != NULL)
+        printf("%s\n", prompt);
+
+    if (back)
+    {
+        printf(entry->_("Type '%s' to go back."), backstr);
+        printf("\n");
+    } // if
+
+    printf(entry->_("Press enter to continue."), backstr);
+    printf("\n");
+    printf(entry->_("> "));
+    fflush(stdout);
+
+    if ((retval = read_stdin(buf, len)) >= 0)
+    {
+        if (strcmp(buf, backstr) == 0)
+            retval = -1;
+    } // if
+
+    free((void *) backstr);
+    return retval;
+} // print_prompt
+
+
 static uint8 MojoGui_stdio_priority(void)
 {
-    return MOJOGUI_PRIORITY_TRY_LAST;
-}
+    return MOJOGUI_PRIORITY_TRY_LAST;  // always a last resort.
+} // MojoGui_stdio_priority
+
 
 static boolean MojoGui_stdio_init(void)
 {
-    return true;
-}
+    return true;   // always succeeds.
+} // MojoGui_stdio_init
+
 
 static void MojoGui_stdio_deinit(void)
 {
     // no-op
-}
+} // MojoGui_stdio_deinit
+
 
 static void MojoGui_stdio_msgbox(const char *title, const char *text)
 {
+    char buf[128];
     printf(entry->_("NOTICE: %s\n[hit enter]"), text);
     fflush(stdout);
-    getchar();
+    read_stdin(buf, sizeof (buf));
 } // MojoGui_stdio_msgbox
+
 
 static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
 {
-    if (feof(stdin))
-        return 0;
-    else
+    boolean retval = false;
+    if (!feof(stdin))
     {
-        const char *localized_no = entry->_("N");
-        const char *localized_yes = entry->_("Y");
+        const char *localized_no = entry->xstrdup(entry->_("N"));
+        const char *localized_yes = entry->xstrdup(entry->_("Y"));
+        boolean getout = false;
         char buf[128];
-        size_t len = 0;
-        while (1)
+        while (!getout)
         {
             printf(entry->_("%s\n[y/n]: "), text);
             fflush(stdout);
-
-            if (fgets(buf, sizeof (buf), stdin) == NULL)
-                return 0;
-
-            len = strlen(buf) - 1;
-            while ( (len >= 0) && ((buf[len] == '\n') || (buf[len] == '\r')) )
-                buf[len--] = '\0';
-
-            if (strcasecmp(buf, localized_no) == 0)
-                return 0;
+            if (read_stdin(buf, sizeof (buf)) < 0)
+                getout = true;
+            else if (strcasecmp(buf, localized_no) == 0)
+                getout = true;
             else if (strcasecmp(buf, localized_yes) == 0)
-                return 1;
+                retval = getout = true;
         } // while
-    } // else
+        free((void *) localized_no);
+        free((void *) localized_yes);
+    } // if
 
-    return 0;
+    return retval;
 } // MojoGui_stdio_promptyn
 
 static boolean MojoGui_stdio_start(const char *title, const char *splash)
@@ -81,12 +124,68 @@ static void MojoGui_stdio_stop(void)
 
 
 static boolean MojoGui_stdio_readme(const char *name, const uint8 *data,
-                                    size_t len, boolean can_go_back,
+                                    size_t datalen, boolean can_go_back,
                                     boolean can_go_forward)
 {
-    printf("%s\n%s\n", name, (const char *) data);
-    return true;
+    boolean getout = false;
+    boolean retval = false;
+    int len = 0;
+    char buf[128];
+
+    while (!getout)
+    {
+        printf("%s\n%s\n", name, (const char *) data);
+        if ((len = readstr(NULL, buf, sizeof (buf), can_go_back)) < 0)
+            getout = true;
+        else if (len == 0)
+            getout = retval = true;
+    } // while
+
+    return retval;
 } // MojoGui_stdio_readme
+
+
+static void toggle_option(MojoGuiSetupOptions *parent,
+                          MojoGuiSetupOptions *opts, int *line, int target)
+{
+    if ((opts != NULL) && (target > *line))
+    {
+        if (!opts->is_group_parent)
+        {
+            if (++(*line) == target)
+            {
+                const boolean toggled = ((opts->value) ? false : true);
+
+                // "radio buttons" in a group?
+                if ((parent) && (parent->is_group_parent))
+                {
+                    if (toggled)  // drop unless we weren't the current toggle.
+                    {
+                        // set all siblings to false...
+                        MojoGuiSetupOptions *i = parent->child;
+                        while (i != NULL)
+                        {
+                            i->value = false;
+                            i = i->next_sibling;
+                        } // while
+                        opts->value = true;  // reset us to be true.
+                    } // if
+                } // if
+
+                else  // individual "check box" was chosen.
+                {
+                    opts->value = toggled;
+                } // else
+
+                return;  // we found it, bail.
+            } // if
+        } // if
+
+        if (opts->value) // if option is toggled on, descend to children.
+            toggle_option(opts, opts->child, line, target);
+        toggle_option(parent, opts->next_sibling, line, target);
+    } // if
+} // toggle_option
 
 
 static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
@@ -96,17 +195,20 @@ static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
         int i;
         int spacing = 1;
         if (opts->is_group_parent)
-            spacing += 10;
+            spacing += 7;
         else
+        {
+            (*line)++;
             printf("%2d  [%c]", *line, opts->value ? 'X' : ' ');
+        } // else
 
-        for (i = 0; i < (level + spacing); i++)
+        for (i = 0; i < ((level*2) + spacing); i++)
             putchar(' ');
 
         puts(opts->description);
 
-        (*line)++;
-        print_options(opts->child, line, level+1);
+        if (opts->value)
+            print_options(opts->child, line, level+1);
         print_options(opts->next_sibling, line, level);
     } // if
 } // print_options
@@ -115,9 +217,43 @@ static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
 static boolean MojoGui_stdio_options(MojoGuiSetupOptions *opts,
                        boolean can_go_back, boolean can_go_forward)
 {
-    int line = 0;
-    print_options(opts, &line, 0);
-    return true;
+    const char *prompt = entry->xstrdup(entry->_("Choose number to change."));
+    const char *inst_opts_str = entry->xstrdup(entry->_("Install options:"));
+    boolean retval = false;
+    boolean getout = false;
+    char buf[128];
+    int len = 0;
+
+    while (!getout)
+    {
+        int line = 0;
+
+        printf("\n\n");
+        printf(inst_opts_str);
+        printf("\n");
+        print_options(opts, &line, 1);
+        printf("\n");
+
+        if ((len = readstr(prompt, buf, sizeof (buf), can_go_back)) < 0)
+            getout = true;
+        else if (len == 0)
+            retval = getout = true;
+        else
+        {
+            char *endptr = NULL;
+            int target = (int) strtol(buf, &endptr, 10);
+            if (*endptr == '\0')  // complete string was a valid number?
+            {
+                line = 0;
+                toggle_option(NULL, opts, &line, target);
+            } // if
+        } // else
+    } // while
+
+    free((void *) inst_opts_str);
+    free((void *) prompt);
+
+    return retval;
 } // MojoGui_stdio_options
 
 // end of gui_stdio.c ...

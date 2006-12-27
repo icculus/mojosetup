@@ -87,7 +87,10 @@ local function do_install(install)
         -- (options) becomes an upvalue in this function.
         stages[#stages+1] = function(thisstage, maxstage)
             -- This does some complex stuff with a hierarchy of tables in C.
-            return MojoSetup.gui.options(options, thisstage, maxstage)
+            --return MojoSetup.gui.options(options, thisstage, maxstage)
+            local rc = MojoSetup.gui.options(options, thisstage, maxstage)
+            MojoSetup.dumptable("options", options)
+            return rc
         end
     end
 
@@ -120,7 +123,7 @@ local function do_install(install)
             i = i + 1
         else
             if i == 1 then
-                MojoSetup.logWarning("Stepped back over start of stages")
+                MojoSetup.logwarning("Stepped back over start of stages")
                 MojoSetup.fatal(_("Internal error"))
             else
                 i = i - 1

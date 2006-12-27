@@ -29,6 +29,7 @@ struct MojoGuiSetupOptions
     boolean value;
     boolean is_group_parent;
     uint64 size;
+    int opaque;  // GUI drivers shouldn't touch this.
     MojoGuiSetupOptions *next_sibling;
     MojoGuiSetupOptions *child;
 };

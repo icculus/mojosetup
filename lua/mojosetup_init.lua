@@ -225,10 +225,11 @@ end
 
 local function reform_schema_table(tab)
     for k,v in pairs(tab) do
-        local typestr = type(k)
-        if (typestr == "number") and (v._type_ ~= nil) then
+        local ktype = type(k)
+        local vtype = type(v)
+        if (ktype == "number") and (vtype == "table") and (v._type_ ~= nil) then
             -- add element to proper named array.
-            typestr = v._type_
+            local typestr = v._type_
             v._type_ = nil
             MojoSetup.logdebug("schema: reforming '" .. typestr .. "', '" .. k .. "'")
             if tab[typestr] == nil then
@@ -237,7 +238,7 @@ local function reform_schema_table(tab)
                 table.insert(tab[typestr], v)
             end
             tab[k] = nil
-        elseif typestr == "table" then
+        elseif vtype == "table" then
             tab[k] = reform_schema_table(v)
         end
     end
