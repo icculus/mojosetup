@@ -713,14 +713,7 @@ static void done_gui_options(lua_State *L, GuiOptions *opts)
 {
     if (opts != NULL)
     {
-        GuiOptions *i = opts->next_sibling;
-        while (i != NULL)
-        {
-            GuiOptions *next = i->next_sibling;
-            done_gui_options(L, i);
-            i = next;
-        } // while
-
+        done_gui_options(L, opts->next_sibling);
         done_gui_options(L, opts->child);
 
         if (opts->opaque)
