@@ -151,6 +151,13 @@ static boolean MojoGui_macosx_options(MojoGuiSetupOptions *opts,
     return true;
 } // MojoGui_macosx_options
 
+static char *MojoGui_macosx_destination(const char **recommends, int reccount,
+                                       boolean can_go_back, boolean can_go_fwd)
+{
+    // !!! FIXME: write me.
+    STUBBED("macosx destination");
+    return entry->xstrdup("/Applications");
+} // MojoGui_macosx_destination
 
 // end of gui_macosx.c ...
 

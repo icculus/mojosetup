@@ -764,6 +764,47 @@ static int luahook_gui_options(lua_State *L)
 } // luahook_gui_options
 
 
+static int luahook_gui_destination(lua_State *L)
+{
+    const int thisstage = luaL_checkinteger(L, 2);
+    const int maxstage = luaL_checkinteger(L, 3);
+    const boolean can_go_back = canGoBack(thisstage);
+    const boolean can_go_fwd = canGoForward(thisstage, maxstage);
+    char **recommend = NULL;
+    size_t reccount = 0;
+    char *rc = NULL;
+
+    if (lua_istable(L, 1))
+    {
+        int i;
+
+        reccount = lua_objlen(L, 1);
+        recommend = (char **) alloca(reccount * sizeof (char *));
+        for (i = 0; i < reccount; i++)
+        {
+            const char *str = NULL;
+            lua_pushinteger(L, i+1);
+            lua_gettable(L, 1);
+            str = lua_tostring(L, -1);
+            recommend[i] = (char *) alloca(strlen(str) + 1);
+            strcpy(recommend[i], str);
+            lua_pop(L, 1);
+        } // for
+    } // if
+
+    rc = GGui->destination((const char **) recommend, reccount,
+                            can_go_back, can_go_fwd);
+    if (rc == NULL)
+        lua_pushnil(L);
+    else
+    {
+        lua_pushstring(L, rc);
+        free(rc);
+    } // else
+    return 1;
+} // luahook_gui_destination
+
+
 // Sets t[sym]=f, where t is on the top of the Lua stack.
 static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
 {
@@ -877,6 +918,7 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_gui_start, "start");
             set_cfunc(luaState, luahook_gui_readme, "readme");
             set_cfunc(luaState, luahook_gui_options, "options");
+            set_cfunc(luaState, luahook_gui_destination, "destination");
             set_cfunc(luaState, luahook_gui_stop, "stop");
         lua_setfield(luaState, -2, "gui");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);

@@ -55,6 +55,8 @@ struct MojoGui
                       boolean can_go_back, boolean can_go_forward);
     boolean (*options)(MojoGuiSetupOptions *opts,
                        boolean can_go_back, boolean can_go_forward);
+    char * (*destination)(const char **recommendations, int reccount,
+                           boolean can_go_back, boolean can_go_forward);
 };
 
 typedef const MojoGui* (*MojoGuiEntryPoint)(int revision,
@@ -89,6 +91,8 @@ static boolean MojoGui_##module##_readme(const char *name, const uint8 *data, \
                                     boolean can_go_forward); \
 static boolean MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
                        boolean can_go_back, boolean can_go_forward); \
+static char *MojoGui_##module##_destination(const char **r, int reccount, \
+                           boolean can_go_back, boolean can_go_forward); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \
     if (rev == MOJOGUI_INTERFACE_REVISION) { \
@@ -103,6 +107,7 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_stop, \
             MojoGui_##module##_readme, \
             MojoGui_##module##_options, \
+            MojoGui_##module##_destination, \
         }; \
         entry = e; \
         return &retval; \

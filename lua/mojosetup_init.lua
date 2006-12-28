@@ -112,15 +112,14 @@ local function schema_assert(test, fnname, elem, errstr)
 end
 
 local function mustExist(fnname, elem, val)
-    schema_assert(val ~= nil, fnname, elem,
-                            "must be explicitly specified")
+    schema_assert(val ~= nil, fnname, elem, "must be explicitly specified")
 end
 
 local function mustBeSomething(fnname, elem, val, elemtype)
     -- Can be nil...please use mustExist if this is a problem!
     if val ~= nil then
         schema_assert(type(val) == elemtype, fnname, elem,
-                                "must be a " .. elemtype)
+                        "must be a " .. elemtype)
     end
 end
 
@@ -164,6 +163,7 @@ local function mustBeStringOrTableOfStrings(fnname, elem, val)
                                 "must be string or table of strings")
         end
     end
+
 end
 
 local function mustBeValidSplashPos(fnname, elem, val)
@@ -266,7 +266,8 @@ function Setup.Package(tab)
         { "id", nil, mustExist, mustBeString, cantBeEmpty },
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
         { "version", nil, mustExist, mustBeString, cantBeEmpty },
-        { "path", "/usr/local/games", mustBeString, cantBeEmpty },
+        { "destination", nil, mustBeString, cantBeEmpty },
+        { "recommended_destinations", nil, mustBeStringOrTableOfStrings },
         { "precheck", nil, mustBeFunction },
         { "preflight", nil, mustBeFunction },
         { "preinstall", nil, mustBeFunction },

@@ -77,9 +77,27 @@ local function do_install(install)
         end
     end
 
+    -- Next stage: let user choose install destination.
+    --  The config file can force a destination if it has a really good reason
+    --  (system drivers that have to go in a specific place, for example),
+    --  but really really shouldn't in 99% of the cases.
+    if install.destination == nil then
+        local recommend = install.recommended_destinations
+        -- (recommend) becomes an upvalue in this function.
+        stages[#stages+1] = function(thisstage, maxstage)
+            local x = MojoSetup.gui.destination(recommend, thisstage, maxstage)
+            if x == nil then
+                return false   -- go back
+            end
+            install.destination = x
+            return true
+        end
+    end
+
     -- Next stage: let user choose install options.
     if install.options ~= nil or install.optiongroups ~= nil then
-        local options = {
+        local options =
+        {
             options = install.options,
             optiongroups = install.optiongroups
         }
@@ -87,18 +105,9 @@ local function do_install(install)
         -- (options) becomes an upvalue in this function.
         stages[#stages+1] = function(thisstage, maxstage)
             -- This does some complex stuff with a hierarchy of tables in C.
-            --return MojoSetup.gui.options(options, thisstage, maxstage)
-            local rc = MojoSetup.gui.options(options, thisstage, maxstage)
-            MojoSetup.dumptable("options", options)
-            return rc
+            return MojoSetup.gui.options(options, thisstage, maxstage)
         end
     end
-
-    -- Next stage: let user choose install destination.
-        -- See if installer requires a specific installation location.
-        --   Else, see if installer has default installation recommendation.
-        --   Prompt user via GUI.
-        --   Warn if directory exists. Warn if it doesn't. I dunno.
 
     -- Next stage: actual installation.
 
@@ -130,6 +139,8 @@ local function do_install(install)
             end
         end
     end
+
+    MojoSetup.logdebug("Install destination is '" .. install.destination .. "'")
 
     -- Done with this. Make it eligible for garbage collection.
     MojoSetup.stages = nil
