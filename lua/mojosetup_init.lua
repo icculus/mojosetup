@@ -368,11 +368,19 @@ function Setup.Package(tab)
 end
 
 function Setup.Eula(tab)
-    return sanitize("Eula", tab, textfile_schema);
+    return sanitize("Eula", tab,
+    {
+        { "description", nil, mustExist, mustBeString, cantBeEmpty },
+        { "source", nil, mustExist, mustBeString, cantBeEmpty },
+    })
 end
 
 function Setup.Readme(tab)
-    return sanitize("Readme", tab, textfile_schema);
+    return sanitize("Readme", tab,
+    {
+        { "description", nil, mustExist, mustBeString, cantBeEmpty },
+        { "source", nil, mustExist, mustBeString, cantBeEmpty },
+    })
 end
 
 function Setup.Media(tab)

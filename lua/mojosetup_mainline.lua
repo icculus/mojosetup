@@ -9,7 +9,6 @@ local _ = MojoSetup.translate
 --  so it only spits out crap if debug-level logging is enabled.
 MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
 
-
 local function do_install(install)
     -- Build a bunch of functions into a linear array...this lets us move
     --  back and forth between stages of the install with customized functions
@@ -36,15 +35,7 @@ local function do_install(install)
     --  of any EULA is considered fatal.
     for k,eula in pairs(install.eulas) do
         local desc = eula.description;
-        local fname = eula["ui_" .. MojoSetup.ui]
-        if fname == nil then
-            fname = eula.generic
-        end
-        -- No EULA we can show. That's fatal, unfortunately.
-        if fname == nil then
-            MojoSetup.logerror("No ui-specific or generic EULA for " .. desc)
-            MojoSetup.fatal(_("Internal error"))
-        end
+        local fname = eula.source;
 
         -- (desc) and (fname) become an upvalues in this function.
         stages[#stages+1] = function (thisstage, maxstage)
@@ -62,18 +53,10 @@ local function do_install(install)
     -- Next stage: show any READMEs.
     for k,readme in pairs(install.readmes) do
         local desc = readme.description;
-        local fname = readme["ui_" .. MojoSetup.ui]
-        if fname == nil then
-            fname = readme.generic
-        end
-        -- No README we can show. Log it and move on.
-        if fname == nil then
-            MojoSetup.logerror("No ui-specific or generic README for " .. desc)
-        else
-            -- (desc) and (fname) become upvalues in this function.
-            stages[#stages+1] = function(thisstage, maxstage)
-                return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
-            end
+        local fname = readme.source;
+        -- (desc) and (fname) become upvalues in this function.
+        stages[#stages+1] = function(thisstage, maxstage)
+            return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
         end
     end
 

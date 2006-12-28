@@ -30,29 +30,20 @@ Setup.Package
     Setup.Eula
     {
         description = "My Game License",
-        ui_stdio = MojoSetup.translate("MyGame_EULA.txt"),
-        ui_gtkplus = MojoSetup.translate("MyGame_EULA.html"),
-        ui_macosx = MojoSetup.translate("MyGame_EULA.html"),
-        ui_generic = MojoSetup.translate("MyGame_EULA.mtf"),
+        source = MojoSetup.translate("MyGame_EULA.html")
     },
 
     Setup.Eula
     {
         description = "Punkbuster License",
-        ui_stdio = MojoSetup.translate("PunkBuster_EULA.txt"),
-        ui_gtkplus = MojoSetup.translate("PunkBuster_EULA.html"),
-        ui_macosx = MojoSetup.translate("PunkBuster_EULA.html"),
-        ui_generic = MojoSetup.translate("PunkBuster_EULA.mtf"),
+        source = MojoSetup.translate("PunkBuster_EULA.html"),
     },
 
     -- README file(s) to show and install.
     Setup.Readme
     {
         description = "My Game README",
-        ui_stdio = MojoSetup.translate("README.txt"),
-        ui_gtkplus = MojoSetup.translate("README.html"),
-        ui_macosx = MojoSetup.translate("README.html"),
-        ui_generic = MojoSetup.translate("README.mtf"),
+        source = MojoSetup.translate("README.html"),
     },
 
     -- Specify media (discs) we may need for this install and how to find them.
