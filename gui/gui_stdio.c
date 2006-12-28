@@ -270,7 +270,7 @@ static char *MojoGui_stdio_destination(const char **recommends, int reccount,
     char *retval = NULL;
     boolean getout = false;
     char buf[128];
-    size_t len = 0;
+    int len = 0;
     int i = 0;
 
     if (reccount > 0)
@@ -287,7 +287,7 @@ static char *MojoGui_stdio_destination(const char **recommends, int reccount,
 
         if ((len = readstr(prompt, buf, sizeof (buf), can_go_back, false)) < 0)
             getout = true;
-        else
+        else if (len > 0)
         {
             char *endptr = NULL;
             int target = (int) strtol(buf, &endptr, 10);
