@@ -224,6 +224,7 @@ local function sanitize(fnname, tab, elems)
 end
 
 local function reform_schema_table(tab)
+    local killlist = {}
     for k,v in pairs(tab) do
         local ktype = type(k)
         local vtype = type(v)
@@ -237,10 +238,15 @@ local function reform_schema_table(tab)
             else
                 table.insert(tab[typestr], v)
             end
-            tab[k] = nil
+            -- can't just set tab[k] to nil here, since it screws up pairs()...
+            killlist[#killlist+1] = k;
         elseif vtype == "table" then
             tab[k] = reform_schema_table(v)
         end
+    end
+
+    for i,v in ipairs(killlist) do
+        tab[v] = nil
     end
 
     return tab
