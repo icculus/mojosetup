@@ -674,8 +674,7 @@ static inline GuiOptions *cleanup_gui_option_list(GuiOptions *opts,
 
 
 // the top of the stack must be the lua table with options/optiongroups.
-//  We build onto (opts) "child" field. This function grows the Lua stack!
-//  You have to clean it up elsewhere. Use with care...
+//  We build onto (opts) "child" field.
 static GuiOptions *build_gui_options(lua_State *L, GuiOptions *parent)
 {
     int i = 0;
