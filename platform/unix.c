@@ -437,12 +437,16 @@ static inline boolean chooseTempFile(char *fname, size_t len, const char *tmpl)
     #define P_tmpdir NULL
     #endif
 
-    if (!testTmpDir(getenv("TMPDIR"), fname, len, tmpl))
+    // With /dev/shm we may be able to avoid writing to physical media...
+    if (!testTmpDir("/dev/shm", fname, len, tmpl))
     {
-        if (!testTmpDir(P_tmpdir, fname, len, tmpl))
+        if (!testTmpDir(getenv("TMPDIR"), fname, len, tmpl))
         {
-            if (!testTmpDir("/tmp", fname, len, tmpl))
-                return false;
+            if (!testTmpDir(P_tmpdir, fname, len, tmpl))
+            {
+                if (!testTmpDir("/tmp", fname, len, tmpl))
+                    return false;
+            } // if
         } // if
     } // if
 
