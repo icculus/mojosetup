@@ -431,54 +431,45 @@ static boolean testTmpDir(const char *dname, char *buf,
 } // testTmpDir
 
 
-static inline boolean chooseTempFile(char *fname, size_t len, const char *tmpl)
-{
-    #ifndef P_tmpdir  // glibc defines this, maybe others.
-    #define P_tmpdir NULL
-    #endif
-
-    // With /dev/shm we may be able to avoid writing to physical media...
-    if (!testTmpDir("/dev/shm", fname, len, tmpl))
-    {
-        if (!testTmpDir(getenv("TMPDIR"), fname, len, tmpl))
-        {
-            if (!testTmpDir(P_tmpdir, fname, len, tmpl))
-            {
-                if (!testTmpDir("/tmp", fname, len, tmpl))
-                    return false;
-            } // if
-        } // if
-    } // if
-
-    return true;
-} // chooseTempFile
-
-
 void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 {
     // Write the image to a temporary file, dlopen() it, and delete it
     //  immediately. The inode will be kept around by the Unix kernel until
     //  we either dlclose() it or the process terminates, but we don't have
     //  to worry about polluting the /tmp directory or cleaning this up later.
+    // We'll try every reasonable temp directory location until we find one
+    //  that works, in case (say) one lets us write a file, but there
+    //  isn't enough space for the data.
 
-    void *retval = NULL;
+    // /dev/shm may be able to avoid writing to physical media...try it first.
+    const char *dirs[] = { "/dev/shm", getenv("TMPDIR"), P_tmpdir, "/tmp" };
+    const char *tmpl = "mojosetup-gui-plugin-XXXXXX";
     char fname[PATH_MAX];
+    void *retval = NULL;
+    int i = 0;
 
     if (dlopen == NULL)   // weak symbol on older Mac OS X
         return NULL;
 
-    if (chooseTempFile(fname, sizeof (fname), "mojosetup-gui-plugin-XXXXXX"))
+    #ifndef P_tmpdir  // glibc defines this, maybe others.
+    #define P_tmpdir NULL
+    #endif
+
+    for (i = 0; (i < STATICARRAYLEN(dirs)) && (retval == NULL); i++)
     {
-        const int fd = mkstemp(fname);
-        if (fd != -1)
+        if (testTmpDir(dirs[i], fname, len, tmpl))
         {
-            const size_t bw = write(fd, img, len);
-            const int rc = close(fd);
-            if ((bw == len) && (rc != -1))
-                retval = dlopen(fname, DLOPEN_ARGS);
-            unlink(fname);
+            const int fd = mkstemp(fname);
+            if (fd != -1)
+            {
+                const size_t bw = write(fd, img, len);
+                const int rc = close(fd);
+                if ((bw == len) && (rc != -1))
+                    retval = dlopen(fname, DLOPEN_ARGS);
+                unlink(fname);
+            } // if
         } // if
-    } // if
+    } // for
 
     return retval;
 } // MojoPlatform_dlopen
