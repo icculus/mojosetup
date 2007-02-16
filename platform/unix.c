@@ -321,6 +321,35 @@ boolean MojoPlatform_locale(char *buf, size_t len)
         retval = true;
     } // if
 
+    #if PLATFORM_MACOSX
+    else if (CFLocaleCreateCanonicalLocaleIdentifierFromString == NULL)
+        retval = false; // !!! FIXME: 10.2 compatibility?
+
+    else if (CFLocaleCreateCanonicalLocaleIdentifierFromString != NULL)
+    {
+        CFPropertyListRef languages = CFPreferencesCopyAppValue(
+                                            CFSTR("AppleLanguages"),
+                                            kCFPreferencesCurrentApplication);
+        if (languages != NULL)
+        {
+            CFStringRef primary = CFArrayGetValueAtIndex(languages, 0);
+            if (primary != NULL)
+            {
+                CFStringRef locale =
+                        CFLocaleCreateCanonicalLocaleIdentifierFromString(
+                                                kCFAllocatorDefault, primary);                if (locale != NULL)
+                if (locale != NULL)
+                {
+                    CFStringGetCString(locale, buf, len, kCFStringEncodingUTF8);
+                    CFRelease(locale);
+                    retval = true;
+                } // if
+            } // if
+            CFRelease(languages);
+        } // if
+    } // else if
+    #endif
+
     return retval;
 } // MojoPlatform_locale
 
