@@ -506,16 +506,21 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 
 void *MojoPlatform_dlsym(void *lib, const char *sym)
 {
-    if (dlsym == NULL)   // weak symbol on older Mac OS X
-        return NULL;
+    #if PLATFORM_MACOSX
+    if (dlsym == NULL) return NULL;  // weak symbol on older Mac OS X
+    #endif
+
     return dlsym(lib, sym);
 } // MojoPlatform_dlsym
 
 
 void MojoPlatform_dlclose(void *lib)
 {
-    if (dlclose != NULL)   // weak symbol on older Mac OS X
-        dlclose(lib);
+    #if PLATFORM_MACOSX
+    if (dlclose == NULL) return;  // weak symbol on older Mac OS X
+    #endif
+
+    dlclose(lib);
 } // MojoPlatform_dlclose
 
 // end of unix.c ...
