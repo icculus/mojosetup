@@ -56,6 +56,12 @@ MojoSetup.localization = {
     ["No"] = {
     };
 
+    ["OK"] = {
+    };
+
+    ["Cancel"] = {
+    };
+
     ["Press enter to continue."] = {
     };
 
@@ -110,6 +116,9 @@ MojoSetup.localization = {
     };
 
     ["failed to load file '%s'"] = {
+    };
+
+    ["Please insert '%s'\n"] = {
     };
 };
 

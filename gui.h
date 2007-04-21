@@ -57,6 +57,7 @@ struct MojoGui
                        boolean can_go_back, boolean can_go_forward);
     char * (*destination)(const char **recommendations, int reccount,
                            boolean can_go_back, boolean can_go_forward);
+    boolean (*insertmedia)(const char *medianame);
 };
 
 typedef const MojoGui* (*MojoGuiEntryPoint)(int revision,
@@ -93,6 +94,7 @@ static boolean MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
                        boolean can_go_back, boolean can_go_forward); \
 static char *MojoGui_##module##_destination(const char **r, int reccount, \
                            boolean can_go_back, boolean can_go_forward); \
+static boolean MojoGui_##module##_insertmedia(const char *medianame); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \
     if (rev == MOJOGUI_INTERFACE_REVISION) { \
@@ -108,6 +110,7 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_readme, \
             MojoGui_##module##_options, \
             MojoGui_##module##_destination, \
+            MojoGui_##module##_insertmedia, \
         }; \
         entry = e; \
         return &retval; \

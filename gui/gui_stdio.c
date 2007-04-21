@@ -308,5 +308,13 @@ static char *MojoGui_stdio_destination(const char **recommends, int reccount,
     return retval;
 } // MojoGui_stdio_destination
 
+
+static boolean MojoGui_stdio_insertmedia(const char *medianame)
+{
+    char buf[32];
+    printf(entry->_("Please insert '%s'\n"), medianame);
+    return readstr(NULL, buf, sizeof (buf), false, true) > 0;
+} // MojoGui_stdio_insertmedia
+
 // end of gui_stdio.c ...
 

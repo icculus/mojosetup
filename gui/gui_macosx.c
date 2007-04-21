@@ -83,7 +83,8 @@ static void MojoGui_macosx_msgbox(const char *title, const char *text)
 } // MojoGui_macosx_msgbox
 
 
-static boolean do_promptyn(const char *title, const char *text, boolean yes)
+static boolean do_prompt(const char *title, const char *text,
+                         boolean yes, const char *yesstr, const char *nostr)
 {
     boolean retval = false;
     OSStatus err = noErr;
@@ -95,8 +96,8 @@ static boolean do_promptyn(const char *title, const char *text, boolean yes)
         DialogItemIndex item;
         CFStringRef yes, no;
         const CFStringEncoding enc = kCFStringEncodingUTF8;
-        yes = CFStringCreateWithCString(NULL, entry->_("Yes"), enc);
-        no = CFStringCreateWithCString(NULL, entry->_("No"), enc);
+        yes = CFStringCreateWithCString(NULL, yesstr, enc);
+        no = CFStringCreateWithCString(NULL, nostr, enc);
 
         params.movable = TRUE;
         params.helpButton = FALSE;
@@ -118,13 +119,13 @@ static boolean do_promptyn(const char *title, const char *text, boolean yes)
 
 static boolean MojoGui_macosx_promptyn(const char *title, const char *text)
 {
-    return do_promptyn(title, text, true);
-}
+    return do_prompt(title, text, true, entry->_("Yes"), entry->_("No"));
+} // MojoGui_macosx_promptyn
 
 
 static boolean MojoGui_macosx_start(const char *title, const char *splash)
 {
-    return false;  // !!! FIXME
+    return true;  // !!! FIXME
 } // MojoGui_macosx_start
 
 
@@ -158,6 +159,15 @@ static char *MojoGui_macosx_destination(const char **recommends, int reccount,
     STUBBED("macosx destination");
     return entry->xstrdup("/Applications");
 } // MojoGui_macosx_destination
+
+
+static boolean MojoGui_macosx_insertmedia(const char *medianame)
+{
+    // !!! FIXME: "please insert '%s' ..."
+    // !!! FIXME: localization.
+    return do_prompt("Please insert", medianame, true,
+                     entry->_("OK"), entry->_("Cancel"));
+} // MojoGui_macosx_insertmedia
 
 // end of gui_macosx.c ...
 
