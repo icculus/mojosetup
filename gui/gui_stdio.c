@@ -30,13 +30,14 @@ static int readstr(const char *prompt, char *buf, int len,
                    boolean back, boolean fwd)
 {
     int retval = 0;
-    const char *backstr = entry->xstrdup(entry->_("back"));
+    const char *backstr = NULL;
 
     if (prompt != NULL)
         printf("%s\n", prompt);
 
     if (back)
     {
+        backstr = entry->xstrdup(entry->_("back"));
         printf(entry->_("Type '%s' to go back."), backstr);
         printf("\n");
     } // if
@@ -52,7 +53,7 @@ static int readstr(const char *prompt, char *buf, int len,
 
     if ((retval = read_stdin(buf, len)) >= 0)
     {
-        if (strcmp(buf, backstr) == 0)
+        if ((back) && (strcmp(buf, backstr) == 0))
             retval = -1;
     } // if
 
