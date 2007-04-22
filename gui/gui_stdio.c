@@ -313,7 +313,7 @@ static boolean MojoGui_stdio_insertmedia(const char *medianame)
 {
     char buf[32];
     printf(entry->_("Please insert '%s'\n"), medianame);
-    return readstr(NULL, buf, sizeof (buf), false, true) > 0;
+    return (readstr(NULL, buf, sizeof (buf), false, true) >= 0);
 } // MojoGui_stdio_insertmedia
 
 
