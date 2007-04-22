@@ -9,8 +9,20 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 #include <sys/utsname.h>
+#include <sys/mount.h>
 #include <time.h>
 #include <unistd.h>
+
+#if MOJOSETUP_HAVE_SYS_UCRED_H
+#  ifdef MOJOSETUP_HAVE_MNTENT_H
+#    undef MOJOSETUP_HAVE_MNTENT_H /* don't do both... */
+#  endif
+#  include <sys/ucred.h>
+#endif
+
+#if MOJOSETUP_HAVE_MNTENT_H
+#  include <mntent.h>
+#endif
 
 #if PLATFORM_BEOS
 #define DLOPEN_ARGS 0
@@ -433,6 +445,61 @@ boolean MojoPlatform_unlink(const char *fname)
 {
     return (unlink(fname) == 0);
 } // MojoPlatform_unlink
+
+
+boolean MojoPlatform_exists(const char *dir, const char *fname)
+{
+    boolean retval = false;
+    if (fname == NULL)
+        retval = (access(dir, F_OK) != -1);
+    else
+    {
+        const size_t len = strlen(dir) + strlen(fname) + 2;
+        char *buf = (char *) xmalloc(strlen(dir) + strlen(fname) + 2);
+        snprintf(buf, len, "%s/%s", dir, fname);
+        retval = (access(buf, F_OK) != -1);
+        free(buf);
+    } // else
+    return retval;
+} // MojoPlatform_exists
+
+
+char *MojoPlatform_findMedia(const char *uniquefile)
+{
+#if MOJOSETUP_HAVE_SYS_UCRED_H
+    int i = 0;
+    struct statfs *mntbufp = NULL;
+    int mounts = getmntinfo(&mntbufp, MNT_WAIT);
+    for (i = 0; i < mounts; i++)
+    {
+        const char *mnt = mntbufp[i].f_mntonname;
+        if (MojoPlatform_exists(mnt, uniquefile))
+            return xstrdup(mnt);
+    } // for
+
+#elif MOJOSETUP_HAVE_MNTENT_H
+    FILE *mounts = setmntent("/etc/mtab", "r");
+    if (mounts != NULL)
+    {
+        struct mntent *ent = NULL;
+        while ((ent = getmntent(mounts)) != NULL)
+        {
+            const char *mnt = ent->mnt_dir;
+            if (MojoPlatform_exists(mnt, uniquefile))
+            {
+                endmntent(mounts);
+                return xstrdup(mnt);
+            } // if
+        } // while
+        endmntent(mounts);
+    } // if
+
+#else
+#   warning No mountpoint detection on this platform...
+#endif
+
+    return NULL;
+} // MojoPlatform_findMedia
 
 
 void MojoPlatform_log(const char *str)

@@ -453,6 +453,47 @@ static int luahook_cmdlinestr(lua_State *L)
 } // luahook_cmdlinestr
 
 
+static int luahook_findmedia(lua_State *L)
+{
+    // Let user specify overrides of directories to act as drives.
+    //  This is good if for some reason MojoSetup can't find them, or they
+    //  want to pretend a copy on the filesystem is really a CD, etc.
+    // Put your anti-piracy crap in your OWN program.  :)
+    //
+    // You can specify with command lines or environment variables, command
+    //  lines taking precedence:
+    // MOJOSETUP_MEDIA0=/my/patch ./installer --media1=/over/there
+    //
+    // --media and MOJOSETUP_MEDIA are checked first, then --media0 and
+    //  MOJOSETUP_MEDIA0, etc until you find the media or run out of
+    //  overrides.
+    //
+    // After the overrides, we ask the platform layer to find the media.
+
+    const char *unique = luaL_checkstring(L, 1);
+    const char *override = cmdlinestr("media", "MOJOSETUP_MEDIA", NULL);
+    char *physical = NULL;
+    char cmdbuf[64];
+    char envrbuf[64];
+    int i = 0;
+
+    do
+    {
+        if ( (override) && (MojoPlatform_exists(override, unique)) )
+            return retvalString(L, override);
+
+        snprintf(cmdbuf, sizeof (cmdbuf), "media%d", i);
+        snprintf(envrbuf, sizeof (envrbuf), "MOJOSETUP_MEDIA%d", i);
+    } while ((override = cmdlinestr(cmdbuf, envrbuf, NULL)) != NULL);
+
+    // No override. Try platform layer for real media...
+    physical = MojoPlatform_findMedia(unique);
+    retvalString(L, physical);  // may push nil.
+    free(physical);
+    return 1;
+} // luahook_findmedia
+
+
 static int luahook_gui_start(lua_State *L)
 {
     const char *title = luaL_checkstring(L, 1);
@@ -912,6 +953,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_cmdlinestr, "cmdlinestr");
         set_cfunc(luaState, luahook_collectgarbage, "collectgarbage");
         set_cfunc(luaState, luahook_debugger, "debugger");
+        set_cfunc(luaState, luahook_findmedia, "findmedia");
         set_string(luaState, locale, "locale");
         set_string(luaState, PLATFORM_NAME, "platform");
         set_string(luaState, PLATFORM_ARCH, "arch");

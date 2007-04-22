@@ -30,6 +30,12 @@ boolean MojoPlatform_unlink(const char *fname);
 //  NULL if path couldn't be resolved.
 char *MojoPlatform_realpath(const char *path);
 
+// !!! FIXME: comment me.
+boolean MojoPlatform_exists(const char *dir, const char *fname);
+
+// !!! FIXME: comment me.
+char *MojoPlatform_findMedia(const char *uniquefile);
+
 // Wrappers for Unix dlopen/dlsym/dlclose, sort of. Instead of a filename,
 //  these take a memory buffer for the library. If you can't load this
 //  directly in RAM, the platform should write it to a temporary file first,
@@ -39,6 +45,7 @@ char *MojoPlatform_realpath(const char *path);
 void *MojoPlatform_dlopen(const uint8 *img, size_t len);
 void *MojoPlatform_dlsym(void *lib, const char *sym);
 void MojoPlatform_dlclose(void *lib);
+
 
 // Put a line of text to the the system log, whatever that might be on a
 //  given platform. (str) is a complete line, but won't end with any newline
