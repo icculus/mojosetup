@@ -58,6 +58,12 @@ struct MojoGui
     char * (*destination)(const char **recommendations, int reccount,
                            boolean can_go_back, boolean can_go_forward);
     boolean (*insertmedia)(const char *medianame);
+    void (*startdownload)(void);
+    void (*pumpdownload)(void);
+    void (*enddownload)(void);
+    void (*startinstall)(void);
+    void (*pumpinstall)(void);
+    void (*endinstall)(void);
 };
 
 typedef const MojoGui* (*MojoGuiEntryPoint)(int revision,
@@ -95,6 +101,12 @@ static boolean MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
 static char *MojoGui_##module##_destination(const char **r, int reccount, \
                            boolean can_go_back, boolean can_go_forward); \
 static boolean MojoGui_##module##_insertmedia(const char *medianame); \
+static void MojoGui_##module##_startdownload(void); \
+static void MojoGui_##module##_pumpdownload(void); \
+static void MojoGui_##module##_enddownload(void); \
+static void MojoGui_##module##_startinstall(void); \
+static void MojoGui_##module##_pumpinstall(void); \
+static void MojoGui_##module##_endinstall(void); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \
     if (rev == MOJOGUI_INTERFACE_REVISION) { \
@@ -111,6 +123,12 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_options, \
             MojoGui_##module##_destination, \
             MojoGui_##module##_insertmedia, \
+            MojoGui_##module##_startdownload, \
+            MojoGui_##module##_pumpdownload, \
+            MojoGui_##module##_enddownload, \
+            MojoGui_##module##_startinstall, \
+            MojoGui_##module##_pumpinstall, \
+            MojoGui_##module##_endinstall, \
         }; \
         entry = e; \
         return &retval; \

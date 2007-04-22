@@ -316,5 +316,39 @@ static boolean MojoGui_stdio_insertmedia(const char *medianame)
     return readstr(NULL, buf, sizeof (buf), false, true) > 0;
 } // MojoGui_stdio_insertmedia
 
+
+static void MojoGui_stdio_startdownload(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_stdio_startdownload
+static void MojoGui_stdio_pumpdownload(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_stdio_pumpdownload
+static void MojoGui_stdio_enddownload(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_stdio_enddownload
+
+static void MojoGui_stdio_startinstall(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_stdio_startinstall
+static void MojoGui_stdio_pumpinstall(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_stdio_pumpinstall
+static void MojoGui_stdio_endinstall(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_stdio_endinstall
+
+
 // end of gui_stdio.c ...
 

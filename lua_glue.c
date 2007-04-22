@@ -855,6 +855,48 @@ static int luahook_gui_insertmedia(lua_State *L)
 } // luahook_gui_insertmedia
 
 
+static int luahook_gui_startdownload(lua_State *L)
+{
+    GGui->startdownload();
+    return 0;
+} // luahook_gui_startdownload
+
+
+static int luahook_gui_pumpdownload(lua_State *L)
+{
+    GGui->pumpdownload();
+    return 0;
+} // luahook_gui_pumpdownload
+
+
+static int luahook_gui_enddownload(lua_State *L)
+{
+    GGui->enddownload();
+    return 0;
+} // luahook_gui_enddownload
+
+
+static int luahook_gui_startinstall(lua_State *L)
+{
+    GGui->startinstall();
+    return 0;
+} // luahook_gui_startinstall
+
+
+static int luahook_gui_pumpinstall(lua_State *L)
+{
+    GGui->pumpinstall();
+    return 0;
+} // luahook_gui_pumpinstall
+
+
+static int luahook_gui_endinstall(lua_State *L)
+{
+    GGui->endinstall();
+    return 0;
+} // luahook_gui_endinstall
+
+
 // Sets t[sym]=f, where t is on the top of the Lua stack.
 static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
 {
@@ -972,6 +1014,12 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_gui_destination, "destination");
             set_cfunc(luaState, luahook_gui_stop, "stop");
             set_cfunc(luaState, luahook_gui_insertmedia, "insertmedia");
+            set_cfunc(luaState, luahook_gui_startdownload, "startdownload");
+            set_cfunc(luaState, luahook_gui_pumpdownload, "pumpdownload");
+            set_cfunc(luaState, luahook_gui_enddownload, "enddownload");
+            set_cfunc(luaState, luahook_gui_startinstall, "startinstall");
+            set_cfunc(luaState, luahook_gui_pumpinstall, "pumpinstall");
+            set_cfunc(luaState, luahook_gui_endinstall, "endinstall");
         lua_setfield(luaState, -2, "gui");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 

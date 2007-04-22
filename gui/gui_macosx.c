@@ -169,5 +169,38 @@ static boolean MojoGui_macosx_insertmedia(const char *medianame)
                      entry->_("OK"), entry->_("Cancel"));
 } // MojoGui_macosx_insertmedia
 
+
+static void MojoGui_macosx_startdownload(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_macosx_startdownload
+static void MojoGui_macosx_pumpdownload(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_macosx_pumpdownload
+static void MojoGui_macosx_enddownload(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_macosx_enddownload
+
+static void MojoGui_macosx_startinstall(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_macosx_startinstall
+static void MojoGui_macosx_pumpinstall(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_macosx_pumpinstall
+static void MojoGui_macosx_endinstall(void)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_macosx_endinstall
+
 // end of gui_macosx.c ...
 
