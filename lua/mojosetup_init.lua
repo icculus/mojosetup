@@ -399,7 +399,6 @@ function Setup.File(tab)
         { "destination", nil, mustBeString, cantBeEmpty },
         { "filter", nil, mustBeFunction },
         { "unpackarchives", nil, mustBeBool },
-        { "mediaid", nil, mustBeString, cantBeEmpty },
     })
 end
 

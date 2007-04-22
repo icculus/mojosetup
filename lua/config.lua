@@ -73,10 +73,9 @@ Setup.Package
         -- File(s) to install.
         Setup.File
         {
-            mediaid = "cd1",
             destination = "MyGame/MyGame.app",
             unpackarchives = true,
-            source = { "Maps/Maps.zip", "Sounds/*.wav", "Graphics/*" },
+            source = { "media://cd1/Maps/m.zip", "media://cd1/Sounds/*.wav" },
 
             -- You can optionally assign a lua function...we'll call this for
             --  each file to see if we should avoid installing it.
@@ -109,6 +108,23 @@ Setup.Package
                 description = "German",
                 Setup.File { source="Lang/German.zip" },
             },
+        },
+    },
+
+    Setup.Option
+    {
+        value = true,
+        required = false,
+        disabled = false,
+        size = "20M",
+        description = "Downloadable extras",
+
+        -- File(s) to install.
+        Setup.File
+        {
+            destination = "MyGame/MyGame.app",
+            unpackarchives = true,
+            source = { "http://hostname.dom/extras/extras.zip" },
         },
     },
 }
