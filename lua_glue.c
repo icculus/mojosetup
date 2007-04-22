@@ -40,6 +40,30 @@ static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 } // MojoLua_reader
 
 
+static inline int retvalString(lua_State *L, const char *str)
+{
+    if (str != NULL)
+        lua_pushstring(L, str);
+    else
+        lua_pushnil(L);
+    return 1;
+} // retvalString
+
+
+static inline int retvalBoolean(lua_State *L, boolean b)
+{
+    lua_pushboolean(L, b);
+    return 1;
+} // retvalBoolean
+
+
+static inline int retvalNumber(lua_State *L, lua_Number n)
+{
+    lua_pushnumber(L, n);
+    return 1;
+} // retvalNumber
+
+
 static inline int snprintfcat(char **ptr, size_t *len, const char *fmt, ...)
 {
     int bw = 0;
@@ -119,8 +143,7 @@ static int luahook_stackwalk(lua_State *L)
         logDebug((const char *) scratchbuf_128k);
     } // for
 
-    lua_pushstring(L, errstr ? errstr : "");
-    return 1;
+    return retvalString(L, errstr ? errstr : "");
 } // luahook_stackwalk
 
 
@@ -284,15 +307,6 @@ static int luahook_collectgarbage(lua_State *L)
 } // luahook_collectgarbage
 
 
-static inline void pushStringOrNil(lua_State *L, const char *str)
-{
-    if (str != NULL)
-        lua_pushstring(L, str);
-    else
-        lua_pushnil(L);
-} // pushStringOrNil
-
-
 // Since localization is kept in Lua tables, I stuck this in the Lua glue.
 const char *translate(const char *str)
 {
@@ -349,8 +363,7 @@ static int luahook_fatal(lua_State *L)
 static int luahook_runfile(lua_State *L)
 {
     const char *fname = luaL_checkstring(L, 1);
-    lua_pushboolean(L, MojoLua_runFile(fname));
-    return 1;
+    return retvalBoolean(L, MojoLua_runFile(fname));
 } // luahook_runfile
 
 
@@ -358,8 +371,7 @@ static int luahook_runfile(lua_State *L)
 static int luahook_translate(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
-    lua_pushstring(L, translate(str));
-    return 1;
+    return retvalString(L, translate(str));
 } // luahook_translate
 
 
@@ -392,9 +404,8 @@ static int luahook_promptyn(lua_State *L)
         rc = GGui->promptyn(title, text);
     } // if
 
-    lua_pushboolean(L, rc);
-    return 1;
-} // luahook_msgbox
+    return retvalBoolean(L, rc);
+} // luahook_promptyn
 
 
 static int luahook_logwarning(lua_State *L)
@@ -428,8 +439,7 @@ static int luahook_logdebug(lua_State *L)
 static int luahook_cmdline(lua_State *L)
 {
     const char *arg = luaL_checkstring(L, 1);
-    lua_pushboolean(L, cmdline(arg));
-    return 1;
+    return retvalBoolean(L, cmdline(arg));
 } // luahook_cmdline
 
 
@@ -439,8 +449,7 @@ static int luahook_cmdlinestr(lua_State *L)
     const char *arg = luaL_checkstring(L, 1);
     const char *envr = (argc < 2) ? NULL : lua_tostring(L, 2);
     const char *deflt = (argc < 3) ? NULL : lua_tostring(L, 3);
-    pushStringOrNil(L, cmdlinestr(arg, envr, deflt));
-    return 1;
+    return retvalString(L, cmdlinestr(arg, envr, deflt));
 } // luahook_cmdlinestr
 
 
@@ -448,8 +457,7 @@ static int luahook_gui_start(lua_State *L)
 {
     const char *title = luaL_checkstring(L, 1);
     const char *splash = lua_tostring(L, 2);
-    lua_pushboolean(L, GGui->start(title, splash));
-    return 1;
+    return retvalBoolean(L, GGui->start(title, splash));
 } // luahook_gui_start
 
 
@@ -758,8 +766,7 @@ static int luahook_gui_options(lua_State *L)
     done_gui_options(L, opts);  // free C structs, update Lua tables...
     lua_pop(L, 1);  // pop table we created.
 
-    lua_pushboolean(L, rc);
-    return 1;  // returns one boolean value.
+    return retvalBoolean(L, rc);
 } // luahook_gui_options
 
 
@@ -793,21 +800,17 @@ static int luahook_gui_destination(lua_State *L)
 
     rc = GGui->destination((const char **) recommend, reccount,
                             can_go_back, can_go_fwd);
-    if (rc == NULL)
-        lua_pushnil(L);
-    else
-    {
-        lua_pushstring(L, rc);
-        free(rc);
-    } // else
+
+    retvalString(L, rc);  // may push nil.
+    free(rc);
     return 1;
 } // luahook_gui_destination
 
 
 static int luahook_gui_insertmedia(lua_State *L)
 {
-    lua_pushboolean(L, GGui->insertmedia(luaL_checkstring(L, 1)));
-    return 1;
+    const char *unique = luaL_checkstring(L, 1);
+    return retvalBoolean(L, GGui->insertmedia(unique));
 } // luahook_gui_insertmedia
 
 
