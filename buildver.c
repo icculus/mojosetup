@@ -1,5 +1,5 @@
 /*
- * This is in a seperate file so that we can recompile it every time
+ * This is in a separate file so that we can recompile it every time
  *  without it forcing a recompile on something ccache would otherwise not
  *  have to rebuild...this file's checksum changes every time you build it
  *  due to the __DATE__ and __TIME__ macros.
