@@ -15,7 +15,7 @@ void MojoLua_deinitLua(void);
 boolean MojoLua_initialized(void);
 
 // Run the code in a given Lua file. This is JUST the base filename.
-//  We will look for it in GBaseArchive in the lua/ directory, both as
+//  We will look for it in GBaseArchive in the scripts/ directory, both as
 //  fname.luac and fname.lua. This code chunk will accept no arguments, and
 //  return no results, but it can change the global state and alter tables,
 //  etc, so it can have lasting side effects.

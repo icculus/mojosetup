@@ -236,7 +236,7 @@ boolean MojoLua_runFile(const char *basefname)
     if (snprintf(ulua, sizeof (ulua), "%s.lua", basefname) >= sizeof (ulua))
         return false;
 
-    if (ar->enumerate(ar, "lua"))
+    if (ar->enumerate(ar, "scripts"))
     {
         while ((entinfo = ar->enumNext(ar)) != NULL)
         {
@@ -257,8 +257,8 @@ boolean MojoLua_runFile(const char *basefname)
 
     if (io != NULL)
     {
-        char *realfname = xmalloc(strlen(entinfo->filename) + 6);
-        sprintf(realfname, "@lua/%s", entinfo->filename);
+        char *realfname = xmalloc(strlen(entinfo->filename) + 10);
+        sprintf(realfname, "@scripts/%s", entinfo->filename);
         lua_pushcfunction(luaState, luahook_stackwalk);
         rc = lua_load(luaState, MojoLua_reader, io, realfname);
         free(realfname);
