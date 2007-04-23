@@ -124,7 +124,6 @@ SET(LUA_PARSER_SRCS
 SET(MOJOSETUP_SRCS
     buildver.c
     mojosetup.c
-    misc.c
     gui.c
     fileio.c
     archive_zip.c
