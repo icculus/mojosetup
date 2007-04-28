@@ -94,6 +94,43 @@ const char *cmdlinestr(const char *arg, const char *envr, const char *deflt)
 } // cmdlinestr
 
 
+boolean wildcardMatch(const char *str, const char *pattern)
+{
+    char sch = *(str++);
+    while (true)
+    {
+        const char pch = *(pattern++);
+        if (pch == '?')
+        {
+            if ((sch == '\0') || (sch == '/'))
+                return false;
+            sch = *(str++);
+        } // else if
+
+        else if (pch == '*')
+        {
+            char nextpch = *(pattern+1);
+            if (nextpch != '?')
+            {
+                while ((sch != '/') && (sch != '\0') && (sch != nextpch))
+                    sch = *(str++);
+            } // if
+        } // else if
+
+        else
+        {
+            if (pch != sch)
+                return false;
+            else if (pch == '\0')
+                return true;
+            sch = *(str++);
+        } // else
+    } // while
+
+    return true;   // shouldn't hit this.
+} // wildcardMatch
+
+
 // !!! FIXME: change this later.
 #define DEFLOGLEV "everything"
 static MojoSetupLogLevel logLevel = MOJOSETUP_LOG_EVERYTHING;
