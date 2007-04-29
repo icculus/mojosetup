@@ -52,17 +52,17 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
 } // MojoArchive_newFromInput
 
 
-void MojoArchive_resetEntryInfo(MojoArchiveEntryInfo *info, int basetoo)
+void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo)
 {
     char *base = info->basepath;
     free(info->filename);
-    memset(info, '\0', sizeof (MojoArchiveEntryInfo));
+    memset(info, '\0', sizeof (MojoArchiveEntry));
 
     if (basetoo)
         free(base);
     else
         info->basepath = base;
-} // MojoArchive_resetEntryInfo
+} // MojoArchive_resetEntry
 
 
 
@@ -125,7 +125,7 @@ MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname)
 
     if (ar->enumerate(ar, path))
     {
-        const MojoArchiveEntryInfo *entinfo;
+        const MojoArchiveEntry *entinfo;
         while ((entinfo = ar->enumNext(ar)) != NULL)
         {
             if (strcmp(entinfo->filename, file) == 0)
@@ -377,7 +377,7 @@ static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
     DIR *dir = NULL;
 
     freeDirStack(&inst->dirs);
-    MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
+    MojoArchive_resetEntry(&ar->prevEnum, 1);
 
     if (path == NULL)
     {
@@ -410,7 +410,7 @@ static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
 } // MojoArchive_dir_enumerate
 
 
-static const MojoArchiveEntryInfo *MojoArchive_dir_enumNext(MojoArchive *ar)
+static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
 {
     const boolean enumall = (ar->prevEnum.basepath == NULL);
     struct stat statbuf;
@@ -420,7 +420,7 @@ static const MojoArchiveEntryInfo *MojoArchive_dir_enumNext(MojoArchive *ar)
     if (inst->dirs == NULL)
         return NULL;
 
-    MojoArchive_resetEntryInfo(&ar->prevEnum, 0);
+    MojoArchive_resetEntry(&ar->prevEnum, 0);
 
     dent = readdir(inst->dirs->dir);
     if (dent == NULL)  // end of dir?
@@ -494,7 +494,7 @@ static void MojoArchive_dir_close(MojoArchive *ar)
     freeDirStack(&inst->dirs);
     free(inst->base);
     free(inst);
-    MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
+    MojoArchive_resetEntry(&ar->prevEnum, 1);
     free(ar);
 } // MojoArchive_dir_close
 

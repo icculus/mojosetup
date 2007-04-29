@@ -47,16 +47,15 @@ typedef enum
 } MojoArchiveEntryType;
 
 // Abstract archive interface. Archives, directories, etc.
-typedef struct MojoArchiveEntryInfo MojoArchiveEntryInfo;
-struct MojoArchiveEntryInfo
+typedef struct MojoArchiveEntry
 {
     char *filename;
     char *basepath;
     MojoArchiveEntryType type;
     int64 filesize;
-};
+} MojoArchiveEntry;
 
-void MojoArchive_resetEntryInfo(MojoArchiveEntryInfo *info, int basetoo);
+void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo);
 
 
 typedef struct MojoArchive MojoArchive;
@@ -64,13 +63,13 @@ struct MojoArchive
 {
     // public
     boolean (*enumerate)(MojoArchive *ar, const char *path);
-    const MojoArchiveEntryInfo* (*enumNext)(MojoArchive *ar);
+    const MojoArchiveEntry* (*enumNext)(MojoArchive *ar);
     MojoInput* (*openCurrentEntry)(MojoArchive *ar);
     void (*close)(MojoArchive *ar);
 
     // private
     MojoInput *io;
-    MojoArchiveEntryInfo prevEnum;
+    MojoArchiveEntry prevEnum;
     void *opaque;
 };
 

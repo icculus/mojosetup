@@ -1688,7 +1688,7 @@ static boolean MojoArchive_zip_enumerate(MojoArchive *ar, const char *path)
 {
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
 
-    MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
+    MojoArchive_resetEntry(&ar->prevEnum, 1);
     info->enumIndex = 0;
 
     if (path != NULL)
@@ -1707,7 +1707,7 @@ static boolean MojoArchive_zip_enumerate(MojoArchive *ar, const char *path)
 } // MojoArchive_zip_enumerate
 
 
-static const MojoArchiveEntryInfo *MojoArchive_zip_enumNext(MojoArchive *ar)
+static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
 {
     const boolean enumall = (ar->prevEnum.basepath == NULL);
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
@@ -1715,7 +1715,7 @@ static const MojoArchiveEntryInfo *MojoArchive_zip_enumNext(MojoArchive *ar)
     if (info->enumIndex < 0)
         return NULL;
 
-    MojoArchive_resetEntryInfo(&ar->prevEnum, 0);
+    MojoArchive_resetEntry(&ar->prevEnum, 0);
 
     if (info->enumIndex < info->entryCount)
     {
@@ -1816,7 +1816,7 @@ static MojoInput *MojoArchive_zip_openCurrentEntry(MojoArchive *ar)
 static void MojoArchive_zip_close(MojoArchive *ar)
 {
     ZIP_dirClose(ar->opaque);
-    MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
+    MojoArchive_resetEntry(&ar->prevEnum, 1);
     free(ar);
 } // MojoArchive_zip_close
 

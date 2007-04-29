@@ -144,7 +144,7 @@ static void loadDynamicGuiPlugins(PluginList *plugins)
 {
     if (GBaseArchive->enumerate(GBaseArchive, "gui"))
     {
-        const MojoArchiveEntryInfo *entinfo;
+        const MojoArchiveEntry *entinfo;
         while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)
         {
             if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)

@@ -223,7 +223,7 @@ void MojoLua_debugger(void)
 boolean MojoLua_runFile(const char *basefname)
 {
     MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
-    const MojoArchiveEntryInfo *entinfo;
+    const MojoArchiveEntry *entinfo;
     boolean retval = false;
     char clua[128];  // compiled filename.
     char ulua[128];  // uncompiled filename.
