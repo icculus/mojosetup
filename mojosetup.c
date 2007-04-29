@@ -401,57 +401,6 @@ int MojoSetup_main(int argc, char **argv)
         return 0;
     } // if
 
-#if 1
-{
-    int i;
-    for (i = 1; i < argc; i++)
-    {
-        MojoArchive *archive = MojoArchive_newFromDirectory(argv[i]);
-        if (archive != NULL)
-            printf("directory '%s'...\n", argv[i]);
-        else
-        {
-            MojoInput *io = MojoInput_newFromFile(argv[i]);
-            if (io != NULL)
-            {
-                archive = MojoArchive_newFromInput(io, argv[i]);
-                if (archive != NULL)
-                    printf("archive '%s'...\n", argv[i]);
-            } // if
-        } // else
-
-        if (archive == NULL)
-            fprintf(stderr, "Couldn't handle '%s'\n", argv[i]);
-        else
-        {
-            if (!archive->enumerate(archive, NULL))
-                fprintf(stderr, "enumerate() failed.\n");
-            else
-            {
-                const MojoArchiveEntryInfo *ent;
-                while ((ent = archive->enumNext(archive)) != NULL)
-                {
-                    printf("%s ", ent->filename);
-                    if (ent->type == MOJOARCHIVE_ENTRY_FILE)
-                        printf("(file, %d bytes)\n", (int) ent->filesize);
-                    else if (ent->type == MOJOARCHIVE_ENTRY_DIR)
-                        printf("(dir)\n");
-                    else if (ent->type == MOJOARCHIVE_ENTRY_SYMLINK)
-                        printf("(symlink)\n");
-                    else
-                        printf("(UNKNOWN?!, %d bytes)\n", (int) ent->filesize);
-                } // while
-            } // else
-            archive->close(archive);
-            printf("\n\n");
-        } // else
-    } // for
-
-    return 0;
-}
-#endif
-
-
     if (!initEverything())
         return 1;
 
