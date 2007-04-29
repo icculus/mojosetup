@@ -3,6 +3,11 @@
 #include "fileio.h"
 #include "platform.h"
 
+#ifdef alloca
+#undef alloca
+#endif
+#define alloca xmalloc
+
 typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
 MojoArchive *MojoArchive_createZIP(MojoInput *io);
@@ -25,6 +30,8 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
     const char *ext = ((origfname != NULL) ? strrchr(origfname, '.') : NULL);
     if (ext != NULL)
     {
+        ext++;  // skip '.'
+
         // Try for an exact match.
         for (i = 0; i < STATICARRAYLEN(archives); i++)
         {
@@ -320,70 +327,145 @@ MojoInput *MojoInput_newFromMemory(void *mem, uint32 bytes)
 #include <sys/param.h>
 #include <dirent.h>
 
-typedef struct
+typedef struct DirStack
 {
     DIR *dir;
+    char *basepath;
+    struct DirStack *next;
+} DirStack;
+
+static void pushDirStack(DirStack **_stack, const char *basepath, DIR *dir)
+{
+    DirStack *stack = (DirStack *) xmalloc(sizeof (DirStack));
+    stack->dir = dir;
+    stack->basepath = xstrdup(basepath);
+    stack->next = *_stack;
+    *_stack = stack;
+} // pushDirStack
+
+static void popDirStack(DirStack **_stack)
+{
+    DirStack *stack = *_stack;
+    if (stack != NULL)
+    {
+        DirStack *next = stack->next;
+        if (stack->dir)
+            closedir(stack->dir);
+        free(stack->basepath);
+        free(stack);
+        *_stack = next;
+    } // if
+} // popDirStack
+
+static void freeDirStack(DirStack **_stack)
+{
+    while (*_stack)
+        popDirStack(_stack);
+} // freeDirStack
+
+
+typedef struct
+{
+    DirStack *dirs;
     char *base;
 } MojoArchiveDirInstance;
 
 static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
 {
-    char *fullpath = NULL;
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    if (inst->dir != NULL)
-        closedir(inst->dir);
+    char *fullpath = NULL;
+    DIR *dir = NULL;
 
+    freeDirStack(&inst->dirs);
     MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
-    fullpath = (char *) alloca(strlen(inst->base) + strlen(path) + 2);
-    sprintf(fullpath, "%s/%s", inst->base, path);
-    ar->prevEnum.basepath = xstrdup(path);
-    inst->dir = opendir(fullpath);
-    return (inst->dir != NULL);
+
+    if (path == NULL)
+    {
+        fullpath = (char *) alloca(strlen(inst->base) + 1);
+        strcpy(fullpath, inst->base);
+    } // if
+    else
+    {
+        size_t dlen = strlen(inst->base) + strlen(path);
+        fullpath = (char *) alloca(dlen + 1);
+        sprintf(fullpath, "%s/%s", inst->base, path);
+        while ((dlen > 0) && (fullpath[dlen - 1] == '/'))
+            fullpath[--dlen] = '\0'; // ignore trailing '/'
+    } // else
+
+    dir = opendir(fullpath);
+    if (dir != NULL)
+    {
+        if (path != NULL)
+        {
+            size_t dlen = strlen(path);
+            ar->prevEnum.basepath = xstrdup(path);
+            while ((dlen > 0) && (ar->prevEnum.basepath[dlen - 1] == '/'))
+                ar->prevEnum.basepath[--dlen] = '\0'; // ignore trailing '/'
+        } // if
+        pushDirStack(&inst->dirs, fullpath, dir);
+    } // if
+
+    return (dir != NULL);
 } // MojoArchive_dir_enumerate
 
 
 static const MojoArchiveEntryInfo *MojoArchive_dir_enumNext(MojoArchive *ar)
 {
+    const boolean enumall = (ar->prevEnum.basepath == NULL);
     struct stat statbuf;
     char *fullpath = NULL;
-    struct dirent *dent;
+    struct dirent *dent = NULL;
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    if (inst->dir == NULL)
+    if (inst->dirs == NULL)
         return NULL;
 
     MojoArchive_resetEntryInfo(&ar->prevEnum, 0);
 
-    dent = readdir(inst->dir);
+    dent = readdir(inst->dirs->dir);
     if (dent == NULL)  // end of dir?
     {
-        closedir(inst->dir);
-        inst->dir = NULL;
-        return NULL;
+        popDirStack(&inst->dirs);
+        return MojoArchive_dir_enumNext(ar);  // try higher level in tree.
     } // if
 
     if ((strcmp(dent->d_name, ".") == 0) || (strcmp(dent->d_name, "..") == 0))
-        return MojoArchive_dir_enumNext(ar);
+        return MojoArchive_dir_enumNext(ar);  // skip these.
 
-    ar->prevEnum.filename = xstrdup(dent->d_name);
-    fullpath = (char *) alloca(strlen(inst->base) +
-                               strlen(ar->prevEnum.basepath) +
-                               strlen(ar->prevEnum.filename) + 3);
+    fullpath = (char *) alloca(strlen(inst->dirs->basepath) +
+                               strlen(dent->d_name) + 2);
 
-    sprintf(fullpath, "%s/%s/%s",
-                inst->base,
-                ar->prevEnum.basepath,
-                ar->prevEnum.filename);
+    sprintf(fullpath, "%s/%s", inst->dirs->basepath, dent->d_name);
 
-    if (stat(fullpath, &statbuf) != -1)
+    if (!enumall)
+        ar->prevEnum.filename = xstrdup(dent->d_name);
+    else
+    {
+        ar->prevEnum.filename = xmalloc(strlen(fullpath) + 1);
+        strcpy(ar->prevEnum.filename, fullpath + strlen(inst->base) + 1);
+    } // else
+
+    if (lstat(fullpath, &statbuf) == -1)
+        ar->prevEnum.type = MOJOARCHIVE_ENTRY_UNKNOWN;
+    else
     {
         ar->prevEnum.filesize = statbuf.st_size;
-        if (S_ISDIR(statbuf.st_mode))
-            ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-        else if (S_ISREG(statbuf.st_mode))
+        if (S_ISREG(statbuf.st_mode))
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
         else if (S_ISLNK(statbuf.st_mode))
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-    } // if
+        else if (S_ISDIR(statbuf.st_mode))
+        {
+            ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
+            if (enumall)
+            {
+                // push this dir on the stack. Next enum will start there.
+                DIR *dir = opendir(fullpath);
+                if (dir != NULL)  // !!! FIXME: what to do if NULL?
+                    pushDirStack(&inst->dirs, fullpath, dir);
+            } // if
+        } // else if
+    } // else
 
     return &ar->prevEnum;
 } // MojoArchive_dir_enumNext
@@ -391,24 +473,25 @@ static const MojoArchiveEntryInfo *MojoArchive_dir_enumNext(MojoArchive *ar)
 
 static MojoInput *MojoArchive_dir_openCurrentEntry(MojoArchive *ar)
 {
+    MojoInput *retval = NULL;
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    char *fullpath = (char *) alloca(strlen(inst->base) +
-                                     strlen(ar->prevEnum.basepath) +
-                                     strlen(ar->prevEnum.filename) + 3);
-    sprintf(fullpath, "%s/%s/%s",
-                inst->base,
-                ar->prevEnum.basepath,
-                ar->prevEnum.filename);
 
-    return MojoInput_newFromFile(fullpath);
+    if ((inst->dirs != NULL) && (ar->prevEnum.type != MOJOARCHIVE_ENTRY_DIR))
+    {
+        char *fullpath = (char *) alloca(strlen(inst->dirs->basepath) +
+                                         strlen(ar->prevEnum.filename) + 2);
+        sprintf(fullpath, "%s/%s", inst->dirs->basepath, ar->prevEnum.filename);
+        retval = MojoInput_newFromFile(fullpath);
+    } // if
+
+    return retval;
 } // MojoArchive_dir_openCurrentEntry
 
 
 static void MojoArchive_dir_close(MojoArchive *ar)
 {
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    if (inst->dir != NULL)
-        closedir(inst->dir);
+    freeDirStack(&inst->dirs);
     free(inst->base);
     free(inst);
     MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
@@ -420,13 +503,14 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
 {
     MojoArchive *ar = NULL;
     MojoArchiveDirInstance *inst;
-    char *resolved = MojoPlatform_realpath(dirname);
+    char *real = MojoPlatform_realpath(dirname);
+    struct stat st;
 
-    if (resolved == NULL)
+    if ( (real == NULL) || (stat(real, &st) == -1) || (!S_ISDIR(st.st_mode)) )
         return NULL;
 
     inst = (MojoArchiveDirInstance *) xmalloc(sizeof (MojoArchiveDirInstance));
-    inst->base = resolved;
+    inst->base = real;
     ar = (MojoArchive *) xmalloc(sizeof (MojoArchive));
     ar->enumerate = MojoArchive_dir_enumerate;
     ar->enumNext = MojoArchive_dir_enumNext;

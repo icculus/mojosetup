@@ -1000,7 +1000,7 @@ static int zip_version_does_symlinks(PHYSFS_uint32 version)
 } /* zip_version_does_symlinks */
 
 
-static int zip_entry_is_symlink(ZIPentry *entry)
+static int zip_entry_is_symlink(const ZIPentry *entry)
 {
     return((entry->resolved == ZIP_UNRESOLVED_SYMLINK) ||
            (entry->resolved == ZIP_BROKEN_SYMLINK) ||
@@ -1687,19 +1687,21 @@ static void MojoInput_zip_close(MojoInput *io)
 static boolean MojoArchive_zip_enumerate(MojoArchive *ar, const char *path)
 {
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
-    size_t dlen;
 
     MojoArchive_resetEntryInfo(&ar->prevEnum, 1);
+    info->enumIndex = 0;
 
-    info->enumIndex = zip_find_start_of_dir(info, path, 0);
-    if (info->enumIndex == -1)  // no such directory.
-        return false;
-
-    ar->prevEnum.basepath = xstrdup(path);
-
-    dlen = strlen(ar->prevEnum.basepath);
-    while ((dlen > 0) && (ar->prevEnum.basepath[dlen - 1] == '/'))
-        ar->prevEnum.basepath[--dlen] = '\0'; // ignore trailing slashes.
+    if (path != NULL)
+    {
+        size_t dlen;
+        info->enumIndex = zip_find_start_of_dir(info, path, 0);
+        if (info->enumIndex == -1)  // no such directory.
+            return false;
+        ar->prevEnum.basepath = xstrdup(path);
+        dlen = strlen(ar->prevEnum.basepath);
+        while ((dlen > 0) && (ar->prevEnum.basepath[dlen - 1] == '/'))
+            ar->prevEnum.basepath[--dlen] = '\0'; // ignore trailing slashes.
+    } // if
 
     return true;
 } // MojoArchive_zip_enumerate
@@ -1707,59 +1709,74 @@ static boolean MojoArchive_zip_enumerate(MojoArchive *ar, const char *path)
 
 static const MojoArchiveEntryInfo *MojoArchive_zip_enumNext(MojoArchive *ar)
 {
+    const boolean enumall = (ar->prevEnum.basepath == NULL);
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
-    const char *dname;
-    size_t dlen, dlen_inc;
 
     if (info->enumIndex < 0)
         return NULL;
 
     MojoArchive_resetEntryInfo(&ar->prevEnum, 0);
 
-    dname = ar->prevEnum.basepath;
-    dlen = strlen(dname);
-    dlen_inc = ((dlen > 0) ? 1 : 0) + dlen;
-
     if (info->enumIndex < info->entryCount)
     {
-        ZIPentry *entry = &info->entries[info->enumIndex];
-        char *e = entry->name;
-
-        // not past end of this dir?
-        if (!((dlen) && ((strncmp(e, dname, dlen) != 0) || (e[dlen] != '/'))))
+        if (enumall)
         {
-            // Valid entry, this will be our returned data.
-            char *add = e + dlen_inc;
-            char *ptr = strchr(add, '/');
-            PHYSFS_sint32 ln = (PHYSFS_sint32) ((ptr) ? ptr-add : strlen(add));
-
-            ar->prevEnum.filename = (char *) xmalloc(ln+1);
-            memcpy(ar->prevEnum.filename, add, ln);
-            ar->prevEnum.filename[ln] = '\0';
-
+            const ZIPentry *entry = &info->entries[info->enumIndex++];
+            ar->prevEnum.filename = xstrdup(entry->name);
             ar->prevEnum.filesize = entry->uncompressed_size;
-            if (ptr != NULL)
+            if (entry->name[strlen(entry->name) - 1] == '/')
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
             else if (zip_entry_is_symlink(entry))
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
             else
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
-
-            info->enumIndex++;
-
-            // skip children of subdirs...
-            if (ptr != NULL)
-            {
-                while (info->enumIndex < info->entryCount)
-                {
-                    char *e_new = info->entries[info->enumIndex].name;
-                    if ((strncmp(e, e_new, ln) != 0) || (e_new[ln] != '/'))
-                        break;
-                    info->enumIndex++;
-                } // while
-            } // if
             return &ar->prevEnum;
         } // if
+
+        else  // enumerating one directory...
+        {
+            const char *dname = ar->prevEnum.basepath;
+            size_t dlen = strlen(dname);
+            size_t dlen_inc = ((dlen > 0) ? 1 : 0) + dlen;
+            const ZIPentry *entry = &info->entries[info->enumIndex];
+            const char *e = entry->name;
+
+            // not past end of this dir?
+            if (!((dlen)&&((strncmp(e, dname, dlen) != 0)||(e[dlen] != '/'))))
+            {
+                // Valid entry, this will be our returned data.
+                const char *add = e + dlen_inc;
+                char *ptr = strchr(add, '/');
+                PHYSFS_sint32 ln = (PHYSFS_sint32)((ptr) ? ptr-add:strlen(add));
+
+                ar->prevEnum.filename = (char *) xmalloc(ln+1);
+                memcpy(ar->prevEnum.filename, add, ln);
+                ar->prevEnum.filename[ln] = '\0';
+
+                ar->prevEnum.filesize = entry->uncompressed_size;
+                if (ptr != NULL)
+                    ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
+                else if (zip_entry_is_symlink(entry))
+                    ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
+                else
+                    ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+
+                info->enumIndex++;
+
+                // skip children of subdirs...
+                if (ptr != NULL)
+                {
+                    while (info->enumIndex < info->entryCount)
+                    {
+                        char *e_new = info->entries[info->enumIndex].name;
+                        if ((strncmp(e, e_new, ln) != 0) || (e_new[ln] != '/'))
+                            break;
+                        info->enumIndex++;
+                    } // while
+                } // if
+                return &ar->prevEnum;
+            } // if
+        } // else
     } // if
 
     // we're done.
