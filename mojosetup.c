@@ -110,9 +110,9 @@ boolean wildcardMatch(const char *str, const char *pattern)
         else if (pch == '*')
         {
             char nextpch = *(pattern+1);
-            if (nextpch != '?')
+            if ((nextpch != '?') && (nextpch != '*'))
             {
-                while ((sch != '/') && (sch != '\0') && (sch != nextpch))
+                while ((sch != '\0') && (sch != nextpch))
                     sch = *(str++);
             } // if
         } // else if
