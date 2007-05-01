@@ -142,7 +142,7 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
 
 static void loadDynamicGuiPlugins(PluginList *plugins)
 {
-    if (GBaseArchive->enumerate(GBaseArchive, "gui"))
+    if (GBaseArchive->enumerate(GBaseArchive, "guis"))
     {
         const MojoArchiveEntry *entinfo;
         while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)

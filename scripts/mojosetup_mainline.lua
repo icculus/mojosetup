@@ -239,7 +239,7 @@ local function do_install(install)
     --  of any EULA is considered fatal.
     for k,eula in pairs(install.eulas) do
         local desc = eula.description
-        local fname = eula.source
+        local fname = "data/" .. eula.source
 
         -- (desc) and (fname) become an upvalues in this function.
         stages[#stages+1] = function (thisstage, maxstage)
@@ -257,7 +257,7 @@ local function do_install(install)
     -- Next stage: show any READMEs.
     for k,readme in pairs(install.readmes) do
         local desc = readme.description
-        local fname = readme.source
+        local fname = "data/" .. readme.source
         -- (desc) and (fname) become upvalues in this function.
         stages[#stages+1] = function(thisstage, maxstage)
             return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
