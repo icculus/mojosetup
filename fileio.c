@@ -4,11 +4,6 @@
 #include "fileio.h"
 #include "platform.h"
 
-#ifdef alloca
-#undef alloca
-#endif
-#define alloca xmalloc
-
 typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
 MojoArchive *MojoArchive_createZIP(MojoInput *io);
@@ -408,7 +403,7 @@ static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
     } // if
     else
     {
-        size_t dlen = strlen(inst->base) + strlen(path);
+        size_t dlen = strlen(inst->base) + strlen(path) + 1;
         fullpath = (char *) alloca(dlen + 1);
         sprintf(fullpath, "%s/%s", inst->base, path);
         while ((dlen > 0) && (fullpath[dlen - 1] == '/'))
