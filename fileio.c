@@ -23,6 +23,7 @@ static const MojoArchiveType archives[] =
     { "zip", MojoArchive_createZIP },
 };
 
+// !!! FIXME: origfname should just be the extension, I think...
 MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
 {
     int i;
@@ -56,6 +57,7 @@ void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo)
 {
     char *base = info->basepath;
     free(info->filename);
+    free(info->linkdest);
     memset(info, '\0', sizeof (MojoArchiveEntry));
 
     if (basetoo)
@@ -452,8 +454,16 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
         ar->prevEnum.filesize = statbuf.st_size;
         if (S_ISREG(statbuf.st_mode))
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+
         else if (S_ISLNK(statbuf.st_mode))
+        {
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
+            ar->prevEnum.linkdest = (char *) xmalloc(statbuf.st_size + 1);
+            if (readlink(fullpath, ar->prevEnum.linkdest, statbuf.st_size) < 0)
+                return MojoArchive_dir_enumNext(ar);
+            ar->prevEnum.linkdest[statbuf.st_size] = '\0';
+        } // else if
+
         else if (S_ISDIR(statbuf.st_mode))
         {
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;

@@ -218,6 +218,9 @@ typedef struct _ZIPentry
 {
     char *name;                         /* Name of file in archive        */
     struct _ZIPentry *symlink;          /* NULL or file we symlink to     */
+    #if __MOJOSETUP__
+    char *linkdest;
+    #endif
     ZipResolveType resolved;            /* Have we resolved file/symlink? */
     PHYSFS_uint32 offset;               /* offset of data in archive      */
     PHYSFS_uint16 version;              /* version made by                */
@@ -662,6 +665,10 @@ static void zip_free_entries(ZIPentry *entries, PHYSFS_uint32 max)
         ZIPentry *entry = &entries[i];
         if (entry->name != NULL)
             allocator.Free(entry->name);
+        #if __MOJOSETUP__
+        if (entry->linkdest != NULL)
+            allocator.Free(entry->linkdest);
+        #endif
     } /* for */
 
     allocator.Free(entries);
@@ -876,6 +883,9 @@ static int zip_resolve_symlink(void *in, ZIPinfo *info, ZIPentry *entry)
     {
         path[entry->uncompressed_size] = '\0';    /* null-terminate it. */
         zip_convert_dos_path(entry, path);
+        #if __MOJOSETUP__
+        entry->linkdest = xstrdup(path);
+        #endif
         entry->symlink = zip_follow_symlink(in, info, path);
     } /* else */
 
@@ -1083,6 +1093,10 @@ static int zip_load_entry(void *in, ZIPentry *entry, PHYSFS_uint32 ofs_fixup)
     BAIL_IF_MACRO(!readui32(in, &external_attr), NULL, 0);
     BAIL_IF_MACRO(!readui32(in, &entry->offset), NULL, 0);
     entry->offset += ofs_fixup;
+
+    #if __MOJOSETUP__
+    entry->linkdest = NULL;
+    #endif
 
     entry->symlink = NULL;  /* will be resolved later, if necessary. */
     entry->resolved = (zip_has_symlink_attr(entry, external_attr)) ?
@@ -1684,6 +1698,14 @@ static void MojoInput_zip_close(MojoInput *io)
 
 // MojoArchive implementation...
 
+static int MojoArchive_zip_entry_is_symlink(ZIPentry *entry)
+{
+    if (entry->resolved == ZIP_UNRESOLVED_SYMLINK) /* gotta resolve it. */
+        zip_resolve(info->io, info, entry);
+    return zip_entry_is_symlink(entry);
+} // MojoArchive_zip_entry_is_symlink
+
+
 static boolean MojoArchive_zip_enumerate(MojoArchive *ar, const char *path)
 {
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
@@ -1724,12 +1746,14 @@ static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
             const ZIPentry *entry = &info->entries[info->enumIndex++];
             ar->prevEnum.filename = xstrdup(entry->name);
             ar->prevEnum.filesize = entry->uncompressed_size;
+            ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
             if (entry->name[strlen(entry->name) - 1] == '/')
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-            else if (zip_entry_is_symlink(entry))
+            else if (MojoArchive_zip_entry_is_symlink(entry))
+            {
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-            else
-                ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+                ar->prevEnum.linkdest = xstrdup(entry->linkdest);
+            } // else if
             return &ar->prevEnum;
         } // if
 
@@ -1754,12 +1778,14 @@ static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
                 ar->prevEnum.filename[ln] = '\0';
 
                 ar->prevEnum.filesize = entry->uncompressed_size;
+                ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
                 if (ptr != NULL)
                     ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-                else if (zip_entry_is_symlink(entry))
+                else if (MojoArchive_zip_entry_is_symlink(entry))
+                {
                     ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-                else
-                    ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+                    ar->prevEnum.linkdest = xstrdup(entry->linkdest);
+                } // else if
 
                 info->enumIndex++;
 

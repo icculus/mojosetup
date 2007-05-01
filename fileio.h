@@ -51,6 +51,7 @@ typedef struct MojoArchiveEntry
 {
     char *filename;
     char *basepath;
+    char *linkdest;
     MojoArchiveEntryType type;
     int64 filesize;
 } MojoArchiveEntry;
