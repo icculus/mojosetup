@@ -257,7 +257,7 @@ boolean MojoLua_runFile(const char *basefname)
 
     if (io != NULL)
     {
-        char *realfname = xmalloc(strlen(entinfo->filename) + 10);
+        char *realfname = (char *) xmalloc(strlen(entinfo->filename) + 10);
         sprintf(realfname, "@scripts/%s", entinfo->filename);
         lua_pushcfunction(luaState, luahook_stackwalk);
         rc = lua_load(luaState, MojoLua_reader, io, realfname);
@@ -492,6 +492,98 @@ static int luahook_findmedia(lua_State *L)
     free(physical);
     return 1;
 } // luahook_findmedia
+
+
+static boolean writefile_callback(int percent, void *data)
+{
+    printf("writefile_callback: %d percent\n", percent);
+    return true;
+} // writefile_callback
+
+
+// !!! FIXME: push this into Lua, make things fatal.
+static int luahook_writefile(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 2);
+    boolean retval = false;
+
+    if (archive != NULL)
+    {
+        MojoInput *in = archive->openCurrentEntry(archive);
+        if (in != NULL)
+        {
+            retval = MojoInput_toPhysicalFile(in, path, writefile_callback, NULL);
+            in->close(in);
+        } // if
+    } // if
+
+    return retvalBoolean(L, retval);
+} // luahook_writefile
+
+
+static int luahook_archive_fromdir(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    lua_pushlightuserdata(L, MojoArchive_newFromDirectory(path));
+    return 1;
+} // luahook_archive_fromdir
+
+
+static int luahook_platform_unlink(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    return retvalBoolean(L, MojoPlatform_unlink(path));
+} // luahook_platform_unlink
+
+
+static int luahook_platform_exists(lua_State *L)
+{
+    const char *dir = luaL_checkstring(L, 1);
+    const char *fname = lua_tostring(L, 2);  // can be nil.
+    return retvalBoolean(L, MojoPlatform_exists(dir, fname));
+} // luahook_platform_exists
+
+
+static int luahook_platform_symlink(lua_State *L)
+{
+    const char *src = luaL_checkstring(L, 1);
+    const char *dst = luaL_checkstring(L, 2);
+    return retvalBoolean(L, MojoPlatform_symlink(src, dst));
+} // luahook_platform_symlink
+
+
+static int luahook_platform_mkdir(lua_State *L)
+{
+    const char *dir = luaL_checkstring(L, 1);
+    return retvalBoolean(L, MojoPlatform_mkdir(dir));
+} // luahook_platform_mkdir
+
+
+static int luahook_movefile(lua_State *L)
+{
+    boolean retval = false;
+    const char *src = luaL_checkstring(L, 1);
+    const char *dst = luaL_checkstring(L, 2);
+    retval = MojoPlatform_rename(src, dst);
+    if (!retval)
+    {
+        MojoInput *in = MojoInput_newFromFile(src);
+        if (in != NULL)
+        {
+            retval = MojoInput_toPhysicalFile(in, dst, NULL, NULL);
+            in->close(in);
+            if (retval)
+            {
+                retval = MojoPlatform_unlink(src);
+                if (!retval)
+                    MojoPlatform_unlink(dst);  // oh well.
+            } // if
+        } // if
+    } // if
+
+    return retvalBoolean(L, retval);
+} // luahook_movefile
 
 
 static int luahook_gui_start(lua_State *L)
@@ -832,7 +924,7 @@ static int luahook_gui_destination(lua_State *L)
             const char *str = NULL;
             lua_pushinteger(L, i+1);
             lua_gettable(L, 1);
-            str = lua_tostring(L, -1);
+            str = lua_tostring(L, -1);  // !!! FIXME: alloca in a loop...
             recommend[i] = (char *) alloca(strlen(str) + 1);
             strcpy(recommend[i], str);
             lua_pop(L, 1);
@@ -898,6 +990,7 @@ static int luahook_gui_endinstall(lua_State *L)
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
 static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
 {
     lua_pushcfunction(luaState, f);
@@ -906,12 +999,23 @@ static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
+static inline void set_cptr(lua_State *L, void *ptr, const char *sym)
+{
+    lua_pushlightuserdata(luaState, ptr);
+    lua_setfield(luaState, -2, sym);
+} // set_cfunc
+
+
+// Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
 static inline void set_string(lua_State *L, const char *str, const char *sym)
 {
     lua_pushstring(luaState, str);
     lua_setfield(luaState, -2, sym);
 } // set_string
 
+// !!! FIXME: why is this a different naming convention?
 static inline void set_string_array(lua_State *L, int argc, const char **argv,
                                     const char *sym)
 {
@@ -941,6 +1045,22 @@ void MojoLua_setStringArray(int argc, const char **argv, const char *sym)
     set_string_array(luaState, argc, argv, sym);
     lua_pop(luaState, 1);
 } // MojoLua_setStringArray
+
+
+static const char *logLevelString(void)
+{
+    switch (MojoLog_logLevel)
+    {
+        case MOJOSETUP_LOG_NOTHING: return "nothing";
+        case MOJOSETUP_LOG_ERRORS: return "errors";
+        case MOJOSETUP_LOG_WARNINGS: return "warnings";
+        case MOJOSETUP_LOG_INFO: return "info";
+        case MOJOSETUP_LOG_DEBUG: return "debug";
+        case MOJOSETUP_LOG_EVERYTHING: default: return "everything";
+    } // switch
+
+    return NULL;  // shouldn't ever hit this.
+} // logLevelString
 
 
 boolean MojoLua_initLua(void)
@@ -977,6 +1097,8 @@ boolean MojoLua_initLua(void)
 
     luaL_openlibs(luaState);
 
+    // !!! FIXME: I'd like to change the function name case for the lua hooks.
+
     // Build MojoSetup namespace for Lua to access and fill in C bridges...
     lua_newtable(luaState);
         // Set up initial C functions, etc we want to expose to Lua code...
@@ -996,15 +1118,31 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_collectgarbage, "collectgarbage");
         set_cfunc(luaState, luahook_debugger, "debugger");
         set_cfunc(luaState, luahook_findmedia, "findmedia");
-        set_string(luaState, locale, "locale");
-        set_string(luaState, PLATFORM_NAME, "platform");
-        set_string(luaState, PLATFORM_ARCH, "arch");
-        set_string(luaState, ostype, "ostype");
-        set_string(luaState, osversion, "osversion");
-        set_string(luaState, GGui->name(), "ui");
-        set_string(luaState, GBuildVer, "buildver");
-        set_string(luaState, GLuaLicense, "lualicense");
-        set_string_array(luaState, GArgc, GArgv, "argv");
+        set_cfunc(luaState, luahook_writefile, "writefile");
+        set_cfunc(luaState, luahook_movefile, "movefile");
+
+        // Set some information strings...
+        lua_newtable(luaState);
+            set_string(luaState, locale, "locale");
+            set_string(luaState, PLATFORM_NAME, "platform");
+            set_string(luaState, PLATFORM_ARCH, "arch");
+            set_string(luaState, ostype, "ostype");
+            set_string(luaState, osversion, "osversion");
+            set_string(luaState, GGui->name(), "ui");
+            set_string(luaState, GBuildVer, "buildver");
+            set_string(luaState, GMojoSetupLicense, "license");
+            set_string(luaState, GLuaLicense, "lualicense");
+            set_string(luaState, logLevelString(), "loglevel");
+            set_string_array(luaState, GArgc, GArgv, "argv");
+        lua_setfield(luaState, -2, "info");
+
+        // Set the platform functions...
+        lua_newtable(luaState);
+            set_cfunc(luaState, luahook_platform_unlink, "unlink");
+            set_cfunc(luaState, luahook_platform_exists, "exists");
+            set_cfunc(luaState, luahook_platform_symlink, "symlink");
+            set_cfunc(luaState, luahook_platform_mkdir, "mkdir");
+        lua_setfield(luaState, -2, "platform");
 
         // Set the GUI functions...
         lua_newtable(luaState);
@@ -1021,6 +1159,12 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_gui_pumpinstall, "pumpinstall");
             set_cfunc(luaState, luahook_gui_endinstall, "endinstall");
         lua_setfield(luaState, -2, "gui");
+
+        // Set the i/o functions...
+        lua_newtable(luaState);
+            set_cfunc(luaState, luahook_archive_fromdir, "fromdir");
+            set_cptr(luaState, GBaseArchive, "base");
+        lua_setfield(luaState, -2, "archive");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
     // Set up localization table, if possible.
@@ -1059,6 +1203,32 @@ void MojoLua_deinitLua(void)
         luaState = NULL;
     } // if
 } // MojoLua_deinitLua
+
+
+
+const char *GMojoSetupLicense =
+"Copyright (c) 2007 Ryan C. Gordon and others.\n"
+"\n"
+"This software is provided 'as-is', without any express or implied warranty.\n"
+"In no event will the authors be held liable for any damages arising from\n"
+"the use of this software.\n"
+"\n"
+"Permission is granted to anyone to use this software for any purpose,\n"
+"including commercial applications, and to alter it and redistribute it\n"
+"freely, subject to the following restrictions:\n"
+"\n"
+"1. The origin of this software must not be misrepresented; you must not\n"
+"claim that you wrote the original software. If you use this software in a\n"
+"product, an acknowledgment in the product documentation would be\n"
+"appreciated but is not required.\n"
+"\n"
+"2. Altered source versions must be plainly marked as such, and must not be\n"
+"misrepresented as being the original software.\n"
+"\n"
+"3. This notice may not be removed or altered from any source distribution.\n"
+"\n"
+"    Ryan C. Gordon <icculus@icculus.org>\n"
+"\n";
 
 
 const char *GLuaLicense =

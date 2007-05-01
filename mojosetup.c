@@ -133,7 +133,7 @@ boolean wildcardMatch(const char *str, const char *pattern)
 
 // !!! FIXME: change this later.
 #define DEFLOGLEV "everything"
-static MojoSetupLogLevel logLevel = MOJOSETUP_LOG_EVERYTHING;
+MojoSetupLogLevel MojoLog_logLevel = MOJOSETUP_LOG_EVERYTHING;
 static FILE *logFile = NULL;
 
 void MojoLog_initLogging(void)
@@ -142,17 +142,17 @@ void MojoLog_initLogging(void)
     const char *fname = cmdlinestr("logfile", "MOJOSETUP_LOGFILE", NULL);
 
     if (strcmp(level, "nothing") == 0)
-        logLevel = MOJOSETUP_LOG_NOTHING;
+        MojoLog_logLevel = MOJOSETUP_LOG_NOTHING;
     else if (strcmp(level, "errors") == 0)
-        logLevel = MOJOSETUP_LOG_ERRORS;
+        MojoLog_logLevel = MOJOSETUP_LOG_ERRORS;
     else if (strcmp(level, "warnings") == 0)
-        logLevel = MOJOSETUP_LOG_WARNINGS;
+        MojoLog_logLevel = MOJOSETUP_LOG_WARNINGS;
     else if (strcmp(level, "info") == 0)
-        logLevel = MOJOSETUP_LOG_INFO;
+        MojoLog_logLevel = MOJOSETUP_LOG_INFO;
     else if (strcmp(level, "debug") == 0)
-        logLevel = MOJOSETUP_LOG_DEBUG;
+        MojoLog_logLevel = MOJOSETUP_LOG_DEBUG;
     else  // Unknown string gets everything...that'll teach you.
-        logLevel = MOJOSETUP_LOG_EVERYTHING;
+        MojoLog_logLevel = MOJOSETUP_LOG_EVERYTHING;
 
     if (fname != NULL)
         logFile = fopen(fname, "w");
@@ -170,13 +170,14 @@ void MojoLog_deinitLogging(void)
 static inline void addLog(MojoSetupLogLevel level, char levelchar,
                           const char *fmt, va_list ap)
 {
-    if (level <= logLevel)
+    if (level <= MojoLog_logLevel)
     {
-        char buf[512];
+        char *buf = (char *) scratchbuf_128k;
+        const size_t buflen = sizeof (scratchbuf_128k);
         //int len = vsnprintf(buf + 2, sizeof (buf) - 2, fmt, ap) + 2;
         //buf[0] = levelchar;
         //buf[1] = ' ';
-        int len = vsnprintf(buf, sizeof (buf), fmt, ap);
+        int len = vsnprintf(buf, buflen, fmt, ap);
         while ( (--len >= 0) && ((buf[len] == '\n') || (buf[len] == '\r')) ) {}
         buf[len+1] = '\0';  // delete trailing newline crap.
         MojoPlatform_log(buf);
@@ -184,6 +185,7 @@ static inline void addLog(MojoSetupLogLevel level, char levelchar,
         {
             fputs(buf, logFile);
             fputs("\n", logFile);
+            fflush(logFile);
         } // if
     } // if
 } // addLog

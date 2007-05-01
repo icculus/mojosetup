@@ -1698,7 +1698,7 @@ static void MojoInput_zip_close(MojoInput *io)
 
 // MojoArchive implementation...
 
-static int MojoArchive_zip_entry_is_symlink(ZIPentry *entry)
+static int MojoArchive_zip_entry_is_symlink(ZIPinfo *info, ZIPentry *entry)
 {
     if (entry->resolved == ZIP_UNRESOLVED_SYMLINK) /* gotta resolve it. */
         zip_resolve(info->io, info, entry);
@@ -1743,13 +1743,13 @@ static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
     {
         if (enumall)
         {
-            const ZIPentry *entry = &info->entries[info->enumIndex++];
+            ZIPentry *entry = &info->entries[info->enumIndex++];
             ar->prevEnum.filename = xstrdup(entry->name);
             ar->prevEnum.filesize = entry->uncompressed_size;
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
             if (entry->name[strlen(entry->name) - 1] == '/')
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-            else if (MojoArchive_zip_entry_is_symlink(entry))
+            else if (MojoArchive_zip_entry_is_symlink(info, entry))
             {
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
                 ar->prevEnum.linkdest = xstrdup(entry->linkdest);
@@ -1762,7 +1762,7 @@ static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
             const char *dname = ar->prevEnum.basepath;
             size_t dlen = strlen(dname);
             size_t dlen_inc = ((dlen > 0) ? 1 : 0) + dlen;
-            const ZIPentry *entry = &info->entries[info->enumIndex];
+            ZIPentry *entry = &info->entries[info->enumIndex];
             const char *e = entry->name;
 
             // not past end of this dir?
@@ -1781,7 +1781,7 @@ static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
                 if (ptr != NULL)
                     ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-                else if (MojoArchive_zip_entry_is_symlink(entry))
+                else if (MojoArchive_zip_entry_is_symlink(info, entry))
                 {
                     ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
                     ar->prevEnum.linkdest = xstrdup(entry->linkdest);

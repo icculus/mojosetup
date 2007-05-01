@@ -447,6 +447,25 @@ boolean MojoPlatform_unlink(const char *fname)
 } // MojoPlatform_unlink
 
 
+boolean MojoPlatform_symlink(const char *src, const char *dst)
+{
+    return (symlink(dst, src) == 0);
+} // MojoPlatform_symlink
+
+
+boolean MojoPlatform_mkdir(const char *path)
+{
+    // !!! FIXME: error if already exists?
+    return (mkdir(path, 0755) == 0);
+} // MojoPlatform_mkdir
+
+
+boolean MojoPlatform_rename(const char *src, const char *dst)
+{
+    return (rename(src, dst) == 0);
+} // MojoPlatform_rename
+
+
 boolean MojoPlatform_exists(const char *dir, const char *fname)
 {
     boolean retval = false;

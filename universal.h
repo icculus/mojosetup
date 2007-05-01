@@ -160,6 +160,7 @@ typedef enum
     MOJOSETUP_LOG_EVERYTHING
 } MojoSetupLogLevel;
 
+extern MojoSetupLogLevel MojoLog_logLevel;
 void MojoLog_initLogging(void);
 void MojoLog_deinitLogging(void);
 void logWarning(const char *fmt, ...) ISPRINTF(1,2);

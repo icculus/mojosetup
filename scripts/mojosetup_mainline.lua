@@ -2,12 +2,198 @@
 --  the user's config script has successfully run. This Lua chunk drives the
 --  main application code.
 
+-- !!! FIXME: add a --dryrun option.
+
 -- This is just for convenience.
 local _ = MojoSetup.translate
 
 -- This dumps the table built from the user's config script using logdebug,
 --  so it only spits out crap if debug-level logging is enabled.
 MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
+
+
+local function delete_files(filelist, callback, error_is_fatal)
+    local max = #filelist
+    for i,v in ipairs(filelist) do
+        if not MojoSetup.platform.unlink(v) and error_is_fatal then
+            -- !!! FIXME: formatting
+            MojoSetup.fatal(_("Deletion failed!"))
+        end
+        MojoSetup.loginfo("Deleted '" .. v .. "'");
+
+        if callback ~= nil then
+            callback(i, max)
+        end
+    end
+end
+
+
+local function install_file(path, archive, file)
+    if not MojoSetup.writefile(path, archive) then
+        -- !!! FIXME: formatting!
+        MojoSetup.fatal(_("file creation failed!"))
+    end
+    MojoSetup.loginfo("Created file '" .. path .. "'")
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
+end
+
+
+local function install_symlink(path, lndest)
+    if not MojoSetup.platform.symlink(path, lndest) then
+        -- !!! FIXME: formatting!
+        MojoSetup.fatal(_("symlink creation failed!"))
+    end
+    MojoSetup.loginfo("Created symlink '" .. path .. "' -> '" .. lndest .. "'")
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
+end
+
+
+local function install_directory(path)
+    if not MojoSetup.platform.mkdir(path) then
+        -- !!! FIXME: formatting
+        MojoSetup.fatal(_("mkdir failed"))
+    end
+    MojoSetup.loginfo("Created directory '" .. path .. "'")
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
+end
+
+
+local function install_parent_dirs(path)
+    -- Chop any '/' chars from the end of the string...
+    path = string.gsub(s, "/+$", "")
+
+    -- Build each piece of final path. The gmatch() skips the last element.
+    local fullpath = ""
+    for item in string.gmatch(path, "(.-)/") do
+        if (item ~= "") then
+            fullpath = fullpath .. "/" .. item
+            if not MojoSetup.platform.exists(fullpath) then
+                install_directory(fullpath)
+            end
+        end
+    end
+end
+
+
+local function permit_write(dest, entinfo, file)
+    local allowoverwrite = true
+    if MojoSetup.platform.exists(dest) then
+        -- never "permit" existing dirs, so they don't rollback.
+        if entinfo.type == "dir" then
+            allowoverwrite = false
+        else
+            allowoverwrite = file.allowoverwrite
+            if not allowoverwrite then
+                -- !!! FIXME: language and formatting.
+                allowoverwrite = MojoSetup.promptyn(_("Conflict!"), _("File already exists! Replace?"))
+            end
+
+            if allowoverwrite then
+                local id = #MojoSetup.rollbacks + 1
+                local f = MojoSetup.destination .. "/.mojosetup_tmp/rollback"
+                install_parent_dirs(f)
+                f = f .. "/" .. id
+                if not MojoSetup.movefile(dest, f) then
+                    -- !!! FIXME: formatting
+                    MojoSetup.fatal(_("Couldn't backup file for rollback"))
+                end
+                MojoSetup.rollbacks[id] = dest
+                MojoSetup.loginfo("Moved rollback #" .. id .. ": '" .. dest .. "' -> '" .. f .. "'")
+            end
+        end
+    end
+
+    return allowoverwrite
+end
+
+
+local function install_archive_entry(archive, ent, file)
+    -- Set destination in native filesystem. May be default or explicit.
+    local dest = file.destination
+    if dest == nil then
+        if ent.basepath ~= nil then
+            dest = ent.basepath .. "/" .. ent.filename
+        else
+            dest = ent.filename
+        end
+        if dest == nil then return end   -- probably can't happen...
+    end
+
+    if file.filter ~= nil then
+        dest = file.filter(dest)
+    end
+
+    if dest ~= nil then  -- Only install if file wasn't filtered out
+        dest = MojoSetup.destination .. "/" .. dest
+        if permit_write(dest, ent, file) then
+            install_parent_dirs(dest)
+            if ent.type == "file" then
+                install_file(dest, archive, file)
+            elseif ent.type == "dir" then
+                install_directory(dest)
+            elseif ent.type == "symlink" then
+                install_symlink(dest, ent.linkdest)
+            else  -- !!! FIXME: device nodes, etc...
+                -- !!! FIXME: formatting!
+                -- !!! FIXME: should this be fatal?
+                MojoSetup.fatal(_("Unknown file type in archive"))
+            end
+        end
+    end
+end
+
+
+-- basepath can be nil if (src) is in GBaseArchive, otherwise it will be
+--  the native filesystem's location (although (src) may specify subdirs).
+local function install_archive(basepath, src, file)
+    local archive = nil
+    if basepath == nil then
+        archive = MojoSetup.archive.base
+    else
+        archive = MojoSetup.archive.fromdir(basepath)
+        if archive == nil then
+            -- !!! FIXME: need formatting function.
+            MojoSetup.fatal(_("Can't open archive"))
+        end
+    end
+
+    -- we don't have to iterate the whole archive if there are no wildcards.
+    local wildcards = (string.match(src, "[*?]") ~= nil)
+
+    if not MojoSetup.archive.enumerate(archive, nil) then
+        -- !!! FIXME: need formatting function.
+        MojoSetup.fatal(_("Can't enumerate archive"))
+    end
+
+    local ent = MojoSetup.archive.enumnext(archive)
+    while ent ~= nil do
+        -- If inside GBaseArchive, we want to clip to data/ directory...
+        if basepath == nil then
+            local count
+            ent.filename, count = string.gsub(ent.filename, "^data/", "", 1)
+            if count == 0 then
+                ent.filename = nil
+            end
+        end
+
+        -- See if we should install this file...
+        if ent.filename ~= nil then
+            if MojoSetup.wildcardmatch(fname, ent.filename) then
+                install_archive_entry(archive, ent, file)
+                if not wildcards then
+                    break  -- no reason to keep iterating...
+                end
+            end
+        end
+
+        -- and check the next entry in the archive...
+        ent = MojoSetup.archive.enumnext(archive)
+    end
+
+    if basepath ~= nil then
+        MojoSetup.archive.close(archive)  -- we created this one, close it.
+    end
+end
 
 
 local function do_install(install)
@@ -113,7 +299,7 @@ local function do_install(install)
     --  This is not a GUI stage, it just needs to run between them.
     --  This gets a little hairy.
     stages[#stages+1] = function(thisstage, maxstage)
-        local process_file = function(option, file)
+        local function process_file(file)
             -- !!! FIXME: do this in schema?
             if type(file.source) == "string" then
                 file.source = { file.source }
@@ -121,18 +307,27 @@ local function do_install(install)
 
             -- !!! FIXME: what happens if a file shows up in multiple options?
             for k,v in pairs(file.source) do
-                local prot,host,path = string.match(v, "^(.+://)(.-)/(.*)");
+                local prot,host,path = string.match(v, "^(.+://)(.-)/(.*)")
                 if prot == nil then  -- included content?
-                    MojoSetup.sources.included[v] = option
+                    if MojoSetup.sources.included == nil then
+                        MojoSetup.sources.included = {}
+                    end
+                    MojoSetup.sources.included[v] = file
                 elseif prot == "media://" then
                     -- !!! FIXME: make sure media id is valid.
+                    if MojoSetup.sources.media == nil then
+                        MojoSetup.sources.media = {}
+                    end
                     if MojoSetup.sources.media[host] == nil then
                         MojoSetup.sources.media[host] = {}
                     end
-                    MojoSetup.sources.media[host][path] = option
+                    MojoSetup.sources.media[host][path] = file
                 else
                     -- !!! FIXME: make sure we can handle this URL...
-                    MojoSetup.sources.downloads[v] = option
+                    if MojoSetup.sources.downloads == nil then
+                        MojoSetup.sources.downloads = {}
+                    end
+                    MojoSetup.sources.downloads[v] = file
                 end
             end
         end
@@ -140,11 +335,12 @@ local function do_install(install)
         -- Sort an option into tables that say what sort of install it is.
         --  This lets us batch all the things from one CD together,
         --  do all the downloads first, etc.
-        local process_option = function(option)
+        local function process_option(option)
             -- !!! FIXME: check for nil in schema?
             if option.files ~= nil then
                 for k,v in pairs(option.files) do
-                    process_file(option, v);
+                    v.option = option  -- Make sure this is reachable later...
+                    process_file(v)
                 end
             end
         end
@@ -170,9 +366,6 @@ local function do_install(install)
         end
 
         MojoSetup.sources = {}
-        MojoSetup.sources.downloads = {}
-        MojoSetup.sources.media = {}
-        MojoSetup.sources.included = {}
         build_source_tables(install)
 
         -- This dumps the sources tables using logdebug,
@@ -184,10 +377,12 @@ local function do_install(install)
 
     -- Next stage: Download external packages.
     stages[#stages+1] = function(thisstage, maxstage)
---        MojoSetup.gui.startdownload()
--- !!! FIXME
-return true
---        MojoSetup.gui.enddownload()
+        if MojoSetup.sources.downloads ~= nil then
+            MojoSetup.gui.startdownload()
+            -- !!! FIXME: write me.
+            MojoSetup.gui.enddownload()
+        end
+        return true
     end
 
     -- Next stage: actual installation.
@@ -203,21 +398,36 @@ return true
         -- !!! FIXME: sort these so they show up in a reasonable order...
         -- !!! FIXME:  ...disc 1 before disc 2, etc...
 
-        for mediaid,srcs in pairs(MojoSetup.sources.media) do
-            local media = MojoSetup.media[mediaid]
-            local basepath = MojoSetup.findmedia(media.uniquefile)
-            while basepath == nil do
-                basepath = MojoSetup.findmedia(media.uniquefile)
-                if not MojoSetup.gui.insertmedia(media.description) then
-                    MojoSetup.fatal(_("User cancelled."))  -- !!! FIXME: don't like this.
+        if MojoSetup.sources.media ~= nil then
+            for mediaid,srcs in pairs(MojoSetup.sources.media) do
+                local media = MojoSetup.media[mediaid]
+                local basepath = MojoSetup.findmedia(media.uniquefile)
+                while basepath == nil do
+                    basepath = MojoSetup.findmedia(media.uniquefile)
+                    if not MojoSetup.gui.insertmedia(media.description) then
+                        MojoSetup.fatal(_("User cancelled."))  -- !!! FIXME: don't like this.
+                    end
+                end
+
+                -- Media is ready, install everything from this one...
+                for src,file in pairs(srcs) do
+                    install_archive(basepath, src, file)
                 end
             end
+        end
 
-            -- Media is ready, install everything from this one...
-            for src,option in pairs(srcs) do
-                -- !!! FIXME: write me.   install_file(basepath, src, option)
+        if MojoSetup.sources.downloads ~= nil then
+            for src,file in pairs(MojoSetup.sources.downloads) do
+                install_archive(basepath, src, file)
             end
         end
+
+        if MojoSetup.sources.included ~= nil then
+            for src,file in pairs(MojoSetup.sources.included) do
+                install_archive(nil, src, file)
+            end
+        end
+
         MojoSetup.gui.endinstall()
     end
 
@@ -233,6 +443,7 @@ return true
     MojoSetup.stages = stages
 
     MojoSetup.installed_files = {}
+    MojoSetup.rollbacks = {}
 
     local i = 1
     while MojoSetup.stages[i] ~= nil do
@@ -250,8 +461,16 @@ return true
         end
     end
 
+    -- !!! FIXME: write out manifest.
+
+    -- Successful install, so delete conflicts we no longer need to rollback.
+    delete_files(MojoSetup.rollbacks)
+
+    -- !!! FIXME: nuke scratch files (downloaded files, rollbacks, etc)...
+
     -- Don't let future errors delete files from successful installs...
     MojoSetup.installed_files = nil
+    MojoSetup.rollbacks = nil
 
     MojoSetup.gui.stop()
 
@@ -262,6 +481,7 @@ return true
     MojoSetup.destination = nil
 end
 
+-- !!! FIXME: is MojoSetup.installs just nil? Should we lose saw_an_installer?
 local saw_an_installer = false
 for installkey,install in pairs(MojoSetup.installs) do
     saw_an_installer = true

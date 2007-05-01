@@ -30,6 +30,20 @@ boolean MojoPlatform_unlink(const char *fname);
 //  NULL if path couldn't be resolved.
 char *MojoPlatform_realpath(const char *path);
 
+// Create a symlink in the physical filesystem. (src) is the NAME OF THE LINK
+//  and (dst) is WHAT IT POINTS TO. This is backwards from the unix symlink()
+//  syscall! Returns true if link was created, false otherwise.
+boolean MojoPlatform_symlink(const char *src, const char *dst);
+
+// !!! FIXME: comment me.
+boolean MojoPlatform_mkdir(const char *path);
+
+// Move a file to a new name. This has to be a fast (if not atomic) operation,
+//  so if it would require a legitimate copy to another filesystem or device,
+//  this should fail, as the standard Unix rename() function does.
+// Returns true on successful rename, false otherwise.
+boolean MojoPlatform_rename(const char *src, const char *dst);
+
 // !!! FIXME: comment me.
 boolean MojoPlatform_exists(const char *dir, const char *fname);
 

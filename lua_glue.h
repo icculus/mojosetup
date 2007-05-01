@@ -7,8 +7,12 @@
 extern "C" {
 #endif
 
+// License text for MojoSetup.
+extern const char *GMojoSetupLicense;
+
 // License text for Lua.
 extern const char *GLuaLicense;
+
 
 boolean MojoLua_initLua(void);
 void MojoLua_deinitLua(void);

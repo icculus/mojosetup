@@ -11,20 +11,24 @@
 --  then this code executes to do the heavy lifting. All Lua state should be
 --  sane for the rest of the app once this script successfully completes.
 
+-- !!! FIXME: don't use the "os" package.
 MojoSetup.loginfo("MojoSetup Lua initialization at " .. os.date())
-MojoSetup.loginfo("buildver: " .. MojoSetup.buildver)
-MojoSetup.loginfo("locale: " .. MojoSetup.locale)
-MojoSetup.loginfo("platform: " .. MojoSetup.platform)
-MojoSetup.loginfo("arch: " .. MojoSetup.arch)
-MojoSetup.loginfo("ostype: " .. MojoSetup.ostype)
-MojoSetup.loginfo("osversion: " .. MojoSetup.osversion)
-MojoSetup.loginfo("ui: " .. MojoSetup.ui)
+MojoSetup.loginfo("buildver: " .. MojoSetup.info.buildver)
+MojoSetup.loginfo("locale: " .. MojoSetup.info.locale)
+MojoSetup.loginfo("platform: " .. MojoSetup.info.platform)
+MojoSetup.loginfo("arch: " .. MojoSetup.info.arch)
+MojoSetup.loginfo("ostype: " .. MojoSetup.info.ostype)
+MojoSetup.loginfo("osversion: " .. MojoSetup.info.osversion)
+MojoSetup.loginfo("ui: " .. MojoSetup.info.ui)
+MojoSetup.loginfo("loglevel: " .. MojoSetup.info.loglevel)
 
 MojoSetup.loginfo("command line:");
-for i,v in ipairs(MojoSetup.argv) do
+for i,v in ipairs(MojoSetup.info.argv) do
     MojoSetup.loginfo("  " .. i .. ": " .. v)
 end
---MojoSetup.loginfo(MojoSetup.lualicense)
+
+--MojoSetup.loginfo(MojoSetup.info.license)
+--MojoSetup.loginfo(MojoSetup.info.lualicense)
 
 
 -- This gets called by fatal()...
@@ -40,7 +44,14 @@ end
 
 -- This is handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
-    if depth == nil then depth = 1 end
+    if depth == nil then  -- first call, before any recursion?
+        local loglevel = MojoSetup.info.loglevel
+        if (loglevel ~= "debug") and (loglevel ~= "everything") then
+            return  -- don't spend time on this if there's no output...
+        end
+        depth = 1
+    end
+
     if tabname ~= nil then
         MojoSetup.logdebug(tabname .. " = {")
     end
@@ -50,14 +61,22 @@ function MojoSetup.dumptable(tabname, tab, depth)
         depthstr = depthstr .. " "
     end
 
-    for k,v in pairs(tab) do
-        if type(v) == "table" then
-            MojoSetup.logdebug(depthstr .. k .. " = {")
-            MojoSetup.dumptable(nil, v, depth + 1)
-            MojoSetup.logdebug(depthstr .. "}")
-        else
-            MojoSetup.logdebug(depthstr .. k .. " = " .. tostring(v))
+    if tab.MOJOSETUP_DUMPTABLE_ITERATED then
+        MojoSetup.logdebug(depthstr .. "(...circular reference...)")
+    else
+        tab.MOJOSETUP_DUMPTABLE_ITERATED = true
+        for k,v in pairs(tab) do
+            if type(v) == "table" then
+                MojoSetup.logdebug(depthstr .. k .. " = {")
+                MojoSetup.dumptable(nil, v, depth + 1)
+                MojoSetup.logdebug(depthstr .. "}")
+            else
+                if k ~= "MOJOSETUP_DUMPTABLE_ITERATED" then
+                    MojoSetup.logdebug(depthstr .. k .. " = " .. tostring(v))
+                end
+            end
         end
+        tab.MOJOSETUP_DUMPTABLE_ITERATED = nil
     end
 
     if tabname ~= nil then
@@ -76,7 +95,7 @@ end
 
 if MojoSetup.localization ~= nil then
     local at_least_one = false;
-    local locale = MojoSetup.locale
+    local locale = MojoSetup.info.locale
     local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
     MojoSetup.translations = {}
     for k,v in pairs(MojoSetup.localization) do
@@ -399,6 +418,7 @@ function Setup.File(tab)
         { "destination", nil, mustBeString, cantBeEmpty },
         { "filter", nil, mustBeFunction },
         { "unpackarchives", nil, mustBeBool },
+        { "allowoverwrite", nil, mustBeBool },
     })
 end
 

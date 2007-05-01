@@ -1,3 +1,4 @@
+#include <unistd.h>  // !!! FIXME: unix dependency for readlink().
 #include <sys/stat.h>  // !!! FIXME: unix dependency for stat().
 
 #include "fileio.h"
@@ -67,18 +68,23 @@ void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo)
 } // MojoArchive_resetEntry
 
 
-
-boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname)
+// !!! FIXME: I'd rather not use a callback here, but I can't see a cleaner
+// !!! FIXME:  way right now...
+boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname,
+                                 MojoInput_FileCopyCallback cb, void *data)
 {
     FILE *out = NULL;
     boolean iofailure = false;
     int32 br = 0;
+    int64 flen = 0;
+    int64 bw = 0;
 
-    STUBBED("mkdir first?");
     STUBBED("file permissions?");
 
     if (in == NULL)
         return false;
+
+    flen = in->length(in);
 
     STUBBED("fopen?");
     MojoPlatform_unlink(fname);
@@ -97,10 +103,24 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname)
         {
             if (fwrite(scratchbuf_128k, br, 1, out) != 1)
                 iofailure = true;
+            else
+            {
+                bw += br;
+                if (cb != NULL)
+                {
+                    int pct = -1;
+                    if (flen > 0)
+                        pct = ((int) (((double) bw) / ((double) flen))) * 100;
+                    if (!cb(pct, data))
+                        iofailure = true;
+                } // if
+            } // else
         } // else
     } // while
 
-    fclose(out);
+    if (fclose(out) != 0)
+        iofailure = true;
+
     if (iofailure)
     {
         MojoPlatform_unlink(fname);
