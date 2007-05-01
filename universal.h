@@ -145,8 +145,8 @@ const char *cmdlinestr(const char *arg, const char *envr, const char *deflt);
 // Returns true if (str) matches (pattern), false otherwise.
 //  This is NOT a regexp! It only understands '?' and '*', similar to how
 //  wildcards worked in MS-DOS command lines. '?' matches one char, and
-//  '*' matches until the end of string, a '/', or the next char in the
-//  pattern is seen. Case matters!
+//  '*' matches until the end of string or the next char in the pattern
+//  is seen. Case matters!
 boolean wildcardMatch(const char *str, const char *pattern);
 
 // Logging functions.
