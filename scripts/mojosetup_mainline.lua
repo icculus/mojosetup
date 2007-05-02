@@ -19,7 +19,7 @@ local function delete_files(filelist, callback, error_is_fatal)
             -- !!! FIXME: formatting
             MojoSetup.fatal(_("Deletion failed!"))
         end
-        MojoSetup.loginfo("Deleted '" .. v .. "'");
+        MojoSetup.loginfo("Deleted '" .. v .. "'")
 
         if callback ~= nil then
             callback(i, max)
@@ -29,7 +29,7 @@ end
 
 
 local function install_file(path, archive, file)
-    if not MojoSetup.writefile(path, archive) then
+    if not MojoSetup.writefile(archive, path) then
         -- !!! FIXME: formatting!
         MojoSetup.fatal(_("file creation failed!"))
     end
@@ -60,7 +60,7 @@ end
 
 local function install_parent_dirs(path)
     -- Chop any '/' chars from the end of the string...
-    path = string.gsub(s, "/+$", "")
+    path = string.gsub(path, "/+$", "")
 
     -- Build each piece of final path. The gmatch() skips the last element.
     local fullpath = ""
@@ -78,6 +78,7 @@ end
 local function permit_write(dest, entinfo, file)
     local allowoverwrite = true
     if MojoSetup.platform.exists(dest) then
+MojoSetup.logdebug(dest .. " exists, entinfo.type is '" .. entinfo.type .. "'")
         -- never "permit" existing dirs, so they don't rollback.
         if entinfo.type == "dir" then
             allowoverwrite = false
@@ -85,14 +86,17 @@ local function permit_write(dest, entinfo, file)
             allowoverwrite = file.allowoverwrite
             if not allowoverwrite then
                 -- !!! FIXME: language and formatting.
+                MojoSetup.logdebug("File '" .. dest .. "' already exists.")
                 allowoverwrite = MojoSetup.promptyn(_("Conflict!"), _("File already exists! Replace?"))
             end
 
             if allowoverwrite then
                 local id = #MojoSetup.rollbacks + 1
+                -- !!! FIXME: dirname may clash.
                 local f = MojoSetup.destination .. "/.mojosetup_tmp/rollback"
-                install_parent_dirs(f)
                 f = f .. "/" .. id
+                -- !!! FIXME: don't add (f) to the installed_files table...
+                install_parent_dirs(f)
                 if not MojoSetup.movefile(dest, f) then
                     -- !!! FIXME: formatting
                     MojoSetup.fatal(_("Couldn't backup file for rollback"))
@@ -108,15 +112,21 @@ end
 
 
 local function install_archive_entry(archive, ent, file)
+    local entdest = nil
+    if ent.basepath ~= nil then
+        entdest = ent.basepath .. "/" .. ent.filename
+    else
+        entdest = ent.filename
+    end
+    if entdest == nil then return end   -- probably can't happen...
+
     -- Set destination in native filesystem. May be default or explicit.
     local dest = file.destination
     if dest == nil then
-        if ent.basepath ~= nil then
-            dest = ent.basepath .. "/" .. ent.filename
-        else
-            dest = ent.filename
-        end
-        if dest == nil then return end   -- probably can't happen...
+        dest = entdest
+    else
+        entdest = string.gsub(entdest, "^.*/", "", 1)
+        dest = dest .. "/" .. entdest
     end
 
     if file.filter ~= nil then
@@ -178,7 +188,7 @@ local function install_archive(basepath, src, file)
 
         -- See if we should install this file...
         if ent.filename ~= nil then
-            if MojoSetup.wildcardmatch(fname, ent.filename) then
+            if MojoSetup.wildcardmatch(ent.filename, src) then
                 install_archive_entry(archive, ent, file)
                 if not wildcards then
                     break  -- no reason to keep iterating...
@@ -395,25 +405,33 @@ local function do_install(install)
         --  the source data, you should only have to insert each disc
         --  once, no matter how they landed in the config file.
 
-        -- !!! FIXME: sort these so they show up in a reasonable order...
-        -- !!! FIXME:  ...disc 1 before disc 2, etc...
-
         if MojoSetup.sources.media ~= nil then
-            for mediaid,srcs in pairs(MojoSetup.sources.media) do
+            -- Build an array of media ids so we can sort them into a
+            --  reasonable order...disc 1 before disc 2, etc.
+            local medialist = {}
+            for mediaid,mediavalue in pairs(MojoSetup.sources.media) do
+                medialist[#medialist+1] = mediaid
+            end
+            table.sort(medialist)
+
+            for mediaidx,mediaid in ipairs(medialist) do
                 local media = MojoSetup.media[mediaid]
                 local basepath = MojoSetup.findmedia(media.uniquefile)
                 while basepath == nil do
-                    basepath = MojoSetup.findmedia(media.uniquefile)
                     if not MojoSetup.gui.insertmedia(media.description) then
                         MojoSetup.fatal(_("User cancelled."))  -- !!! FIXME: don't like this.
                     end
+                    basepath = MojoSetup.findmedia(media.uniquefile)
                 end
 
                 -- Media is ready, install everything from this one...
+                MojoSetup.loginfo("Found correct media at '" .. basepath .. "'")
+                local srcs = MojoSetup.sources.media[mediaid]
                 for src,file in pairs(srcs) do
                     install_archive(basepath, src, file)
                 end
             end
+            medialist = nil   -- done with this.
         end
 
         if MojoSetup.sources.downloads ~= nil then
@@ -429,6 +447,7 @@ local function do_install(install)
         end
 
         MojoSetup.gui.endinstall()
+        return true   -- go to next stage.
     end
 
     -- Next stage: show results gui
@@ -449,6 +468,12 @@ local function do_install(install)
     while MojoSetup.stages[i] ~= nil do
         local stage = MojoSetup.stages[i]
         local go_forward = stage(i, #MojoSetup.stages)
+
+        -- Too many times I forgot to return something.   :)
+        if go_forward == nil then
+            MojoSetup.fatal("Bug in the installer: stage returned nil.")
+        end
+
         if go_forward then
             i = i + 1
         else

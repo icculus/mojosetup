@@ -1832,10 +1832,30 @@ static MojoInput *buildZipMojoInput(ZIPinfo *info, const char *fullpath)
 
 static MojoInput *MojoArchive_zip_openCurrentEntry(MojoArchive *ar)
 {
-    char *fullpath = (char *) alloca(strlen(ar->prevEnum.basepath) +
-                                     strlen(ar->prevEnum.filename) + 2);
-    sprintf(fullpath, "%s/%s", ar->prevEnum.basepath, ar->prevEnum.filename);
-    return buildZipMojoInput((ZIPinfo *) ar->opaque, fullpath);
+    MojoInput *retval = NULL;
+    ZIPinfo *info = (ZIPinfo *) ar->opaque;
+
+    if ((info->enumIndex >= 0) && (info->enumIndex < info->entryCount) &&
+        (ar->prevEnum.type == MOJOARCHIVE_ENTRY_FILE))
+    {
+        char *fullpath = NULL;
+        if (ar->prevEnum.basepath != NULL)
+        {
+            fullpath = (char *) alloca(strlen(ar->prevEnum.basepath) +
+                                       strlen(ar->prevEnum.filename) + 2);
+            sprintf(fullpath, "%s/%s", ar->prevEnum.basepath,
+                    ar->prevEnum.filename);
+        } // if
+        else
+        {
+            fullpath = (char *) alloca(strlen(ar->prevEnum.filename) + 1);
+            strcpy(fullpath, ar->prevEnum.filename);
+        } // else
+
+        retval = buildZipMojoInput(info, fullpath);
+    } // if
+
+    return retval;
 } // MojoArchive_zip_openCurrentEntry
 
 

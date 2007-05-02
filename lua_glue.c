@@ -40,6 +40,76 @@ static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 } // MojoLua_reader
 
 
+// Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
+static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
+{
+    lua_pushcfunction(L, f);
+    lua_setfield(L, -2, sym);
+} // set_cfunc
+
+
+// Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
+static inline void set_cptr(lua_State *L, void *ptr, const char *sym)
+{
+    lua_pushlightuserdata(L, ptr);
+    lua_setfield(L, -2, sym);
+} // set_cfunc
+
+
+// Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
+static inline void set_string(lua_State *L, const char *str, const char *sym)
+{
+    if (str == NULL)
+        lua_pushnil(L);
+    else
+        lua_pushstring(L, str);
+    lua_setfield(L, -2, sym);
+} // set_string
+
+
+// Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
+static inline void set_number(lua_State *L, lua_Number x, const char *sym)
+{
+    lua_pushnumber(L, x);
+    lua_setfield(L, -2, sym);
+} // set_string
+
+// !!! FIXME: why is this a different naming convention?
+static inline void set_string_array(lua_State *L, int argc, const char **argv,
+                                    const char *sym)
+{
+    int i;
+    lua_newtable(L);
+    for (i = 0; i < argc; i++)
+    {
+        lua_pushinteger(L, i+1);  // lua is option base 1!
+        lua_pushstring(L, argv[i]);
+        lua_settable(L, -3);
+    } // for
+    lua_setfield(L, -2, sym);
+} // set_string_array
+
+
+void MojoLua_setString(const char *str, const char *sym)
+{
+    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
+    set_string(luaState, str, sym);
+    lua_pop(luaState, 1);
+} // MojoLua_setString
+
+
+void MojoLua_setStringArray(int argc, const char **argv, const char *sym)
+{
+    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
+    set_string_array(luaState, argc, argv, sym);
+    lua_pop(luaState, 1);
+} // MojoLua_setStringArray
+
+
 static inline int retvalString(lua_State *L, const char *str)
 {
     if (str != NULL)
@@ -453,6 +523,14 @@ static int luahook_cmdlinestr(lua_State *L)
 } // luahook_cmdlinestr
 
 
+static int luahook_wildcardmatch(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    const char *pattern = luaL_checkstring(L, 2);
+    return retvalBoolean(L, wildcardMatch(str, pattern));
+} // luahook_wildcardmatch
+
+
 static int luahook_findmedia(lua_State *L)
 {
     // Let user specify overrides of directories to act as drives.
@@ -504,8 +582,8 @@ static boolean writefile_callback(int percent, void *data)
 // !!! FIXME: push this into Lua, make things fatal.
 static int luahook_writefile(lua_State *L)
 {
-    const char *path = luaL_checkstring(L, 1);
-    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 2);
+    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
+    const char *path = luaL_checkstring(L, 2);
     boolean retval = false;
 
     if (archive != NULL)
@@ -528,6 +606,52 @@ static int luahook_archive_fromdir(lua_State *L)
     lua_pushlightuserdata(L, MojoArchive_newFromDirectory(path));
     return 1;
 } // luahook_archive_fromdir
+
+
+static int luahook_archive_enumerate(lua_State *L)
+{
+    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
+    const char *path = lua_tostring(L, 2);   // can be nil
+    return retvalBoolean(L, archive->enumerate(archive, path));
+} // luahook_archive_enumerate
+
+
+static int luahook_archive_enumnext(lua_State *L)
+{
+    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
+    const MojoArchiveEntry *entinfo = archive->enumNext(archive);
+    if (entinfo == NULL)
+        lua_pushnil(L);
+    else
+    {
+        const char *typestr = NULL;
+        if (entinfo->type == MOJOARCHIVE_ENTRY_FILE)
+            typestr = "file";
+        else if (entinfo->type == MOJOARCHIVE_ENTRY_DIR)
+            typestr = "dir";
+        else if (entinfo->type == MOJOARCHIVE_ENTRY_SYMLINK)
+            typestr = "symlink";
+        else
+            typestr = "unknown";
+
+        lua_newtable(L);
+        set_string(L, entinfo->filename, "filename");
+        set_string(L, entinfo->basepath, "basepath");
+        set_string(L, entinfo->linkdest, "linkdest");
+        set_number(L, entinfo->filesize, "filesize");
+        set_string(L, typestr, "type");
+    } // else
+
+    return 1;
+} // luahook_archive_enumnext
+
+
+static int luahook_archive_close(lua_State *L)
+{
+    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
+    archive->close(archive);
+    return 0;
+} // luahook_archive_close
 
 
 static int luahook_platform_unlink(lua_State *L)
@@ -989,64 +1113,6 @@ static int luahook_gui_endinstall(lua_State *L)
 } // luahook_gui_endinstall
 
 
-// Sets t[sym]=f, where t is on the top of the Lua stack.
-// !!! FIXME: why is this a different naming convention?
-static inline void set_cfunc(lua_State *L, lua_CFunction f, const char *sym)
-{
-    lua_pushcfunction(luaState, f);
-    lua_setfield(luaState, -2, sym);
-} // set_cfunc
-
-
-// Sets t[sym]=f, where t is on the top of the Lua stack.
-// !!! FIXME: why is this a different naming convention?
-static inline void set_cptr(lua_State *L, void *ptr, const char *sym)
-{
-    lua_pushlightuserdata(luaState, ptr);
-    lua_setfield(luaState, -2, sym);
-} // set_cfunc
-
-
-// Sets t[sym]=f, where t is on the top of the Lua stack.
-// !!! FIXME: why is this a different naming convention?
-static inline void set_string(lua_State *L, const char *str, const char *sym)
-{
-    lua_pushstring(luaState, str);
-    lua_setfield(luaState, -2, sym);
-} // set_string
-
-// !!! FIXME: why is this a different naming convention?
-static inline void set_string_array(lua_State *L, int argc, const char **argv,
-                                    const char *sym)
-{
-    int i;
-    lua_newtable(luaState);
-    for (i = 0; i < argc; i++)
-    {
-        lua_pushinteger(luaState, i+1);  // lua is option base 1!
-        lua_pushstring(luaState, argv[i]);
-        lua_settable(luaState, -3);
-    } // for
-    lua_setfield(luaState, -2, sym);
-} // set_string_array
-
-
-void MojoLua_setString(const char *str, const char *sym)
-{
-    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
-    set_string(luaState, str, sym);
-    lua_pop(luaState, 1);
-} // MojoLua_setString
-
-
-void MojoLua_setStringArray(int argc, const char **argv, const char *sym)
-{
-    lua_getglobal(luaState, MOJOSETUP_NAMESPACE);
-    set_string_array(luaState, argc, argv, sym);
-    lua_pop(luaState, 1);
-} // MojoLua_setStringArray
-
-
 static const char *logLevelString(void)
 {
     switch (MojoLog_logLevel)
@@ -1120,6 +1186,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_findmedia, "findmedia");
         set_cfunc(luaState, luahook_writefile, "writefile");
         set_cfunc(luaState, luahook_movefile, "movefile");
+        set_cfunc(luaState, luahook_wildcardmatch, "wildcardmatch");
 
         // Set some information strings...
         lua_newtable(luaState);
@@ -1163,6 +1230,9 @@ boolean MojoLua_initLua(void)
         // Set the i/o functions...
         lua_newtable(luaState);
             set_cfunc(luaState, luahook_archive_fromdir, "fromdir");
+            set_cfunc(luaState, luahook_archive_enumerate, "enumerate");
+            set_cfunc(luaState, luahook_archive_enumnext, "enumnext");
+            set_cfunc(luaState, luahook_archive_close, "close");
             set_cptr(luaState, GBaseArchive, "base");
         lua_setfield(luaState, -2, "archive");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);

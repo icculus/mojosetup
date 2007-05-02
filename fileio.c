@@ -105,7 +105,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname,
                 {
                     int pct = -1;
                     if (flen > 0)
-                        pct = ((int) (((double) bw) / ((double) flen))) * 100;
+                        pct = (int) ((((double)bw) / ((double)flen)) * 100.0);
                     if (!cb(pct, data))
                         iofailure = true;
                 } // if
@@ -496,16 +496,29 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
 } // MojoArchive_dir_enumNext
 
 
+// !!! FIXME: this code is going to be cut-and-paste for every archiver!
 static MojoInput *MojoArchive_dir_openCurrentEntry(MojoArchive *ar)
 {
     MojoInput *retval = NULL;
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
 
-    if ((inst->dirs != NULL) && (ar->prevEnum.type != MOJOARCHIVE_ENTRY_DIR))
+    if ((inst->dirs != NULL) && (ar->prevEnum.type == MOJOARCHIVE_ENTRY_FILE))
     {
-        char *fullpath = (char *) alloca(strlen(inst->dirs->basepath) +
-                                         strlen(ar->prevEnum.filename) + 2);
-        sprintf(fullpath, "%s/%s", inst->dirs->basepath, ar->prevEnum.filename);
+        char *fullpath = NULL;
+        if (ar->prevEnum.basepath != NULL)
+        {
+            fullpath = (char *) alloca(strlen(inst->dirs->basepath) +
+                                       strlen(ar->prevEnum.filename) + 2);
+            sprintf(fullpath, "%s/%s", inst->dirs->basepath,
+                    ar->prevEnum.filename);
+        } // if
+        else
+        {
+            fullpath = (char *) alloca(strlen(inst->base) +
+                                       strlen(ar->prevEnum.filename) + 2);
+            sprintf(fullpath, "%s/%s", inst->base, ar->prevEnum.filename);
+        } // else
+
         retval = MojoInput_newFromFile(fullpath);
     } // if
 
