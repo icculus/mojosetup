@@ -56,7 +56,7 @@ local drill_for_archive = function(archive, path)
     end
 
     local pathtab = split_path(path)
-    local ent = MojoSetup.archive.enumNext(archive)
+    local ent = MojoSetup.archive.enumnext(archive)
     while ent ~= nil do
         if ent.type == "file" then
             local i = 1

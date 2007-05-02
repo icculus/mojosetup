@@ -73,12 +73,12 @@ function MojoSetup.dumptable(tabname, tab, depth)
         tab.MOJOSETUP_DUMPTABLE_ITERATED = true
         for k,v in pairs(tab) do
             if type(v) == "table" then
-                MojoSetup.logdebug(depthstr .. k .. " = {")
+                MojoSetup.logdebug(depthstr .. tostring(k) .. " = {")
                 MojoSetup.dumptable(nil, v, depth + 1)
                 MojoSetup.logdebug(depthstr .. "}")
             else
                 if k ~= "MOJOSETUP_DUMPTABLE_ITERATED" then
-                    MojoSetup.logdebug(depthstr .. k .. " = " .. tostring(v))
+                    MojoSetup.logdebug(depthstr .. tostring(k) .. " = " .. tostring(v))
                 end
             end
         end
@@ -204,8 +204,8 @@ local function mustBeValidInteraction(fnname, elem, val)
 end
 
 local function mustBeUrl(fnname, elem, val)
-    mustBeString(fname, elem, val)
-    cantBeEmpty(fname, elem, val)
+    mustBeString(fnname, elem, val)
+    cantBeEmpty(fnname, elem, val)
     if (val ~= nil) then
         local prot,host,path = MojoSetup.spliturl(val)
         schema_assert(prot ~= nil, fnname, elem, "URL doesn't have protocol")
