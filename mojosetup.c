@@ -172,12 +172,11 @@ static inline void addLog(MojoSetupLogLevel level, char levelchar,
 {
     if (level <= MojoLog_logLevel)
     {
-        char *buf = (char *) scratchbuf_128k;
-        const size_t buflen = sizeof (scratchbuf_128k);
+        char buf[1024];
         //int len = vsnprintf(buf + 2, sizeof (buf) - 2, fmt, ap) + 2;
         //buf[0] = levelchar;
         //buf[1] = ' ';
-        int len = vsnprintf(buf, buflen, fmt, ap);
+        int len = vsnprintf(buf, sizeof (buf), fmt, ap);
         while ( (--len >= 0) && ((buf[len] == '\n') || (buf[len] == '\r')) ) {}
         buf[len+1] = '\0';  // delete trailing newline crap.
         MojoPlatform_log(buf);
