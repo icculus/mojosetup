@@ -20,15 +20,12 @@ static const MojoArchiveType archives[] =
 };
 
 // !!! FIXME: origfname should just be the extension, I think...
-MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
+MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *ext)
 {
     int i;
     MojoArchive *retval = NULL;
-    const char *ext = ((origfname != NULL) ? strrchr(origfname, '.') : NULL);
     if (ext != NULL)
     {
-        ext++;  // skip '.'
-
         // Try for an exact match.
         for (i = 0; i < STATICARRAYLEN(archives); i++)
         {
@@ -573,7 +570,7 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         MojoInput *io = MojoInput_newFromFile(basepath);
 
         if (io != NULL)
-            GBaseArchive = MojoArchive_newFromInput(io, basepath);
+            GBaseArchive = MojoArchive_newFromInput(io, NULL);
 
         if (GBaseArchive == NULL)
         {

@@ -31,6 +31,12 @@ end
 --MojoSetup.loginfo(MojoSetup.info.lualicense)
 
 
+-- Returns three elements: protocol, host, path
+function MojoSetup.spliturl(url)
+    return string.match(url, "^(.+://)(.-)/(.*)")
+end
+
+
 -- This gets called by fatal()...
 function MojoSetup.shutdown ()
     if MojoSetup.installed_files ~= nil then
@@ -200,8 +206,12 @@ end
 local function mustBeUrl(fnname, elem, val)
     mustBeString(fname, elem, val)
     cantBeEmpty(fname, elem, val)
-    -- !!! FIXME: this doesn't work, need to test this regexp some more...
-    -- string.match(str, "^%w+://(.+(:.+)?@)?[%w-\.]*/")
+    if (val ~= nil) then
+        local prot,host,path = MojoSetup.spliturl(val)
+        schema_assert(prot ~= nil, fnname, elem, "URL doesn't have protocol")
+        schema_assert(host ~= nil, fnname, elem, "URL doesn't have host")
+        schema_assert(path ~= nil, fnname, elem, "URL doesn't have path")
+    end
 end
 
 local function sanitize(fnname, tab, elems)
@@ -414,10 +424,10 @@ end
 function Setup.File(tab)
     return sanitize("File", tab,
     {
-        { "source", nil, mustExist, mustBeStringOrTableOfStrings },
+        { "source", nil, mustBeUrl },
         { "destination", nil, mustBeString, cantBeEmpty },
+        { "wildcards", nil, mustBeStringOrTableOfStrings },
         { "filter", nil, mustBeFunction },
-        { "unpackarchives", nil, mustBeBool },
         { "allowoverwrite", nil, mustBeBool },
     })
 end

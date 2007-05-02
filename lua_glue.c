@@ -608,6 +608,38 @@ static int luahook_archive_fromdir(lua_State *L)
 } // luahook_archive_fromdir
 
 
+static int luahook_archive_fromfile(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    MojoInput *io = MojoInput_newFromFile(path);
+    MojoArchive *archive = NULL;
+    if (io != NULL)
+        archive = MojoArchive_newFromInput(io, NULL);
+
+    if (archive != NULL)
+        lua_pushlightuserdata(L, archive);
+    else
+        lua_pushnil(L);
+    return 1;
+} // luahook_archive_fromfile
+
+
+static int luahook_archive_fromentry(lua_State *L)
+{
+    MojoArchive *ar = (MojoArchive *) lua_touserdata(L, 1);
+    MojoInput *io = ar->openCurrentEntry(ar);
+    MojoArchive *archive = NULL;
+    if (io != NULL)
+        archive = MojoArchive_newFromInput(io, NULL);
+
+    if (archive != NULL)
+        lua_pushlightuserdata(L, archive);
+    else
+        lua_pushnil(L);
+    return 1;
+} // luahook_archive_fromentry
+
+
 static int luahook_archive_enumerate(lua_State *L)
 {
     MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
@@ -1230,6 +1262,8 @@ boolean MojoLua_initLua(void)
         // Set the i/o functions...
         lua_newtable(luaState);
             set_cfunc(luaState, luahook_archive_fromdir, "fromdir");
+            set_cfunc(luaState, luahook_archive_fromfile, "fromfile");
+            set_cfunc(luaState, luahook_archive_fromentry, "fromentry");
             set_cfunc(luaState, luahook_archive_enumerate, "enumerate");
             set_cfunc(luaState, luahook_archive_enumnext, "enumnext");
             set_cfunc(luaState, luahook_archive_close, "close");

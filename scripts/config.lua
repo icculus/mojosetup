@@ -73,13 +73,37 @@ Setup.Package
         -- File(s) to install.
         Setup.File
         {
+            -- source can be a directory, an archive, or a supported URL.
+            --  You can use "media://" to get data from a disc that the user
+            --  will be prompted to insert. Everything in the source will
+            --  be installed, but the "wildcards" and "filter" attributes
+            --  can be used to cull the archive's contents.
+            source = "media://cd1/Maps/m.zip",
+
+            -- This is a directory where files will be installed from this
+            --  source. If this isn't specified, the directory tree structure
+            --  in the source will be recreated for the installation.
+            -- You can change the destination on a per-file basis using
+            --  the filter attribute instead. It overrides this attribute,
+            --  but the parameter passed to the filter will use this value
+            --  if it exists.
             destination = "MyGame/MyGame.app",
-            unpackarchives = true,
-            source = { "media://cd1/Maps/m.zip", "media://cd1/Sounds/*.wav" },
+
+            -- Files in here need to match at least one wildcard to be
+            --  installed. If they pass here, they go to the filter function.
+            -- This can be a single string or a table of strings.
+            wildcards = { "Single/*/*.map", "Multi/*/*.map" },
 
             -- You can optionally assign a lua function...we'll call this for
-            --  each file to see if we should avoid installing it.
-            filter = function(fn) return fn == "Graphics/dontinstall.jpg" end
+            --  each file to see if we should avoid installing it. It returns
+            --  nil to drop the file from the install list, or a string of
+            --  the new install destination...you can return the original
+            --  string to just pass it through for installation, or
+            --  use this opportunity to rename a file on the fly.
+            filter = function(fn)
+                if fn == "Single/x/dontinstall.map" then return nil end
+                return fn
+            end
         },
 
         -- Radio buttons.
@@ -92,21 +116,21 @@ Setup.Package
                 value = string.match(MojoSetup.info.locale, "^en_") ~= nil,
                 size = "10M",
                 description = "English",
-                Setup.File { source="Lang/English.zip" },
+                Setup.File { source="base://Lang/English.zip" },
             },
             Setup.Option
             {
                 value = string.match(MojoSetup.info.locale, "^fr_") ~= nil,
                 size = "10M",
                 description = "French",
-                Setup.File { source="Lang/French.zip" },
+                Setup.File { source="base://Lang/French.zip" },
             },
             Setup.Option
             {
                 value = string.match(MojoSetup.info.locale, "^de_") ~= nil,
                 size = "10M",
                 description = "German",
-                Setup.File { source="Lang/German.zip" },
+                Setup.File { source="base://Lang/German.zip" },
             },
         },
     },
@@ -123,7 +147,6 @@ Setup.Package
         Setup.File
         {
             destination = "MyGame/MyGame.app",
-            unpackarchives = true,
             source = { "http://hostname.dom/extras/extras.zip" },
         },
     },

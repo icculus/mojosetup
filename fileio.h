@@ -75,7 +75,7 @@ struct MojoArchive
 };
 
 MojoArchive *MojoArchive_newFromDirectory(const char *dirname);
-MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname);
+MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *ext);
 
 // This will reset enumeration in the archive, don't use it while iterating!
 // Also, this can be very slow depending on the archive in question, so

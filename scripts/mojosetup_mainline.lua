@@ -12,6 +12,80 @@ local _ = MojoSetup.translate
 MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
 
 
+local function split_path(path)
+    local retval = {}
+    for item in string.gmatch(path .. "/", "(.-)/") do
+        if item ~= "" then
+            retval[#retval+1] = item
+        end
+    end
+    return retval
+end
+
+local function rebuild_path(paths, n)
+    local retval = paths[n]
+    n = n + 1
+    while paths[n] ~= nil do
+        retval = retval .. "/" .. paths[n]
+        n = n + 1
+    end
+    return retval
+end
+
+local function normalize_path(path)
+    return rebuild_path(split_path(path), 1)
+end
+
+
+local function is_base_url(src)
+    local retval = true
+    if src ~= nil then
+        local prot,host,path = MojoSetup.spliturl(file.source)
+        if prot ~= "base://" then
+            retval = false
+        end
+    end
+    return retval
+end
+
+
+-- This code's a little nasty...
+local drill_for_archive = function(archive, path)
+    if not MojoSetup.archive.enumerate(archive, nil) then
+        MojoSetup.fatal(_("Couldn't enumerate archive."))  -- !!! FIXME: error message
+    end
+
+    local pathtab = split_path(path)
+    local ent = MojoSetup.archive.enumNext(archive)
+    while ent ~= nil do
+        if ent.type == "file" then
+            local i = 1
+            local enttab = split_path(ent.filename)
+            while (enttab[i] ~= nil) and (enttab[i] == pathtab[i]) do
+                i = i + 1
+            end
+
+            if enttab[i] == nil then
+                -- It's a file that makes up some of the specified path.
+                --  open it as an archive and keep drilling...
+                local arc = MojoSetup.archive.fromentry(archive)
+                if arc == nil then
+                    MojoSetup.fatal(_("Couldn't open archive."))  -- !!! FIXME: error message.
+                end
+                if pathtab[i] == nil then
+                    return arc  -- this is the end of the path! Done drilling!
+                end
+                local retval = drill_for_archive(arc, rebuild_path(paths, i))
+                MojoSetup.archive.close(arc)
+                return retval
+            end
+        end
+    end
+
+    MojoSetup.fatal(_("Archive not found."))  -- !!! FIXME: error message.
+end
+
+
 local function delete_files(filelist, callback, error_is_fatal)
     local max = #filelist
     for i,v in ipairs(filelist) do
@@ -65,7 +139,7 @@ local function install_parent_dirs(path)
     -- Build each piece of final path. The gmatch() skips the last element.
     local fullpath = ""
     for item in string.gmatch(path, "(.-)/") do
-        if (item ~= "") then
+        if item ~= "" then
             fullpath = fullpath .. "/" .. item
             if not MojoSetup.platform.exists(fullpath) then
                 install_directory(fullpath)
@@ -153,45 +227,58 @@ local function install_archive_entry(archive, ent, file)
 end
 
 
--- basepath can be nil if (src) is in GBaseArchive, otherwise it will be
---  the native filesystem's location (although (src) may specify subdirs).
-local function install_archive(basepath, src, file)
-    local archive = nil
-    if basepath == nil then
-        archive = MojoSetup.archive.base
-    else
-        archive = MojoSetup.archive.fromdir(basepath)
-        if archive == nil then
-            -- !!! FIXME: need formatting function.
-            MojoSetup.fatal(_("Can't open archive"))
-        end
-    end
-
-    -- we don't have to iterate the whole archive if there are no wildcards.
-    local wildcards = (string.match(src, "[*?]") ~= nil)
-
+local function install_archive(archive, file, option)
     if not MojoSetup.archive.enumerate(archive, nil) then
         -- !!! FIXME: need formatting function.
         MojoSetup.fatal(_("Can't enumerate archive"))
     end
 
+    local isbase = is_base_url(file.source)
+    local single_match = true
+    local wildcards = file.wildcards
+
+    if wildcards ~= nil then
+        if type(wildcards) == "string" then
+            wildcards = { wildcards }
+        end
+        for k,v in ipairs(wildcards) do
+            if string.find(v, "[*?]") ~= nil then
+                single_match = false
+                break  -- no reason to keep iterating...
+            end
+        end
+    end
+
     local ent = MojoSetup.archive.enumnext(archive)
     while ent ~= nil do
-        -- If inside GBaseArchive, we want to clip to data/ directory...
-        if basepath == nil then
+        -- If inside GBaseArchive (no URL lead in string), then we
+        --  want to clip to data/ directory...
+        if isbase then
             local count
             ent.filename, count = string.gsub(ent.filename, "^data/", "", 1)
             if count == 0 then
                 ent.filename = nil
             end
         end
-
+        
         -- See if we should install this file...
         if ent.filename ~= nil then
-            if MojoSetup.wildcardmatch(ent.filename, src) then
+            local should_install = false
+            if wildcards == nil then
+                should_install = true
+            else
+                for k,v in ipairs(wildcards) do
+                    if MojoSetup.wildcardmatch(ent.filename, v) then
+                        should_install = true
+                        break  -- no reason to keep iterating...
+                    end
+                end
+            end
+
+            if should_install then
                 install_archive_entry(archive, ent, file)
-                if not wildcards then
-                    break  -- no reason to keep iterating...
+                if single_match then
+                    break   -- no sense in iterating further if we're done.
                 end
             end
         end
@@ -199,9 +286,36 @@ local function install_archive(basepath, src, file)
         -- and check the next entry in the archive...
         ent = MojoSetup.archive.enumnext(archive)
     end
+end
 
-    if basepath ~= nil then
-        MojoSetup.archive.close(archive)  -- we created this one, close it.
+
+local function install_basepath(basepath, file, option)
+    -- Obviously, we don't want to enumerate the entire physical filesystem,
+    --  so we'll dig through each path element with MojoPlatform_exists()
+    --  until we find one that doesn't, then we'll back up and try to open
+    --  that as a directory, and then a file archive, and start drilling from
+    --  there. Fun.
+    local paths = split_path(basepath)
+    local path = ""
+    for i,v in ipairs(paths) do
+        local knowngood = path
+        path = path .. "/" .. v
+        if not MojoSetup.platform.exists(path) then
+            if knowngood == "" then  -- !!! FIXME: error message.
+                MojoSetup.fatal(_("archive not found"))
+            end
+            local archive = MojoSetup.archive.fromdir(knowngood)
+            if archive == nil then
+                archive = MojoSetup.archive.fromfile(knowngood)
+                if archive == nil then  -- !!! FIXME: error message.
+                    MojoSetup.fatal(_("cannot open archive."))
+                end
+            end
+            local arc = drill_for_archive(archive, rebuild_path(paths, i))
+            MojoSetup.archive.close(archive)
+            install_archive(arc, file, option)
+            MojoSetup.archive.close(arc)
+        end
     end
 end
 
@@ -309,36 +423,33 @@ local function do_install(install)
     --  This is not a GUI stage, it just needs to run between them.
     --  This gets a little hairy.
     stages[#stages+1] = function(thisstage, maxstage)
-        local function process_file(file)
-            -- !!! FIXME: do this in schema?
-            if type(file.source) == "string" then
-                file.source = { file.source }
-            end
-
+        local function process_file(option, file)
             -- !!! FIXME: what happens if a file shows up in multiple options?
-            for k,v in pairs(file.source) do
-                local prot,host,path = string.match(v, "^(.+://)(.-)/(.*)")
-                if prot == nil then  -- included content?
-                    if MojoSetup.sources.included == nil then
-                        MojoSetup.sources.included = {}
-                    end
-                    MojoSetup.sources.included[v] = file
-                elseif prot == "media://" then
-                    -- !!! FIXME: make sure media id is valid.
-                    if MojoSetup.sources.media == nil then
-                        MojoSetup.sources.media = {}
-                    end
-                    if MojoSetup.sources.media[host] == nil then
-                        MojoSetup.sources.media[host] = {}
-                    end
-                    MojoSetup.sources.media[host][path] = file
-                else
-                    -- !!! FIXME: make sure we can handle this URL...
-                    if MojoSetup.sources.downloads == nil then
-                        MojoSetup.sources.downloads = {}
-                    end
-                    MojoSetup.sources.downloads[v] = file
+            local src = file.source
+            local prot,host,path
+            if src ~= nil then  -- no source, it's in GBaseArchive
+                prot,host,path = MojoSetup.spliturl(src)
+            end
+            if (src == nil) or (prot == "base://") then  -- included content?
+                if MojoSetup.files.included == nil then
+                    MojoSetup.files.included = {}
                 end
+                MojoSetup.files.included[file] = option
+            elseif prot == "media://" then
+                -- !!! FIXME: make sure media id is valid.
+                if MojoSetup.files.media == nil then
+                    MojoSetup.files.media = {}
+                end
+                if MojoSetup.files.media[host] == nil then
+                    MojoSetup.files.media[host] = {}
+                end
+                MojoSetup.files.media[host][file] = option
+            else
+                -- !!! FIXME: make sure we can handle this URL...
+                if MojoSetup.files.downloads == nil then
+                    MojoSetup.files.downloads = {}
+                end
+                MojoSetup.files.downloads[file] = option
             end
         end
 
@@ -349,8 +460,7 @@ local function do_install(install)
             -- !!! FIXME: check for nil in schema?
             if option.files ~= nil then
                 for k,v in pairs(option.files) do
-                    v.option = option  -- Make sure this is reachable later...
-                    process_file(v)
+                    process_file(option, v)
                 end
             end
         end
@@ -375,19 +485,19 @@ local function do_install(install)
             end
         end
 
-        MojoSetup.sources = {}
+        MojoSetup.files = {}
         build_source_tables(install)
 
-        -- This dumps the sources tables using logdebug,
+        -- This dumps the files tables using MojoSetup.logdebug,
         --  so it only spits out crap if debug-level logging is enabled.
-        MojoSetup.dumptable("MojoSetup.sources", MojoSetup.sources)
+        MojoSetup.dumptable("MojoSetup.files", MojoSetup.files)
 
         return true   -- always go forward from non-GUI stage.
     end
 
     -- Next stage: Download external packages.
     stages[#stages+1] = function(thisstage, maxstage)
-        if MojoSetup.sources.downloads ~= nil then
+        if MojoSetup.files.downloads ~= nil then
             MojoSetup.gui.startdownload()
             -- !!! FIXME: write me.
             MojoSetup.gui.enddownload()
@@ -405,11 +515,11 @@ local function do_install(install)
         --  the source data, you should only have to insert each disc
         --  once, no matter how they landed in the config file.
 
-        if MojoSetup.sources.media ~= nil then
+        if MojoSetup.files.media ~= nil then
             -- Build an array of media ids so we can sort them into a
             --  reasonable order...disc 1 before disc 2, etc.
             local medialist = {}
-            for mediaid,mediavalue in pairs(MojoSetup.sources.media) do
+            for mediaid,mediavalue in pairs(MojoSetup.files.media) do
                 medialist[#medialist+1] = mediaid
             end
             table.sort(medialist)
@@ -426,23 +536,31 @@ local function do_install(install)
 
                 -- Media is ready, install everything from this one...
                 MojoSetup.loginfo("Found correct media at '" .. basepath .. "'")
-                local srcs = MojoSetup.sources.media[mediaid]
-                for src,file in pairs(srcs) do
-                    install_archive(basepath, src, file)
+                local files = MojoSetup.files.media[mediaid]
+                for file,option in pairs(files) do
+                    install_basepath(basepath, file, option)
                 end
             end
             medialist = nil   -- done with this.
         end
 
-        if MojoSetup.sources.downloads ~= nil then
-            for src,file in pairs(MojoSetup.sources.downloads) do
-                install_archive(basepath, src, file)
+        if MojoSetup.files.downloads ~= nil then
+            for file,option in pairs(MojoSetup.files.downloads) do
+                install_basepath(basepath, file, option)
             end
         end
 
-        if MojoSetup.sources.included ~= nil then
-            for src,file in pairs(MojoSetup.sources.included) do
-                install_archive(nil, src, file)
+        if MojoSetup.files.included ~= nil then
+            for file,option in pairs(MojoSetup.files.included) do
+                local arc = MojoSetup.archive.base
+                if file.source == nil then
+                    install_archive(arc, file, option)
+                else
+                    local prot,host,path = MojoSetup.spliturl(file.source)
+                    arc = drill_for_archive(arc, path)
+                    install_archive(arc, file, option)
+                    MojoSetup.archive.close(arc)
+                end
             end
         end
 
@@ -501,7 +619,7 @@ local function do_install(install)
 
     -- Done with these things. Make them eligible for garbage collection.
     MojoSetup.stages = nil
-    MojoSetup.sources = nil
+    MojoSetup.files = nil
     MojoSetup.media = nil
     MojoSetup.destination = nil
 end
