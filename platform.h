@@ -48,6 +48,12 @@ boolean MojoPlatform_rename(const char *src, const char *dst);
 boolean MojoPlatform_exists(const char *dir, const char *fname);
 
 // !!! FIXME: comment me.
+boolean MojoPlatform_perms(const char *fname, uint16 *p);
+
+// !!! FIXME: comment me.
+boolean MojoPlatform_chmod(const char *fname, uint16 p);
+
+// !!! FIXME: comment me.
 char *MojoPlatform_findMedia(const char *uniquefile);
 
 // Wrappers for Unix dlopen/dlsym/dlclose, sort of. Instead of a filename,

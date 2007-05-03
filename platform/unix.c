@@ -486,6 +486,25 @@ boolean MojoPlatform_exists(const char *dir, const char *fname)
 } // MojoPlatform_exists
 
 
+boolean MojoPlatform_perms(const char *fname, uint16 *p)
+{
+    boolean retval = false;
+    struct stat statbuf;
+    if (stat(fname, &statbuf) != -1)
+    {
+        *p = statbuf.st_mode;
+        retval = true;
+    } // if
+    return retval;
+} // MojoPlatform_perms
+
+
+boolean MojoPlatform_chmod(const char *fname, uint16 p)
+{
+    return (chmod(fname, p) != -1);
+} // MojoPlatform_chmod
+
+
 char *MojoPlatform_findMedia(const char *uniquefile)
 {
 #if MOJOSETUP_HAVE_SYS_UCRED_H

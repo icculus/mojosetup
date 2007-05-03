@@ -62,7 +62,7 @@ void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo)
 
 // !!! FIXME: I'd rather not use a callback here, but I can't see a cleaner
 // !!! FIXME:  way right now...
-boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname,
+boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                                  MojoInput_FileCopyCallback cb, void *data)
 {
     FILE *out = NULL;
@@ -70,8 +70,6 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname,
     int32 br = 0;
     int64 flen = 0;
     int64 bw = 0;
-
-    STUBBED("file permissions?");
 
     if (in == NULL)
         return false;
@@ -119,6 +117,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname,
         return false;
     } // if
 
+    MojoPlatform_chmod(fname, perms);
     return true;
 } // MojoInput_toPhysicalFile
 
@@ -463,6 +462,7 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
         ar->prevEnum.type = MOJOARCHIVE_ENTRY_UNKNOWN;
     else
     {
+        ar->prevEnum.perms = statbuf.st_mode;
         ar->prevEnum.filesize = statbuf.st_size;
         if (S_ISREG(statbuf.st_mode))
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;

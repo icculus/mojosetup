@@ -54,6 +54,7 @@ typedef struct MojoArchiveEntry
     char *linkdest;
     MojoArchiveEntryType type;
     int64 filesize;
+    uint16 perms;
 } MojoArchiveEntry;
 
 void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo);
@@ -89,7 +90,7 @@ MojoArchive *MojoArchive_initBaseArchive(void);
 void MojoArchive_deinitBaseArchive(void);
 
 typedef boolean (*MojoInput_FileCopyCallback)(int percent, void *data);
-boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname,
+boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                                  MojoInput_FileCopyCallback cb, void *data);
 
 #ifdef __cplusplus

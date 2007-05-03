@@ -219,6 +219,7 @@ typedef struct _ZIPentry
     char *name;                         /* Name of file in archive        */
     struct _ZIPentry *symlink;          /* NULL or file we symlink to     */
     #if __MOJOSETUP__
+    PHYSFS_uint16 perms;
     char *linkdest;
     #endif
     ZipResolveType resolved;            /* Have we resolved file/symlink? */
@@ -1095,6 +1096,7 @@ static int zip_load_entry(void *in, ZIPentry *entry, PHYSFS_uint32 ofs_fixup)
     entry->offset += ofs_fixup;
 
     #if __MOJOSETUP__
+    entry->perms = (external_attr >> 16) & 0xFFFF;
     entry->linkdest = NULL;
     #endif
 
@@ -1747,6 +1749,8 @@ static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
             ar->prevEnum.filename = xstrdup(entry->name);
             ar->prevEnum.filesize = entry->uncompressed_size;
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+            ar->prevEnum.perms = entry->perms;
+
             if (entry->name[strlen(entry->name) - 1] == '/')
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
             else if (MojoArchive_zip_entry_is_symlink(info, entry))
@@ -1779,6 +1783,7 @@ static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
 
                 ar->prevEnum.filesize = entry->uncompressed_size;
                 ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+                ar->prevEnum.perms = entry->perms;
                 if (ptr != NULL)
                     ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
                 else if (MojoArchive_zip_entry_is_symlink(info, entry))

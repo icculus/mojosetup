@@ -591,7 +591,8 @@ static int luahook_writefile(lua_State *L)
         MojoInput *in = archive->openCurrentEntry(archive);
         if (in != NULL)
         {
-            retval = MojoInput_toPhysicalFile(in, path, writefile_callback, NULL);
+            retval = MojoInput_toPhysicalFile(in, path, archive->prevEnum.perms,
+                                              writefile_callback, NULL);
             in->close(in);
         } // if
     } // if
@@ -727,7 +728,9 @@ static int luahook_movefile(lua_State *L)
         MojoInput *in = MojoInput_newFromFile(src);
         if (in != NULL)
         {
-            retval = MojoInput_toPhysicalFile(in, dst, NULL, NULL);
+            uint16 perms = 0;
+            MojoPlatform_perms(src, &perms);
+            retval = MojoInput_toPhysicalFile(in, dst, perms, NULL, NULL);
             in->close(in);
             if (retval)
             {
