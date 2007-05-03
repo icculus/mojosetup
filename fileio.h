@@ -36,7 +36,6 @@ struct MojoInput
 };
 
 MojoInput *MojoInput_newFromFile(const char *fname);
-MojoInput *MojoInput_newFromMemory(void *mem, uint32 bytes);
 
 typedef enum
 {
