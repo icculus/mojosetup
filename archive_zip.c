@@ -1834,8 +1834,9 @@ static MojoInput *MojoArchive_zip_openCurrentEntry(MojoArchive *ar)
 {
     MojoInput *retval = NULL;
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
+    const int32 enumIndex = info->enumIndex - 1;
 
-    if ((info->enumIndex >= 0) && (info->enumIndex < info->entryCount) &&
+    if ((enumIndex >= 0) && (enumIndex < info->entryCount) &&
         (ar->prevEnum.type == MOJOARCHIVE_ENTRY_FILE))
     {
         char *fullpath = NULL;

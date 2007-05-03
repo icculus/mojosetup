@@ -37,20 +37,16 @@ local function normalize_path(path)
 end
 
 
-local function is_base_url(src)
-    local retval = true
-    if src ~= nil then
-        local prot,host,path = MojoSetup.spliturl(file.source)
-        if prot ~= "base://" then
-            retval = false
-        end
+local function close_archive_list(arclist)
+    for i = #arclist,1,-1 do
+        MojoSetup.archive.close(arclist[i])
+        arclist[i] = nil
     end
-    return retval
 end
 
 
 -- This code's a little nasty...
-local drill_for_archive = function(archive, path)
+local function drill_for_archive(archive, path, arclist)
     if not MojoSetup.archive.enumerate(archive, nil) then
         MojoSetup.fatal(_("Couldn't enumerate archive."))  -- !!! FIXME: error message
     end
@@ -72,14 +68,14 @@ local drill_for_archive = function(archive, path)
                 if arc == nil then
                     MojoSetup.fatal(_("Couldn't open archive."))  -- !!! FIXME: error message.
                 end
+                arclist[#arclist+1] = arc
                 if pathtab[i] == nil then
                     return arc  -- this is the end of the path! Done drilling!
                 end
-                local retval = drill_for_archive(arc, rebuild_path(paths, i))
-                MojoSetup.archive.close(arc)
-                return retval
+                return drill_for_archive(arc, rebuild_path(pathtab, i), arclist)
             end
         end
+        ent = MojoSetup.archive.enumnext(archive)
     end
 
     MojoSetup.fatal(_("Archive not found."))  -- !!! FIXME: error message.
@@ -152,7 +148,6 @@ end
 local function permit_write(dest, entinfo, file)
     local allowoverwrite = true
     if MojoSetup.platform.exists(dest) then
-MojoSetup.logdebug(dest .. " exists, entinfo.type is '" .. entinfo.type .. "'")
         -- never "permit" existing dirs, so they don't rollback.
         if entinfo.type == "dir" then
             allowoverwrite = false
@@ -160,7 +155,7 @@ MojoSetup.logdebug(dest .. " exists, entinfo.type is '" .. entinfo.type .. "'")
             allowoverwrite = file.allowoverwrite
             if not allowoverwrite then
                 -- !!! FIXME: language and formatting.
-                MojoSetup.logdebug("File '" .. dest .. "' already exists.")
+                MojoSetup.loginfo("File '" .. dest .. "' already exists.")
                 allowoverwrite = MojoSetup.promptyn(_("Conflict!"), _("File already exists! Replace?"))
             end
 
@@ -233,18 +228,26 @@ local function install_archive(archive, file, option)
         MojoSetup.fatal(_("Can't enumerate archive"))
     end
 
-    local isbase = is_base_url(file.source)
+    local isbase = (archive == MojoSetup.archive.base)
     local single_match = true
     local wildcards = file.wildcards
 
-    if wildcards ~= nil then
+    -- If there's only one explicit file we're looking for, we don't have to
+    --  iterate the whole archive...we can stop as soon as we find it.
+    if wildcards == nil then
+        single_match = false
+    else
         if type(wildcards) == "string" then
             wildcards = { wildcards }
         end
-        for k,v in ipairs(wildcards) do
-            if string.find(v, "[*?]") ~= nil then
-                single_match = false
-                break  -- no reason to keep iterating...
+        if #wildcards > 1 then
+            single_match = false
+        else
+            for k,v in ipairs(wildcards) do
+                if string.find(v, "[*?]") ~= nil then
+                    single_match = false
+                    break  -- no reason to keep iterating...
+                end
             end
         end
     end
@@ -262,7 +265,7 @@ local function install_archive(archive, file, option)
         end
         
         -- See if we should install this file...
-        if ent.filename ~= nil then
+        if (ent.filename ~= nil) and (ent.filename ~= "") then
             local should_install = false
             if wildcards == nil then
                 should_install = true
@@ -295,27 +298,46 @@ local function install_basepath(basepath, file, option)
     --  until we find one that doesn't, then we'll back up and try to open
     --  that as a directory, and then a file archive, and start drilling from
     --  there. Fun.
-    local paths = split_path(basepath)
-    local path = ""
-    for i,v in ipairs(paths) do
-        local knowngood = path
-        path = path .. "/" .. v
-        if not MojoSetup.platform.exists(path) then
-            if knowngood == "" then  -- !!! FIXME: error message.
-                MojoSetup.fatal(_("archive not found"))
+
+    local function create_basepath_archive(path)
+        local archive = MojoSetup.archive.fromdir(path)
+        if archive == nil then
+            archive = MojoSetup.archive.fromfile(path)
+            if archive == nil then  -- !!! FIXME: error message.
+                MojoSetup.fatal(_("cannot open archive."))
             end
-            local archive = MojoSetup.archive.fromdir(knowngood)
-            if archive == nil then
-                archive = MojoSetup.archive.fromfile(knowngood)
-                if archive == nil then  -- !!! FIXME: error message.
-                    MojoSetup.fatal(_("cannot open archive."))
-                end
-            end
-            local arc = drill_for_archive(archive, rebuild_path(paths, i))
-            MojoSetup.archive.close(archive)
-            install_archive(arc, file, option)
-            MojoSetup.archive.close(arc)
         end
+        return archive
+    end
+
+    -- fast path: See if the whole path exists. This is probably the normal
+    --  case, but it won't work for archives-in-archives.
+    if MojoSetup.platform.exists(basepath) then
+        local archive = create_basepath_archive(basepath)
+        install_archive(archive, file, option)
+        MojoSetup.archive.close(archive)
+    else
+        -- Check for archives-in-archives...
+        local path = ""
+        for i,v in ipairs(paths) do
+            local knowngood = path
+            path = path .. "/" .. v
+            if not MojoSetup.platform.exists(path) then
+                if knowngood == "" then  -- !!! FIXME: error message.
+                    MojoSetup.fatal(_("archive not found"))
+                end
+                local archive = create_basepath_archive(knowngood)
+                local arclist = { archive }
+                path = rebuild_path(paths, i)
+                local arc = drill_for_archive(archive, path, arclist)
+                install_archive(arc, file, option)
+                close_archive_list(arclist)
+                return  -- we're done here
+            end
+        end
+
+        -- wait, the whole thing exists now? Did this just move in?
+        install_basepath(basepath, file, option)  -- try again, I guess...
     end
 end
 
@@ -394,7 +416,7 @@ local function do_install(install)
     --  but really really shouldn't in 99% of the cases.
     MojoSetup.destination = install.destination
     if MojoSetup.destination ~= nil then
-        MojoSetup.logdebug("Install dest: '" .. install.destination .. "'")
+        MojoSetup.loginfo("Install dest: '" .. install.destination .. "'")
     else
         local recommend = install.recommended_destinations
         -- (recommend) becomes an upvalue in this function.
@@ -404,7 +426,7 @@ local function do_install(install)
                 return false   -- go back
             end
             MojoSetup.destination = x
-            MojoSetup.logdebug("Install dest: '" .. x .. "'")
+            MojoSetup.loginfo("Install dest: '" .. x .. "'")
             return true
         end
     end
@@ -465,7 +487,7 @@ local function do_install(install)
             end
         end
 
-        local build_source_tables = function(opts)
+        local function build_source_tables(opts)
             local options = opts['options']
             if options ~= nil then
                 for k,v in pairs(options) do
@@ -538,7 +560,8 @@ local function do_install(install)
                 MojoSetup.loginfo("Found correct media at '" .. basepath .. "'")
                 local files = MojoSetup.files.media[mediaid]
                 for file,option in pairs(files) do
-                    install_basepath(basepath, file, option)
+                    local prot,host,path = MojoSetup.spliturl(file.source)
+                    install_basepath(basepath .. "/" .. path, file, option)
                 end
             end
             medialist = nil   -- done with this.
@@ -557,9 +580,10 @@ local function do_install(install)
                     install_archive(arc, file, option)
                 else
                     local prot,host,path = MojoSetup.spliturl(file.source)
-                    arc = drill_for_archive(arc, path)
+                    local arclist = {}
+                    arc = drill_for_archive(arc, "data/" .. path, arclist)
                     install_archive(arc, file, option)
-                    MojoSetup.archive.close(arc)
+                    close_archive_list(arclist)
                 end
             end
         end

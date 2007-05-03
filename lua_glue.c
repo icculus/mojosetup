@@ -574,7 +574,7 @@ static int luahook_findmedia(lua_State *L)
 
 static boolean writefile_callback(int percent, void *data)
 {
-    printf("writefile_callback: %d percent\n", percent);
+//    printf("writefile_callback: %d percent\n", percent);
     return true;
 } // writefile_callback
 
