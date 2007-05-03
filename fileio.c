@@ -46,7 +46,7 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *ext)
 } // MojoArchive_newFromInput
 
 
-void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo)
+void MojoArchive_resetEntry(MojoArchiveEntry *info, boolean basetoo)
 {
     char *base = info->basepath;
     free(info->filename);
@@ -306,7 +306,7 @@ static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
     DIR *dir = NULL;
 
     freeDirStack(&inst->dirs);
-    MojoArchive_resetEntry(&ar->prevEnum, 1);
+    MojoArchive_resetEntry(&ar->prevEnum, true);
 
     if (path == NULL)
     {
@@ -349,7 +349,7 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
     if (inst->dirs == NULL)
         return NULL;
 
-    MojoArchive_resetEntry(&ar->prevEnum, 0);
+    MojoArchive_resetEntry(&ar->prevEnum, false);
 
     dent = readdir(inst->dirs->dir);
     if (dent == NULL)  // end of dir?
@@ -445,7 +445,7 @@ static void MojoArchive_dir_close(MojoArchive *ar)
     freeDirStack(&inst->dirs);
     free(inst->base);
     free(inst);
-    MojoArchive_resetEntry(&ar->prevEnum, 1);
+    MojoArchive_resetEntry(&ar->prevEnum, true);
     free(ar);
 } // MojoArchive_dir_close
 

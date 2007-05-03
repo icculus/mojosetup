@@ -56,7 +56,7 @@ typedef struct MojoArchiveEntry
     uint16 perms;
 } MojoArchiveEntry;
 
-void MojoArchive_resetEntry(MojoArchiveEntry *info, int basetoo);
+void MojoArchive_resetEntry(MojoArchiveEntry *info, boolean basetoo);
 
 
 typedef struct MojoArchive MojoArchive;
