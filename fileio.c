@@ -221,35 +221,29 @@ static void MojoInput_file_close(MojoInput *io)
     free(io);
 } // MojoInput_file_close
 
-MojoInput *MojoInput_newFromFile(const char *fname)
+MojoInput *MojoInput_newFromFile(const char *path)
 {
-    FILE *f = NULL;
     MojoInput *io = NULL;
-    MojoInputFileInstance *inst;
-    char *path = MojoPlatform_realpath(fname);
-    
-    if (path == NULL)
-        return NULL;
+    FILE *f = NULL;
 
     f = fopen(path, "rb");
-    if (f == NULL)
+    if (f != NULL)
     {
-        free(path);
-        return NULL;
+        MojoInputFileInstance *inst;
+        inst = (MojoInputFileInstance *) xmalloc(sizeof (MojoInputFileInstance));
+        inst->path = xstrdup(path);
+        inst->handle = f;
+
+        io = (MojoInput *) xmalloc(sizeof (MojoInput));
+        io->read = MojoInput_file_read;
+        io->seek = MojoInput_file_seek;
+        io->tell = MojoInput_file_tell;
+        io->length = MojoInput_file_length;
+        io->duplicate = MojoInput_file_duplicate;
+        io->close = MojoInput_file_close;
+        io->opaque = inst;
     } // if
 
-    inst = (MojoInputFileInstance *) xmalloc(sizeof (MojoInputFileInstance));
-    inst->path = path;
-    inst->handle = f;
-
-    io = (MojoInput *) xmalloc(sizeof (MojoInput));
-    io->read = MojoInput_file_read;
-    io->seek = MojoInput_file_seek;
-    io->tell = MojoInput_file_tell;
-    io->length = MojoInput_file_length;
-    io->duplicate = MojoInput_file_duplicate;
-    io->close = MojoInput_file_close;
-    io->opaque = inst;
     return io;
 } // MojoInput_newFromFile
 
