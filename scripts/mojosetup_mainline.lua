@@ -47,7 +47,7 @@ end
 
 -- This code's a little nasty...
 local function drill_for_archive(archive, path, arclist)
-    if not MojoSetup.archive.enumerate(archive, nil) then
+    if not MojoSetup.archive.enumerate(archive) then
         MojoSetup.fatal(_("Couldn't enumerate archive."))  -- !!! FIXME: error message
     end
 
@@ -181,12 +181,7 @@ end
 
 
 local function install_archive_entry(archive, ent, file)
-    local entdest = nil
-    if ent.basepath ~= nil then
-        entdest = ent.basepath .. "/" .. ent.filename
-    else
-        entdest = ent.filename
-    end
+    local entdest = ent.filename
     if entdest == nil then return end   -- probably can't happen...
 
     -- Set destination in native filesystem. May be default or explicit.
@@ -223,7 +218,7 @@ end
 
 
 local function install_archive(archive, file, option)
-    if not MojoSetup.archive.enumerate(archive, nil) then
+    if not MojoSetup.archive.enumerate(archive) then
         -- !!! FIXME: need formatting function.
         MojoSetup.fatal(_("Can't enumerate archive"))
     end

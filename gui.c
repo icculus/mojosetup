@@ -142,12 +142,15 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
 
 static void loadDynamicGuiPlugins(PluginList *plugins)
 {
-    if (GBaseArchive->enumerate(GBaseArchive, "guis"))
+    if (GBaseArchive->enumerate(GBaseArchive))
     {
         const MojoArchiveEntry *entinfo;
         while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)
         {
             if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
+                continue;
+
+            if (strncmp(entinfo->filename, "guis/", 5) != 0)
                 continue;
 
             loadDynamicGuiPlugin(plugins, GBaseArchive);

@@ -53,17 +53,11 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *ext)
 } // MojoArchive_newFromInput
 
 
-void MojoArchive_resetEntry(MojoArchiveEntry *info, boolean basetoo)
+void MojoArchive_resetEntry(MojoArchiveEntry *info)
 {
-    char *base = info->basepath;
     free(info->filename);
     free(info->linkdest);
     memset(info, '\0', sizeof (MojoArchiveEntry));
-
-    if (basetoo)
-        free(base);
-    else
-        info->basepath = base;
 } // MojoArchive_resetEntry
 
 
@@ -132,23 +126,12 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
 MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname)
 {
     MojoInput *retval = NULL;
-    char *fullpath = xstrdup(fname);
-    char *file = strrchr(fullpath, '/');
-    char *path = fullpath;
-    if (file != NULL)
-        *(file++) = '\0';
-    else
-    {
-        path = "";
-        file = fullpath;
-    } // else
-
-    if (ar->enumerate(ar, path))
+    if (ar->enumerate(ar))
     {
         const MojoArchiveEntry *entinfo;
         while ((entinfo = ar->enumNext(ar)) != NULL)
         {
-            if (strcmp(entinfo->filename, file) == 0)
+            if (strcmp(entinfo->filename, fname) == 0)
             {
                 if (entinfo->type == MOJOARCHIVE_ENTRY_FILE)
                     retval = ar->openCurrentEntry(ar);
@@ -157,7 +140,6 @@ MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname)
         } // while
     } // if
 
-    free(fullpath);
     return retval;
 } // MojoInput_newFromArchivePath
 
@@ -306,41 +288,17 @@ typedef struct
     char *base;
 } MojoArchiveDirInstance;
 
-static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
+static boolean MojoArchive_dir_enumerate(MojoArchive *ar)
 {
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    char *fullpath = NULL;
     DIR *dir = NULL;
 
     freeDirStack(&inst->dirs);
-    MojoArchive_resetEntry(&ar->prevEnum, true);
+    MojoArchive_resetEntry(&ar->prevEnum);
 
-    if (path == NULL)
-    {
-        fullpath = (char *) alloca(strlen(inst->base) + 1);
-        strcpy(fullpath, inst->base);
-    } // if
-    else
-    {
-        size_t dlen = strlen(inst->base) + strlen(path) + 1;
-        fullpath = (char *) alloca(dlen + 1);
-        sprintf(fullpath, "%s/%s", inst->base, path);
-        while ((dlen > 0) && (fullpath[dlen - 1] == '/'))
-            fullpath[--dlen] = '\0'; // ignore trailing '/'
-    } // else
-
-    dir = opendir(fullpath);
+    dir = opendir(inst->base);
     if (dir != NULL)
-    {
-        if (path != NULL)
-        {
-            size_t dlen = strlen(path);
-            ar->prevEnum.basepath = xstrdup(path);
-            while ((dlen > 0) && (ar->prevEnum.basepath[dlen - 1] == '/'))
-                ar->prevEnum.basepath[--dlen] = '\0'; // ignore trailing '/'
-        } // if
-        pushDirStack(&inst->dirs, fullpath, dir);
-    } // if
+        pushDirStack(&inst->dirs, inst->base, dir);
 
     return (dir != NULL);
 } // MojoArchive_dir_enumerate
@@ -348,15 +306,15 @@ static boolean MojoArchive_dir_enumerate(MojoArchive *ar, const char *path)
 
 static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
 {
-    const boolean enumall = (ar->prevEnum.basepath == NULL);
     struct stat statbuf;
     char *fullpath = NULL;
     struct dirent *dent = NULL;
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
+
+    MojoArchive_resetEntry(&ar->prevEnum);
+
     if (inst->dirs == NULL)
         return NULL;
-
-    MojoArchive_resetEntry(&ar->prevEnum, false);
 
     dent = readdir(inst->dirs->dir);
     if (dent == NULL)  // end of dir?
@@ -368,18 +326,11 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
     if ((strcmp(dent->d_name, ".") == 0) || (strcmp(dent->d_name, "..") == 0))
         return MojoArchive_dir_enumNext(ar);  // skip these.
 
-    fullpath = (char *) alloca(strlen(inst->dirs->basepath) +
-                               strlen(dent->d_name) + 2);
+    fullpath = (char *) xmalloc(strlen(inst->dirs->basepath) +
+                                strlen(dent->d_name) + 2);
 
     sprintf(fullpath, "%s/%s", inst->dirs->basepath, dent->d_name);
-
-    if (!enumall)
-        ar->prevEnum.filename = xstrdup(dent->d_name);
-    else
-    {
-        ar->prevEnum.filename = xmalloc(strlen(fullpath) + 1);
-        strcpy(ar->prevEnum.filename, fullpath + strlen(inst->base) + 1);
-    } // else
+    ar->prevEnum.filename = xstrdup(fullpath + strlen(inst->base) + 1);
 
     if (lstat(fullpath, &statbuf) == -1)
         ar->prevEnum.type = MOJOARCHIVE_ENTRY_UNKNOWN;
@@ -395,28 +346,32 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
             ar->prevEnum.linkdest = (char *) xmalloc(statbuf.st_size + 1);
             if (readlink(fullpath, ar->prevEnum.linkdest, statbuf.st_size) < 0)
+            {
+                free(fullpath);
                 return MojoArchive_dir_enumNext(ar);
+            } // if
             ar->prevEnum.linkdest[statbuf.st_size] = '\0';
         } // else if
 
         else if (S_ISDIR(statbuf.st_mode))
         {
+            DIR *dir = opendir(fullpath);
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-            if (enumall)
+            if (dir == NULL)
             {
-                // push this dir on the stack. Next enum will start there.
-                DIR *dir = opendir(fullpath);
-                if (dir != NULL)  // !!! FIXME: what to do if NULL?
-                    pushDirStack(&inst->dirs, fullpath, dir);
+                free(fullpath);
+                return MojoArchive_dir_enumNext(ar);
             } // if
+            // push this dir on the stack. Next enum will start there.
+            pushDirStack(&inst->dirs, fullpath, dir);
         } // else if
     } // else
 
+    free(fullpath);
     return &ar->prevEnum;
 } // MojoArchive_dir_enumNext
 
 
-// !!! FIXME: this code is going to be cut-and-paste for every archiver!
 static MojoInput *MojoArchive_dir_openCurrentEntry(MojoArchive *ar)
 {
     MojoInput *retval = NULL;
@@ -424,22 +379,11 @@ static MojoInput *MojoArchive_dir_openCurrentEntry(MojoArchive *ar)
 
     if ((inst->dirs != NULL) && (ar->prevEnum.type == MOJOARCHIVE_ENTRY_FILE))
     {
-        char *fullpath = NULL;
-        if (ar->prevEnum.basepath != NULL)
-        {
-            fullpath = (char *) alloca(strlen(inst->dirs->basepath) +
-                                       strlen(ar->prevEnum.filename) + 2);
-            sprintf(fullpath, "%s/%s", inst->dirs->basepath,
-                    ar->prevEnum.filename);
-        } // if
-        else
-        {
-            fullpath = (char *) alloca(strlen(inst->base) +
-                                       strlen(ar->prevEnum.filename) + 2);
-            sprintf(fullpath, "%s/%s", inst->base, ar->prevEnum.filename);
-        } // else
-
+        char *fullpath = (char *) xmalloc(strlen(inst->base) +
+                                          strlen(ar->prevEnum.filename) + 2);
+        sprintf(fullpath, "%s/%s", inst->base, ar->prevEnum.filename);
         retval = MojoInput_newFromFile(fullpath);
+        free(fullpath);
     } // if
 
     return retval;
@@ -452,7 +396,7 @@ static void MojoArchive_dir_close(MojoArchive *ar)
     freeDirStack(&inst->dirs);
     free(inst->base);
     free(inst);
-    MojoArchive_resetEntry(&ar->prevEnum, true);
+    MojoArchive_resetEntry(&ar->prevEnum);
     free(ar);
 } // MojoArchive_dir_close
 
@@ -507,7 +451,7 @@ MojoArchive *MojoArchive_initBaseArchive(void)
             GBaseArchive = MojoArchive_newFromDirectory(parentdir);
         } // if
 
-        free(basepath);   // caller free()s this string.
+        free(basepath);   // appBinaryPath caller free()s this string.
     } // else
 
     return GBaseArchive;

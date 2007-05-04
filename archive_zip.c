@@ -1324,6 +1324,7 @@ zip_openarchive_failed:
 } /* ZIP_openArchive */
 
 
+#if !__MOJOSETUP__
 static PHYSFS_sint32 zip_find_start_of_dir(ZIPinfo *info, const char *path,
                                             int stop_on_first_find)
 {
@@ -1377,7 +1378,6 @@ static PHYSFS_sint32 zip_find_start_of_dir(ZIPinfo *info, const char *path,
 } /* zip_find_start_of_dir */
 
 
-#if !__MOJOSETUP__
 /*
  * Moved to seperate function so we can use alloca then immediately throw
  *  away the allocated stack space...
@@ -1708,110 +1708,43 @@ static int MojoArchive_zip_entry_is_symlink(ZIPinfo *info, ZIPentry *entry)
 } // MojoArchive_zip_entry_is_symlink
 
 
-static boolean MojoArchive_zip_enumerate(MojoArchive *ar, const char *path)
+static boolean MojoArchive_zip_enumerate(MojoArchive *ar)
 {
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
-
-    MojoArchive_resetEntry(&ar->prevEnum, true);
+    MojoArchive_resetEntry(&ar->prevEnum);
     info->enumIndex = 0;
-
-    if (path != NULL)
-    {
-        size_t dlen;
-        info->enumIndex = zip_find_start_of_dir(info, path, 0);
-        if (info->enumIndex == -1)  // no such directory.
-            return false;
-        ar->prevEnum.basepath = xstrdup(path);
-        dlen = strlen(ar->prevEnum.basepath);
-        while ((dlen > 0) && (ar->prevEnum.basepath[dlen - 1] == '/'))
-            ar->prevEnum.basepath[--dlen] = '\0'; // ignore trailing slashes.
-    } // if
-
     return true;
 } // MojoArchive_zip_enumerate
 
 
 static const MojoArchiveEntry *MojoArchive_zip_enumNext(MojoArchive *ar)
 {
-    const boolean enumall = (ar->prevEnum.basepath == NULL);
     ZIPinfo *info = (ZIPinfo *) ar->opaque;
+    MojoArchiveEntry *retval = NULL;
 
-    if (info->enumIndex < 0)
-        return NULL;
+    MojoArchive_resetEntry(&ar->prevEnum);
 
-    MojoArchive_resetEntry(&ar->prevEnum, false);
-
-    if (info->enumIndex < info->entryCount)
+    if ((info->enumIndex >= 0) && (info->enumIndex < info->entryCount))
     {
-        if (enumall)
+        ZIPentry *entry = &info->entries[info->enumIndex];
+        ar->prevEnum.filename = xstrdup(entry->name);
+        ar->prevEnum.filesize = entry->uncompressed_size;
+        ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+        ar->prevEnum.perms = entry->perms;
+
+        if (entry->name[strlen(entry->name) - 1] == '/')
+            ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
+        else if (MojoArchive_zip_entry_is_symlink(info, entry))
         {
-            ZIPentry *entry = &info->entries[info->enumIndex++];
-            ar->prevEnum.filename = xstrdup(entry->name);
-            ar->prevEnum.filesize = entry->uncompressed_size;
-            ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
-            ar->prevEnum.perms = entry->perms;
+            ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
+            ar->prevEnum.linkdest = xstrdup(entry->linkdest);
+        } // else if
 
-            if (entry->name[strlen(entry->name) - 1] == '/')
-                ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-            else if (MojoArchive_zip_entry_is_symlink(info, entry))
-            {
-                ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-                ar->prevEnum.linkdest = xstrdup(entry->linkdest);
-            } // else if
-            return &ar->prevEnum;
-        } // if
-
-        else  // enumerating one directory...
-        {
-            const char *dname = ar->prevEnum.basepath;
-            size_t dlen = strlen(dname);
-            size_t dlen_inc = ((dlen > 0) ? 1 : 0) + dlen;
-            ZIPentry *entry = &info->entries[info->enumIndex];
-            const char *e = entry->name;
-
-            // not past end of this dir?
-            if (!((dlen)&&((strncmp(e, dname, dlen) != 0)||(e[dlen] != '/'))))
-            {
-                // Valid entry, this will be our returned data.
-                const char *add = e + dlen_inc;
-                char *ptr = strchr(add, '/');
-                PHYSFS_sint32 ln = (PHYSFS_sint32)((ptr) ? ptr-add:strlen(add));
-
-                ar->prevEnum.filename = (char *) xmalloc(ln+1);
-                memcpy(ar->prevEnum.filename, add, ln);
-                ar->prevEnum.filename[ln] = '\0';
-
-                ar->prevEnum.filesize = entry->uncompressed_size;
-                ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
-                ar->prevEnum.perms = entry->perms;
-                if (ptr != NULL)
-                    ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-                else if (MojoArchive_zip_entry_is_symlink(info, entry))
-                {
-                    ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-                    ar->prevEnum.linkdest = xstrdup(entry->linkdest);
-                } // else if
-
-                info->enumIndex++;
-
-                // skip children of subdirs...
-                if (ptr != NULL)
-                {
-                    while (info->enumIndex < info->entryCount)
-                    {
-                        char *e_new = info->entries[info->enumIndex].name;
-                        if ((strncmp(e, e_new, ln) != 0) || (e_new[ln] != '/'))
-                            break;
-                        info->enumIndex++;
-                    } // while
-                } // if
-                return &ar->prevEnum;
-            } // if
-        } // else
+        info->enumIndex++;
+        retval = &ar->prevEnum;
     } // if
 
-    // we're done.
-    return NULL;
+    return retval;
 } // MojoArchive_zip_enumNext
 
 
@@ -1844,21 +1777,10 @@ static MojoInput *MojoArchive_zip_openCurrentEntry(MojoArchive *ar)
     if ((enumIndex >= 0) && (enumIndex < info->entryCount) &&
         (ar->prevEnum.type == MOJOARCHIVE_ENTRY_FILE))
     {
-        char *fullpath = NULL;
-        if (ar->prevEnum.basepath != NULL)
-        {
-            fullpath = (char *) alloca(strlen(ar->prevEnum.basepath) +
-                                       strlen(ar->prevEnum.filename) + 2);
-            sprintf(fullpath, "%s/%s", ar->prevEnum.basepath,
-                    ar->prevEnum.filename);
-        } // if
-        else
-        {
-            fullpath = (char *) alloca(strlen(ar->prevEnum.filename) + 1);
-            strcpy(fullpath, ar->prevEnum.filename);
-        } // else
-
+        char *fullpath = (char *) xmalloc(strlen(ar->prevEnum.filename) + 1);
+        strcpy(fullpath, ar->prevEnum.filename);
         retval = buildZipMojoInput(info, fullpath);
+        free(fullpath);
     } // if
 
     return retval;
@@ -1869,7 +1791,7 @@ static void MojoArchive_zip_close(MojoArchive *ar)
 {
     ZIP_dirClose(ar->opaque);
     ar->io->close(ar->io);
-    MojoArchive_resetEntry(&ar->prevEnum, true);
+    MojoArchive_resetEntry(&ar->prevEnum);
     free(ar);
 } // MojoArchive_zip_close
 

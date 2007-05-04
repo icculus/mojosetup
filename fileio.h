@@ -49,21 +49,20 @@ typedef enum
 typedef struct MojoArchiveEntry
 {
     char *filename;
-    char *basepath;
     char *linkdest;
     MojoArchiveEntryType type;
     int64 filesize;
     uint16 perms;
 } MojoArchiveEntry;
 
-void MojoArchive_resetEntry(MojoArchiveEntry *info, boolean basetoo);
+void MojoArchive_resetEntry(MojoArchiveEntry *info);
 
 
 typedef struct MojoArchive MojoArchive;
 struct MojoArchive 
 {
     // public
-    boolean (*enumerate)(MojoArchive *ar, const char *path);
+    boolean (*enumerate)(MojoArchive *ar);
     const MojoArchiveEntry* (*enumNext)(MojoArchive *ar);
     MojoInput* (*openCurrentEntry)(MojoArchive *ar);
     void (*close)(MojoArchive *ar);

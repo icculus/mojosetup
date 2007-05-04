@@ -290,7 +290,7 @@ void MojoLua_debugger(void)
 } // MojoLua_debugger
 
 
-boolean MojoLua_runFile(const char *basefname)
+boolean MojoLua_runFile(const char *name)
 {
     MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
     const MojoArchiveEntry *entinfo;
@@ -300,35 +300,36 @@ boolean MojoLua_runFile(const char *basefname)
     int rc = 0;
     MojoInput *io = NULL;
 
-    if (snprintf(clua, sizeof (clua), "%s.luac", basefname) >= sizeof (clua))
+    if (snprintf(clua, sizeof(clua), "scripts/%s.luac", name) >= sizeof (clua))
         return false;
 
-    if (snprintf(ulua, sizeof (ulua), "%s.lua", basefname) >= sizeof (ulua))
+    if (snprintf(ulua, sizeof(ulua), "scripts/%s.lua", name) >= sizeof (ulua))
         return false;
 
-    if (ar->enumerate(ar, "scripts"))
+    if (ar->enumerate(ar))
     {
-        while ((entinfo = ar->enumNext(ar)) != NULL)
+        while ((io == NULL) && ((entinfo = ar->enumNext(ar)) != NULL))
         {
-            boolean match = (strcmp(entinfo->filename, clua) == 0);
+            boolean match = false;
+
+            if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
+                continue;
+
+            match = (strcmp(entinfo->filename, clua) == 0);
             #if !DISABLE_LUA_PARSER
             if (!match)
                 match = (strcmp(entinfo->filename, ulua) == 0);
             #endif
 
             if (match)
-            {
-                if (entinfo->type == MOJOARCHIVE_ENTRY_FILE)
-                    io = ar->openCurrentEntry(ar);
-                break;
-            } // if
+                io = ar->openCurrentEntry(ar);
         } // while
     } // if
 
     if (io != NULL)
     {
-        char *realfname = (char *) xmalloc(strlen(entinfo->filename) + 10);
-        sprintf(realfname, "@scripts/%s", entinfo->filename);
+        char *realfname = (char *) xmalloc(strlen(entinfo->filename) + 2);
+        sprintf(realfname, "@%s", entinfo->filename);
         lua_pushcfunction(luaState, luahook_stackwalk);
         rc = lua_load(luaState, MojoLua_reader, io, realfname);
         free(realfname);
@@ -644,8 +645,7 @@ static int luahook_archive_fromentry(lua_State *L)
 static int luahook_archive_enumerate(lua_State *L)
 {
     MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
-    const char *path = lua_tostring(L, 2);   // can be nil
-    return retvalBoolean(L, archive->enumerate(archive, path));
+    return retvalBoolean(L, archive->enumerate(archive));
 } // luahook_archive_enumerate
 
 
@@ -669,7 +669,6 @@ static int luahook_archive_enumnext(lua_State *L)
 
         lua_newtable(L);
         set_string(L, entinfo->filename, "filename");
-        set_string(L, entinfo->basepath, "basepath");
         set_string(L, entinfo->linkdest, "linkdest");
         set_number(L, entinfo->filesize, "filesize");
         set_string(L, typestr, "type");
