@@ -7,6 +7,7 @@
 typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
 MojoArchive *MojoArchive_createZIP(MojoInput *io);
+MojoArchive *MojoArchive_createTAR(MojoInput *io);
 
 typedef struct
 {
@@ -17,9 +18,15 @@ typedef struct
 static const MojoArchiveType archives[] =
 {
     { "zip", MojoArchive_createZIP },
+    { "tar", MojoArchive_createTAR },
+    { "tar.gz", MojoArchive_createTAR },
+    { "tar.bz2", MojoArchive_createTAR },
+    { "tgz", MojoArchive_createTAR },
+    { "tbz2", MojoArchive_createTAR },
+    { "tb2", MojoArchive_createTAR },
+    { "tbz", MojoArchive_createTAR },
 };
 
-// !!! FIXME: origfname should just be the extension, I think...
 MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *ext)
 {
     int i;
