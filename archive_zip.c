@@ -8,7 +8,7 @@ MojoArchive *MojoArchive_createZIP(MojoInput *io) { return NULL; }
 #include <time.h>
 #include <errno.h>
 
-#include "zlib123/zlib.h"
+#include "zlib-1.2.3/zlib.h"
 
 /*
  * ZIP support routines, adapted from PhysicsFS (http://icculus.org/physfs/)
@@ -189,8 +189,11 @@ typedef void (*PHYSFS_EnumFilesCallback)(void *, const char *, const char *);
  * Depending on your speed and memory requirements, you should tweak this
  *  value.
  */
+#if __MOJOSETUP__
+#define ZIP_READBUFSIZE   (128 * 1024)
+#else
 #define ZIP_READBUFSIZE   (16 * 1024)
-
+#endif
 
 /*
  * Entries are "unresolved" until they are first opened. At that time,
@@ -1604,9 +1607,6 @@ static void ZIP_dirClose(dvoid *opaque)
     ZIPinfo *zi = (ZIPinfo *) (opaque);
     zip_free_entries(zi->entries, zi->entryCount);
     allocator.Free(zi->archiveName);
-    #if __MOJOSETUP__
-    ((MojoInput *) zi->io)->close((MojoInput *) zi->io);
-    #endif
     allocator.Free(zi);
 } /* ZIP_dirClose */
 
@@ -1868,6 +1868,7 @@ static MojoInput *MojoArchive_zip_openCurrentEntry(MojoArchive *ar)
 static void MojoArchive_zip_close(MojoArchive *ar)
 {
     ZIP_dirClose(ar->opaque);
+    ar->io->close(ar->io);
     MojoArchive_resetEntry(&ar->prevEnum, true);
     free(ar);
 } // MojoArchive_zip_close
@@ -1886,6 +1887,7 @@ MojoArchive *MojoArchive_createZIP(MojoInput *io)
     ar->openCurrentEntry = MojoArchive_zip_openCurrentEntry;
     ar->close = MojoArchive_zip_close;
     ar->opaque = opaque;
+    ar->io = io;
     return ar;
 } // MojoArchive_createZIP
 
