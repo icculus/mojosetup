@@ -85,7 +85,7 @@ static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
         if (maxread > sizeof (buf))
             maxread = sizeof (buf);
 
-        if (io->read(info->origio, buf, maxread) != maxread)
+        if (info->origio->read(info->origio, buf, maxread) != maxread)
             return false;
     } /* while */
 
