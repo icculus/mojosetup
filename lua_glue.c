@@ -1032,8 +1032,7 @@ static void done_gui_options(lua_State *L, GuiOptions *opts)
 
 static int luahook_gui_options(lua_State *L)
 {
-    // The options table is arg #1.
-    const int argc = lua_gettop(L);
+    // The options table is arg #1 (hence the assert below).
     const int thisstage = luaL_checkint(L, 2);
     const int maxstage = luaL_checkint(L, 3);
     const boolean can_go_back = canGoBack(thisstage);
@@ -1041,7 +1040,7 @@ static int luahook_gui_options(lua_State *L)
     boolean rc = true;
     GuiOptions *opts = NULL;
 
-    assert(argc == 3);
+    assert(lua_gettop(L) == 3);
 
     lua_newtable(L);  // we'll use this for updating the tree later.
 
