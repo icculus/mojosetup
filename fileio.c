@@ -27,13 +27,25 @@ static const MojoArchiveType archives[] =
     { "tbz", MojoArchive_createTAR },
 };
 
-MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *ext)
+MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
 {
     int i;
     MojoArchive *retval = NULL;
+    const char *ext = NULL;
+
+    if (origfname != NULL)
+    {
+        ext = strchr(origfname, '/');
+        if (ext == NULL)
+            ext = strchr(origfname, '.');
+        else
+            ext = strchr(ext+1, '.');
+    } // if
+
     if (ext != NULL)
     {
         // Try for an exact match.
+        ext++;  // skip that '.'
         for (i = 0; i < STATICARRAYLEN(archives); i++)
         {
             if (strcasecmp(ext, archives[i].ext) == 0)
@@ -437,7 +449,7 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         MojoInput *io = MojoInput_newFromFile(basepath);
 
         if (io != NULL)
-            GBaseArchive = MojoArchive_newFromInput(io, NULL);
+            GBaseArchive = MojoArchive_newFromInput(io, basepath);
 
         if (GBaseArchive == NULL)
         {

@@ -616,7 +616,7 @@ static int luahook_archive_fromfile(lua_State *L)
     MojoInput *io = MojoInput_newFromFile(path);
     MojoArchive *archive = NULL;
     if (io != NULL)
-        archive = MojoArchive_newFromInput(io, NULL);
+        archive = MojoArchive_newFromInput(io, path);
 
     if (archive != NULL)
         lua_pushlightuserdata(L, archive);
@@ -632,7 +632,7 @@ static int luahook_archive_fromentry(lua_State *L)
     MojoInput *io = ar->openCurrentEntry(ar);
     MojoArchive *archive = NULL;
     if (io != NULL)
-        archive = MojoArchive_newFromInput(io, NULL);
+        archive = MojoArchive_newFromInput(io, ar->prevEnum.filename);
 
     if (archive != NULL)
         lua_pushlightuserdata(L, archive);
