@@ -69,7 +69,7 @@ static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
             return false;
 
         if (!info->origio->seek(info->origio, 0))
-            return false;
+            return false;  // !!! FIXME: leaking (str)?
 
         inflateEnd(&info->stream);
         memcpy(&info->stream, &str, sizeof (z_stream));
@@ -80,12 +80,16 @@ static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
     {
         uint8 buf[512];
         uint32 maxread;
+        int64 br;
 
         maxread = (uint32) (offset - info->uncompressed_position);
         if (maxread > sizeof (buf))
             maxread = sizeof (buf);
 
-        if (info->origio->read(info->origio, buf, maxread) != maxread)
+        br = info->origio->read(info->origio, buf, maxread);
+        if (br > 0)
+            info->uncompressed_position += br;
+        if (br != maxread)
             return false;
     } /* while */
 
@@ -423,6 +427,10 @@ static const MojoArchiveEntry *MojoArchive_tar_enumNext(MojoArchive *ar)
     fnamelen = strlen((const char *) scratch);
     memcpy(&scratch[fnamelen], &block[TAR_FNAME], TAR_FNAMELEN);
     fnamelen += strlen((const char *) &scratch[fnamelen]);
+
+    if (fnamelen == 0)
+        return NULL;   // corrupt file.  !!! FIXME: fatal() ?
+
     ar->prevEnum.filename = xstrdup((const char *) scratch);
 
     type = block[TAR_TYPE];
