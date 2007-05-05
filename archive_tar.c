@@ -5,12 +5,6 @@
 MojoArchive *MojoArchive_createTAR(MojoInput *io) { return NULL; }
 #else
 
-// !!! FIXME
-#if SUPPORT_TAR_BZ2
-#undef SUPPORT_TAR_BZ2
-#endif
-
-
 #if SUPPORT_TAR_GZ
 
 #include "zlib-1.2.3/zlib.h"
@@ -33,9 +27,6 @@ static voidpf mojoZlibAlloc(voidpf opaque, uInt items, uInt size)
     return xmalloc(items * size);
 } // mojoZlibAlloc
 
-/*
- * Bridge physfs allocation functions to zlib's format...
- */
 static void mojoZlibFree(voidpf opaque, voidpf address)
 {
     free(address);
@@ -46,7 +37,7 @@ static void initializeZStream(z_stream *pstr)
     memset(pstr, '\0', sizeof (z_stream));
     pstr->zalloc = mojoZlibAlloc;
     pstr->zfree = mojoZlibFree;
-} /* initializeZStream */
+} // initializeZStream
 
 
 static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
@@ -62,17 +53,12 @@ static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
      */
     if (offset < info->uncompressed_position)
     {
-        /* we do a copy so state is sane if inflateInit2() fails. */
-        z_stream str;
-        initializeZStream(&str);
-        if (inflateInit2(&str, 31) != Z_OK)
-            return false;
-
         if (!info->origio->seek(info->origio, 0))
-            return false;  // !!! FIXME: leaking (str)?
-
+            return false;
         inflateEnd(&info->stream);
-        memcpy(&info->stream, &str, sizeof (z_stream));
+        initializeZStream(&info->stream);
+        if (inflateInit2(&info->stream, 31) != Z_OK)
+            return false;
         info->uncompressed_position = 0;
     } // if
 
@@ -110,8 +96,8 @@ static int64 MojoInput_gzip_read(MojoInput *io, void *buf, uint32 bufsize)
     MojoInput *origio = info->origio;
     int64 retval = 0;
 
-    if (bufsize == 0) return 0;    // quick rejection.
-
+    if (bufsize == 0)
+        return 0;    // quick rejection.
     else
     {
         info->stream.next_out = buf;
@@ -119,7 +105,7 @@ static int64 MojoInput_gzip_read(MojoInput *io, void *buf, uint32 bufsize)
 
         while (retval < ((int64) bufsize))
         {
-            uint32 before = info->stream.total_out;
+            const uint32 before = info->stream.total_out;
             int rc;
 
             if (info->stream.avail_in == 0)
@@ -162,17 +148,9 @@ static MojoInput* MojoInput_gzip_duplicate(MojoInput *io)
     MojoInput *newio = info->origio->duplicate(info->origio);
     if (newio != NULL)
     {
-        // try to reconstruct this in a copy, so gzip stream is sane...
-        GZIPinfo *newinfo = (GZIPinfo *) xmalloc(sizeof (GZIPinfo));
-        memcpy(newinfo, info, sizeof (GZIPinfo));
-        newinfo->origio = newio;
-        newinfo->buffer = (uint8 *) xmalloc(GZIP_READBUFSIZE);
-        memcpy(newinfo->buffer, info->buffer, GZIP_READBUFSIZE);
-        newinfo->stream.next_in = newinfo->buffer +
-                                  (info->stream.next_in - info->buffer);
-        retval = (MojoInput *) xmalloc(sizeof (MojoInput));
-        memcpy(retval, io, sizeof (MojoInput));
-        retval->opaque = newinfo;
+        retval = make_gzip_input(newio);
+        if (retval != NULL)
+            retval->seek(retval, io->tell(io));  // slow, slow, slow...
     } // if
     return retval;
 } // MojoInput_gzip_duplicate
@@ -215,6 +193,209 @@ static MojoInput *make_gzip_input(MojoInput *origio)
 } // make_gzip_info
 
 #endif  // SUPPORT_TAR_GZ
+
+
+#if SUPPORT_TAR_BZ2
+
+#include "bzip2-1.0.4/bzlib.h"
+
+#define BZIP2_READBUFSIZE (128 * 1024)
+
+typedef struct BZIP2info
+{
+    MojoInput *origio;
+    uint64 uncompressed_position;
+    uint8 *buffer;
+    bz_stream stream;
+} BZIP2info;
+
+
+static MojoInput *make_bzip2_input(MojoInput *origio);
+
+static voidpf mojoBzlib2Alloc(voidpf opaque, int items, int size)
+{
+    return xmalloc(items * size);
+} // mojoBzlib2Alloc
+
+static void mojoBzlib2Free(void *opaque, void *address)
+{
+    free(address);
+} // mojoBzlib2Free
+
+static void initializeBZ2Stream(bz_stream *pstr)
+{
+    memset(pstr, '\0', sizeof (bz_stream));
+    pstr->bzalloc = mojoBzlib2Alloc;
+    pstr->bzfree = mojoBzlib2Free;
+} // initializeBZ2Stream
+
+
+static boolean MojoInput_bzip2_seek(MojoInput *io, uint64 offset)
+{
+    // This is all really expensive.
+    BZIP2info *info = (BZIP2info *) io->opaque;
+
+    /*
+     * If seeking backwards, we need to redecode the file
+     *  from the start and throw away the compressed bits until we hit
+     *  the offset we need. If seeking forward, we still need to
+     *  decode, but we don't rewind first.
+     */
+    if (offset < info->uncompressed_position)
+    {
+#if 0
+        /* we do a copy so state is sane if inflateInit2() fails. */
+        bz_stream str;
+        initializeBZ2Stream(&str);
+        if (BZ2_bzDecompressInit(&str, 0, 0) != BZ_OK)
+            return false;
+
+        if (!info->origio->seek(info->origio, 0))
+            return false;  // !!! FIXME: leaking (str)?
+
+        BZ2_bzDecompressEnd(&info->stream);
+        memcpy(&info->stream, &str, sizeof (bz_stream));
+#endif
+
+        if (!info->origio->seek(info->origio, 0))
+            return false;
+        BZ2_bzDecompressEnd(&info->stream);
+        initializeBZ2Stream(&info->stream);
+        if (BZ2_bzDecompressInit(&info->stream, 0, 0) != BZ_OK)
+            return false;
+        info->uncompressed_position = 0;
+    } // if
+
+    while (info->uncompressed_position != offset)
+    {
+        uint8 buf[512];
+        uint32 maxread;
+        int64 br;
+
+        maxread = (uint32) (offset - info->uncompressed_position);
+        if (maxread > sizeof (buf))
+            maxread = sizeof (buf);
+
+        br = io->read(io, buf, maxread);
+        if (br != maxread)
+            return false;
+    } /* while */
+
+    return true;
+} // MojoInput_bzip2_seek
+
+static int64 MojoInput_bzip2_tell(MojoInput *io)
+{
+    return (((BZIP2info *) io->opaque)->uncompressed_position);
+} // MojoInput_bzip2_tell
+
+static int64 MojoInput_bzip2_length(MojoInput *io)
+{
+    return -1;
+} // MojoInput_bzip2_length
+
+static int64 MojoInput_bzip2_read(MojoInput *io, void *buf, uint32 bufsize)
+{
+    BZIP2info *info = (BZIP2info *) io->opaque;
+    MojoInput *origio = info->origio;
+    int64 retval = 0;
+
+    if (bufsize == 0)
+        return 0;    // quick rejection.
+    else
+    {
+        info->stream.next_out = buf;
+        info->stream.avail_out = bufsize;
+
+        while (retval < ((int64) bufsize))
+        {
+            const uint32 before = info->stream.total_out_lo32;
+            int rc;
+
+            if (info->stream.avail_in == 0)
+            {
+                int64 br;
+
+                br = origio->length(origio) - origio->tell(origio);
+                if (br > 0)
+                {
+                    if (br > BZIP2_READBUFSIZE)
+                        br = BZIP2_READBUFSIZE;
+
+                    br = origio->read(origio, info->buffer, br);
+                    if (br <= 0)
+                        return -1;
+
+                    info->stream.next_in = (char *) info->buffer;
+                    info->stream.avail_in = (uint32) br;
+                } // if
+            } // if
+
+            rc = BZ2_bzDecompress(&info->stream);
+            retval += (info->stream.total_out_lo32 - before);
+            if (rc != BZ_OK)
+                return -1;
+        } // while
+    } // else
+
+    if (retval > 0)
+        info->uncompressed_position += (uint32) retval;
+
+    return retval;
+} // MojoInput_bzip2_read
+
+static MojoInput* MojoInput_bzip2_duplicate(MojoInput *io)
+{
+    BZIP2info *info = (BZIP2info *) io->opaque;
+    MojoInput *retval = NULL;
+    MojoInput *newio = info->origio->duplicate(info->origio);
+    if (newio != NULL)
+    {
+        retval = make_bzip2_input(newio);
+        if (retval != NULL)
+            retval->seek(retval, io->tell(io));  // slow, slow, slow...
+    } // if
+    return retval;
+} // MojoInput_bzip2_duplicate
+
+static void MojoInput_bzip2_close(MojoInput *io)
+{
+    BZIP2info *info = (BZIP2info *) io->opaque;
+    if (info->origio != NULL)
+        info->origio->close(info->origio);
+    BZ2_bzDecompressEnd(&info->stream);
+    free(info->buffer);
+    free(info);
+    free(io);
+} // MojoInput_bzip2_close
+
+static MojoInput *make_bzip2_input(MojoInput *origio)
+{
+    MojoInput *io = NULL;
+    BZIP2info *info = (BZIP2info *) xmalloc(sizeof (BZIP2info));
+
+    initializeBZ2Stream(&info->stream);
+    if (BZ2_bzDecompressInit(&info->stream, 0, 0) != BZ_OK)
+    {
+        free(info);
+        return NULL;
+    } // if
+
+    info->origio = origio;
+    info->buffer = (uint8 *) xmalloc(BZIP2_READBUFSIZE);
+
+    io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    io->read = MojoInput_bzip2_read;
+    io->seek = MojoInput_bzip2_seek;
+    io->tell = MojoInput_bzip2_tell;
+    io->length = MojoInput_bzip2_length;
+    io->duplicate = MojoInput_bzip2_duplicate;
+    io->close = MojoInput_bzip2_close;
+    io->opaque = info;
+    return io;
+} // make_bzip2_info
+
+#endif  // SUPPORT_TAR_BZ2
 
 
 // MojoInput implementation...
@@ -405,7 +586,7 @@ static const MojoArchiveEntry *MojoArchive_tar_enumNext(MojoArchive *ar)
     while (zeroes)
     {
         if (ar->io->read(ar->io, block, sizeof (block)) != sizeof (block))
-            return NULL;
+            return NULL;  // !!! FIXME: fatal() ?
         zeroes = (memcmp(block, scratch, sizeof (block)) == 0);
     } // while
 
