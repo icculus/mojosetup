@@ -86,9 +86,7 @@ static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
         if (maxread > sizeof (buf))
             maxread = sizeof (buf);
 
-        br = info->origio->read(info->origio, buf, maxread);
-        if (br > 0)
-            info->uncompressed_position += br;
+        br = io->read(io, buf, maxread);
         if (br != maxread)
             return false;
     } /* while */
@@ -234,6 +232,7 @@ typedef struct TARinput
 typedef struct TARinfo
 {
     MojoInput *input;
+    uint64 curFileStart;
     uint64 nextEnumPos;
 } TARinfo;
 
@@ -308,7 +307,7 @@ static boolean MojoArchive_tar_enumerate(MojoArchive *ar)
     MojoArchive_resetEntry(&ar->prevEnum);
     if (info->input != NULL)
         fatal("BUG: tar entry still open on new enumeration");
-    info->nextEnumPos = 0;
+    info->curFileStart = info->nextEnumPos = 0;
     return true;
 } // MojoArchive_tar_enumerate
 
@@ -416,6 +415,7 @@ static const MojoArchiveEntry *MojoArchive_tar_enumNext(MojoArchive *ar)
 
     ar->prevEnum.perms = (uint16) octal_convert(&block[TAR_MODE]);
     ar->prevEnum.filesize = octal_convert(&block[TAR_SIZE]);
+    info->curFileStart = info->nextEnumPos + 512;
     info->nextEnumPos += 512 + ar->prevEnum.filesize;
     if (ar->prevEnum.filesize % 512)
         info->nextEnumPos += 512 - (ar->prevEnum.filesize % 512);
@@ -471,6 +471,9 @@ static MojoInput *MojoArchive_tar_openCurrentEntry(MojoArchive *ar)
     MojoInput *io = NULL;
     TARinput *opaque = NULL;
 
+    if (info->curFileStart == 0)
+        return NULL;
+
     // Can't open multiple, since we would end up decompressing twice
     //  to enumerate the next file, so I imposed this limitation for now.
     if (info->input != NULL)
@@ -479,9 +482,7 @@ static MojoInput *MojoArchive_tar_openCurrentEntry(MojoArchive *ar)
     opaque = (TARinput *) xmalloc(sizeof (TARinput));
     opaque->ar = ar;
     opaque->fsize = ar->prevEnum.filesize;
-    opaque->offset = (info->nextEnumPos - opaque->fsize);
-    if (opaque->offset % 512)
-        opaque->offset -= 512 - (opaque->offset % 512);
+    opaque->offset = info->curFileStart;
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
     io->read = MojoInput_tar_read;
