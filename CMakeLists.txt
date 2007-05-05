@@ -16,6 +16,7 @@ INCLUDE(CheckLibraryExists)
 INCLUDE(CheckCSourceCompiles)
 INCLUDE(TestBigEndian)
 
+ADD_DEFINITIONS(-D__MOJOSETUP__=1)
 ADD_DEFINITIONS(-DAPPID=mojosetup)
 ADD_DEFINITIONS(-DAPPREV=${MOJOSETUP_VERSION})
 ADD_DEFINITIONS(-D_REENTRANT)
@@ -106,39 +107,49 @@ SET(BZLIB_SRCS
     ${BZLIB_DIR}/bzlib.c
 )
 
+SET(LIBFETCH_DIR libfetch)
+SET(LIBFETCH_SRCS
+    ${LIBFETCH_DIR}/fetch.c
+    ${LIBFETCH_DIR}/common.c
+    ${LIBFETCH_DIR}/ftp.c
+)
+    #${LIBFETCH_DIR}/file.c
+    #${LIBFETCH_DIR}/http.c
+
+SET(LUA_DIR lua-5.1.1)
 SET(LUA_SRCS
-    lua-5.1.1/src/lapi.c
-    lua-5.1.1/src/ldebug.c
-    lua-5.1.1/src/ldo.c
-    lua-5.1.1/src/ldump.c
-    lua-5.1.1/src/lfunc.c
-    lua-5.1.1/src/lgc.c
-    lua-5.1.1/src/lmem.c
-    lua-5.1.1/src/lobject.c
-    lua-5.1.1/src/lopcodes.c
-    lua-5.1.1/src/lstate.c
-    lua-5.1.1/src/lstring.c
-    lua-5.1.1/src/ltable.c
-    lua-5.1.1/src/ltm.c
-    lua-5.1.1/src/lundump.c
-    lua-5.1.1/src/lvm.c
-    lua-5.1.1/src/lzio.c
-    lua-5.1.1/src/lauxlib.c
-    lua-5.1.1/src/lbaselib.c
-    lua-5.1.1/src/ldblib.c
-    lua-5.1.1/src/liolib.c
-    lua-5.1.1/src/lmathlib.c
-    lua-5.1.1/src/loslib.c
-    lua-5.1.1/src/ltablib.c
-    lua-5.1.1/src/lstrlib.c
-    lua-5.1.1/src/loadlib.c
-    lua-5.1.1/src/linit.c
+    ${LUA_DIR}/src/lapi.c
+    ${LUA_DIR}/src/ldebug.c
+    ${LUA_DIR}/src/ldo.c
+    ${LUA_DIR}/src/ldump.c
+    ${LUA_DIR}/src/lfunc.c
+    ${LUA_DIR}/src/lgc.c
+    ${LUA_DIR}/src/lmem.c
+    ${LUA_DIR}/src/lobject.c
+    ${LUA_DIR}/src/lopcodes.c
+    ${LUA_DIR}/src/lstate.c
+    ${LUA_DIR}/src/lstring.c
+    ${LUA_DIR}/src/ltable.c
+    ${LUA_DIR}/src/ltm.c
+    ${LUA_DIR}/src/lundump.c
+    ${LUA_DIR}/src/lvm.c
+    ${LUA_DIR}/src/lzio.c
+    ${LUA_DIR}/src/lauxlib.c
+    ${LUA_DIR}/src/lbaselib.c
+    ${LUA_DIR}/src/ldblib.c
+    ${LUA_DIR}/src/liolib.c
+    ${LUA_DIR}/src/lmathlib.c
+    ${LUA_DIR}/src/loslib.c
+    ${LUA_DIR}/src/ltablib.c
+    ${LUA_DIR}/src/lstrlib.c
+    ${LUA_DIR}/src/loadlib.c
+    ${LUA_DIR}/src/linit.c
 )
 
 SET(LUA_PARSER_SRCS
-    lua-5.1.1/src/lparser.c
-    lua-5.1.1/src/llex.c
-    lua-5.1.1/src/lcode.c
+    ${LUA_DIR}/src/lparser.c
+    ${LUA_DIR}/src/llex.c
+    ${LUA_DIR}/src/lcode.c
 )
 
 SET(MOJOSETUP_SRCS
@@ -150,13 +161,14 @@ SET(MOJOSETUP_SRCS
     archive_tar.c
     lua_glue.c
     ${LUA_SRCS}
+    ${LIBFETCH_SRCS}
 )
 
 SET(MOJOLUAC_SRCS
     ${LUA_SRCS}
     ${LUA_PARSER_SRCS}
-    lua-5.1.1/src/luac.c
-    lua-5.1.1/src/print.c
+    ${LUA_DIR}/src/luac.c
+    ${LUA_DIR}/src/print.c
 )
 
 # Disabling the parser cuts the Lua binary bits by about 35% (about 30 kbytes
@@ -170,7 +182,7 @@ OPTION(MOJOSETUP_LUA_PARSER "Bigger binary but scripts don't need to be compiled
 IF(MOJOSETUP_LUA_PARSER)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_PARSER_SRCS})
 ELSE(MOJOSETUP_LUA_PARSER)
-    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} lua-5.1.1/etc/noparser.c)
+    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/etc/noparser.c)
     ADD_DEFINITIONS(-DDISABLE_LUA_PARSER=1)
 ENDIF(MOJOSETUP_LUA_PARSER)
 

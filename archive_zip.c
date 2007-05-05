@@ -1,9 +1,8 @@
-
-#include "fileio.h"
-
 #if !SUPPORT_ZIP
 MojoArchive *MojoArchive_createZIP(MojoInput *io) { return NULL; }
 #else
+
+#include "fileio.h"
 
 #include <time.h>
 #include <errno.h>

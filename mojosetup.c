@@ -7,7 +7,10 @@
 #include "fileio.h"
 
 #define TEST_ARCHIVE_CODE 0
-int testArchiveCode(int argc, char **argv);
+int MojoSetup_testArchiveCode(int argc, char **argv);
+
+#define TEST_NETWORK_CODE 1
+int MojoSetup_testNetworkCode(int argc, char **argv);
 
 
 uint8 scratchbuf_128k[128 * 1024];
@@ -407,7 +410,11 @@ int MojoSetup_main(int argc, char **argv)
     } // if
 
     #if TEST_ARCHIVE_CODE
-    return testArchiveCode(argc, argv);
+    return MojoSetup_testArchiveCode(argc, argv);
+    #endif
+
+    #if TEST_NETWORK_CODE
+    return MojoSetup_testNetworkCode(argc, argv);
     #endif
 
     if (!initEverything())
@@ -426,9 +433,10 @@ int MojoSetup_main(int argc, char **argv)
 
 
 #if TEST_ARCHIVE_CODE
-int testArchiveCode(int argc, char **argv)
+int MojoSetup_testArchiveCode(int argc, char **argv)
 {
     int i;
+    printf("Testing archiver code...\n\n");
     for (i = 1; i < argc; i++)
     {
         MojoArchive *archive = MojoArchive_newFromDirectory(argv[i]);
@@ -480,9 +488,43 @@ int testArchiveCode(int argc, char **argv)
     } // for
 
     return 0;
-} // testArchiveCode
+} // MojoSetup_testArchiveCode
 #endif
 
+
+#if TEST_NETWORK_CODE
+int MojoSetup_testNetworkCode(int argc, char **argv)
+{
+    int i;
+    printf("Testing networking code...\n\n");
+    for (i = 1; i < argc; i++)
+    {
+        static char buf[64 * 1024];
+        const char *url = argv[i];
+        int64 br = 0;
+        printf("\n\nFetching '%s' ...\n", url);
+        MojoInput *io = MojoInput_fromURL(url);
+        if (io == NULL)
+        {
+            fprintf(stderr, "failed!\n");
+            continue;
+        } // if
+
+        printf("Ready to read (%lld) bytes.\n\n", (long long) io->length(io));
+        while ((br = io->read(io, buf, sizeof (buf))) > 0)
+            fwrite(buf, br, 1, stdout);
+
+        if (br < 0)
+            fprintf(stderr, "\n\n\n---- ERROR IN TRANSMISSION. ----\n\n");
+        else
+            printf("\n\n\n---- TRANSMISSION COMPLETE! ----\n\n");
+
+        io->close(io);
+    } // for
+
+    return 0;
+} // MojoSetup_testNetworkCode
+#endif
 
 // end of mojosetup.c ...
 

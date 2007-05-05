@@ -15,9 +15,6 @@
 extern "C" {
 #endif
 
-// Just a define for when we have to glue to external code.
-#define __MOJOSETUP__ 1
-
 typedef char int8;
 typedef unsigned char uint8;
 typedef short int16;

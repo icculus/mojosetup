@@ -91,6 +91,8 @@ typedef boolean (*MojoInput_FileCopyCallback)(int percent, void *data);
 boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                                  MojoInput_FileCopyCallback cb, void *data);
 
+MojoInput *MojoInput_fromURL(const char *url);
+
 #ifdef __cplusplus
 }
 #endif
