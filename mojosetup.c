@@ -6,6 +6,10 @@
 #include "lua_glue.h"
 #include "fileio.h"
 
+#define TEST_ARCHIVE_CODE 0
+int testArchiveCode(int argc, char **argv);
+
+
 uint8 scratchbuf_128k[128 * 1024];
 MojoSetupEntryPoints GEntryPoints =
 {
@@ -402,6 +406,10 @@ int MojoSetup_main(int argc, char **argv)
         return 0;
     } // if
 
+    #if TEST_ARCHIVE_CODE
+    return testArchiveCode(argc, argv);
+    #endif
+
     if (!initEverything())
         return 1;
 
@@ -412,6 +420,69 @@ int MojoSetup_main(int argc, char **argv)
 
     return 0;
 } // MojoSetup_main
+
+
+
+
+
+#if TEST_ARCHIVE_CODE
+int testArchiveCode(int argc, char **argv)
+{
+    int i;
+    for (i = 1; i < argc; i++)
+    {
+        MojoArchive *archive = MojoArchive_newFromDirectory(argv[i]);
+        if (archive != NULL)
+            printf("directory '%s'...\n", argv[i]);
+        else
+        {
+            MojoInput *io = MojoInput_newFromFile(argv[i]);
+            if (io != NULL)
+            {
+                archive = MojoArchive_newFromInput(io, argv[i]);
+                if (archive != NULL)
+                    printf("archive '%s'...\n", argv[i]);
+            } // if
+        } // else
+
+        if (archive == NULL)
+            fprintf(stderr, "Couldn't handle '%s'\n", argv[i]);
+        else
+        {
+            if (!archive->enumerate(archive))
+                fprintf(stderr, "enumerate() failed.\n");
+            else
+            {
+                const MojoArchiveEntry *ent;
+                while ((ent = archive->enumNext(archive)) != NULL)
+                {
+                    printf("%s ", ent->filename);
+                    if (ent->type == MOJOARCHIVE_ENTRY_FILE)
+                    {
+                        printf("(file, %d bytes, %o)\n",
+                                (int) ent->filesize, (int) ent->perms);
+                    } // if
+                    else if (ent->type == MOJOARCHIVE_ENTRY_DIR)
+                        printf("(dir, %o)\n", ent->perms);
+                    else if (ent->type == MOJOARCHIVE_ENTRY_SYMLINK)
+                        printf("(symlink -> '%s')\n", ent->linkdest);
+                    else
+                    {
+                        printf("(UNKNOWN?!, %d bytes, -> '%s', %o)\n",
+                                (int) ent->filesize, ent->linkdest,
+                                (int) ent->perms);
+                    } // else
+                } // while
+            } // else
+            archive->close(archive);
+            printf("\n\n");
+        } // else
+    } // for
+
+    return 0;
+} // testArchiveCode
+#endif
+
 
 // end of mojosetup.c ...
 
