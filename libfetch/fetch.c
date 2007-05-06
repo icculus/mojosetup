@@ -291,7 +291,8 @@ fetchGetURL(const char *URL, const char *flags)
 #if __MOJOSETUP__
 MojoInput *MojoInput_fromURL(const char *url)
 {
-    return fetchGetURL(url, "rbp");
+    struct url_stat us;
+    return fetchXGetURL(url, &us, "rbp");
 } // MojoInput_fromURL
 #endif
 

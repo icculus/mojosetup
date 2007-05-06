@@ -486,6 +486,7 @@ struct ftpio {
 	int	 err;		/* Error code */
 #if __MOJOSETUP__
     int64 bytes_read;
+    int64 length;
 #endif
 };
 
@@ -507,8 +508,8 @@ static int64 MojoInput_ftp_tell(MojoInput *v)
 }
 static int64 MojoInput_ftp_length(MojoInput *v)
 {
-	//struct ftpio *io = (struct ftpio *)v->opaque;
-    return -1;
+	struct ftpio *io = (struct ftpio *)v->opaque;
+    return io->length;
 }
 static MojoInput* MojoInput_ftp_duplicate(MojoInput *v)
 {
@@ -686,6 +687,7 @@ _ftp_setup(conn_t *cconn, conn_t *dconn, int mode)
 	io->eof = io->err = 0;
 #if __MOJOSETUP__
     io->bytes_read = 0;
+    io->length = -1;
     f = (MojoInput *) xmalloc(sizeof (MojoInput));
     f->read = MojoInput_ftp_read;
     f->seek = MojoInput_ftp_seek;
@@ -1277,7 +1279,19 @@ _ftp_request(struct url *url, const char *op, struct url_stat *us,
 		oflag = O_RDONLY;
 
 	/* initiate the transfer */
+#if __MOJOSETUP__
+{
+	MojoInput *retval = _ftp_transfer(conn, op, url->doc, oflag, url->offset, flags);
+    if ((retval != NULL) && (us != NULL))
+    {
+    	struct ftpio *io = (struct ftpio *)retval->opaque;
+        io->length = us->size;
+    } // if
+    return retval;
+}
+#else
 	return (_ftp_transfer(conn, op, url->doc, oflag, url->offset, flags));
+#endif
 }
 
 /*

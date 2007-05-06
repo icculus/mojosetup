@@ -131,6 +131,7 @@ struct httpio
 
 #if __MOJOSETUP__
     int64 bytes_read;
+    int64 length;
 #endif
 };
 
@@ -147,8 +148,8 @@ static int64 MojoInput_http_tell(MojoInput *v)
 }
 static int64 MojoInput_http_length(MojoInput *v)
 {
-	//struct httpio *io = (struct httpio *)v->opaque;
-    return -1;
+	struct httpio *io = (struct httpio *)v->opaque;
+    return io->length;
 }
 static MojoInput* MojoInput_http_duplicate(MojoInput *v)
 {
@@ -384,6 +385,7 @@ _http_funopen(conn_t *conn, int chunked)
 	io->chunked = chunked;
 #if __MOJOSETUP__
     io->bytes_read = 0;
+    io->length = -1;
     f = (MojoInput *) xmalloc(sizeof (MojoInput));
     f->read = MojoInput_http_read;
     f->seek = MojoInput_http_seek;
@@ -1235,6 +1237,10 @@ _http_request(struct url *URL, const char *op, struct url_stat *us,
 #endif
 		f = NULL;
 	}
+
+#if __MOJOSETUP__
+	((struct httpio *)f->opaque)->length = size;
+#endif
 
 	return (f);
 
