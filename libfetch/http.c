@@ -441,6 +441,9 @@ static struct {
 /*
  * Send a formatted line; optionally echo to terminal
  */
+#if __MOJOSETUP__
+static int _http_cmd(conn_t *conn, const char *fmt, ...) ISPRINTF(2,3);
+#endif
 static int
 _http_cmd(conn_t *conn, const char *fmt, ...)
 {
@@ -793,7 +796,6 @@ _http_connect(struct url *URL, struct url *purl, const char *flags)
 
 	val = 1;
 	setsockopt(conn->sd, IPPROTO_TCP, TCP_NOPUSH, &val, sizeof(val));
-
 	return (conn);
 }
 
@@ -997,15 +999,25 @@ _http_request(struct url *URL, const char *op, struct url_stat *us,
 			else
 				_http_cmd(conn, "Referer: %s", p);
 		}
+#if __MOJOSETUP__
 		if ((p = getenv("HTTP_USER_AGENT")) != NULL && *p != '\0')
 			_http_cmd(conn, "User-Agent: %s", p);
 		else
-			_http_cmd(conn, "User-Agent: %s " _LIBFETCH_VER, getprogname());
+			_http_cmd(conn, "User-Agent: %s", _LIBFETCH_VER);
+#else
+		if ((p = getenv("HTTP_USER_AGENT")) != NULL && *p != '\0')
+			_http_cmd(conn, "User-Agent: %s", p);
+		else
+			_http_cmd(conn, "User-Agent: %s" _LIBFETCH_VER, getprogname());
+#endif
 		if (url->offset > 0)
 			_http_cmd(conn, "Range: bytes=%lld-", (long long)url->offset);
 		_http_cmd(conn, "Connection: close");
+#if __MOJOSETUP__
+		_http_cmd(conn, "%s", "");
+#else
 		_http_cmd(conn, "");
-
+#endif
 		/*
 		 * Force the queued request to be dispatched.  Normally, one
 		 * would do this with shutdown(2) but squid proxies can be

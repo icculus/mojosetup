@@ -754,6 +754,28 @@ int MOJOSETUP_vasprintf(char **strp, const char *fmt, va_list ap)
     va_end(aq);
     *strp = (char *) xmalloc(len+1);
     return vsnprintf(*strp, len+1, fmt, ap);
-}
+} // MOJOSETUP_vasprintf
+
+int MOJOSETUP_asprintf(char **strp, const char *fmt, ...)
+{
+    va_list ap;
+    int len = 0;
+    char dummy = 0;
+    va_start(ap, fmt);
+    len = vsnprintf(&dummy, sizeof (dummy), fmt, ap);
+    va_end(ap);
+    *strp = (char *) xmalloc(len+1);
+    va_start(ap, fmt);
+    len = vsnprintf(*strp, len+1, fmt, ap);
+    va_end(ap);
+    return len;
+} // MOJOSETUP_asprintf
+
+boolean ishexnumber(char ch)
+{
+    return ( ((ch >= '0') && (ch <= '9')) ||
+             ((ch >= 'a') && (ch <= 'f')) ||
+             ((ch >= 'A') && (ch <= 'F')) );
+} // ishexnumber
 #endif
 

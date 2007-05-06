@@ -177,6 +177,9 @@ _ftp_chkerr(conn_t *conn)
 /*
  * Send a command and check reply
  */
+#if __MOJOSETUP__
+static int _ftp_cmd(conn_t *conn, const char *fmt, ...) ISPRINTF(2,3);
+#endif
 static int
 _ftp_cmd(conn_t *conn, const char *fmt, ...)
 {
@@ -326,7 +329,11 @@ _ftp_cwd(conn_t *conn, const char *file)
 			++beg, ++i;
 		for (++i; file + i < end && file[i] != '/'; ++i)
 			/* nothing */ ;
+#if __MOJOSETUP__
+		e = _ftp_cmd(conn, "CWD %.*s", (int) (file + i - beg), beg);
+#else
 		e = _ftp_cmd(conn, "CWD %.*s", file + i - beg, beg);
+#endif
 		if (e != FTP_FILE_ACTION_OK) {
 			_ftp_seterr(e);
 			return (-1);

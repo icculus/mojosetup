@@ -1,6 +1,17 @@
 #ifndef _INCL_MOJOSETUP_LIBFETCH_H_
 #define _INCL_MOJOSETUP_LIBFETCH_H_
 
+#include "../universal.h"
+#include "../fileio.h"
+
+#include <stdarg.h>
+#include <time.h>
+
+int MOJOSETUP_vasprintf(char **strp, const char *fmt, va_list ap);
+#define vasprintf MOJOSETUP_vasprintf
+int MOJOSETUP_asprintf(char **strp, const char *fmt, ...) ISPRINTF(2,3);
+#define asprintf MOJOSETUP_asprintf
+
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__APPLE__)
 #ifndef FREEBSD
 #define FREEBSD 1
@@ -26,15 +37,6 @@
 #define MAXLOGNAME (17)
 #endif
 
-
-
-#include "../universal.h"
-#include "../fileio.h"
-
-#include <stdarg.h>
-int MOJOSETUP_vasprintf(char **strp, const char *fmt, va_list ap);
-#define vasprintf MOJOSETUP_vasprintf
-
 #undef calloc
 #define calloc(x, y) xmalloc(x * y)
 
@@ -49,6 +51,20 @@ int MOJOSETUP_vasprintf(char **strp, const char *fmt, va_list ap);
 
 #undef strncpy
 #define strncpy(x, y, z) xstrncpy(x, y, z)
+
+#if !FREEBSD
+#ifndef TCP_NOPUSH
+#define TCP_NOPUSH TCP_CORK
+#endif
+#define EAUTH EPERM
+boolean ishexnumber(char ch);
+// Linux has had this since glibc 4.6.8, but doesn't expose it in the headers
+//  without _XOPEN_SOURCE or _GNU_SOURCE, which breaks other things.
+//  ...just force a declaration here, then.
+#ifdef __linux__
+char *strptime(const char *s, const char *format, struct tm *tm);
+#endif
+#endif
 
 #endif
 

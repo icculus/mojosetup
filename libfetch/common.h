@@ -73,7 +73,11 @@ struct iovec;
 
 void		 _fetch_seterr(struct fetcherr *, int);
 void		 _fetch_syserr(void);
+#if __MOJOSETUP__
+void _fetch_info(const char *fmt, ...) ISPRINTF(1,2);
+#else
 void		 _fetch_info(const char *, ...);
+#endif
 int		 _fetch_default_port(const char *);
 int		 _fetch_default_proxy_port(const char *);
 int		 _fetch_bind(int, int, const char *);
