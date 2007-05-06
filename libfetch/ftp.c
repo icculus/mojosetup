@@ -28,6 +28,8 @@
 
 #include "mojosetup_libfetch.h"
 
+#if SUPPORT_URL_FTP
+
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: src/lib/libfetch/ftp.c,v 1.96 2007/04/22 22:33:29 njl Exp $");
 
@@ -1346,3 +1348,6 @@ fetchListFTP(struct url *url __unused, const char *flags __unused)
 	warnx("fetchListFTP(): not implemented");
 	return (NULL);
 }
+
+#endif
+

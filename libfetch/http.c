@@ -30,6 +30,8 @@
 #include "mojosetup_libfetch.h"
 #endif
 
+#if SUPPORT_URL_HTTP || SUPPORT_URL_HTTPS
+
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: src/lib/libfetch/http.c,v 1.77 2005/08/24 12:28:05 des Exp $");
 
@@ -1323,3 +1325,6 @@ fetchListHTTP(struct url *url __unused, const char *flags __unused)
 	warnx("fetchListHTTP(): not implemented");
 	return (NULL);
 }
+
+#endif
+

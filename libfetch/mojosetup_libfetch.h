@@ -50,8 +50,6 @@ int MOJOSETUP_vasprintf(char **strp, const char *fmt, va_list ap);
 #undef strncpy
 #define strncpy(x, y, z) xstrncpy(x, y, z)
 
-MojoInput *MojoInput_fromURL(const char *url);
-
 #endif
 
 // end of mojosetup_libfetch.h ...

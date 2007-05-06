@@ -479,5 +479,16 @@ void MojoArchive_deinitBaseArchive(void)
     } // if
 } // MojoArchive_deinitBaseArchive
 
+
+// This stub is here if we didn't compile in libfetch...
+#if !SUPPORT_URL_HTTP && !SUPPORT_URL_FTP
+MojoInput *MojoInput_fromURL(const char *url)
+{
+    // !!! FIXME: localization.
+    logError(_("No networking support in this build."));
+    return NULL;
+} // MojoInput_fromURL
+#endif
+
 // end of fileio.c ...
 
