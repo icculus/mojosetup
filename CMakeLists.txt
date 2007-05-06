@@ -112,9 +112,8 @@ SET(LIBFETCH_SRCS
     ${LIBFETCH_DIR}/fetch.c
     ${LIBFETCH_DIR}/common.c
     ${LIBFETCH_DIR}/ftp.c
+    ${LIBFETCH_DIR}/http.c
 )
-    #${LIBFETCH_DIR}/file.c
-    #${LIBFETCH_DIR}/http.c
 
 SET(LUA_DIR lua-5.1.1)
 SET(LUA_SRCS

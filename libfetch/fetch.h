@@ -32,7 +32,9 @@
 #define _FETCH_H_INCLUDED
 
 #if __MOJOSETUP__
-#define _LIBFETCH_VER "libfetch/2.0 (MojoSetup " #APPREV ")"
+#define _LIBFETCH_VER3(ver) "libfetch/2.0 (MojoSetup " #ver ")"
+#define _LIBFETCH_VER2(ver) _LIBFETCH_VER3(ver)
+#define _LIBFETCH_VER _LIBFETCH_VER2(APPREV)
 #else
 #define _LIBFETCH_VER "libfetch/2.0"
 #endif

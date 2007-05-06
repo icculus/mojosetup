@@ -126,7 +126,34 @@ struct httpio
 #ifndef NDEBUG
 	size_t		 total;
 #endif
+
+#if __MOJOSETUP__
+    int64 bytes_read;
+#endif
 };
+
+
+#if __MOJOSETUP__
+static boolean MojoInput_http_seek(MojoInput *v, uint64 pos)
+{
+    return -1;
+}
+static int64 MojoInput_http_tell(MojoInput *v)
+{
+	struct httpio *io = (struct httpio *)v->opaque;
+    return io->bytes_read;
+}
+static int64 MojoInput_http_length(MojoInput *v)
+{
+	//struct httpio *io = (struct httpio *)v->opaque;
+    return -1;
+}
+static MojoInput* MojoInput_http_duplicate(MojoInput *v)
+{
+    return NULL;  // !!! FIXME: fatal?
+}
+#endif
+
 
 /*
  * Get next chunk header
@@ -248,10 +275,18 @@ _http_fillbuf(struct httpio *io, size_t len)
 /*
  * Read function
  */
+#if __MOJOSETUP__
+static int64 MojoInput_http_read(MojoInput *v, void *buf, uint32 len)
+#else
 static int
 _http_readfn(void *v, char *buf, int len)
+#endif
 {
+#if __MOJOSETUP__
+	struct httpio *io = (struct httpio *)v->opaque;
+#else
 	struct httpio *io = (struct httpio *)v;
+#endif
 	int l, pos;
 
 	if (io->error)
@@ -269,6 +304,9 @@ _http_readfn(void *v, char *buf, int len)
 			l = len;
 		bcopy(io->buf + io->bufpos, buf + pos, l);
 		io->bufpos += l;
+#if __MOJOSETUP__
+		io->bytes_read += l;
+#endif
 	}
 
 	if (!pos && io->error)
@@ -279,6 +317,7 @@ _http_readfn(void *v, char *buf, int len)
 /*
  * Write function
  */
+#if !__MOJOSETUP__
 static int
 _http_writefn(void *v, const char *buf, int len)
 {
@@ -286,6 +325,7 @@ _http_writefn(void *v, const char *buf, int len)
 
 	return (_fetch_write(io->conn, buf, len));
 }
+#endif
 
 /*
  * Close function
@@ -293,24 +333,46 @@ _http_writefn(void *v, const char *buf, int len)
 static int
 _http_closefn(void *v)
 {
+#if __MOJOSETUP__
+	struct httpio *io = (struct httpio *) ((MojoInput *)v)->opaque;
+#else
 	struct httpio *io = (struct httpio *)v;
+#endif
 	int r;
 
 	r = _fetch_close(io->conn);
 	if (io->buf)
 		free(io->buf);
 	free(io);
+#if __MOJOSETUP__
+    free(v);
+#endif
 	return (r);
 }
+
+#if __MOJOSETUP__
+static void MojoInput_http_close(MojoInput *v)
+{
+    _http_closefn(v);
+}
+#endif
 
 /*
  * Wrap a file descriptor up
  */
+#if __MOJOSETUP__
+static MojoInput *
+#else
 static FILE *
+#endif
 _http_funopen(conn_t *conn, int chunked)
 {
 	struct httpio *io;
+#if __MOJOSETUP__
+	MojoInput *f = NULL;
+#else
 	FILE *f;
+#endif
 
 	if ((io = calloc(1, sizeof(*io))) == NULL) {
 		_fetch_syserr();
@@ -318,12 +380,24 @@ _http_funopen(conn_t *conn, int chunked)
 	}
 	io->conn = conn;
 	io->chunked = chunked;
+#if __MOJOSETUP__
+    io->bytes_read = 0;
+    f = (MojoInput *) xmalloc(sizeof (MojoInput));
+    f->read = MojoInput_http_read;
+    f->seek = MojoInput_http_seek;
+    f->tell = MojoInput_http_tell;
+    f->length = MojoInput_http_length;
+    f->duplicate = MojoInput_http_duplicate;
+    f->close = MojoInput_http_close;
+    f->opaque = io;
+#else
 	f = funopen(io, _http_readfn, _http_writefn, NULL, _http_closefn);
 	if (f == NULL) {
 		_fetch_syserr();
 		free(io);
 		return (NULL);
 	}
+#endif
 	return (f);
 }
 
@@ -740,6 +814,7 @@ _http_get_proxy(const char *flags)
 	return (NULL);
 }
 
+#if !__MOJOSETUP__
 static void
 _http_print_html(FILE *out, FILE *in)
 {
@@ -777,6 +852,7 @@ _http_print_html(FILE *out, FILE *in)
 		fputc('\n', out);
 	}
 }
+#endif
 
 
 /*****************************************************************************
@@ -789,7 +865,11 @@ _http_print_html(FILE *out, FILE *in)
  * XXX This function is way too long, the do..while loop should be split
  * XXX off into a separate function.
  */
+#if __MOJOSETUP__
+MojoInput *
+#else
 FILE *
+#endif
 _http_request(struct url *URL, const char *op, struct url_stat *us,
     struct url *purl, const char *flags)
 {
@@ -800,7 +880,11 @@ _http_request(struct url *URL, const char *op, struct url_stat *us,
 	off_t offset, clength, length, size;
 	time_t mtime;
 	const char *p;
+#if __MOJOSETUP__
+	MojoInput *f = NULL;
+#else
 	FILE *f;
+#endif
 	hdr_t h;
 	char hbuf[MAXHOSTNAMELEN + 7], *host;
 
@@ -1141,8 +1225,12 @@ _http_request(struct url *URL, const char *op, struct url_stat *us,
 		fetchFreeURL(purl);
 
 	if (HTTP_ERROR(conn->err)) {
+#if !__MOJOSETUP__
 		_http_print_html(stderr, f);
 		fclose(f);
+#else
+		f->close(f);
+#endif
 		f = NULL;
 	}
 
@@ -1166,7 +1254,11 @@ ouch:
 /*
  * Retrieve and stat a file by HTTP
  */
+#if __MOJOSETUP__
+MojoInput *
+#else
 FILE *
+#endif
 fetchXGetHTTP(struct url *URL, struct url_stat *us, const char *flags)
 {
 	return (_http_request(URL, "GET", us, _http_get_proxy(flags), flags));
@@ -1175,7 +1267,11 @@ fetchXGetHTTP(struct url *URL, struct url_stat *us, const char *flags)
 /*
  * Retrieve a file by HTTP
  */
+#if __MOJOSETUP__
+MojoInput *
+#else
 FILE *
+#endif
 fetchGetHTTP(struct url *URL, const char *flags)
 {
 	return (fetchXGetHTTP(URL, NULL, flags));
@@ -1184,7 +1280,11 @@ fetchGetHTTP(struct url *URL, const char *flags)
 /*
  * Store a file by HTTP
  */
+#if __MOJOSETUP__
+MojoInput *
+#else
 FILE *
+#endif
 fetchPutHTTP(struct url *URL __unused, const char *flags __unused)
 {
 	warnx("fetchPutHTTP(): not implemented");
@@ -1197,12 +1297,20 @@ fetchPutHTTP(struct url *URL __unused, const char *flags __unused)
 int
 fetchStatHTTP(struct url *URL, struct url_stat *us, const char *flags)
 {
+#if __MOJOSETUP__
+	MojoInput *f = NULL;
+#else
 	FILE *f;
+#endif
 
 	f = _http_request(URL, "HEAD", us, _http_get_proxy(flags), flags);
 	if (f == NULL)
 		return (-1);
+#if __MOJOSETUP__
+	f->close(f);
+#else
 	fclose(f);
+#endif
 	return (0);
 }
 
