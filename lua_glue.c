@@ -1360,5 +1360,7 @@ const char *GLuaLicense =
 "THE SOFTWARE.\n"
 "\n";
 
+// !!! FIXME: need BSD and MIT licenses...put all the licenses in one string.
+
 // end of lua_glue.c ...
 
