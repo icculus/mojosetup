@@ -98,7 +98,9 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
     {
         while (!iofailure)
         {
-            if (!in->ready(in))
+            // If there's a callback, then poll. Otherwise, just block on
+            //  the reads from the MojoInput.
+            if ((cb != NULL) && (!in->ready(in)))
                 MojoPlatform_sleep(100);
             else
             {
