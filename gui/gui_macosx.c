@@ -169,38 +169,13 @@ static boolean MojoGui_macosx_insertmedia(const char *medianame)
                      entry->_("OK"), entry->_("Cancel"));
 } // MojoGui_macosx_insertmedia
 
-
-static void MojoGui_macosx_startdownload(void)
+static boolean MojoGui_macosx_progress(const char *type, const char *component,
+                                       int percent, const char *item)
 {
     // !!! FIXME: write me.
     STUBBED(__FUNCTION__)
-} // MojoGui_macosx_startdownload
-static void MojoGui_macosx_pumpdownload(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_macosx_pumpdownload
-static void MojoGui_macosx_enddownload(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_macosx_enddownload
-
-static void MojoGui_macosx_startinstall(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_macosx_startinstall
-static void MojoGui_macosx_pumpinstall(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_macosx_pumpinstall
-static void MojoGui_macosx_endinstall(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_macosx_endinstall
+    return true;
+} // MojoGui_macosx_progress
 
 // end of gui_macosx.c ...
 

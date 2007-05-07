@@ -573,11 +573,25 @@ static int luahook_findmedia(lua_State *L)
 } // luahook_findmedia
 
 
-static boolean writefile_callback(int percent, void *data)
+static boolean writeCallback(uint32 ticks, int64 bw, int64 total, void *data)
 {
-//    printf("writefile_callback: %d percent\n", percent);
-    return true;
-} // writefile_callback
+    boolean retval = false;
+    lua_State *L = (lua_State *) data;
+    // Lua callback is on top of stack...
+    if (lua_isnil(L, -1))
+        retval = true;
+    else
+    {
+        lua_pushvalue(L, -1);
+        lua_pushnumber(L, (lua_Number) ticks);
+        lua_pushnumber(L, (lua_Number) bw);
+        lua_pushnumber(L, (lua_Number) total);
+        lua_call(L, 3, 1);
+        retval = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+    } // if
+    return retval;
+} // writeCallback
 
 
 // !!! FIXME: push this into Lua, make things fatal.
@@ -593,13 +607,25 @@ static int luahook_writefile(lua_State *L)
         if (in != NULL)
         {
             retval = MojoInput_toPhysicalFile(in, path, archive->prevEnum.perms,
-                                              writefile_callback, NULL);
-            in->close(in);
+                                              writeCallback, L);
         } // if
     } // if
 
     return retvalBoolean(L, retval);
 } // luahook_writefile
+
+
+static int luahook_download(lua_State *L)
+{
+    boolean retval = false;
+    const char *url = luaL_checkstring(L, 1);
+    const char *dst = luaL_checkstring(L, 2);
+    MojoInput *in = MojoInput_fromURL(url);
+    // !!! FIXME: Unix-specific permissions thing here.
+    if (in != NULL)
+        retval = MojoInput_toPhysicalFile(in, dst, 0644, writeCallback, L);
+    return retvalBoolean(L, retval);
+} // luahook_download
 
 
 static int luahook_archive_fromdir(lua_State *L)
@@ -730,7 +756,6 @@ static int luahook_movefile(lua_State *L)
             uint16 perms = 0;
             MojoPlatform_perms(src, &perms);
             retval = MojoInput_toPhysicalFile(in, dst, perms, NULL, NULL);
-            in->close(in);
             if (retval)
             {
                 retval = MojoPlatform_unlink(src);
@@ -817,34 +842,6 @@ static int luahook_gui_stop(lua_State *L)
 
 typedef MojoGuiSetupOptions GuiOptions;   // a little less chatty.
 
-
-static inline uint64 file_size_from_string(const char *str)
-{
-    // !!! FIXME: this is WRONG
-    uint64 retval = (uint64) atoi(str);
-    size_t len = strlen(str);
-    if (len > 0)
-    {
-        const uint64 ui64_1024 = (uint64) 1024;
-        char ch = str[len-1];
-
-        if ((ch >= 'a') && (ch <= 'z'))
-            ch -= ('a' - 'A');
-
-        if (ch == 'K')
-            retval *= ui64_1024;
-        else if (ch == 'M')
-            retval *= ui64_1024 * ui64_1024;
-        else if (ch == 'G')
-            retval *= ui64_1024 * ui64_1024 * ui64_1024;
-        else if (ch == 'T')
-            retval *= ui64_1024 * ui64_1024 * ui64_1024 * ui64_1024;
-    } // if
-
-    return retval;
-} // file_size_from_string
-
-
 // forward declare this for recursive magic...
 static GuiOptions *build_gui_options(lua_State *L, GuiOptions *parent);
 
@@ -904,8 +901,8 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
             lua_getfield(L, -1, "value");
             newopt->value = (lua_toboolean(L, -1) ? true : false);
             lua_pop(L, 1);
-            lua_getfield(L, -1, "size");
-            newopt->size = file_size_from_string(lua_tostring(L, -1));
+            lua_getfield(L, -1, "bytes");
+            newopt->size = (int64) lua_tonumber(L, -1);
             lua_pop(L, 1);
             newopt->opaque = ((int) lua_objlen(L, 4)) + 1;
             lua_pushinteger(L, newopt->opaque);
@@ -1104,46 +1101,14 @@ static int luahook_gui_insertmedia(lua_State *L)
 } // luahook_gui_insertmedia
 
 
-static int luahook_gui_startdownload(lua_State *L)
+static int luahook_gui_progress(lua_State *L)
 {
-    GGui->startdownload();
-    return 0;
-} // luahook_gui_startdownload
-
-
-static int luahook_gui_pumpdownload(lua_State *L)
-{
-    GGui->pumpdownload();
-    return 0;
-} // luahook_gui_pumpdownload
-
-
-static int luahook_gui_enddownload(lua_State *L)
-{
-    GGui->enddownload();
-    return 0;
-} // luahook_gui_enddownload
-
-
-static int luahook_gui_startinstall(lua_State *L)
-{
-    GGui->startinstall();
-    return 0;
-} // luahook_gui_startinstall
-
-
-static int luahook_gui_pumpinstall(lua_State *L)
-{
-    GGui->pumpinstall();
-    return 0;
-} // luahook_gui_pumpinstall
-
-
-static int luahook_gui_endinstall(lua_State *L)
-{
-    GGui->endinstall();
-    return 0;
-} // luahook_gui_endinstall
+    const char *type = luaL_checkstring(L, 1);
+    const char *component = luaL_checkstring(L, 2);
+    int percent = luaL_checkint(L, 3);
+    const char *item = luaL_checkstring(L, 4);
+    return retvalBoolean(L, GGui->progress(type, component, percent, item));
+} // luahook_gui_progress
 
 
 static const char *logLevelString(void)
@@ -1218,6 +1183,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_debugger, "debugger");
         set_cfunc(luaState, luahook_findmedia, "findmedia");
         set_cfunc(luaState, luahook_writefile, "writefile");
+        set_cfunc(luaState, luahook_download, "download");
         set_cfunc(luaState, luahook_movefile, "movefile");
         set_cfunc(luaState, luahook_wildcardmatch, "wildcardmatch");
 
@@ -1250,14 +1216,9 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_gui_readme, "readme");
             set_cfunc(luaState, luahook_gui_options, "options");
             set_cfunc(luaState, luahook_gui_destination, "destination");
-            set_cfunc(luaState, luahook_gui_stop, "stop");
             set_cfunc(luaState, luahook_gui_insertmedia, "insertmedia");
-            set_cfunc(luaState, luahook_gui_startdownload, "startdownload");
-            set_cfunc(luaState, luahook_gui_pumpdownload, "pumpdownload");
-            set_cfunc(luaState, luahook_gui_enddownload, "enddownload");
-            set_cfunc(luaState, luahook_gui_startinstall, "startinstall");
-            set_cfunc(luaState, luahook_gui_pumpinstall, "pumpinstall");
-            set_cfunc(luaState, luahook_gui_endinstall, "endinstall");
+            set_cfunc(luaState, luahook_gui_progress, "progress");
+            set_cfunc(luaState, luahook_gui_stop, "stop");
         lua_setfield(luaState, -2, "gui");
 
         // Set the i/o functions...

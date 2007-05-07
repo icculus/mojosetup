@@ -181,6 +181,7 @@ typedef struct MojoSetupEntryPoints
     void (*logError)(const char *fmt, ...) ISPRINTF(1,2);
     void (*logInfo)(const char *fmt, ...) ISPRINTF(1,2);
     void (*logDebug)(const char *fmt, ...) ISPRINTF(1,2);
+    uint32 (*ticks)(void);
 } MojoSetupEntryPoints;
 extern MojoSetupEntryPoints GEntryPoints;
 

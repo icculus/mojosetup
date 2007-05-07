@@ -78,9 +78,11 @@ void MojoArchive_resetEntry(MojoArchiveEntry *info)
 boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                                  MojoInput_FileCopyCallback cb, void *data)
 {
+    boolean retval = false;
+    uint32 start = MojoPlatform_ticks();
     FILE *out = NULL;
     boolean iofailure = false;
-    int32 br = 0;
+    int64 br = 0;
     int64 flen = 0;
     int64 bw = 0;
 
@@ -92,46 +94,50 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
     STUBBED("fopen?");
     MojoPlatform_unlink(fname);
     out = fopen(fname, "wb");
-    if (out == NULL)
-        return false;
-
-    while (!iofailure)
+    if (out != NULL)
     {
-        br = (int32) in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
-        if (br == 0)  // we're done!
-            break;
-        else if (br < 0)
+        while (!iofailure)
+        {
+// !!! FIXME: to be written
+//            if (!in->ready(in))
+//                MojoPlatform_sleep(100);
+//            else
+            {
+                br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
+                if (br == 0)  // we're done!
+                    break;
+                else if (br < 0)
+                    iofailure = true;
+                else
+                {
+                    if (fwrite(scratchbuf_128k, br, 1, out) != 1)
+                        iofailure = true;
+                    else
+                        bw += br;
+                } // else
+            } // else
+
+            if (cb != NULL)
+            {
+                if (!cb(MojoPlatform_ticks() - start, bw, flen, data))
+                    iofailure = true;
+            } // if
+        } // while
+
+        if (fclose(out) != 0)
             iofailure = true;
+
+        if (iofailure)
+            MojoPlatform_unlink(fname);
         else
         {
-            if (fwrite(scratchbuf_128k, br, 1, out) != 1)
-                iofailure = true;
-            else
-            {
-                bw += br;
-                if (cb != NULL)
-                {
-                    int pct = -1;
-                    if (flen > 0)
-                        pct = (int) ((((double)bw) / ((double)flen)) * 100.0);
-                    if (!cb(pct, data))
-                        iofailure = true;
-                } // if
-            } // else
+            MojoPlatform_chmod(fname, perms);
+            retval = true;
         } // else
-    } // while
-
-    if (fclose(out) != 0)
-        iofailure = true;
-
-    if (iofailure)
-    {
-        MojoPlatform_unlink(fname);
-        return false;
     } // if
 
-    MojoPlatform_chmod(fname, perms);
-    return true;
+    in->close(in);
+    return retval;
 } // MojoInput_toPhysicalFile
 
 

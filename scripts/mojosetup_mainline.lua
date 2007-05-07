@@ -11,6 +11,14 @@ local _ = MojoSetup.translate
 --  so it only spits out crap if debug-level logging is enabled.
 MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
 
+local function calc_percent(current, total)
+    if total == 0 then
+        return 0
+    elseif total < 0 then
+        return -1
+    end
+    return ((current / total) * 100)
+end
 
 local function split_path(path)
     local retval = {}
@@ -98,8 +106,20 @@ local function delete_files(filelist, callback, error_is_fatal)
 end
 
 
-local function install_file(path, archive, file)
-    if not MojoSetup.writefile(archive, path) then
+local function install_file(path, archive, file, option)
+    -- Upvalued so we don't look these up each time...
+    local fname = string.gsub(path, "^.*/", "", 1)  -- chop the dirs off...
+    local ptype = _("Installing")  -- !!! FIXME: localization.
+    local component = option.description
+    local callback = function(ticks, bw, total)
+        MojoSetup.written = MojoSetup.written + bw
+        local percent = calc_percent(MojoSetup.written,
+                                     MojoSetup.totalwrite)
+        local item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
+        return MojoSetup.gui.progress(ptype, component, percent, item)
+    end
+
+    if not MojoSetup.writefile(archive, path, callback) then
         -- !!! FIXME: formatting!
         MojoSetup.fatal(_("file creation failed!"))
     end
@@ -180,7 +200,7 @@ local function permit_write(dest, entinfo, file)
 end
 
 
-local function install_archive_entry(archive, ent, file)
+local function install_archive_entry(archive, ent, file, option)
     local entdest = ent.filename
     if entdest == nil then return end   -- probably can't happen...
 
@@ -202,7 +222,7 @@ local function install_archive_entry(archive, ent, file)
         if permit_write(dest, ent, file) then
             install_parent_dirs(dest)
             if ent.type == "file" then
-                install_file(dest, archive, file)
+                install_file(dest, archive, file, option)
             elseif ent.type == "dir" then
                 install_directory(dest)
             elseif ent.type == "symlink" then
@@ -274,7 +294,7 @@ local function install_archive(archive, file, option)
             end
 
             if should_install then
-                install_archive_entry(archive, ent, file)
+                install_archive_entry(archive, ent, file, option)
                 if single_match then
                     break   -- no sense in iterating further if we're done.
                 end
@@ -338,6 +358,11 @@ end
 
 
 local function do_install(install)
+    MojoSetup.written = 0
+    MojoSetup.totalwrite = 0
+    MojoSetup.downloaded = 0
+    MojoSetup.totaldownload = 0
+
     -- !!! FIXME: try to sanity check everything we can here
     -- !!! FIXME:  (unsupported URLs, bogus media IDs, etc.)
     -- !!! FIXME:  I would like everything possible to fail here instead of
@@ -367,7 +392,6 @@ local function do_install(install)
     -- First stage: Make sure installer can run. Always fails or steps forward.
     if install.precheck ~= nil then
         stages[#stages+1] = function ()
-            MojoSetup.gui.precheck()
             local errstr = install.precheck()
             if errstr ~= nil then
                 MojoSetup.fatal(errstr)
@@ -466,6 +490,7 @@ local function do_install(install)
                 if MojoSetup.files.downloads == nil then
                     MojoSetup.files.downloads = {}
                 end
+                MojoSetup.totaldownload = MojoSetup.totaldownload + option.bytes
                 MojoSetup.files.downloads[file] = option
             end
         end
@@ -474,7 +499,7 @@ local function do_install(install)
         --  This lets us batch all the things from one CD together,
         --  do all the downloads first, etc.
         local function process_option(option)
-            -- !!! FIXME: check for nil in schema?
+            MojoSetup.totalwrite = MojoSetup.totalwrite + option.bytes
             if option.files ~= nil then
                 for k,v in pairs(option.files) do
                     process_file(option, v)
@@ -515,16 +540,39 @@ local function do_install(install)
     -- Next stage: Download external packages.
     stages[#stages+1] = function(thisstage, maxstage)
         if MojoSetup.files.downloads ~= nil then
-            MojoSetup.gui.startdownload()
-            -- !!! FIXME: write me.
-            MojoSetup.gui.enddownload()
+            -- !!! FIXME: id will cause problems for download resume
+            local id = 0
+            for file,option in pairs(MojoSetup.files.downloads) do
+                local f = MojoSetup.destination .. "/.mojosetup_tmp/downloads"
+                f = f .. "/" .. id
+                -- !!! FIXME: don't add (f) to the installed_files table...
+                install_parent_dirs(f)
+                id = id + 1
+
+                -- Upvalued so we don't look these up each time...
+                local url = file.source
+                local fname = string.gsub(url, "^.*/", "", 1)  -- chop the dirs off...
+                local ptype = _("Downloading")  -- !!! FIXME: localization.
+                local component = option.description
+                local callback = function(ticks, bw, total)
+                    MojoSetup.downloaded = MojoSetup.downloaded + bw
+                    local percent = calc_percent(MojoSetup.downloaded,
+                                                 MojoSetup.totaldownload)
+                    local item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
+                    return MojoSetup.gui.progress(ptype, component, percent, item)
+                end
+
+                if not MojoSetup.download(url, f, callback) then
+                    -- !!! FIXME: formatting!
+                    MojoSetup.fatal(_("file download failed!"))
+                end
+            end
         end
         return true
     end
 
     -- Next stage: actual installation.
     stages[#stages+1] = function(thisstage, maxstage)
-        MojoSetup.gui.startinstall()
         -- Do stuff on media first, so the user finds out he's missing
         --  disc 3 of 57 as soon as possible...
 
@@ -583,7 +631,6 @@ local function do_install(install)
             end
         end
 
-        MojoSetup.gui.endinstall()
         return true   -- go to next stage.
     end
 
@@ -641,6 +688,10 @@ local function do_install(install)
     MojoSetup.files = nil
     MojoSetup.media = nil
     MojoSetup.destination = nil
+    MojoSetup.written = 0
+    MojoSetup.totalwrite = 0
+    MojoSetup.downloaded = 0
+    MojoSetup.totaldownload = 0
 end
 
 -- !!! FIXME: is MojoSetup.installs just nil? Should we lose saw_an_installer?

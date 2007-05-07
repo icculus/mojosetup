@@ -13,6 +13,11 @@ CREATE_MOJOGUI_ENTRY_POINT(stdio)
 
 #include <ctype.h>
 
+static char *lastType = NULL;
+static char *lastComponent = NULL;
+static int lastPercent = -1;
+static uint32 percentTicks = 0;
+
 static int read_stdin(char *buf, int len)
 {
     if (fgets(buf, len, stdin) == NULL)
@@ -70,6 +75,12 @@ static uint8 MojoGui_stdio_priority(void)
 
 static boolean MojoGui_stdio_init(void)
 {
+    free(lastType);
+    lastType = NULL;
+    free(lastComponent);
+    lastComponent = NULL;
+    lastPercent = -1;
+    percentTicks = 0;
     return true;   // always succeeds.
 } // MojoGui_stdio_init
 
@@ -115,6 +126,7 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
 
     return retval;
 } // MojoGui_stdio_promptyn
+
 
 static boolean MojoGui_stdio_start(const char *title, const char *splash)
 {
@@ -317,38 +329,41 @@ static boolean MojoGui_stdio_insertmedia(const char *medianame)
 } // MojoGui_stdio_insertmedia
 
 
-static void MojoGui_stdio_startdownload(void)
+static boolean MojoGui_stdio_progress(const char *type, const char *component,
+                                      int percent, const char *item)
 {
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_stdio_startdownload
-static void MojoGui_stdio_pumpdownload(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_stdio_pumpdownload
-static void MojoGui_stdio_enddownload(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_stdio_enddownload
+    const uint32 now = entry->ticks();
+    if ((lastType == NULL) || (strcmp(lastType, type) == 0))
+    {
+        percentTicks = 0;
+        lastPercent = -1;
+        free(lastType);
+        lastType = entry->xstrdup(type);
+        printf("%s\n", type);
+    } // if
 
-static void MojoGui_stdio_startinstall(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_stdio_startinstall
-static void MojoGui_stdio_pumpinstall(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_stdio_pumpinstall
-static void MojoGui_stdio_endinstall(void)
-{
-    // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
-} // MojoGui_stdio_endinstall
+    if ((lastComponent == NULL) || (strcmp(lastComponent, component) == 0))
+    {
+        percentTicks = 0;
+        free(lastComponent);
+        lastComponent = entry->xstrdup(component);
+        printf("%s\n", component);
+    } // if
 
+    // limit update spam... will only write every two seconds, tops.
+    if (percentTicks <= now)
+    {
+        percentTicks = now + 2000;
+        if (percent != lastPercent)
+        {
+            lastPercent = percent;
+            // !!! FIXME: localization.
+            printf(entry->_("%s (total %d%%)\n"), item, percent);
+        } // if
+    } // if
+
+    return true;
+} // MojoGui_stdio_progress
 
 // end of gui_stdio.c ...
 

@@ -9,7 +9,7 @@
 #define TEST_ARCHIVE_CODE 0
 int MojoSetup_testArchiveCode(int argc, char **argv);
 
-#define TEST_NETWORK_CODE 1
+#define TEST_NETWORK_CODE 0
 int MojoSetup_testNetworkCode(int argc, char **argv);
 
 
@@ -25,6 +25,7 @@ MojoSetupEntryPoints GEntryPoints =
     logError,
     logInfo,
     logDebug,
+    MojoPlatform_ticks,
 };
 
 int GArgc = 0;

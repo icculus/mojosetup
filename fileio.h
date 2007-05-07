@@ -87,7 +87,8 @@ extern MojoArchive *GBaseArchive;
 MojoArchive *MojoArchive_initBaseArchive(void);
 void MojoArchive_deinitBaseArchive(void);
 
-typedef boolean (*MojoInput_FileCopyCallback)(int percent, void *data);
+typedef boolean (*MojoInput_FileCopyCallback)(uint32 ticks, int64 bw,
+                                              int64 total, void *data);
 boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                                  MojoInput_FileCopyCallback cb, void *data);
 
