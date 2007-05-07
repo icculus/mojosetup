@@ -137,6 +137,10 @@ struct httpio
 
 
 #if __MOJOSETUP__
+static boolean MojoInput_http_ready(MojoInput *io)
+{
+    return true;  // !!! FIXME: select on the socket...
+}
 static boolean MojoInput_http_seek(MojoInput *v, uint64 pos)
 {
     return -1;
@@ -387,6 +391,7 @@ _http_funopen(conn_t *conn, int chunked)
     io->bytes_read = 0;
     io->length = -1;
     f = (MojoInput *) xmalloc(sizeof (MojoInput));
+    f->ready = MojoInput_http_ready;
     f->read = MojoInput_http_read;
     f->seek = MojoInput_http_seek;
     f->tell = MojoInput_http_tell;

@@ -66,6 +66,10 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len);
 void *MojoPlatform_dlsym(void *lib, const char *sym);
 void MojoPlatform_dlclose(void *lib);
 
+// Put the calling process to sleep for at least (ticks) milliseconds.
+//  This is meant to yield the CPU while spinning in a loop that is polling
+//  for input, etc. Pumping the GUI event queue happens elsewhere, not here.
+void MojoPlatform_sleep(uint32 ticks);
 
 // Put a line of text to the the system log, whatever that might be on a
 //  given platform. (str) is a complete line, but won't end with any newline

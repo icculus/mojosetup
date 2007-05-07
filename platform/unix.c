@@ -32,9 +32,11 @@
 void *beos_dlopen(const char *fname, int unused);
 void *beos_dlsym(void *lib, const char *sym);
 void beos_dlclose(void *lib);
+void beos_usleep(unsigned long ticks);
 #define dlopen beos_dlopen
 #define dlsym beos_dlsym
 #define dlclose beos_dlclose
+#define usleep beos_usleep
 #else
 #include <dlfcn.h>
 #define DLOPEN_ARGS (RTLD_NOW | RTLD_GLOBAL)
@@ -424,6 +426,12 @@ boolean MojoPlatform_osVersion(char *buf, size_t len)
 
     return false;
 } // MojoPlatform_osversion
+
+
+void MojoPlatform_sleep(uint32 ticks)
+{
+    usleep(ticks * 1000);
+} // MojoPlatform_sleep
 
 
 uint32 MojoPlatform_ticks(void)

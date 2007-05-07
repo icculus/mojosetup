@@ -98,10 +98,9 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
     {
         while (!iofailure)
         {
-// !!! FIXME: to be written
-//            if (!in->ready(in))
-//                MojoPlatform_sleep(100);
-//            else
+            if (!in->ready(in))
+                MojoPlatform_sleep(100);
+            else
             {
                 br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
                 if (br == 0)  // we're done!
@@ -170,6 +169,12 @@ typedef struct
     FILE *handle;
     char *path;
 } MojoInputFileInstance;
+
+static boolean MojoInput_file_ready(MojoInput *io)
+{
+    // !!! FIXME: select()? Does that help with network filesystems?
+    return true;
+} // MojoInput_file_ready
 
 static int64 MojoInput_file_read(MojoInput *io, void *buf, uint32 bufsize)
 {
@@ -242,6 +247,7 @@ MojoInput *MojoInput_newFromFile(const char *path)
         inst->handle = f;
 
         io = (MojoInput *) xmalloc(sizeof (MojoInput));
+        io->ready = MojoInput_file_ready;
         io->read = MojoInput_file_read;
         io->seek = MojoInput_file_seek;
         io->tell = MojoInput_file_tell;

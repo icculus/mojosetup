@@ -24,6 +24,7 @@ typedef struct MojoInput MojoInput;
 struct MojoInput
 {
     // public
+    boolean (*ready)(MojoInput *io);
     int64 (*read)(MojoInput *io, void *buf, uint32 bufsize);
     boolean (*seek)(MojoInput *io, uint64 pos);
     int64 (*tell)(MojoInput *io);

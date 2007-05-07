@@ -1664,6 +1664,11 @@ const PHYSFS_Archiver __PHYSFS_Archiver_ZIP =
 
 // MojoInput implementation...
 
+static boolean MojoInput_zip_ready(MojoInput *io)
+{
+    return true;
+} // MojoInput_zip_ready
+
 static int64 MojoInput_zip_read(MojoInput *io, void *buf, uint32 bufsize)
 {
     return ZIP_read(io->opaque, buf, 1, bufsize);
@@ -1758,6 +1763,7 @@ static MojoInput *buildZipMojoInput(ZIPinfo *info, const char *fullpath)
         return NULL;
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    io->ready = MojoInput_zip_ready;
     io->read = MojoInput_zip_read;
     io->seek = MojoInput_zip_seek;
     io->tell = MojoInput_zip_tell;

@@ -508,6 +508,10 @@ static int	 _ftp_closefn(void *);
 
 
 #if __MOJOSETUP__
+static boolean MojoInput_ftp_ready(MojoInput *io)
+{
+    return true;  // !!! FIXME: select on the socket...
+}
 static int64 MojoInput_ftp_tell(MojoInput *v)
 {
 	struct ftpio *io = (struct ftpio *)v->opaque;
@@ -696,6 +700,7 @@ _ftp_setup(conn_t *cconn, conn_t *dconn, int mode)
     io->bytes_read = 0;
     io->length = -1;
     f = (MojoInput *) xmalloc(sizeof (MojoInput));
+    f->ready = MojoInput_ftp_ready;
     f->read = MojoInput_ftp_read;
     f->seek = MojoInput_ftp_seek;
     f->tell = MojoInput_ftp_tell;

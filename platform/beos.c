@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <be/kernel/image.h>
+#include <be/kernel/OS.h>
 
 void *beos_dlopen(const char *fname, int unused)
 {
@@ -29,6 +30,12 @@ void beos_dlclose(void *lib)
 {
     unload_add_on((image_id) lib);
 } // beos_dlclose
+
+
+void beos_usleep(unsigned long microseconds)
+{
+    snooze(microseconds);
+} // beos_usleep
 
 // end of beos.c ...
 

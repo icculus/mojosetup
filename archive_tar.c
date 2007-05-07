@@ -39,6 +39,10 @@ static void initializeZStream(z_stream *pstr)
     pstr->zfree = mojoZlibFree;
 } // initializeZStream
 
+static boolean MojoInput_gzip_ready(MojoInput *io)
+{
+    return true;
+} // MojoInput_gzip_ready
 
 static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
 {
@@ -182,6 +186,7 @@ static MojoInput *make_gzip_input(MojoInput *origio)
     info->buffer = (uint8 *) xmalloc(GZIP_READBUFSIZE);
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    io->ready = MojoInput_gzip_ready;
     io->read = MojoInput_gzip_read;
     io->seek = MojoInput_gzip_seek;
     io->tell = MojoInput_gzip_tell;
@@ -229,6 +234,10 @@ static void initializeBZ2Stream(bz_stream *pstr)
     pstr->bzfree = mojoBzlib2Free;
 } // initializeBZ2Stream
 
+static boolean MojoInput_bzip2_ready(MojoInput *io)
+{
+    return true;
+} // MojoInput_bzip2_ready
 
 static boolean MojoInput_bzip2_seek(MojoInput *io, uint64 offset)
 {
@@ -385,6 +394,7 @@ static MojoInput *make_bzip2_input(MojoInput *origio)
     info->buffer = (uint8 *) xmalloc(BZIP2_READBUFSIZE);
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    io->ready = MojoInput_bzip2_ready;
     io->read = MojoInput_bzip2_read;
     io->seek = MojoInput_bzip2_seek;
     io->tell = MojoInput_bzip2_tell;
@@ -416,6 +426,11 @@ typedef struct TARinfo
     uint64 curFileStart;
     uint64 nextEnumPos;
 } TARinfo;
+
+static boolean MojoInput_tar_ready(MojoInput *io)
+{
+    return true;
+} // MojoInput_tar_ready
 
 static int64 MojoInput_tar_read(MojoInput *io, void *buf, uint32 bufsize)
 {
@@ -666,6 +681,7 @@ static MojoInput *MojoArchive_tar_openCurrentEntry(MojoArchive *ar)
     opaque->offset = info->curFileStart;
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    io->ready = MojoInput_tar_ready;
     io->read = MojoInput_tar_read;
     io->seek = MojoInput_tar_seek;
     io->tell = MojoInput_tar_tell;
