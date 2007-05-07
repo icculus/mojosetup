@@ -300,6 +300,31 @@ void MojoLua_debugger(void)
 } // MojoLua_debugger
 
 
+boolean MojoLua_callProcedure(const char *funcname)
+{
+    boolean called = false;
+    lua_State *L = luaState;
+    int popcount = 0;
+
+    if (L != NULL)
+    {
+        lua_getglobal(L, MOJOSETUP_NAMESPACE); popcount++;
+        if (lua_istable(L, -1))  // namespace is sane?
+        {
+            lua_getfield(L, -1, funcname); popcount++;
+            if (lua_isfunction(L, -1))
+            {
+                lua_call(L, 0, 0);
+                called = true;
+            } // if
+        } // if
+        lua_pop(L, popcount);
+    } // if
+
+    return called;
+} // MojoLua_callProcedure
+
+
 boolean MojoLua_runFile(const char *name)
 {
     MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
@@ -426,6 +451,7 @@ const char *translate(const char *str)
 // Use this instead of Lua's error() function if you don't have a
 //  programatic error, so you don't get stack callback stuff:
 // MojoSetup.fatal("You need the base game to install this expansion pack.")
+//  This will also handle cleanup of half-written installations.
 //  Doesn't actually return.
 static int luahook_fatal(lua_State *L)
 {

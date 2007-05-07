@@ -447,7 +447,16 @@ void MojoPlatform_die(void)
 
 boolean MojoPlatform_unlink(const char *fname)
 {
-    return (unlink(fname) == 0);
+    boolean retval = false;
+    struct stat statbuf;
+    if (stat(fname, &statbuf) != -1)
+    {
+        if (S_ISDIR(statbuf.st_mode))
+            retval = (rmdir(fname) == 0);
+        else
+            retval = (unlink(fname) == 0);
+    } // if
+    return retval;
 } // MojoPlatform_unlink
 
 

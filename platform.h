@@ -22,8 +22,8 @@ uint32 MojoPlatform_ticks(void);
 //  avoid calling this.
 void MojoPlatform_die(void);
 
-// Delete a file from the physical filesystem. Returns true on success, false
-//  on failure.
+// Delete a file from the physical filesystem. This should remove empty
+//  directories as well as files. Returns true on success, false on failure.
 boolean MojoPlatform_unlink(const char *fname);
 
 // Resolve symlinks, relative paths, etc. Caller free()'s buffer. Returns

@@ -37,19 +37,6 @@ function MojoSetup.spliturl(url)
 end
 
 
--- This gets called by fatal()...
-function MojoSetup.shutdown ()
-    if MojoSetup.installed_files ~= nil then
-        for k,v in ipairs(MojoSetup.installed_files) do
-            MojoSetup.loginfo("Deleting " .. v)
-            -- unlink(v)
-        end
-        --- !!! FIXME: delete downloads.
-        --- !!! FIXME: do rollbacks.
-    end
-end
-
-
 -- This is handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then  -- first call, before any recursion?

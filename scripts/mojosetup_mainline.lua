@@ -7,9 +7,75 @@
 -- This is just for convenience.
 local _ = MojoSetup.translate
 
--- This dumps the table built from the user's config script using logdebug,
---  so it only spits out crap if debug-level logging is enabled.
-MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
+local function do_delete(fname)
+    local retval = false
+    if fname == nil then
+        retval = true
+    else
+        if MojoSetup.platform.exists(fname) then
+            if MojoSetup.platform.unlink(fname) then
+                MojoSetup.loginfo("Deleted '" .. fname .. "'")
+                retval = true
+            end
+        end
+    end
+    return retval
+end
+
+local function delete_files(filelist, callback, error_is_fatal)
+    if filelist ~= nil then
+        local max = #filelist
+        for i = max,1,-1 do
+            local fname = filelist[i]
+            if not do_delete(fname) and error_is_fatal then
+                -- !!! FIXME: formatting
+                MojoSetup.fatal(_("Deletion failed!"))
+            end
+
+            if callback ~= nil then
+                callback(i, max)
+            end
+        end
+    end
+end
+
+local function delete_scratchdirs()
+    do_delete(MojoSetup.downloaddir)
+    do_delete(MojoSetup.rollbackdir)
+    do_delete(MojoSetup.scratchdir)  -- must be last!
+end
+
+
+local function do_rollbacks()
+    if MojoSetup.rollbacks == nil then
+        return
+    end
+
+    local max = #MojoSetup.rollbacks
+    for id = max,1,-1 do
+        local src = MojoSetup.rollbackdir .. "/" .. id
+        local dest = MojoSetup.rollbacks[id]
+        if not MojoSetup.movefile(src, dest) then
+            -- we're already in fatal(), so we can only throw up a msgbox...
+            -- !!! FIXME: formatting
+            MojoSetup.msgbox(_("Serious problem"),
+                             _("Couldn't restore some files. Your existing installation is likely damaged."))
+        end
+        MojoSetup.loginfo("Restored rollback #" .. id .. ": '" .. src .. "' -> '" .. dest .. "'")
+    end
+end
+
+
+-- This gets called by fatal()...must be a global function.
+function MojoSetup.revertinstall()
+    MojoSetup.loginfo("Cleaning up half-finished installation...");
+
+    delete_files(MojoSetup.downloads)
+    delete_files(MojoSetup.installed_files)
+    do_rollbacks()
+    delete_scratchdirs();
+end
+
 
 local function calc_percent(current, total)
     if total == 0 then
@@ -90,22 +156,6 @@ local function drill_for_archive(archive, path, arclist)
 end
 
 
-local function delete_files(filelist, callback, error_is_fatal)
-    local max = #filelist
-    for i,v in ipairs(filelist) do
-        if not MojoSetup.platform.unlink(v) and error_is_fatal then
-            -- !!! FIXME: formatting
-            MojoSetup.fatal(_("Deletion failed!"))
-        end
-        MojoSetup.loginfo("Deleted '" .. v .. "'")
-
-        if callback ~= nil then
-            callback(i, max)
-        end
-    end
-end
-
-
 local function install_file(path, archive, file, option)
     -- Upvalued so we don't look these up each time...
     local fname = string.gsub(path, "^.*/", "", 1)  -- chop the dirs off...
@@ -119,32 +169,32 @@ local function install_file(path, archive, file, option)
         return MojoSetup.gui.progress(ptype, component, percent, item)
     end
 
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
     if not MojoSetup.writefile(archive, path, callback) then
         -- !!! FIXME: formatting!
         MojoSetup.fatal(_("file creation failed!"))
     end
     MojoSetup.loginfo("Created file '" .. path .. "'")
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
 end
 
 
 local function install_symlink(path, lndest)
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
     if not MojoSetup.platform.symlink(path, lndest) then
         -- !!! FIXME: formatting!
         MojoSetup.fatal(_("symlink creation failed!"))
     end
     MojoSetup.loginfo("Created symlink '" .. path .. "' -> '" .. lndest .. "'")
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
 end
 
 
 local function install_directory(path)
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
     if not MojoSetup.platform.mkdir(path) then
         -- !!! FIXME: formatting
         MojoSetup.fatal(_("mkdir failed"))
     end
     MojoSetup.loginfo("Created directory '" .. path .. "'")
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
 end
 
 
@@ -181,16 +231,14 @@ local function permit_write(dest, entinfo, file)
 
             if allowoverwrite then
                 local id = #MojoSetup.rollbacks + 1
-                -- !!! FIXME: dirname may clash.
-                local f = MojoSetup.destination .. "/.mojosetup_tmp/rollback"
-                f = f .. "/" .. id
+                local f = MojoSetup.rollbackdir .. "/" .. id
                 -- !!! FIXME: don't add (f) to the installed_files table...
                 install_parent_dirs(f)
+                MojoSetup.rollbacks[id] = dest
                 if not MojoSetup.movefile(dest, f) then
                     -- !!! FIXME: formatting
                     MojoSetup.fatal(_("Couldn't backup file for rollback"))
                 end
-                MojoSetup.rollbacks[id] = dest
                 MojoSetup.loginfo("Moved rollback #" .. id .. ": '" .. dest .. "' -> '" .. f .. "'")
             end
         end
@@ -357,6 +405,16 @@ local function install_basepath(basepath, file, option)
 end
 
 
+local function set_destination(dest)
+    -- !!! FIXME: ".mojosetup_tmp" dirname may clash with install...?
+    MojoSetup.loginfo("Install dest: '" .. dest .. "'")
+    MojoSetup.destination = dest
+    MojoSetup.scratchdir = MojoSetup.destination .. "/.mojosetup_tmp"
+    MojoSetup.rollbackdir = MojoSetup.scratchdir .. "/rollbacks"
+    MojoSetup.downloaddir = MojoSetup.scratchdir .. "/downloads"
+end
+
+
 local function do_install(install)
     MojoSetup.written = 0
     MojoSetup.totalwrite = 0
@@ -433,9 +491,8 @@ local function do_install(install)
     --  The config file can force a destination if it has a really good reason
     --  (system drivers that have to go in a specific place, for example),
     --  but really really shouldn't in 99% of the cases.
-    MojoSetup.destination = install.destination
-    if MojoSetup.destination ~= nil then
-        MojoSetup.loginfo("Install dest: '" .. install.destination .. "'")
+    if install.destination ~= nil then
+        set_destination(install.destination)
     else
         local recommend = install.recommended_destinations
         -- (recommend) becomes an upvalue in this function.
@@ -444,8 +501,7 @@ local function do_install(install)
             if x == nil then
                 return false   -- go back
             end
-            MojoSetup.destination = x
-            MojoSetup.loginfo("Install dest: '" .. x .. "'")
+            set_destination(x)
             return true
         end
     end
@@ -544,8 +600,7 @@ local function do_install(install)
             -- !!! FIXME: id will chop filename extension
             local id = 0
             for file,option in pairs(MojoSetup.files.downloads) do
-                local f = MojoSetup.destination .. "/.mojosetup_tmp/downloads"
-                f = f .. "/" .. id
+                local f = MojoSetup.downloaddir .. "/" .. id
                 -- !!! FIXME: don't add (f) to the installed_files table...
                 install_parent_dirs(f)
                 id = id + 1
@@ -616,8 +671,7 @@ local function do_install(install)
         if MojoSetup.files.downloads ~= nil then
             local id = 0
             for file,option in pairs(MojoSetup.files.downloads) do
-                local f = MojoSetup.destination .. "/.mojosetup_tmp/downloads"
-                f = f .. "/" .. id
+                local f = MojoSetup.downloaddir .. "/" .. id
                 id = id + 1
                 install_basepath(f, file, option)
             end
@@ -686,8 +740,7 @@ MojoSetup.crash();
     -- Successful install, so delete conflicts we no longer need to rollback.
     delete_files(MojoSetup.rollbacks)
     delete_files(MojoSetup.downloads)
-
-    -- !!! FIXME: nuke scratch files (downloaded files, rollbacks, etc)...
+    delete_scratchdirs()
 
     -- Don't let future errors delete files from successful installs...
     MojoSetup.installed_files = nil
@@ -697,15 +750,27 @@ MojoSetup.crash();
     MojoSetup.gui.stop()
 
     -- Done with these things. Make them eligible for garbage collection.
+    MojoSetup.destination = nil
+    MojoSetup.scratchdir = nil
+    MojoSetup.rollbackdir = nil
+    MojoSetup.downloaddir = nil
     MojoSetup.stages = nil
     MojoSetup.files = nil
     MojoSetup.media = nil
-    MojoSetup.destination = nil
     MojoSetup.written = 0
     MojoSetup.totalwrite = 0
     MojoSetup.downloaded = 0
     MojoSetup.totaldownload = 0
 end
+
+
+
+-- Mainline.
+
+
+-- This dumps the table built from the user's config script using logdebug,
+--  so it only spits out crap if debug-level logging is enabled.
+MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
 
 -- !!! FIXME: is MojoSetup.installs just nil? Should we lose saw_an_installer?
 local saw_an_installer = false

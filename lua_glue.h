@@ -28,6 +28,14 @@ boolean MojoLua_initialized(void);
 //  chunk, as it will call fatal() instead.
 boolean MojoLua_runFile(const char *fname);
 
+// Call a function in Lua. This calls MojoSetup.funcname, if it exists and
+//  is a function. It will not pass any parameters and it will not return
+//  any values. The call is made unprotected, so if Lua triggers an error,
+//  this C function will not return. Don't use this if you don't know what
+//  you're doing.
+// Returns true if function was called, false otherwise.
+boolean MojoLua_callProcedure(const char *funcname);
+
 // Set a Lua variable in the MojoSetup namespace to a string:
 //  MojoLua_setString("bob", "name");
 //  in Lua: print(MojoSetup.name)  -- outputs: bob

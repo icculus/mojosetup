@@ -350,6 +350,7 @@ int fatal(const char *fmt, ...)
 
     //GGui->status(_("There were errors. Click 'OK' to clean up and exit."));
     //MojoLua_runFunction("errorcleanup");
+    MojoLua_callProcedure("revertinstall");
 
     deinitEverything();
     exit(23);
