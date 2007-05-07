@@ -207,7 +207,7 @@ IF(MACOSX)
         ELSE(MOJOSETUP_GUI_MACOSX_STATIC)
             ADD_LIBRARY(macosx SHARED gui/gui_macosx.c)
             TARGET_LINK_LIBRARIES(macosx
-                -framework Carbon -mmacosx-version-min=10.2
+                "-framework Carbon -mmacosx-version-min=10.2"
             )
         ENDIF(MOJOSETUP_GUI_MACOSX_STATIC)
     ENDIF(MOJOSETUP_GUI_MACOSX)
@@ -358,7 +358,7 @@ IF(MOJOSETUP_BUILD_LUAC)
     TARGET_LINK_LIBRARIES(mojoluac ${OPTIONAL_LIBS})
     GET_TARGET_PROPERTY(MOJOLUAC_LOCATION mojoluac LOCATION)
     # !!! FIXME: actually compile this.
-    ADD_CUSTOM_TARGET(lua "${MOJOLUAC_LOCATION}" -p ${CMAKE_CURRENT_SOURCE_DIR}/lua/*.lua)
+    ADD_CUSTOM_TARGET(lua "${MOJOLUAC_LOCATION}" -p ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.lua)
 ENDIF(MOJOSETUP_BUILD_LUAC)
 
 ADD_EXECUTABLE(mojosetup ${MOJOSETUP_SRCS} ${OPTIONAL_SRCS})
