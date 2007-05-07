@@ -508,9 +508,20 @@ static int	 _ftp_closefn(void *);
 
 
 #if __MOJOSETUP__
-static boolean MojoInput_ftp_ready(MojoInput *io)
+static boolean MojoInput_ftp_ready(MojoInput *v)
 {
-    return true;  // !!! FIXME: select on the socket...
+    boolean retval = true;
+	struct ftpio *io = (struct ftpio *)v->opaque;
+    if (io->dconn != NULL)
+    {
+        fd_set rfds;
+        struct timeval tv;
+        tv.tv_sec = tv.tv_usec = 0;
+        FD_ZERO(&rfds);
+        FD_SET(io->dconn->sd, &rfds);
+        retval = (select(io->dconn->sd+1, &rfds, NULL, NULL, &tv) > 0);
+    } // if
+    return retval;
 }
 static int64 MojoInput_ftp_tell(MojoInput *v)
 {

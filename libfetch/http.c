@@ -137,9 +137,20 @@ struct httpio
 
 
 #if __MOJOSETUP__
-static boolean MojoInput_http_ready(MojoInput *io)
+static boolean MojoInput_http_ready(MojoInput *v)
 {
-    return true;  // !!! FIXME: select on the socket...
+    boolean retval = false;
+	struct httpio *io = (struct httpio *)v->opaque;
+    if (io->conn != NULL)
+    {
+        fd_set rfds;
+        struct timeval tv;
+        tv.tv_sec = tv.tv_usec = 0;
+        FD_ZERO(&rfds);
+        FD_SET(io->conn->sd, &rfds);
+        retval = (select(io->conn->sd+1, &rfds, NULL, NULL, &tv) > 0);
+    } // if
+    return retval;
 }
 static boolean MojoInput_http_seek(MojoInput *v, uint64 pos)
 {

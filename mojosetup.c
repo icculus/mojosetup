@@ -9,7 +9,7 @@
 #define TEST_ARCHIVE_CODE 0
 int MojoSetup_testArchiveCode(int argc, char **argv);
 
-#define TEST_NETWORK_CODE 0
+#define TEST_NETWORK_CODE 1
 int MojoSetup_testNetworkCode(int argc, char **argv);
 
 
@@ -349,7 +349,6 @@ int fatal(const char *fmt, ...)
     free(buf);
 
     //GGui->status(_("There were errors. Click 'OK' to clean up and exit."));
-    //MojoLua_runFunction("errorcleanup");
     MojoLua_callProcedure("revertinstall");
 
     deinitEverything();
@@ -536,7 +535,7 @@ int MojoSetup_testArchiveCode(int argc, char **argv)
 int MojoSetup_testNetworkCode(int argc, char **argv)
 {
     int i;
-    printf("Testing networking code...\n\n");
+    fprintf(stderr, "Testing networking code...\n\n");
     for (i = 1; i < argc; i++)
     {
         static char buf[64 * 1024];
@@ -550,14 +549,36 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
             continue;
         } // if
 
-        printf("Ready to read (%lld) bytes.\n\n", (long long) io->length(io));
-        while ((br = io->read(io, buf, sizeof (buf))) > 0)
-            fwrite(buf, br, 1, stdout);
+        fprintf(stderr, "Ready to read (%lld) bytes.\n",
+                (long long) io->length(io));
+
+        do
+        {
+            uint32 start = MojoPlatform_ticks();
+            if (!io->ready(io))
+            {
+                fprintf(stderr, "Not ready!\n");
+                while (!io->ready(io))
+                    MojoPlatform_sleep(100);
+                fprintf(stderr, "took about %d ticks to get ready\n",
+                        (int) (MojoPlatform_ticks() - start));
+            } // if
+
+            start = MojoPlatform_ticks();
+            br = io->read(io, buf, sizeof (buf));
+            fprintf(stderr, "read blocked for about %d ticks\n",
+                    (int) (MojoPlatform_ticks() - start));
+            if (br > 0)
+            {
+                fprintf(stderr, "read %lld bytes\n", (long long) br);
+                fwrite(buf, br, 1, stdout);
+            } // if
+        } while (br > 0);
 
         if (br < 0)
-            fprintf(stderr, "\n\n\n---- ERROR IN TRANSMISSION. ----\n\n");
+            fprintf(stderr, "ERROR IN TRANSMISSION.\n\n");
         else
-            printf("\n\n\n---- TRANSMISSION COMPLETE! ----\n\n");
+            fprintf(stderr, "TRANSMISSION COMPLETE!\n\n");
 
         io->close(io);
     } // for
