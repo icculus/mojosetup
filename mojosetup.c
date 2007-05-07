@@ -31,6 +31,73 @@ MojoSetupEntryPoints GEntryPoints =
 int GArgc = 0;
 const char **GArgv = NULL;
 
+static char *crashedmsg = NULL;
+static char *termedmsg = NULL;
+
+void MojoSetup_crashed(void)
+{
+    if (crashedmsg == NULL)
+        panic("BUG: crash at startup");
+    else
+        fatal(crashedmsg);
+} // MojoSetup_crash
+
+
+void MojoSetup_terminated(void)
+{
+    if (termedmsg == NULL)  // no translation yet.
+        panic("The installer has been stopped by the system.");
+    else
+        fatal(termedmsg);
+} // MojoSetup_crash
+
+
+static boolean initEverything(void)
+{
+    MojoLog_initLogging();
+
+    logInfo("MojoSetup starting up...");
+
+    // We have to panic on errors until the GUI is ready. Try to make things
+    //  "succeed" unless they are catastrophic, and report problems later.
+
+    // Start with the base archive work, since it might have GUI plugins.
+    //  None of these panic() calls are localized, since localization isn't
+    //  functional until MojoLua_initLua() succeeds.
+    if (!MojoArchive_initBaseArchive())
+        panic("Initial setup failed. Cannot continue.");
+
+    else if (!MojoGui_initGuiPlugin())
+        panic("Initial GUI setup failed. Cannot continue.");
+
+    else if (!MojoLua_initLua())
+        panic("Initial Lua setup failed. Cannot continue.");
+
+    crashedmsg = xstrdup(_("The installer has crashed due to a bug."));
+    termedmsg = xstrdup(_("The installer has been stopped by the system."));
+
+    return true;
+} // initEverything
+
+
+static void deinitEverything(void)
+{
+    char *tmp = NULL;
+
+    logInfo("MojoSetup shutting down...");
+    MojoLua_deinitLua();
+    MojoGui_deinitGuiPlugin();
+    MojoArchive_deinitBaseArchive();
+    MojoLog_deinitLogging();
+
+    tmp = crashedmsg;
+    crashedmsg = NULL;
+    free(tmp);
+    tmp = termedmsg;
+    termedmsg = NULL;
+    free(tmp);
+} // deinitEverything
+
 
 boolean cmdline(const char *arg)
 {
@@ -247,11 +314,18 @@ uint32 profile(const char *what, uint32 start_time)
 
 int fatal(const char *fmt, ...)
 {
+    static boolean in_fatal = false;
     size_t len = 128;
-    char *buf = xmalloc(len);
+    char *buf = NULL;
     int rc = 0;
     va_list ap;
 
+    if (in_fatal)
+        return panic("BUG: fatal() called more than once!");
+
+    in_fatal = true;
+
+    buf = xmalloc(len);
     va_start(ap, fmt);
     rc = vsnprintf(buf, len, fmt, ap);
     va_end(ap);
@@ -360,42 +434,6 @@ char *xstrdup(const char *str)
     strcpy(retval, str);
     return retval;
 } // xstrdup
-
-
-
-boolean initEverything(void)
-{
-    MojoLog_initLogging();
-
-    logInfo("MojoSetup starting up...");
-
-    // We have to panic on errors until the GUI is ready. Try to make things
-    //  "succeed" unless they are catastrophic, and report problems later.
-
-    // Start with the base archive work, since it might have GUI plugins.
-    //  None of these panic() calls are localized, since localization isn't
-    //  functional until MojoLua_initLua() succeeds.
-    if (!MojoArchive_initBaseArchive())
-        panic("Initial setup failed. Cannot continue.");
-
-    else if (!MojoGui_initGuiPlugin())
-        panic("Initial GUI setup failed. Cannot continue.");
-
-    else if (!MojoLua_initLua())
-        panic("Initial Lua setup failed. Cannot continue.");
-
-    return true;
-} // initEverything
-
-
-void deinitEverything(void)
-{
-    logInfo("MojoSetup shutting down...");
-    MojoLua_deinitLua();
-    MojoGui_deinitGuiPlugin();
-    MojoArchive_deinitBaseArchive();
-    MojoLog_deinitLogging();
-} // deinitEverything
 
 
 // This is called from main()/WinMain()/whatever.

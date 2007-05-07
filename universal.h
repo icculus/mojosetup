@@ -77,6 +77,13 @@ int panic(const char *err);
 //  do:  'return fatal("missing config file");' or whatnot.
 int fatal(const char *fmt, ...) ISPRINTF(1,2);
 
+// The platform layer should set up signal/exception handlers before calling
+//  MojoSetup_main(), that will call these functions. "crashed" for bug
+//  signals (SIGSEGV, GPF, etc), and "terminated" for external forces that
+//  destroy the process (SIGKILL, SIGINT, etc). These functions do not return.
+void MojoSetup_crashed(void);
+void MojoSetup_terminated(void);
+
 // Call this to pop up a warning dialog box and block until user hits OK.
 void warn(const char *fmt, ...) ISPRINTF(1,2);
 
@@ -164,9 +171,6 @@ void logWarning(const char *fmt, ...) ISPRINTF(1,2);
 void logError(const char *fmt, ...) ISPRINTF(1,2);
 void logInfo(const char *fmt, ...) ISPRINTF(1,2);
 void logDebug(const char *fmt, ...) ISPRINTF(1,2);
-
-boolean initEverything(void);
-void deinitEverything(void);
 
 // A pointer to this struct is passed to plugins, so they can access
 //  functionality in the base application. (Add to this as you need to.)

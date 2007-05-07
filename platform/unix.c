@@ -15,6 +15,7 @@
 #include <sys/mount.h>
 #include <time.h>
 #include <unistd.h>
+#include <signal.h>
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
@@ -44,15 +45,7 @@ void beos_usleep(unsigned long ticks);
 
 #include "../platform.h"
 
-
 static struct timeval startup_time;
-
-int main(int argc, char **argv)
-{
-    gettimeofday(&startup_time, NULL);
-    return MojoSetup_main(argc, argv);
-} // main
-
 
 static char *getCurrentWorkingDir(void)
 {
@@ -638,6 +631,54 @@ void MojoPlatform_dlclose(void *lib)
 
     dlclose(lib);
 } // MojoPlatform_dlclose
+
+
+
+static void signal_catcher(int sig)
+{
+    static boolean first_shot = true;
+    if (first_shot)
+    {
+        first_shot = false;
+        logError("Caught signal #%d", sig);
+    } // if
+} // signal_catcher
+
+static void crash_catcher(int sig)
+{
+    signal_catcher(sig);
+    MojoSetup_crashed();
+} // crash_catcher
+
+static void termination_catcher(int sig)
+{
+    signal_catcher(sig);
+    MojoSetup_terminated();
+} // termination_catcher
+
+
+static void install_signals(void)
+{
+    static int crash_sigs[] = { SIGSEGV, SIGILL, SIGBUS, SIGFPE, SIGTRAP };
+    static int term_sigs[] = { SIGQUIT, SIGINT, SIGTERM, SIGHUP };
+    static int ignore_sigs[] = { SIGPIPE };
+    int i;
+
+    for (i = 0; i < STATICARRAYLEN(crash_sigs); i++)
+        signal(crash_sigs[i], crash_catcher);
+    for (i = 0; i < STATICARRAYLEN(term_sigs); i++)
+        signal(term_sigs[i], termination_catcher);
+    for (i = 0; i < STATICARRAYLEN(ignore_sigs); i++)
+        signal(ignore_sigs[i], SIG_IGN);
+} // install_signals
+
+
+int main(int argc, char **argv)
+{
+    gettimeofday(&startup_time, NULL);
+    install_signals();
+    return MojoSetup_main(argc, argv);
+} // main
 
 // end of unix.c ...
 

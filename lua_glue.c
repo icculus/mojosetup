@@ -1106,6 +1106,14 @@ static int luahook_gui_progress(lua_State *L)
 } // luahook_gui_progress
 
 
+// !!! FIXME: remove this after testing signal handlers.
+static int luahook_crash(lua_State *L)
+{
+    *((char *) 0x0000) = 0;
+    return 0;
+} // luahook_crash
+
+
 static const char *logLevelString(void)
 {
     switch (MojoLog_logLevel)
@@ -1181,6 +1189,9 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_download, "download");
         set_cfunc(luaState, luahook_movefile, "movefile");
         set_cfunc(luaState, luahook_wildcardmatch, "wildcardmatch");
+
+        // !!! FIXME: remove this after testing signal handlers.
+        set_cfunc(luaState, luahook_crash, "crash");
 
         // Set some information strings...
         lua_newtable(luaState);
