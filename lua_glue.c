@@ -134,6 +134,16 @@ static inline int retvalNumber(lua_State *L, lua_Number n)
 } // retvalNumber
 
 
+static inline int retvalLightUserData(lua_State *L, void *data)
+{
+    if (data != NULL)
+        lua_pushlightuserdata(L, data);
+    else
+        lua_pushnil(L);
+    return 1;
+} // retvalLightUserData
+
+
 static inline int snprintfcat(char **ptr, size_t *len, const char *fmt, ...)
 {
     int bw = 0;
@@ -600,15 +610,11 @@ static int luahook_writefile(lua_State *L)
     MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
     const char *path = luaL_checkstring(L, 2);
     boolean retval = false;
-
-    if (archive != NULL)
+    MojoInput *in = archive->openCurrentEntry(archive);
+    if (in != NULL)
     {
-        MojoInput *in = archive->openCurrentEntry(archive);
-        if (in != NULL)
-        {
-            retval = MojoInput_toPhysicalFile(in, path, archive->prevEnum.perms,
+        retval = MojoInput_toPhysicalFile(in, path, archive->prevEnum.perms,
                                               writeCallback, L);
-        } // if
     } // if
 
     return retvalBoolean(L, retval);
@@ -631,8 +637,7 @@ static int luahook_download(lua_State *L)
 static int luahook_archive_fromdir(lua_State *L)
 {
     const char *path = luaL_checkstring(L, 1);
-    lua_pushlightuserdata(L, MojoArchive_newFromDirectory(path));
-    return 1;
+    return retvalLightUserData(L, MojoArchive_newFromDirectory(path));
 } // luahook_archive_fromdir
 
 
@@ -643,12 +648,7 @@ static int luahook_archive_fromfile(lua_State *L)
     MojoArchive *archive = NULL;
     if (io != NULL)
         archive = MojoArchive_newFromInput(io, path);
-
-    if (archive != NULL)
-        lua_pushlightuserdata(L, archive);
-    else
-        lua_pushnil(L);
-    return 1;
+    return retvalLightUserData(L, archive);
 } // luahook_archive_fromfile
 
 
@@ -659,12 +659,7 @@ static int luahook_archive_fromentry(lua_State *L)
     MojoArchive *archive = NULL;
     if (io != NULL)
         archive = MojoArchive_newFromInput(io, ar->prevEnum.filename);
-
-    if (archive != NULL)
-        lua_pushlightuserdata(L, archive);
-    else
-        lua_pushnil(L);
-    return 1;
+    return retvalLightUserData(L, archive);
 } // luahook_archive_fromentry
 
 

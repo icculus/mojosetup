@@ -541,6 +541,7 @@ local function do_install(install)
     stages[#stages+1] = function(thisstage, maxstage)
         if MojoSetup.files.downloads ~= nil then
             -- !!! FIXME: id will cause problems for download resume
+            -- !!! FIXME: id will chop filename extension
             local id = 0
             for file,option in pairs(MojoSetup.files.downloads) do
                 local f = MojoSetup.destination .. "/.mojosetup_tmp/downloads"
@@ -562,10 +563,12 @@ local function do_install(install)
                     return MojoSetup.gui.progress(ptype, component, percent, item)
                 end
 
+                MojoSetup.loginfo("Download '" .. url .. "' to '" .. f .. "'")
                 if not MojoSetup.download(url, f, callback) then
                     -- !!! FIXME: formatting!
                     MojoSetup.fatal(_("file download failed!"))
                 end
+                MojoSetup.downloads[#MojoSetup.downloads+1] = f
             end
         end
         return true
@@ -611,8 +614,12 @@ local function do_install(install)
         end
 
         if MojoSetup.files.downloads ~= nil then
+            local id = 0
             for file,option in pairs(MojoSetup.files.downloads) do
-                install_basepath(basepath, file, option)
+                local f = MojoSetup.destination .. "/.mojosetup_tmp/downloads"
+                f = f .. "/" .. id
+                id = id + 1
+                install_basepath(f, file, option)
             end
         end
 
@@ -647,6 +654,7 @@ local function do_install(install)
 
     MojoSetup.installed_files = {}
     MojoSetup.rollbacks = {}
+    MojoSetup.downloads = {}
 
     local i = 1
     while MojoSetup.stages[i] ~= nil do
@@ -674,11 +682,13 @@ local function do_install(install)
 
     -- Successful install, so delete conflicts we no longer need to rollback.
     delete_files(MojoSetup.rollbacks)
+    delete_files(MojoSetup.downloads)
 
     -- !!! FIXME: nuke scratch files (downloaded files, rollbacks, etc)...
 
     -- Don't let future errors delete files from successful installs...
     MojoSetup.installed_files = nil
+    MojoSetup.downloads = nil
     MojoSetup.rollbacks = nil
 
     MojoSetup.gui.stop()

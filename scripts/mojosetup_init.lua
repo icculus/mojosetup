@@ -44,6 +44,8 @@ function MojoSetup.shutdown ()
             MojoSetup.loginfo("Deleting " .. v)
             -- unlink(v)
         end
+        --- !!! FIXME: delete downloads.
+        --- !!! FIXME: do rollbacks.
     end
 end
 
