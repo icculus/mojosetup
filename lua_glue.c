@@ -433,9 +433,6 @@ static int luahook_fatal(lua_State *L)
     if (errstr == NULL)
         errstr = _("Unknown error");
     return fatal(errstr);  // doesn't actually return.
-    const char *err = luaL_checkstring(L, 1);
-    fatal(err);
-    return 0;
 } // luahook_fatal
 
 
