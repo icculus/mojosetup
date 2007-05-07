@@ -333,7 +333,7 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
                                       int percent, const char *item)
 {
     const uint32 now = entry->ticks();
-    if ((lastType == NULL) || (strcmp(lastType, type) == 0))
+    if ((lastType == NULL) || (strcmp(lastType, type) != 0))
     {
         percentTicks = 0;
         lastPercent = -1;
@@ -342,7 +342,7 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
         printf("%s\n", type);
     } // if
 
-    if ((lastComponent == NULL) || (strcmp(lastComponent, component) == 0))
+    if ((lastComponent == NULL) || (strcmp(lastComponent, component) != 0))
     {
         percentTicks = 0;
         free(lastComponent);
