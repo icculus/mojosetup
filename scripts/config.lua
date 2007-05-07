@@ -11,6 +11,21 @@
 -- So here's the actual configuration...we used loki_setup's xml schema
 --  as a rough guideline.
 
+-- You can define functions like in any other Lua script. For example, here's
+--  a function that figures out how many bytes are in a megabyte, so you don't
+--  have to list exact values in Setup.Option's "bytes" attribute.
+local function megabytes(num)
+    return num * 1024 * 1024
+end
+
+-- And naturally, functions can build on others. It's a programming language,
+--  after all! But if you don't want to screw with programming, you can treat
+--  this strictly as a config file. This just gives you flexibility if you
+--  need it.
+local function gigabytes(num)
+    return megabytes(num) * 1024
+end
+
 Setup.Package
 {
     id = "mygame",
@@ -67,7 +82,7 @@ Setup.Package
         value = true,
         required = true,
         disabled = false,
-        size = "600M",
+        bytes = megabytes(600),
         description = "Base Install",
 
         -- File(s) to install.
@@ -114,23 +129,23 @@ Setup.Package
             Setup.Option
             {
                 value = string.match(MojoSetup.info.locale, "^en_") ~= nil,
-                size = "10M",
+                bytes = megabytes(10),
                 description = "English",
-                Setup.File { source="base://Lang/English.zip" },
+                Setup.File { source = "base:///Lang/English.zip" },
             },
             Setup.Option
             {
                 value = string.match(MojoSetup.info.locale, "^fr_") ~= nil,
-                size = "10M",
+                bytes = megabytes(10),
                 description = "French",
-                Setup.File { source="base://Lang/French.zip" },
+                Setup.File { source = "base:///Lang/French.zip" },
             },
             Setup.Option
             {
                 value = string.match(MojoSetup.info.locale, "^de_") ~= nil,
-                size = "10M",
+                bytes = megabytes(10),
                 description = "German",
-                Setup.File { source="base://Lang/German.zip" },
+                Setup.File { source = "base:///Lang/German.zip" },
             },
         },
     },
@@ -140,14 +155,14 @@ Setup.Package
         value = true,
         required = false,
         disabled = false,
-        size = "20M",
+        bytes = 19384292,
         description = "Downloadable extras",
 
         -- File(s) to install.
         Setup.File
         {
             destination = "MyGame/MyGame.app",
-            source = { "http://hostname.dom/extras/extras.zip" },
+            source = "http://hostname.dom/extras/extras.zip",
         },
     },
 }

@@ -188,7 +188,15 @@ local function mustBeStringOrTableOfStrings(fnname, elem, val)
                                 "must be string or table of strings")
         end
     end
+end
 
+local function mustBeStringOrNumber(fnname, elem, val)
+    -- Can be nil...please use mustExist if this is a problem!
+    if val ~= nil then
+        local t = type(val)
+        schema_assert((t == "string") or (t == "number"), fnname, elem,
+                        "must be a string or number")
+    end
 end
 
 local function mustBeValidSplashPos(fnname, elem, val)
@@ -438,7 +446,7 @@ function Setup.Option(tab)
         { "value", false, mustBeBool },
         { "required", false, mustBeBool },
         { "disabled", false, mustBeBool },
-        { "size", nil, mustBeString, cantBeEmpty },
+        { "bytes", nil, mustExist, mustBeNumber },
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
     })
 end
