@@ -28,6 +28,7 @@
 
 #if __MOJOSETUP__
 #include "mojosetup_libfetch.h"
+#include <pthread.h>
 #endif
 
 #include <sys/cdefs.h>
@@ -778,10 +779,283 @@ boolean ishexnumber(char ch)
              ((ch >= 'A') && (ch <= 'F')) );
 } // ishexnumber
 
+
+// This is a workaround because libfetch is a pain to make non-blocking.
+//  The ring buffer code is from my OpenAL implementation:
+//     http://icculus.org/al_osx/
+
+typedef struct
+{
+    uint8 *buffer;
+    uint32 size;
+    uint32 write;
+    uint32 read;
+    uint32 used;
+} MojoRing;
+
+static MojoRing *MojoRing_new(uint32 size)
+{
+    MojoRing *ring = (MojoRing *) xmalloc(sizeof (MojoRing));
+    ring->buffer = (uint8 *) xmalloc(size);
+    ring->size = size;
+    ring->write = 0;
+    ring->read = 0;
+    ring->used = 0;
+    return ring;
+} // MojoRing_new
+
+static void MojoRing_free(MojoRing *ring)
+{
+    free(ring->buffer);
+    free(ring);
+} // MojoRing_free
+
+uint32 MojoRing_availableForGet(MojoRing *ring)
+{
+    return(ring->used);
+} // MojoRing_size
+
+uint32 MojoRing_availableForPut(MojoRing *ring)
+{
+    return ring->size - ring->used;
+} // MojoRing_size
+
+void MojoRing_put(MojoRing *ring, uint8 *data, uint32 size)
+{
+    uint32 cpy;
+    uint32 avail;
+
+    if (!size)   // just in case...
+        return;
+
+    // Putting more data than ring buffer holds in total? Replace it all.
+    if (size > ring->size)
+    {
+        ring->write = 0;
+        ring->read = 0;
+        ring->used = ring->size;
+        memcpy(ring->buffer, data + (size - ring->size), ring->size);
+        return;
+    } // if
+
+    // Buffer overflow? Push read pointer to oldest sample not overwritten...
+    avail = ring->size - ring->used;
+    if (size > avail)
+    {
+        ring->read += size - avail;
+        if (ring->read > ring->size)
+            ring->read -= ring->size;
+    } // if
+
+    // Clip to end of buffer and copy first block...
+    cpy = ring->size - ring->write;
+    if (size < cpy)
+        cpy = size;
+    if (cpy) memcpy(ring->buffer + ring->write, data, cpy);
+
+    // Wrap around to front of ring buffer and copy remaining data...
+    avail = size - cpy;
+    if (avail) memcpy(ring->buffer, data + cpy, avail);
+
+    // Update write pointer...
+    ring->write += size;
+    if (ring->write > ring->size)
+        ring->write -= ring->size;
+
+    ring->used += size;
+    if (ring->used > ring->size)
+        ring->used = ring->size;
+} // MojoRing_put
+
+uint32 MojoRing_get(MojoRing *ring, uint8 *data, uint32 size)
+{
+    uint32 cpy;
+    uint32 avail = ring->used;
+
+    // Clamp amount to read to available data...
+    if (size > avail)
+        size = avail;
+    
+    // Clip to end of buffer and copy first block...
+    cpy = ring->size - ring->read;
+    if (cpy > size) cpy = size;
+    if (cpy) memcpy(data, ring->buffer + ring->read, cpy);
+    
+    // Wrap around to front of ring buffer and copy remaining data...
+    avail = size - cpy;
+    if (avail) memcpy(data + cpy, ring->buffer, avail);
+
+    // Update read pointer...
+    ring->read += size;
+    if (ring->read > ring->size)
+        ring->read -= ring->size;
+
+    ring->used -= size;
+
+    return(size);  // may have been clamped if there wasn't enough data...
+} // MojoRing_get
+
+
+
+typedef struct
+{
+    MojoInput *io;
+    MojoRing *ring;
+    int64 bytes_read;
+    boolean error;
+    volatile boolean stop;
+    pthread_t tid;
+    pthread_mutex_t mutex;
+} BlockingInfo;
+
+static void *blocking_thread(void *data)
+{
+    uint8 buf[512];
+    BlockingInfo *info = (BlockingInfo *) data;
+    while (!info->stop)
+    {
+        uint8 *ptr = buf;
+        int64 br = info->io->read(info->io, buf, sizeof (buf));
+
+        if (br < 0)
+            info->stop = info->error = true;
+        else if (br == 0)
+            info->stop = true;
+        else
+        {
+            while (br > 0)
+            {
+                uint32 avail;
+                pthread_mutex_lock(&info->mutex);
+                avail = MojoRing_availableForPut(info->ring);
+                if (avail > br)
+                    avail = br;
+                if (avail)
+                    MojoRing_put(info->ring, ptr, avail);
+                pthread_mutex_unlock(&info->mutex);
+                ptr += avail;
+                br -= avail;
+                if (br > 0)
+                    MojoPlatform_sleep(10);
+            } // while
+        } // else
+    } // while
+
+    // info->io is only dereferenced in the main thread after pthread_join().
+    info->io->close(info->io);
+    info->io = NULL;
+
+    return NULL;
+} // blocking_thread
+
+static boolean MojoInput_blocking_ready(MojoInput *io)
+{
+    boolean retval = false;
+    BlockingInfo *info = (BlockingInfo *) io->opaque;
+    if (pthread_mutex_lock(&info->mutex) == 0)
+    {
+        retval = ( (info->io == NULL) ||
+                   (info->error) ||
+                   MojoRing_availableForGet(info->ring) );
+        pthread_mutex_unlock(&info->mutex);
+    } // if
+    return retval;
+} // MojoInput_blocking_ready
+
+static int64 MojoInput_blocking_read(MojoInput *io, void *buf, uint32 bufsize)
+{
+    BlockingInfo *info = (BlockingInfo *) io->opaque;
+    uint32 avail = 0;
+    while (!io->ready(io))
+        MojoPlatform_sleep(100);
+    avail = MojoRing_availableForGet(info->ring);
+    if (avail > 0)
+    {
+        if (avail > bufsize)
+            avail = bufsize;
+        MojoRing_get(info->ring, (uint8 *) buf, avail);
+        info->bytes_read += avail;
+        return avail;
+    } // if
+
+    if (info->error)
+        return -1;
+
+    assert(info->io == NULL);
+    return 0;
+} // MojoInput_blocking_read
+
+static boolean MojoInput_blocking_seek(MojoInput *io, uint64 pos)
+{
+    return -1;
+} // MojoInput_blocking_seek
+
+static int64 MojoInput_blocking_tell(MojoInput *io)
+{
+    BlockingInfo *info = (BlockingInfo *) io->opaque;
+    return info->bytes_read;
+} // MojoInput_blocking_tell
+
+static int64 MojoInput_blocking_length(MojoInput *io)
+{
+    BlockingInfo *info = (BlockingInfo *) io->opaque;
+    return info->io->length(info->io);
+} // MojoInput_blocking_length
+
+static MojoInput* MojoInput_blocking_duplicate(MojoInput *io)
+{
+    return NULL;
+} // MojoInput_blocking_duplicate
+
+static void MojoInput_blocking_free(MojoInput *io)
+{
+    BlockingInfo *info = (BlockingInfo *) io->opaque;
+    if (info->io != NULL)
+        info->io->close(info->io);
+    MojoRing_free(info->ring);
+    pthread_mutex_destroy(&info->mutex);
+    free(info);
+    free(io);
+} // MojoInput_blocking_free
+
+static void MojoInput_blocking_close(MojoInput *io)
+{
+    BlockingInfo *info = (BlockingInfo *) io->opaque;
+    info->stop = true;
+    pthread_join(info->tid, NULL);
+    MojoInput_blocking_free(io);
+} // MojoInput_blocking_close
+
+
+
 MojoInput *MojoInput_fromURL(const char *url)
 {
+    MojoInput *retval = NULL;
     struct url_stat us;
-    return fetchXGetURL(url, &us, "rbp");
+    MojoInput *baseio = fetchXGetURL(url, &us, "rbp");
+    if (baseio != NULL)
+    {
+        BlockingInfo *info = (BlockingInfo *) xmalloc(sizeof (BlockingInfo));
+        info->ring = MojoRing_new(512 * 1024);
+        info->io = baseio;
+        retval = (MojoInput *) xmalloc(sizeof (MojoInput));
+        retval->ready = MojoInput_blocking_ready;
+        retval->read = MojoInput_blocking_read;
+        retval->seek = MojoInput_blocking_seek;
+        retval->tell = MojoInput_blocking_tell;
+        retval->length = MojoInput_blocking_length;
+        retval->duplicate = MojoInput_blocking_duplicate;
+        retval->close = MojoInput_blocking_close;
+        retval->opaque = info;
+
+        if ( (pthread_mutex_init(&info->mutex, NULL) != 0) ||
+             (pthread_create(&info->tid, NULL, blocking_thread, info) != 0) )
+        {
+            MojoInput_blocking_free(retval);
+            retval = NULL;
+        } // if
+    } // if
+    return retval;
 } // MojoInput_fromURL
 #endif
 

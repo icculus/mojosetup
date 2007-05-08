@@ -2,6 +2,7 @@
 #define _INCL_MOJOSETUP_LIBFETCH_H_
 
 #include "../universal.h"
+#include "../platform.h"
 #include "../fileio.h"
 
 #include <stdarg.h>

@@ -559,7 +559,7 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
             {
                 fprintf(stderr, "Not ready!\n");
                 while (!io->ready(io))
-                    MojoPlatform_sleep(100);
+                    MojoPlatform_sleep(10);
                 fprintf(stderr, "took about %d ticks to get ready\n",
                         (int) (MojoPlatform_ticks() - start));
             } // if
