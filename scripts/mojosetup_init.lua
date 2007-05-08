@@ -208,6 +208,8 @@ local function mustBeUrl(fnname, elem, val)
         schema_assert(prot ~= nil, fnname, elem, "URL doesn't have protocol")
         schema_assert(host ~= nil, fnname, elem, "URL doesn't have host")
         schema_assert(path ~= nil, fnname, elem, "URL doesn't have path")
+        local supported = MojoSetup.info.supportedurls[prot]
+        schema_assert(supported, fnname, elem, "URL protocol is unsupported")
     end
 end
 

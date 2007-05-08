@@ -1229,6 +1229,19 @@ boolean MojoLua_initLua(void)
             set_string(luaState, GLuaLicense, "lualicense");
             set_string(luaState, logLevelString(), "loglevel");
             set_string_array(luaState, GArgc, GArgv, "argv");
+            lua_newtable(luaState);
+                set_string(luaState, "base", "base");
+                set_string(luaState, "media", "media");
+                #if SUPPORT_URL_FTP
+                set_string(luaState, "ftp", "ftp");
+                #endif
+                #if SUPPORT_URL_HTTP
+                set_string(luaState, "http", "http");
+                #endif
+                #if SUPPORT_URL_HTTP
+                set_string(luaState, "https", "https");
+                #endif
+            lua_setfield(luaState, -2, "supportedurls");
         lua_setfield(luaState, -2, "info");
 
         // Set the platform functions...
