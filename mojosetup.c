@@ -539,6 +539,7 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
     for (i = 1; i < argc; i++)
     {
         static char buf[64 * 1024];
+        uint32 start = 0;
         const char *url = argv[i];
         int64 br = 0;
         printf("\n\nFetching '%s' ...\n", url);
@@ -549,12 +550,18 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
             continue;
         } // if
 
+        start = MojoPlatform_ticks();
+        while (!io->ready(io))
+            MojoPlatform_sleep(10);
+        fprintf(stderr, "took about %d ticks to get started\n",
+                (int) (MojoPlatform_ticks() - start));
+
         fprintf(stderr, "Ready to read (%lld) bytes.\n",
                 (long long) io->length(io));
 
         do
         {
-            uint32 start = MojoPlatform_ticks();
+            start = MojoPlatform_ticks();
             if (!io->ready(io))
             {
                 fprintf(stderr, "Not ready!\n");

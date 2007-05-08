@@ -899,9 +899,10 @@ uint32 MojoRing_get(MojoRing *ring, uint8 *data, uint32 size)
 
 typedef struct
 {
-    MojoInput *io;
+    const char *url;
     MojoRing *ring;
     int64 bytes_read;
+    int64 length;
     boolean error;
     volatile boolean stop;
     pthread_t tid;
@@ -910,12 +911,35 @@ typedef struct
 
 static void *blocking_thread(void *data)
 {
+    struct url_stat us;
     uint8 buf[512];
     BlockingInfo *info = (BlockingInfo *) data;
+
+    // !!! FIXME: This function can hang until the connect() or read() times
+    // !!! FIXME:  out, without any way to stop it. ready() can deal with
+    // !!! FIXME:  the blocking reads, but closing the socket has to wait
+    // !!! FIXME:  for a pthread_join, and thus can block for a LONG time.
+    // !!! FIXME: This is only a problem if the user wants to cancel a
+    // !!! FIXME:  download, but it needs to be addressed. Moving libfetch
+    // !!! FIXME:  to non-blocking sockets will fix this and let me flush
+    // !!! FIXME:  all this heroic coding, too.
+
+    MojoInput *io = fetchXGetURL(info->url, &us, "rbp");
+    if (io != NULL)
+    {
+        if (!info->stop)
+            info->length = io->length(io);
+    } // if
+    else
+    {
+        info->error = true;
+        info->stop = true;
+    } // else
+
     while (!info->stop)
     {
         uint8 *ptr = buf;
-        int64 br = info->io->read(info->io, buf, sizeof (buf));
+        int64 br = io->read(io, buf, sizeof (buf));
 
         if (br < 0)
             info->stop = info->error = true;
@@ -941,9 +965,8 @@ static void *blocking_thread(void *data)
         } // else
     } // while
 
-    // info->io is only dereferenced in the main thread after pthread_join().
-    info->io->close(info->io);
-    info->io = NULL;
+    if (io != NULL)
+        io->close(io);
 
     return NULL;
 } // blocking_thread
@@ -954,8 +977,7 @@ static boolean MojoInput_blocking_ready(MojoInput *io)
     BlockingInfo *info = (BlockingInfo *) io->opaque;
     if (pthread_mutex_lock(&info->mutex) == 0)
     {
-        retval = ( (info->io == NULL) ||
-                   (info->error) ||
+        retval = ( (info->stop) || (info->error) ||
                    MojoRing_availableForGet(info->ring) );
         pthread_mutex_unlock(&info->mutex);
     } // if
@@ -981,7 +1003,7 @@ static int64 MojoInput_blocking_read(MojoInput *io, void *buf, uint32 bufsize)
     if (info->error)
         return -1;
 
-    assert(info->io == NULL);
+    assert(info->stop);
     return 0;
 } // MojoInput_blocking_read
 
@@ -999,7 +1021,7 @@ static int64 MojoInput_blocking_tell(MojoInput *io)
 static int64 MojoInput_blocking_length(MojoInput *io)
 {
     BlockingInfo *info = (BlockingInfo *) io->opaque;
-    return info->io->length(info->io);
+    return info->length;
 } // MojoInput_blocking_length
 
 static MojoInput* MojoInput_blocking_duplicate(MojoInput *io)
@@ -1010,10 +1032,9 @@ static MojoInput* MojoInput_blocking_duplicate(MojoInput *io)
 static void MojoInput_blocking_free(MojoInput *io)
 {
     BlockingInfo *info = (BlockingInfo *) io->opaque;
-    if (info->io != NULL)
-        info->io->close(info->io);
     MojoRing_free(info->ring);
     pthread_mutex_destroy(&info->mutex);
+    free((void *) info->url);
     free(info);
     free(io);
 } // MojoInput_blocking_free
@@ -1031,13 +1052,12 @@ static void MojoInput_blocking_close(MojoInput *io)
 MojoInput *MojoInput_fromURL(const char *url)
 {
     MojoInput *retval = NULL;
-    struct url_stat us;
-    MojoInput *baseio = fetchXGetURL(url, &us, "rbp");
-    if (baseio != NULL)
+    if (url != NULL)
     {
         BlockingInfo *info = (BlockingInfo *) xmalloc(sizeof (BlockingInfo));
+        info->url = xstrdup(url);
         info->ring = MojoRing_new(512 * 1024);
-        info->io = baseio;
+        info->length = -1;
         retval = (MojoInput *) xmalloc(sizeof (MojoInput));
         retval->ready = MojoInput_blocking_ready;
         retval->read = MojoInput_blocking_read;
