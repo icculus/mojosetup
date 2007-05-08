@@ -777,5 +777,11 @@ boolean ishexnumber(char ch)
              ((ch >= 'a') && (ch <= 'f')) ||
              ((ch >= 'A') && (ch <= 'F')) );
 } // ishexnumber
+
+MojoInput *MojoInput_fromURL(const char *url)
+{
+    struct url_stat us;
+    return fetchXGetURL(url, &us, "rbp");
+} // MojoInput_fromURL
 #endif
 

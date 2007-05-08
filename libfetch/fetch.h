@@ -95,67 +95,56 @@ struct url_ent {
 __BEGIN_DECLS
 
 /* FILE-specific functions */
-#if __MOJOSETUP__
-MojoInput		*fetchXGetFile(struct url *, struct url_stat *, const char *);
-MojoInput		*fetchGetFile(struct url *, const char *);
-MojoInput		*fetchPutFile(struct url *, const char *);
-#else
+#if !__MOJOSETUP__
 FILE		*fetchXGetFile(struct url *, struct url_stat *, const char *);
 FILE		*fetchGetFile(struct url *, const char *);
 FILE		*fetchPutFile(struct url *, const char *);
-#endif
 int		 fetchStatFile(struct url *, struct url_stat *, const char *);
 struct url_ent	*fetchListFile(struct url *, const char *);
+#endif
 
 /* HTTP-specific functions */
 #if __MOJOSETUP__
 MojoInput		*fetchXGetHTTP(struct url *, struct url_stat *, const char *);
-MojoInput		*fetchGetHTTP(struct url *, const char *);
-MojoInput		*fetchPutHTTP(struct url *, const char *);
 #else
 FILE		*fetchXGetHTTP(struct url *, struct url_stat *, const char *);
 FILE		*fetchGetHTTP(struct url *, const char *);
 FILE		*fetchPutHTTP(struct url *, const char *);
-#endif
 int		 fetchStatHTTP(struct url *, struct url_stat *, const char *);
 struct url_ent	*fetchListHTTP(struct url *, const char *);
+#endif
 
 /* FTP-specific functions */
 #if __MOJOSETUP__
 MojoInput		*fetchXGetFTP(struct url *, struct url_stat *, const char *);
-MojoInput		*fetchGetFTP(struct url *, const char *);
-MojoInput		*fetchPutFTP(struct url *, const char *);
 #else
 FILE		*fetchXGetFTP(struct url *, struct url_stat *, const char *);
 FILE		*fetchGetFTP(struct url *, const char *);
 FILE		*fetchPutFTP(struct url *, const char *);
-#endif
 int		 fetchStatFTP(struct url *, struct url_stat *, const char *);
 struct url_ent	*fetchListFTP(struct url *, const char *);
+#endif
 
 /* Generic functions */
 #if __MOJOSETUP__
 MojoInput		*fetchXGetURL(const char *, struct url_stat *, const char *);
-MojoInput		*fetchGetURL(const char *, const char *);
-MojoInput		*fetchPutURL(const char *, const char *);
 #else
 FILE		*fetchXGetURL(const char *, struct url_stat *, const char *);
 FILE		*fetchGetURL(const char *, const char *);
 FILE		*fetchPutURL(const char *, const char *);
-#endif
 int		 fetchStatURL(const char *, struct url_stat *, const char *);
 struct url_ent	*fetchListURL(const char *, const char *);
+#endif
+
 #if __MOJOSETUP__
 MojoInput		*fetchXGet(struct url *, struct url_stat *, const char *);
-MojoInput		*fetchGet(struct url *, const char *);
-MojoInput		*fetchPut(struct url *, const char *);
 #else
 FILE		*fetchXGet(struct url *, struct url_stat *, const char *);
 FILE		*fetchGet(struct url *, const char *);
 FILE		*fetchPut(struct url *, const char *);
-#endif
 int		 fetchStat(struct url *, struct url_stat *, const char *);
 struct url_ent	*fetchList(struct url *, const char *);
+#endif
 
 /* URL parsing */
 struct url	*fetchMakeURL(const char *, const char *, int,

@@ -120,11 +120,8 @@ fetchXGet(struct url *URL, struct url_stat *us, const char *flags)
  * Select the appropriate protocol for the URL scheme, and return a
  * read-only stream connected to the document referenced by the URL.
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
+#if !__MOJOSETUP__
 FILE *
-#endif
 fetchGet(struct url *URL, const char *flags)
 {
 	return (fetchXGet(URL, NULL, flags));
@@ -134,30 +131,12 @@ fetchGet(struct url *URL, const char *flags)
  * Select the appropriate protocol for the URL scheme, and return a
  * write-only stream connected to the document referenced by the URL.
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
 FILE *
-#endif
 fetchPut(struct url *URL, const char *flags)
 {
 	int direct;
 
 	direct = CHECK_FLAG('d');
-#if __MOJOSETUP__
-    #if SUPPORT_URL_FTP
-	if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
-		return (fetchPutFTP(URL, flags));
-    #endif
-    #if SUPPORT_URL_HTTP
-	if (strcasecmp(URL->scheme, SCHEME_HTTP) == 0)
-		return (fetchPutHTTP(URL, flags));
-    #endif
-    #if SUPPORT_URL_HTTPS
-	if (strcasecmp(URL->scheme, SCHEME_HTTPS) == 0)
-		return (fetchPutHTTP(URL, flags));
-    #endif
-#else
 	if (strcasecmp(URL->scheme, SCHEME_FILE) == 0)
 		return (fetchPutFile(URL, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
@@ -166,7 +145,6 @@ fetchPut(struct url *URL, const char *flags)
 		return (fetchPutHTTP(URL, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_HTTPS) == 0)
 		return (fetchPutHTTP(URL, flags));
-#endif
 	_url_seterr(URL_BAD_SCHEME);
 	return (NULL);
 }
@@ -185,20 +163,6 @@ fetchStat(struct url *URL, struct url_stat *us, const char *flags)
 		us->size = -1;
 		us->atime = us->mtime = 0;
 	}
-#if __MOJOSETUP__
-    #if SUPPORT_URL_FTP
-	if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
-		return (fetchStatFTP(URL, us, flags));
-    #endif
-    #if SUPPORT_URL_HTTP
-	if (strcasecmp(URL->scheme, SCHEME_HTTP) == 0)
-		return (fetchStatHTTP(URL, us, flags));
-    #endif
-    #if SUPPORT_URL_HTTPS
-	if (strcasecmp(URL->scheme, SCHEME_HTTPS) == 0)
-		return (fetchStatHTTP(URL, us, flags));
-    #endif
-#else
 	if (strcasecmp(URL->scheme, SCHEME_FILE) == 0)
 		return (fetchStatFile(URL, us, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
@@ -207,7 +171,6 @@ fetchStat(struct url *URL, struct url_stat *us, const char *flags)
 		return (fetchStatHTTP(URL, us, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_HTTPS) == 0)
 		return (fetchStatHTTP(URL, us, flags));
-#endif
 	_url_seterr(URL_BAD_SCHEME);
 	return (-1);
 }
@@ -222,20 +185,6 @@ fetchList(struct url *URL, const char *flags)
 	int direct;
 
 	direct = CHECK_FLAG('d');
-#if __MOJOSETUP__
-    #if SUPPORT_URL_FTP
-	if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
-		return (fetchListFTP(URL, flags));
-    #endif
-    #if SUPPORT_URL_HTTP
-	if (strcasecmp(URL->scheme, SCHEME_HTTP) == 0)
-		return (fetchListHTTP(URL, flags));
-    #endif
-    #if SUPPORT_URL_HTTPS
-	if (strcasecmp(URL->scheme, SCHEME_HTTPS) == 0)
-		return (fetchListHTTP(URL, flags));
-    #endif
-#else
 	if (strcasecmp(URL->scheme, SCHEME_FILE) == 0)
 		return (fetchListFile(URL, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
@@ -244,10 +193,10 @@ fetchList(struct url *URL, const char *flags)
 		return (fetchListHTTP(URL, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_HTTPS) == 0)
 		return (fetchListHTTP(URL, flags));
-#endif
 	_url_seterr(URL_BAD_SCHEME);
 	return (NULL);
 }
+#endif
 
 /*
  * Attempt to parse the given URL; if successful, call fetchXGet().
@@ -278,41 +227,22 @@ fetchXGetURL(const char *URL, struct url_stat *us, const char *flags)
 /*
  * Attempt to parse the given URL; if successful, call fetchGet().
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
+#if !__MOJOSETUP__
 FILE *
-#endif
 fetchGetURL(const char *URL, const char *flags)
 {
 	return (fetchXGetURL(URL, NULL, flags));
 }
 
-#if __MOJOSETUP__
-MojoInput *MojoInput_fromURL(const char *url)
-{
-    struct url_stat us;
-    return fetchXGetURL(url, &us, "rbp");
-} // MojoInput_fromURL
-#endif
-
 
 /*
  * Attempt to parse the given URL; if successful, call fetchPut().
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
 FILE *
-#endif
 fetchPutURL(const char *URL, const char *flags)
 {
 	struct url *u;
-#if __MOJOSETUP__
-	MojoInput *f = NULL;
-#else
 	FILE *f;
-#endif
 
 	if ((u = fetchParseURL(URL)) == NULL)
 		return (NULL);
@@ -358,6 +288,7 @@ fetchListURL(const char *URL, const char *flags)
 	fetchFreeURL(u);
 	return (ue);
 }
+#endif
 
 /*
  * Make a URL
@@ -541,3 +472,4 @@ fetchFreeURL(struct url *u)
 	free(u->doc);
 	free(u);
 }
+
