@@ -7,7 +7,7 @@
 #undef false
 
 #define BUILDING_EXTERNAL_PLUGIN 1
-#include "../gui.h"
+#include "gui.h"
 
 MOJOGUI_PLUGIN(macosx)
 

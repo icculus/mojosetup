@@ -43,7 +43,7 @@ void beos_usleep(unsigned long ticks);
 #define DLOPEN_ARGS (RTLD_NOW | RTLD_GLOBAL)
 #endif
 
-#include "../platform.h"
+#include "platform.h"
 
 static struct timeval startup_time;
 
