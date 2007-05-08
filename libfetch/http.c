@@ -1314,11 +1314,8 @@ fetchXGetHTTP(struct url *URL, struct url_stat *us, const char *flags)
 /*
  * Retrieve a file by HTTP
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
+#if !__MOJOSETUP__
 FILE *
-#endif
 fetchGetHTTP(struct url *URL, const char *flags)
 {
 	return (fetchXGetHTTP(URL, NULL, flags));
@@ -1327,11 +1324,7 @@ fetchGetHTTP(struct url *URL, const char *flags)
 /*
  * Store a file by HTTP
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
 FILE *
-#endif
 fetchPutHTTP(struct url *URL __unused, const char *flags __unused)
 {
 	warnx("fetchPutHTTP(): not implemented");
@@ -1344,20 +1337,12 @@ fetchPutHTTP(struct url *URL __unused, const char *flags __unused)
 int
 fetchStatHTTP(struct url *URL, struct url_stat *us, const char *flags)
 {
-#if __MOJOSETUP__
-	MojoInput *f = NULL;
-#else
 	FILE *f;
-#endif
 
 	f = _http_request(URL, "HEAD", us, _http_get_proxy(flags), flags);
 	if (f == NULL)
 		return (-1);
-#if __MOJOSETUP__
-	f->close(f);
-#else
 	fclose(f);
-#endif
 	return (0);
 }
 
@@ -1370,6 +1355,7 @@ fetchListHTTP(struct url *url __unused, const char *flags __unused)
 	warnx("fetchListHTTP(): not implemented");
 	return (NULL);
 }
+#endif
 
 #endif
 

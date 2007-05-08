@@ -1333,11 +1333,8 @@ fetchXGetFTP(struct url *url, struct url_stat *us, const char *flags)
 /*
  * Get file
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
+#if !__MOJOSETUP__
 FILE *
-#endif
 fetchGetFTP(struct url *url, const char *flags)
 {
 	return (fetchXGetFTP(url, NULL, flags));
@@ -1346,11 +1343,7 @@ fetchGetFTP(struct url *url, const char *flags)
 /*
  * Put file
  */
-#if __MOJOSETUP__
-MojoInput *
-#else
 FILE *
-#endif
 fetchPutFTP(struct url *url, const char *flags)
 {
 
@@ -1364,11 +1357,7 @@ fetchPutFTP(struct url *url, const char *flags)
 int
 fetchStatFTP(struct url *url, struct url_stat *us, const char *flags)
 {
-#if __MOJOSETUP__
-	MojoInput *f = NULL;
-#else
 	FILE *f;
-#endif
 
 	f = _ftp_request(url, "STAT", us, _ftp_get_proxy(flags), flags);
 	if (f == NULL)
@@ -1386,5 +1375,6 @@ fetchListFTP(struct url *url __unused, const char *flags __unused)
 	return (NULL);
 }
 
+#endif
 #endif
 
