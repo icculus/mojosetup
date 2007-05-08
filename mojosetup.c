@@ -541,6 +541,8 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
         static char buf[64 * 1024];
         uint32 start = 0;
         const char *url = argv[i];
+        int64 length = -1;
+        int64 total_br = 0;
         int64 br = 0;
         printf("\n\nFetching '%s' ...\n", url);
         MojoInput *io = MojoInput_fromURL(url);
@@ -556,8 +558,9 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
         fprintf(stderr, "took about %d ticks to get started\n",
                 (int) (MojoPlatform_ticks() - start));
 
+        length = io->length(io);
         fprintf(stderr, "Ready to read (%lld) bytes.\n",
-                (long long) io->length(io));
+                (long long) length);
 
         do
         {
@@ -577,6 +580,7 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
                     (int) (MojoPlatform_ticks() - start));
             if (br > 0)
             {
+                total_br += br;
                 fprintf(stderr, "read %lld bytes\n", (long long) br);
                 fwrite(buf, br, 1, stdout);
             } // if
@@ -585,8 +589,11 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
         if (br < 0)
             fprintf(stderr, "ERROR IN TRANSMISSION.\n\n");
         else
+        {
             fprintf(stderr, "TRANSMISSION COMPLETE!\n\n");
-
+            fprintf(stderr, "(Read %lld bytes, expected %lld.)\n",
+                    (long long) total_br, length);
+        } // else
         io->close(io);
     } // for
 
