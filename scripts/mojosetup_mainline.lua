@@ -257,7 +257,6 @@ local function install_archive_entry(archive, ent, file, option)
     if dest == nil then
         dest = entdest
     else
-        entdest = string.gsub(entdest, "^.*/", "", 1)
         dest = dest .. "/" .. entdest
     end
 
