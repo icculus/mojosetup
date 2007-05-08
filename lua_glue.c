@@ -557,6 +557,13 @@ static int luahook_cmdlinestr(lua_State *L)
 } // luahook_cmdlinestr
 
 
+static int luahook_truncatenum(lua_State *L)
+{
+    const lua_Number dbl = lua_tonumber(L, 1);
+    return retvalNumber(L, (lua_Number) ((int64) dbl));
+} // luahook_truncatenum
+
+
 static int luahook_wildcardmatch(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
@@ -606,7 +613,8 @@ static int luahook_findmedia(lua_State *L)
 } // luahook_findmedia
 
 
-static boolean writeCallback(uint32 ticks, int64 bw, int64 total, void *data)
+static boolean writeCallback(uint32 ticks, int64 justwrote, int64 bw,
+                             int64 total, void *data)
 {
     boolean retval = false;
     lua_State *L = (lua_State *) data;
@@ -617,9 +625,10 @@ static boolean writeCallback(uint32 ticks, int64 bw, int64 total, void *data)
     {
         lua_pushvalue(L, -1);
         lua_pushnumber(L, (lua_Number) ticks);
+        lua_pushnumber(L, (lua_Number) justwrote);
         lua_pushnumber(L, (lua_Number) bw);
         lua_pushnumber(L, (lua_Number) total);
-        lua_call(L, 3, 1);
+        lua_call(L, 4, 1);
         retval = lua_toboolean(L, -1);
         lua_pop(L, 1);
     } // if
@@ -1212,6 +1221,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_download, "download");
         set_cfunc(luaState, luahook_movefile, "movefile");
         set_cfunc(luaState, luahook_wildcardmatch, "wildcardmatch");
+        set_cfunc(luaState, luahook_truncatenum, "truncatenum");
 
         // !!! FIXME: remove this after testing signal handlers.
         set_cfunc(luaState, luahook_crash, "crash");

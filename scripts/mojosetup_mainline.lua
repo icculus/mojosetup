@@ -83,7 +83,7 @@ local function calc_percent(current, total)
     elseif total < 0 then
         return -1
     end
-    return ((current / total) * 100)
+    return MojoSetup.truncatenum((current / total) * 100)
 end
 
 local function split_path(path)
@@ -161,8 +161,8 @@ local function install_file(path, archive, file, option)
     local fname = string.gsub(path, "^.*/", "", 1)  -- chop the dirs off...
     local ptype = _("Installing")  -- !!! FIXME: localization.
     local component = option.description
-    local callback = function(ticks, bw, total)
-        MojoSetup.written = MojoSetup.written + bw
+    local callback = function(ticks, justwrote, bw, total)
+        MojoSetup.written = MojoSetup.written + justwrote
         local percent = calc_percent(MojoSetup.written,
                                      MojoSetup.totalwrite)
         local item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization

@@ -82,7 +82,6 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
     uint32 start = MojoPlatform_ticks();
     FILE *out = NULL;
     boolean iofailure = false;
-    int64 br = 0;
     int64 flen = 0;
     int64 bw = 0;
 
@@ -98,6 +97,8 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
     {
         while (!iofailure)
         {
+            int64 br = 0;
+
             // If there's a callback, then poll. Otherwise, just block on
             //  the reads from the MojoInput.
             if ((cb != NULL) && (!in->ready(in)))
@@ -120,7 +121,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
 
             if (cb != NULL)
             {
-                if (!cb(MojoPlatform_ticks() - start, bw, flen, data))
+                if (!cb(MojoPlatform_ticks() - start, br, bw, flen, data))
                     iofailure = true;
             } // if
         } // while
