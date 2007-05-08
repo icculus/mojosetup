@@ -3,6 +3,8 @@
 //  are largely POSIX things that are missing from BeOS 5...keeping them here
 //  even on Zeta lets us be binary compatible across everything, I think.
 
+#if PLATFORM_BEOS
+
 #include <stdio.h>
 #include <be/kernel/image.h>
 #include <be/kernel/OS.h>
@@ -36,6 +38,8 @@ void beos_usleep(unsigned long microseconds)
 {
     snooze(microseconds);
 } // beos_usleep
+
+#endif  // PLATFORM_BEOS
 
 // end of beos.c ...
 

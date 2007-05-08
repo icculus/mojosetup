@@ -1,5 +1,4 @@
-// !!! FIXME: TODO...install signal handlers to catch crashes and try to push
-// !!! FIXME:  them through fatal() so we can uninstall if possible.
+#if PLATFORM_UNIX
 
 #if PLATFORM_MACOSX
 #include <Carbon/Carbon.h>
@@ -688,6 +687,8 @@ int main(int argc, char **argv)
     install_signals();
     return MojoSetup_main(argc, argv);
 } // main
+
+#endif  // PLATFORM_UNIX
 
 // end of unix.c ...
 

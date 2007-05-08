@@ -44,7 +44,6 @@ IF(BEOS)
     # !!! FIXME: Workaround for lua issue...fix this better.
     ADD_DEFINITIONS(-D_setjmp=setjmp)
     ADD_DEFINITIONS(-D_longjmp=longjmp)
-    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} platform_beos.c)
 ENDIF(BEOS)
 
 IF(UNIX)
@@ -59,7 +58,6 @@ IF(UNIX)
     IF(NOT MACOSX AND NOT BEOS)
         ADD_DEFINITIONS(-DLUA_USE_DLOPEN=1)
     ENDIF(NOT MACOSX AND NOT BEOS)
-    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} platform_unix.c)
 ENDIF(UNIX)
 
 # See if -fvisibility=hidden is available to us.
@@ -164,6 +162,8 @@ SET(MOJOSETUP_SRCS
     fileio.c
     archive_zip.c
     archive_tar.c
+    platform_unix.c
+    platform_beos.c
     lua_glue.c
     ${LUA_SRCS}
 )
