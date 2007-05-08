@@ -733,9 +733,6 @@ local function do_install(install)
 
     -- !!! FIXME: write out manifest.
 
--- !!! FIXME: remove this after testing signal handlers.
-MojoSetup.crash();
-
     -- Successful install, so delete conflicts we no longer need to rollback.
     delete_files(MojoSetup.rollbacks)
     delete_files(MojoSetup.downloads)
