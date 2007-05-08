@@ -103,9 +103,17 @@ __FBSDID("$FreeBSD: src/lib/libfetch/http.c,v 1.77 2005/08/24 12:28:05 des Exp $
 #define HTTP_BAD_RANGE		416
 #define HTTP_PROTOCOL_ERROR	999
 
+#if __MOJOSETUP__
+#define HTTP_TEMP_REDIRECT	307
+#define HTTP_REDIRECT(xyz) ((xyz) == HTTP_MOVED_PERM \
+			    || (xyz) == HTTP_MOVED_TEMP \
+			    || (xyz) == HTTP_TEMP_REDIRECT \
+			    || (xyz) == HTTP_SEE_OTHER)
+#else
 #define HTTP_REDIRECT(xyz) ((xyz) == HTTP_MOVED_PERM \
 			    || (xyz) == HTTP_MOVED_TEMP \
 			    || (xyz) == HTTP_SEE_OTHER)
+#endif
 
 #define HTTP_ERROR(xyz) ((xyz) > 400 && (xyz) < 599)
 
@@ -1056,6 +1064,9 @@ _http_request(struct url *URL, const char *op, struct url_stat *us,
 			break;
 		case HTTP_MOVED_PERM:
 		case HTTP_MOVED_TEMP:
+        #if __MOJOSETUP__
+		case HTTP_TEMP_REDIRECT:
+        #endif
 		case HTTP_SEE_OTHER:
 			/*
 			 * Not so fine, but we still have to read the
