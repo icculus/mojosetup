@@ -48,6 +48,12 @@ IF(BEOS)
 ENDIF(BEOS)
 
 IF(UNIX)
+    # !!! FIXME: probably not safe long-term.
+    # CMake mailing list had this hack for getting rid of -rdynamic:
+    #   http://public.kitware.com/pipermail/cmake/2006-July/010404.html
+    IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
+    ENDIF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     ADD_DEFINITIONS(-DPLATFORM_UNIX=1)
     ADD_DEFINITIONS(-DLUA_USE_POSIX=1)
     IF(NOT MACOSX AND NOT BEOS)
