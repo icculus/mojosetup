@@ -568,6 +568,7 @@ local function do_install(install)
                 for k,v in pairs(options) do
                     if v.value then
                         process_option(v)
+                        build_source_tables(v)
                     end
                 end
             end
