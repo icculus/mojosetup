@@ -15,6 +15,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <signal.h>
+#include <syslog.h>
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
@@ -554,7 +555,7 @@ char *MojoPlatform_findMedia(const char *uniquefile)
 
 void MojoPlatform_log(const char *str)
 {
-    printf("%s\n", str);
+    syslog(LOG_USER | LOG_INFO, "%s", str);
 } // MojoPlatform_log
 
 
@@ -684,6 +685,8 @@ static void install_signals(void)
 int main(int argc, char **argv)
 {
     gettimeofday(&startup_time, NULL);
+    openlog("mojosetup", LOG_PID, LOG_USER);
+    atexit(closelog);
     install_signals();
     return MojoSetup_main(argc, argv);
 } // main
