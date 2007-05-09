@@ -14,6 +14,7 @@ ENDIF(APPLE AND NOT MACOSX)
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckLibraryExists)
 INCLUDE(CheckCSourceCompiles)
+INCLUDE(CheckCCompilerFlag)
 INCLUDE(TestBigEndian)
 
 ADD_DEFINITIONS(-D__MOJOSETUP__=1)
@@ -60,10 +61,10 @@ IF(UNIX)
     ENDIF(NOT MACOSX AND NOT BEOS)
 ENDIF(UNIX)
 
-# See if -fvisibility=hidden is available to us.
 IF(CMAKE_COMPILER_IS_GNUCC)
     ADD_DEFINITIONS(-pipe -Wall -Werror -fsigned-char)
 
+    # See if -fvisibility=hidden is available to us.
     CHECK_C_SOURCE_COMPILES("
         #if ((defined(__GNUC__)) && (__GNUC__ >= 4))
         int main(int argc, char **argv) { int is_gcc4 = 1; return 0; }
@@ -75,6 +76,13 @@ IF(CMAKE_COMPILER_IS_GNUCC)
     IF(MOJOSETUP_IS_GCC4)
         ADD_DEFINITIONS(-fvisibility=hidden)
     ENDIF(MOJOSETUP_IS_GCC4)
+
+    # See if -fno-stack-protector is available to us.
+    # It doesn't seem to work well, and it adds bulk to the binary.
+    CHECK_C_COMPILER_FLAG("-fno-stack-protector" MOJOSETUP_GCC_HAS_STACKPROT)
+    IF(MOJOSETUP_GCC_HAS_STACKPROT)
+        ADD_DEFINITIONS(-fno-stack-protector)
+    ENDIF(MOJOSETUP_GCC_HAS_STACKPROT)
 ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
 TEST_BIG_ENDIAN(MOJOSETUP_IS_BIGENDIAN)
