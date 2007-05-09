@@ -350,10 +350,10 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
         printf("%s\n", component);
     } // if
 
-    // limit update spam... will only write every two seconds, tops.
+    // limit update spam... will only write every one second, tops.
     if (percentTicks <= now)
     {
-        percentTicks = now + 2000;
+        percentTicks = now + 1000;
         if (percent != lastPercent)
         {
             lastPercent = percent;
