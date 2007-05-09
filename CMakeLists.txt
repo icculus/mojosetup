@@ -346,7 +346,10 @@ ENDIF(MOJOSETUP_URL_FTP)
 IF(MOJOSETUP_NEED_LIBFETCH)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LIBFETCH_SRCS})
     # Had to spin up some threads in libfetch...lame.
-    INCLUDE(FindThreads)
+    # !!! FIXME: CMake will do -lpthread on Mac OS X, but it doesn't need it.
+    IF(NOT MACOSX)
+        FIND_PACKAGE(Threads)
+    ENDIF(NOT MACOSX)
     SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 ENDIF(MOJOSETUP_NEED_LIBFETCH)
 
