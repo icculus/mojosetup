@@ -1194,9 +1194,10 @@ static void registerLuaLibs(lua_State *L)
 // !!! FIXME: platform layer?
 static int luahook_date(lua_State *L)
 {
+    const char *datefmt = "%c";  // workaround stupid gcc warning.
     char buf[128];
     time_t t = time(NULL);
-    strftime(buf, sizeof (buf), "%c", gmtime(&t));
+    strftime(buf, sizeof (buf), datefmt, gmtime(&t));
     return retvalString(L, buf);
 } // luahook_date
 
