@@ -1,3 +1,9 @@
+# The "BINARY SIZE +=" comments note about how much bulk, in kilobytes, a
+#  given option adds to the binary on x86 Linux (built with gcc 3.3.6
+#  MinSizeRel options and stripped, uncompressed). These numbers will vary,
+#  and even on the original test system, become incorrect over time.
+# Only choose options you want/need to squeeze every byte off the download.
+
 PROJECT(MojoSetup)
 SET(MOJOSETUP_VERSION 0.1)
 
@@ -183,13 +189,13 @@ SET(MOJOLUAC_SRCS
     ${LUA_DIR}/src/loadlib.c
 )
 
-# Disabling the parser cuts the Lua binary bits by about 35% (about 30 kbytes
-#  uncompressed on amd64 Linux), plus .luac files are almost always smaller
-#  than the original scripts. The downside is you (and end users in the field)
-#  can't just tweak a script without recompiling it, but even that's not an
-#  unclimbable obstacle.
+# Disabling the parser cuts the Lua binary bits by about 35%, plus .luac files
+#  are almost always smaller than the original scripts. The downside is you
+#  (and end users in the field) can't just tweak a script without recompiling
+#  it, but even that's not an unclimbable obstacle.
 # In reality, you probably want to keep the parser, though, unless you REALLY
 #  must save every single byte in the download.
+# BINARY SIZE += 19
 OPTION(MOJOSETUP_LUA_PARSER "Bigger binary but scripts don't need to be compiled." TRUE)
 IF(MOJOSETUP_LUA_PARSER)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_PARSER_SRCS})
@@ -201,6 +207,7 @@ ENDIF(MOJOSETUP_LUA_PARSER)
 
 # Optional bits of the Lua runtime library...
 
+# BINARY SIZE += 2
 OPTION(MOJOSETUP_LUALIB_TABLE "Add Lua 'table' library" TRUE)
 MARK_AS_ADVANCED(MOJOSETUP_LUALIB_TABLE)
 IF(MOJOSETUP_LUALIB_TABLE)
@@ -208,6 +215,7 @@ IF(MOJOSETUP_LUALIB_TABLE)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/ltablib.c)
 ENDIF(MOJOSETUP_LUALIB_TABLE)
 
+# BINARY SIZE += 4.5
 OPTION(MOJOSETUP_LUALIB_IO "Add Lua 'io' library" TRUE)
 MARK_AS_ADVANCED(MOJOSETUP_LUALIB_IO)
 IF(MOJOSETUP_LUALIB_IO)
@@ -215,6 +223,7 @@ IF(MOJOSETUP_LUALIB_IO)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/liolib.c)
 ENDIF(MOJOSETUP_LUALIB_IO)
 
+# BINARY SIZE += 2.5
 OPTION(MOJOSETUP_LUALIB_OS "Add Lua 'os' library" TRUE)
 MARK_AS_ADVANCED(MOJOSETUP_LUALIB_OS)
 IF(MOJOSETUP_LUALIB_OS)
@@ -222,6 +231,7 @@ IF(MOJOSETUP_LUALIB_OS)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/loslib.c)
 ENDIF(MOJOSETUP_LUALIB_OS)
 
+# BINARY SIZE += 3.5
 OPTION(MOJOSETUP_LUALIB_MATH "Add Lua 'math' library" TRUE)
 MARK_AS_ADVANCED(MOJOSETUP_LUALIB_MATH)
 IF(MOJOSETUP_LUALIB_MATH)
@@ -229,6 +239,7 @@ IF(MOJOSETUP_LUALIB_MATH)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/lmathlib.c)
 ENDIF(MOJOSETUP_LUALIB_MATH)
 
+# BINARY SIZE += 3.5
 OPTION(MOJOSETUP_LUALIB_DB "Add Lua 'db' library" TRUE)
 MARK_AS_ADVANCED(MOJOSETUP_LUALIB_DB)
 IF(MOJOSETUP_LUALIB_DB)
@@ -236,6 +247,7 @@ IF(MOJOSETUP_LUALIB_DB)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/ldblib.c)
 ENDIF(MOJOSETUP_LUALIB_DB)
 
+# BINARY SIZE += 4
 OPTION(MOJOSETUP_LUALIB_PACKAGE "Add Lua 'package' library" TRUE)
 MARK_AS_ADVANCED(MOJOSETUP_LUALIB_PACKAGE)
 IF(MOJOSETUP_LUALIB_PACKAGE)
@@ -246,6 +258,7 @@ ENDIF(MOJOSETUP_LUALIB_PACKAGE)
 
 # GUI plugins...
 
+# BINARY SIZE += 2.5
 OPTION(MOJOSETUP_GUI_STDIO "Enable stdio GUI" TRUE)
 IF(MOJOSETUP_GUI_STDIO)
     ADD_DEFINITIONS(-DSUPPORT_GUI_STDIO=1)
@@ -306,21 +319,26 @@ ENDIF(WINDOWS)
 
 # Archivers...
 
+# BINARY SIZE += 8
 OPTION(MOJOSETUP_ARCHIVE_ZIP "Enable ZIP support" TRUE)
 IF(MOJOSETUP_ARCHIVE_ZIP)
     ADD_DEFINITIONS(-DSUPPORT_ZIP=1)
     SET(MOJOSETUP_NEED_ZLIB TRUE)
 ENDIF(MOJOSETUP_ARCHIVE_ZIP)
 
+# BINARY SIZE += 2
 OPTION(MOJOSETUP_ARCHIVE_TAR "Enable TAR support" TRUE)
 IF(MOJOSETUP_ARCHIVE_TAR)
     ADD_DEFINITIONS(-DSUPPORT_TAR=1)
+
+    # BINARY SIZE += 1.5
     OPTION(MOJOSETUP_ARCHIVE_TAR_GZ "Enable TAR.GZ support" TRUE)
     IF(MOJOSETUP_ARCHIVE_TAR_GZ)
         ADD_DEFINITIONS(-DSUPPORT_TAR_GZ=1)
         SET(MOJOSETUP_NEED_ZLIB TRUE)
     ENDIF(MOJOSETUP_ARCHIVE_TAR_GZ)
 
+    # BINARY SIZE += 1.5
     OPTION(MOJOSETUP_ARCHIVE_TAR_BZ2 "Enable TAR.BZ2 support" TRUE)
     IF(MOJOSETUP_ARCHIVE_TAR_BZ2)
         ADD_DEFINITIONS(-DSUPPORT_TAR_BZ2=1)
@@ -331,18 +349,21 @@ ENDIF(MOJOSETUP_ARCHIVE_TAR)
 
 # Networking...
 
+# BINARY SIZE += 5  ...plus libfetch
 OPTION(MOJOSETUP_URL_HTTP "Enable http:// support" TRUE)
 IF(MOJOSETUP_URL_HTTP)
     ADD_DEFINITIONS(-DSUPPORT_URL_HTTP=1)
     SET(MOJOSETUP_NEED_LIBFETCH TRUE)
 ENDIF(MOJOSETUP_URL_HTTP)
 
+# BINARY SIZE += 9  ...plus libfetch
 OPTION(MOJOSETUP_URL_FTP "Enable ftp://  support" TRUE)
 IF(MOJOSETUP_URL_FTP)
     ADD_DEFINITIONS(-DSUPPORT_URL_FTP=1)
     SET(MOJOSETUP_NEED_LIBFETCH TRUE)
 ENDIF(MOJOSETUP_URL_FTP)
 
+# BINARY SIZE += 10
 IF(MOJOSETUP_NEED_LIBFETCH)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LIBFETCH_SRCS})
     # Had to spin up some threads in libfetch...lame.
@@ -372,6 +393,7 @@ IF(MOJOSETUP_NEED_ZLIB)
         SET(MOJOSETUP_INTERNAL_ZLIB TRUE)
     ENDIF(HAVE_SYSTEM_ZLIB)
 
+    # BINARY SIZE += 50
     IF(MOJOSETUP_INTERNAL_ZLIB)
         INCLUDE_DIRECTORIES(${ZLIB_DIR})
         ADD_DEFINITIONS(-DZ_PREFIX=1)
@@ -397,6 +419,7 @@ IF(MOJOSETUP_NEED_BZLIB)
         SET(MOJOSETUP_INTERNAL_BZLIB TRUE)
     ENDIF(HAVE_SYSTEM_BZLIB)
 
+    # BINARY SIZE += 46
     IF(MOJOSETUP_INTERNAL_BZLIB)
         INCLUDE_DIRECTORIES(${BZLIB_DIR})
         SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${BZLIB_SRCS})
