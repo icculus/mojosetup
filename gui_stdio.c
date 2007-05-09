@@ -13,9 +13,7 @@ CREATE_MOJOGUI_ENTRY_POINT(stdio)
 
 #include <ctype.h>
 
-static char *lastType = NULL;
 static char *lastComponent = NULL;
-static int lastPercent = -1;
 static uint32 percentTicks = 0;
 
 static int read_stdin(char *buf, int len)
@@ -75,11 +73,8 @@ static uint8 MojoGui_stdio_priority(void)
 
 static boolean MojoGui_stdio_init(void)
 {
-    free(lastType);
-    lastType = NULL;
     free(lastComponent);
     lastComponent = NULL;
-    lastPercent = -1;
     percentTicks = 0;
     return true;   // always succeeds.
 } // MojoGui_stdio_init
@@ -333,33 +328,19 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
                                       int percent, const char *item)
 {
     const uint32 now = entry->ticks();
-    if ((lastType == NULL) || (strcmp(lastType, type) != 0))
-    {
-        percentTicks = 0;
-        lastPercent = -1;
-        free(lastType);
-        lastType = entry->xstrdup(type);
-        printf("%s\n", type);
-    } // if
-
     if ((lastComponent == NULL) || (strcmp(lastComponent, component) != 0))
     {
-        percentTicks = 0;
         free(lastComponent);
         lastComponent = entry->xstrdup(component);
-        printf("%s\n", component);
+        printf("%s\n%s\n", type, component);
     } // if
 
     // limit update spam... will only write every one second, tops.
     if (percentTicks <= now)
     {
         percentTicks = now + 1000;
-        if (percent != lastPercent)
-        {
-            lastPercent = percent;
-            // !!! FIXME: localization.
-            printf(entry->_("%s (total %d%%)\n"), item, percent);
-        } // if
+        // !!! FIXME: localization.
+        printf(entry->_("%s (total progress: %d%%)\n"), item, percent);
     } // if
 
     return true;
