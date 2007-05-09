@@ -217,7 +217,7 @@ typedef struct BZIP2info
 
 static MojoInput *make_bzip2_input(MojoInput *origio);
 
-static voidpf mojoBzlib2Alloc(voidpf opaque, int items, int size)
+static void *mojoBzlib2Alloc(void *opaque, int items, int size)
 {
     return xmalloc(items * size);
 } // mojoBzlib2Alloc
@@ -725,7 +725,7 @@ MojoArchive *MojoArchive_createTAR(MojoInput *io)
 
         // BZ2 compressed?
         #if SUPPORT_TAR_BZ2  // bzip2 compressed?
-        else if ((sig[0] == 0x42) && (sig[1] == 0x5A))
+        if ((sig[0] == 0x42) && (sig[1] == 0x5A))
             io = make_bzip2_input(io);
         #endif
     } // if
