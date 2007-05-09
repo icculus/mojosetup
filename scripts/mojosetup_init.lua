@@ -11,8 +11,7 @@
 --  then this code executes to do the heavy lifting. All Lua state should be
 --  sane for the rest of the app once this script successfully completes.
 
--- !!! FIXME: don't use the "os" package.
-MojoSetup.loginfo("MojoSetup Lua initialization at " .. os.date())
+MojoSetup.loginfo("MojoSetup Lua initialization at " .. MojoSetup.date())
 MojoSetup.loginfo("buildver: " .. MojoSetup.info.buildver)
 MojoSetup.loginfo("locale: " .. MojoSetup.info.locale)
 MojoSetup.loginfo("platform: " .. MojoSetup.info.platform)

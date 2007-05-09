@@ -10,6 +10,7 @@
 
 // and some others...
 #include <assert.h>
+#include <time.h>  // !!! FIXME: maybe use this in platform layer?
 
 #ifdef __cplusplus
 extern "C" {

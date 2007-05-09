@@ -1154,6 +1154,53 @@ static const char *logLevelString(void)
 } // logLevelString
 
 
+static void registerLuaLibs(lua_State *L)
+{
+    // We always need the string and base libraries (although base has a
+    //  few we could trim). The rest you can compile in if you want/need them.
+    int i;
+    static const luaL_Reg lualibs[] = {
+        {"", luaopen_base},
+        {LUA_STRLIBNAME, luaopen_string},
+        #if SUPPORT_LUALIB_PACKAGE
+        {LUA_LOADLIBNAME, luaopen_package},
+        #endif
+        #if SUPPORT_LUALIB_TABLE
+        {LUA_TABLIBNAME, luaopen_table},
+        #endif
+        #if SUPPORT_LUALIB_IO
+        {LUA_IOLIBNAME, luaopen_io},
+        #endif
+        #if SUPPORT_LUALIB_OS
+        {LUA_OSLIBNAME, luaopen_os},
+        #endif
+        #if SUPPORT_LUALIB_MATH
+        {LUA_MATHLIBNAME, luaopen_math},
+        #endif
+        #if SUPPORT_LUALIB_DB
+        {LUA_DBLIBNAME, luaopen_debug},
+        #endif
+    };
+
+    for (i = 0; i < STATICARRAYLEN(lualibs); i++)
+    {
+        lua_pushcfunction(L, lualibs[i].func);
+        lua_pushstring(L, lualibs[i].name);
+        lua_call(L, 1, 0);
+    } // for
+} // registerLuaLibs
+
+
+// !!! FIXME: platform layer?
+static int luahook_date(lua_State *L)
+{
+    char buf[128];
+    time_t t = time(NULL);
+    strftime(buf, sizeof (buf), "%c", gmtime(&t));
+    return retvalString(L, buf);
+} // luahook_date
+
+
 boolean MojoLua_initLua(void)
 {
     const char *envr = cmdlinestr("locale", "MOJOSETUP_LOCALE", NULL);
@@ -1186,7 +1233,7 @@ boolean MojoLua_initLua(void)
         return false;
     } // if
 
-    luaL_openlibs(luaState);
+    registerLuaLibs(luaState);
 
     // !!! FIXME: I'd like to change the function name case for the lua hooks.
 
@@ -1214,6 +1261,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_movefile, "movefile");
         set_cfunc(luaState, luahook_wildcardmatch, "wildcardmatch");
         set_cfunc(luaState, luahook_truncatenum, "truncatenum");
+        set_cfunc(luaState, luahook_date, "date");
 
         // Set some information strings...
         lua_newtable(luaState);
