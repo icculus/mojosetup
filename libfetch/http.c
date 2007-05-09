@@ -98,22 +98,16 @@ __FBSDID("$FreeBSD: src/lib/libfetch/http.c,v 1.77 2005/08/24 12:28:05 des Exp $
 #define HTTP_MOVED_PERM		301
 #define HTTP_MOVED_TEMP		302
 #define HTTP_SEE_OTHER		303
+#define HTTP_TEMP_REDIRECT	307
 #define HTTP_NEED_AUTH		401
 #define HTTP_NEED_PROXY_AUTH	407
 #define HTTP_BAD_RANGE		416
 #define HTTP_PROTOCOL_ERROR	999
 
-#if __MOJOSETUP__
-#define HTTP_TEMP_REDIRECT	307
 #define HTTP_REDIRECT(xyz) ((xyz) == HTTP_MOVED_PERM \
 			    || (xyz) == HTTP_MOVED_TEMP \
 			    || (xyz) == HTTP_TEMP_REDIRECT \
 			    || (xyz) == HTTP_SEE_OTHER)
-#else
-#define HTTP_REDIRECT(xyz) ((xyz) == HTTP_MOVED_PERM \
-			    || (xyz) == HTTP_MOVED_TEMP \
-			    || (xyz) == HTTP_SEE_OTHER)
-#endif
 
 #define HTTP_ERROR(xyz) ((xyz) > 400 && (xyz) < 599)
 
