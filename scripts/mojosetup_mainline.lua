@@ -381,6 +381,7 @@ local function install_basepath(basepath, file, option)
     else
         -- Check for archives-in-archives...
         local path = ""
+        local paths = split_path(basepath)
         for i,v in ipairs(paths) do
             local knowngood = path
             path = path .. "/" .. v
