@@ -945,12 +945,16 @@ _http_request(struct url *URL, const char *op, struct url_stat *us,
 
 		/* were we redirected to an FTP URL? */
 		if (purl == NULL && strcmp(url->scheme, SCHEME_FTP) == 0) {
+#if __MOJOSETUP__ && !SUPPORT_URL_FTP
+            conn = NULL;
+            goto ouch;
+#else
 			if (strcmp(op, "GET") == 0)
 				return (_ftp_request(url, "RETR", us, purl, flags));
 			else if (strcmp(op, "HEAD") == 0)
 				return (_ftp_request(url, "STAT", us, purl, flags));
+#endif
 		}
-
 		/* connect to server or proxy */
 		if ((conn = _http_connect(url, purl, flags)) == NULL)
 			goto ouch;
