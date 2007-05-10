@@ -161,18 +161,26 @@ local function install_file(path, archive, file, option)
     local fname = string.gsub(path, "^.*/", "", 1)  -- chop the dirs off...
     local ptype = _("Installing")  -- !!! FIXME: localization.
     local component = option.description
+    local keepgoing = true
     local callback = function(ticks, justwrote, bw, total)
         MojoSetup.written = MojoSetup.written + justwrote
         local percent = calc_percent(MojoSetup.written,
                                      MojoSetup.totalwrite)
         local item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
-        return MojoSetup.gui.progress(ptype, component, percent, item)
+        keepgoing = MojoSetup.gui.progress(ptype, component, percent, item)
+        return keepgoing
     end
 
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
     if not MojoSetup.writefile(archive, path, callback) then
         -- !!! FIXME: formatting!
-        MojoSetup.fatal(_("file creation failed!"))
+        if not keepgoing then
+            MojoSetup.logerror("User cancelled install during file write.")
+            MojoSetup.fatal(_("User cancelled installation."))
+        else
+            MojoSetup.logerror("Failed to create file '" .. path .. "'")
+            MojoSetup.fatal(_("File creation failed!"))
+        end
     end
     MojoSetup.loginfo("Created file '" .. path .. "'")
 end
@@ -182,6 +190,7 @@ local function install_symlink(path, lndest)
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
     if not MojoSetup.platform.symlink(path, lndest) then
         -- !!! FIXME: formatting!
+        MojoSetup.logerror("Failed to create symlink '" .. path .. "'")
         MojoSetup.fatal(_("symlink creation failed!"))
     end
     MojoSetup.loginfo("Created symlink '" .. path .. "' -> '" .. lndest .. "'")
@@ -192,6 +201,7 @@ local function install_directory(path)
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
     if not MojoSetup.platform.mkdir(path) then
         -- !!! FIXME: formatting
+        MojoSetup.logerror("Failed to create dir '" .. path .. "'")
         MojoSetup.fatal(_("mkdir failed"))
     end
     MojoSetup.loginfo("Created directory '" .. path .. "'")
@@ -506,7 +516,17 @@ local function do_install(install)
     if install.destination ~= nil then
         set_destination(install.destination)
     else
-        local recommend = install.recommended_destinations
+        local recommend = nil
+        if install.recommended_destinations ~= nil then
+            recommend = {}
+            for i,v in ipairs(install.recommended_destinations) do
+                -- !!! FIXME: check write access, not exists.
+                if MojoSetup.platform.exists(v) then
+                    recommend[#recommend+1] = v .. "/" .. install.id
+                end
+            end
+        end
+
         -- (recommend) becomes an upvalue in this function.
         stages[#stages+1] = function(thisstage, maxstage)
             local rc, dst
