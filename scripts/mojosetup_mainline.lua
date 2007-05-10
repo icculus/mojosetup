@@ -525,6 +525,10 @@ local function do_install(install)
                     recommend[#recommend+1] = v .. "/" .. install.id
                 end
             end
+
+            if #recommend == 0 then
+                recommend = nil
+            end
         end
 
         -- (recommend) becomes an upvalue in this function.
