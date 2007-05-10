@@ -52,11 +52,11 @@ struct MojoGui
     boolean (*start)(const char *title, const char *splash);
     void (*stop)(void);
     int (*readme)(const char *name, const uint8 *data, size_t len,
-                  boolean can_go_back, boolean can_go_forward);
+                  boolean can_back, boolean can_fwd);
     int (*options)(MojoGuiSetupOptions *opts,
-                   boolean can_go_back, boolean can_go_forward);
+                   boolean can_back, boolean can_fwd);
     char * (*destination)(const char **recommendations, int reccount,
-                          boolean can_go_back, boolean can_go_forward);
+                          boolean can_back, boolean can_fwd);
     boolean (*insertmedia)(const char *medianame);
     boolean (*progress)(const char *type, const char *component,
                         int percent, const char *item);
@@ -90,12 +90,12 @@ static boolean MojoGui_##module##_promptyn(const char *t1, const char *t2); \
 static boolean MojoGui_##module##_start(const char *t, const char *s); \
 static void MojoGui_##module##_stop(void); \
 static int MojoGui_##module##_readme(const char *name, const uint8 *data, \
-                                     size_t len, boolean can_go_back, \
-                                     boolean can_go_forward); \
+                                     size_t len, boolean can_back, \
+                                     boolean can_fwd); \
 static int MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
-                              boolean can_go_back, boolean can_go_forward); \
+                              boolean can_back, boolean can_fwd); \
 static char *MojoGui_##module##_destination(const char **r, int reccount, \
-                           boolean can_go_back, boolean can_go_forward); \
+                           boolean can_back, boolean can_fwd); \
 static boolean MojoGui_##module##_insertmedia(const char *medianame); \
 static boolean MojoGui_##module##_progress(const char *typ, const char *comp, \
                                            int percent, const char *item); \
