@@ -479,6 +479,17 @@ local function do_install(install)
         end
     end
 
+    -- Next stage: show any READMEs.
+    for k,readme in pairs(install.readmes) do
+        local desc = readme.description
+        -- !!! FIXME: pull from archive?
+        local fname = "data/" .. readme.source
+        -- (desc) and (fname) become upvalues in this function.
+        stages[#stages+1] = function(thisstage, maxstage)
+            return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
+        end
+    end
+
     -- Next stage: accept all EULAs. Never lets user step back, so they
     --  either accept or reject and go to the next EULA or stage. Rejection
     --  of any EULA is considered fatal.
@@ -495,17 +506,6 @@ local function do_install(install)
                 end
             end
             return retval
-        end
-    end
-
-    -- Next stage: show any READMEs.
-    for k,readme in pairs(install.readmes) do
-        local desc = readme.description
-        -- !!! FIXME: pull from archive?
-        local fname = "data/" .. readme.source
-        -- (desc) and (fname) become upvalues in this function.
-        stages[#stages+1] = function(thisstage, maxstage)
-            return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
         end
     end
 
