@@ -415,6 +415,16 @@ local function set_destination(dest)
 end
 
 
+local function run_config_defined_hook(func, install)
+    if func ~= nil then
+        local errstr = func(install)
+        if errstr ~= nil then
+            MojoSetup.fatal(errstr)
+        end
+    end
+end
+
+
 local function do_install(install)
     MojoSetup.written = 0
     MojoSetup.totalwrite = 0
@@ -454,10 +464,7 @@ local function do_install(install)
     -- First stage: Make sure installer can run. Always fails or steps forward.
     if install.precheck ~= nil then
         stages[#stages+1] = function ()
-            local errstr = install.precheck()
-            if errstr ~= nil then
-                MojoSetup.fatal(errstr)
-            end
+            run_config_defined_hook(install.precheck, install)
             return 1
         end
     end
@@ -589,6 +596,8 @@ local function do_install(install)
             end
         end
 
+        run_config_defined_hook(install.preflight, install)
+
         MojoSetup.files = {}
         build_source_tables(install)
 
@@ -637,6 +646,8 @@ local function do_install(install)
 
     -- Next stage: actual installation.
     stages[#stages+1] = function(thisstage, maxstage)
+        run_config_defined_hook(install.preinstall)
+
         -- Do stuff on media first, so the user finds out he's missing
         --  disc 3 of 57 as soon as possible...
 
@@ -700,6 +711,8 @@ local function do_install(install)
 
         return 1   -- go to next stage.
     end
+
+    run_config_defined_hook(install.postinstall, install)
 
     -- Next stage: show results gui  (!!! FIXME: write me.)
 
