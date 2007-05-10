@@ -18,14 +18,11 @@ static const MojoGuiEntryPoint staticGui[] =
 #if GUI_STATIC_LINK_STDIO
     MojoGuiPlugin_stdio,
 #endif
-#if GUI_STATIC_LINK_WINDOWS
-    MojoGuiPlugin_windows,
-#endif
 #if GUI_STATIC_LINK_MACOSX
     MojoGuiPlugin_macosx,
 #endif
-#if GUI_STATIC_LINK_GTK_PLUS
-    MojoGuiPlugin_gtkplus,
+#if GUI_STATIC_LINK_GTKPLUS2
+    MojoGuiPlugin_gtkplus2,
 #endif
     NULL
 };
