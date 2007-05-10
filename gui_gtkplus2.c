@@ -1,5 +1,5 @@
 
-// Not only does the GTK+ 2.x API _look_ better, it offers a lot of basic
+// Not only does GTK+ 2.x _look_ better than 1.x, it offers a lot of basic
 //  functionality, like message boxes, that you'd expect to exist in a GUI
 //  toolkit. In GTK+v1, you'd have to roll all that on your own!
 //
@@ -51,8 +51,13 @@ static int run_wizard(const char *name, gint page,
                       boolean can_back, boolean can_fwd)
 {
     int retval = 0;
+    char *markup = g_markup_printf_escaped(
+                        "<span size='large' weight='bold'>%s</span>",
+                        name);
 
-    gtk_label_set_text(GTK_LABEL(pagetitle), name);
+    gtk_label_set_markup(GTK_LABEL(pagetitle), markup);
+    g_free (markup);
+
     gtk_widget_set_sensitive(back, can_back);
     gtk_widget_set_sensitive(next, can_fwd);
     gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), page);
@@ -207,9 +212,9 @@ GtkWidget *create_gtkwindow(const char *title)
 
     pagetitle = gtk_label_new("");
     gtk_widget_show(pagetitle);
-    gtk_box_pack_start(GTK_BOX(box), pagetitle, FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), pagetitle, FALSE, TRUE, 16);
     gtk_label_set_justify(GTK_LABEL(pagetitle), GTK_JUSTIFY_CENTER);
-    gtk_label_set_line_wrap(GTK_LABEL(pagetitle), TRUE);
+    gtk_label_set_line_wrap(GTK_LABEL(pagetitle), FALSE);
 
     widget = gtk_hseparator_new();
     gtk_widget_show(widget);
@@ -218,7 +223,11 @@ GtkWidget *create_gtkwindow(const char *title)
     notebook = gtk_notebook_new();
     gtk_widget_show(notebook);
     gtk_box_pack_start(GTK_BOX(box), notebook, TRUE, TRUE, 0);
+    gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), FALSE);
     gtk_notebook_set_show_border(GTK_NOTEBOOK(notebook), FALSE);
+    gtk_widget_set_size_request(notebook,
+                                (gint) (((float) gdk_screen_width()) * 0.3),
+                                (gint) (((float) gdk_screen_height()) * 0.3));
 
 #if 0
   empty_notebook_page = gtk_vbox_new(FALSE, 0);
@@ -287,9 +296,9 @@ GtkWidget *create_gtkwindow(const char *title)
     gtk_widget_show(widget);
     gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
-    widget = gtk_hbox_new(FALSE, 0);
+    widget = gtk_hbox_new(TRUE, 0);
     gtk_widget_show(widget);
-    gtk_box_pack_start(GTK_BOX(box), widget, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, FALSE, 0);
 
     box = widget;
     cancel = create_button(box, "gtk-cancel", entry->_("Cancel"));
@@ -299,6 +308,7 @@ GtkWidget *create_gtkwindow(const char *title)
     gtk_signal_connect(GTK_OBJECT(window), "delete-event",
                        GTK_SIGNAL_FUNC(signal_delete), NULL);
 
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_widget_show(window);
     return window;
 } // create_gtkwindow
