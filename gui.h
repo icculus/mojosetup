@@ -55,8 +55,8 @@ struct MojoGui
                   boolean can_back, boolean can_fwd);
     int (*options)(MojoGuiSetupOptions *opts,
                    boolean can_back, boolean can_fwd);
-    char * (*destination)(const char **recommendations, int reccount,
-                          boolean can_back, boolean can_fwd);
+    char * (*destination)(const char **recommendations, int recnum,
+                          int *command, boolean can_back, boolean can_fwd);
     boolean (*insertmedia)(const char *medianame);
     boolean (*progress)(const char *type, const char *component,
                         int percent, const char *item);
@@ -94,8 +94,8 @@ static int MojoGui_##module##_readme(const char *name, const uint8 *data, \
                                      boolean can_fwd); \
 static int MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
                               boolean can_back, boolean can_fwd); \
-static char *MojoGui_##module##_destination(const char **r, int reccount, \
-                           boolean can_back, boolean can_fwd); \
+static char *MojoGui_##module##_destination(const char **r, int recnum, \
+                            int *command, boolean can_back, boolean can_fwd); \
 static boolean MojoGui_##module##_insertmedia(const char *medianame); \
 static boolean MojoGui_##module##_progress(const char *typ, const char *comp, \
                                            int percent, const char *item); \

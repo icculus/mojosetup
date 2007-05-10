@@ -137,8 +137,8 @@ static void MojoGui_stdio_stop(void)
 
 
 static int MojoGui_stdio_readme(const char *name, const uint8 *data,
-                                    size_t datalen, boolean can_go_back,
-                                    boolean can_go_forward)
+                                    size_t datalen, boolean can_back,
+                                    boolean can_fwd)
 {
     boolean getout = false;
     int retval = -1;
@@ -148,7 +148,7 @@ static int MojoGui_stdio_readme(const char *name, const uint8 *data,
     while (!getout)
     {
         printf("%s\n%s\n", name, (const char *) data);
-        if ((len = readstr(NULL, buf, sizeof (buf), can_go_back, true)) < 0)
+        if ((len = readstr(NULL, buf, sizeof (buf), can_back, true)) < 0)
             getout = true;
         else if (len == 0)
         {
@@ -231,7 +231,7 @@ static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
 
 
 static int MojoGui_stdio_options(MojoGuiSetupOptions *opts,
-                                 boolean can_go_back, boolean can_go_forward)
+                                 boolean can_back, boolean can_fwd)
 {
     const char *prompt = entry->xstrdup(entry->_("Choose number to change."));
     const char *inst_opts_str = entry->xstrdup(entry->_("Install options:"));
@@ -250,7 +250,7 @@ static int MojoGui_stdio_options(MojoGuiSetupOptions *opts,
         print_options(opts, &line, 1);
         printf("\n");
 
-        if ((len = readstr(prompt, buf, sizeof (buf), can_go_back, true)) < 0)
+        if ((len = readstr(prompt, buf, sizeof (buf), can_back, true)) < 0)
             getout = true;
         else if (len == 0)
         {
@@ -276,8 +276,9 @@ static int MojoGui_stdio_options(MojoGuiSetupOptions *opts,
 } // MojoGui_stdio_options
 
 
-static char *MojoGui_stdio_destination(const char **recommends, int reccount,
-                                       boolean can_go_back, boolean can_go_fwd)
+static char *MojoGui_stdio_destination(const char **recommends, int recnum,
+                                       int *command, boolean can_back,
+                                       boolean can_fwd)
 {
     const char *instdeststr = entry->xstrdup(entry->_("Install destination:"));
     const char *prompt = NULL;
@@ -287,7 +288,9 @@ static char *MojoGui_stdio_destination(const char **recommends, int reccount,
     int len = 0;
     int i = 0;
 
-    if (reccount > 0)
+    *command = -1;
+
+    if (recnum > 0)
         prompt = entry->xstrdup(entry->_("Choose install destination by number, or enter your own."));
     else
         prompt = entry->xstrdup(entry->_("Enter path where files will be installed."));
@@ -295,22 +298,23 @@ static char *MojoGui_stdio_destination(const char **recommends, int reccount,
     while (!getout)
     {
         printf("\n\n%s\n", instdeststr);
-        for (i = 0; i < reccount; i++)
+        for (i = 0; i < recnum; i++)
             printf("  %2d  %s\n", i+1, recommends[i]);
         printf("\n");
 
-        if ((len = readstr(prompt, buf, sizeof (buf), can_go_back, false)) < 0)
+        if ((len = readstr(prompt, buf, sizeof (buf), can_back, false)) < 0)
             getout = true;
         else if (len > 0)
         {
             char *endptr = NULL;
             int target = (int) strtol(buf, &endptr, 10);
             // complete string was a valid number?
-            if ((*endptr == '\0') && (target > 0) && (target <= reccount))
+            if ((*endptr == '\0') && (target > 0) && (target <= recnum))
                 retval = entry->xstrdup(recommends[target-1]);
             else
                 retval = entry->xstrdup(buf);
 
+            *command = 1;
             getout = true;
         } // else
     } // while

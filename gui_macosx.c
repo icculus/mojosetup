@@ -136,8 +136,8 @@ static void MojoGui_macosx_stop(void)
 
 
 static int MojoGui_macosx_readme(const char *name, const uint8 *data,
-                                    size_t len, boolean can_go_back,
-                                    boolean can_go_forward)
+                                    size_t len, boolean can_back,
+                                    boolean can_fwd)
 {
     STUBBED("macosx readme");
     return 1;
@@ -145,18 +145,20 @@ static int MojoGui_macosx_readme(const char *name, const uint8 *data,
 
 
 static int MojoGui_macosx_options(MojoGuiSetupOptions *opts,
-                       boolean can_go_back, boolean can_go_forward)
+                       boolean can_back, boolean can_fwd)
 {
     // !!! FIXME: write me.
     STUBBED("macosx options");
     return 1;
 } // MojoGui_macosx_options
 
-static char *MojoGui_macosx_destination(const char **recommends, int reccount,
-                                        boolean can_go_back, boolean can_go_fwd)
+static char *MojoGui_macosx_destination(const char **recommends, int recnum,
+                                        int *command, boolean can_back,
+                                        boolean can_fwd)
 {
     // !!! FIXME: write me.
     STUBBED("macosx destination");
+    *command = 1;
     return entry->xstrdup("/Applications");
 } // MojoGui_macosx_destination
 

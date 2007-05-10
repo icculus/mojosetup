@@ -502,13 +502,12 @@ local function do_install(install)
         local recommend = install.recommended_destinations
         -- (recommend) becomes an upvalue in this function.
         stages[#stages+1] = function(thisstage, maxstage)
-            local x = MojoSetup.gui.destination(recommend, thisstage, maxstage)
-            -- !!! FIXME:  need back/forward/cancel.
-            if x == nil then
-                return -1   -- go back
+            local rc, dst
+            rc, dst = MojoSetup.gui.destination(recommend, thisstage, maxstage)
+            if rc == 1 then
+                set_destination(dst)
             end
-            set_destination(x)
-            return 1  -- go forward
+            return rc
         end
     end
 

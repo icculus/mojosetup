@@ -338,8 +338,8 @@ static void MojoGui_gtkplus2_stop(void)
 
 
 static int MojoGui_gtkplus2_readme(const char *name, const uint8 *data,
-                                       size_t datalen, boolean can_back,
-                                       boolean can_fwd)
+                                   size_t datalen, boolean can_back,
+                                   boolean can_fwd)
 {
     GtkTextBuffer *textbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(readme));
     gtk_text_buffer_set_text(textbuf, (const gchar *) data, datalen);
@@ -348,15 +348,16 @@ static int MojoGui_gtkplus2_readme(const char *name, const uint8 *data,
 
 
 static int MojoGui_gtkplus2_options(MojoGuiSetupOptions *opts,
-                                   boolean can_back, boolean can_fwd)
+                                    boolean can_back, boolean can_fwd)
 {
     // !!! FIXME: better text.
     return run_wizard(entry->_("Options"), PAGE_OPTIONS, can_back, can_fwd);
 } // MojoGui_gtkplus2_options
 
 
-static char *MojoGui_gtkplus2_destination(const char **recommends, int reccount,
-                                       boolean can_back, boolean can_fwd)
+static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
+                                          int *command, boolean can_back,
+                                          boolean can_fwd)
 {
     // !!! FIXME: better text.
     run_wizard(entry->_("Destination"), PAGE_DESTINATION, can_back, can_fwd);
@@ -380,7 +381,7 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
 
 
 static boolean MojoGui_gtkplus2_progress(const char *type, const char *component,
-                                      int percent, const char *item)
+                                         int percent, const char *item)
 {
     return true;
 } // MojoGui_gtkplus2_progress

@@ -1093,6 +1093,7 @@ static int luahook_gui_destination(lua_State *L)
     char **recommend = NULL;
     size_t reccount = 0;
     char *rc = NULL;
+    int command = 0;
 
     if (lua_istable(L, 1))
     {
@@ -1113,11 +1114,12 @@ static int luahook_gui_destination(lua_State *L)
     } // if
 
     rc = GGui->destination((const char **) recommend, reccount,
-                            can_go_back, can_go_fwd);
+                            &command, can_go_back, can_go_fwd);
 
+    retvalNumber(L, command);
     retvalString(L, rc);  // may push nil.
     free(rc);
-    return 1;
+    return 2;
 } // luahook_gui_destination
 
 
