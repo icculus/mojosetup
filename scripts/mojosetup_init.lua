@@ -281,17 +281,6 @@ local function reform_schema_table(tab)
 end
 
 
--- Add known GUIs to this...
-local textfile_schema =
-{
-    { "description", nil, mustExist, mustBeString, cantBeEmpty },
-    { "ui_generic", nil, mustBeString, cantBeEmpty },
-    { "ui_stdio", nil, mustBeString, cantBeEmpty },
-    { "ui_macosx", nil, mustBeString, cantBeEmpty },
-    { "ui_windows", nil, mustBeString, cantBeEmpty },
-    { "ui_gtkplus", nil, mustBeString, cantBeEmpty },
-}
-
 -- Actual schema elements are below...
 
 function Setup.Package(tab)
