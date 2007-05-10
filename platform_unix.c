@@ -316,6 +316,13 @@ char *MojoPlatform_appBinaryPath(void)
 } // MojoPlatform_appBinaryPath
 
 
+char *MojoPlatform_homedir(void)
+{
+    const char *envr = getenv("HOME");
+    return xstrdup(envr ? envr : "/");
+} // MojoPlatform_homedir
+
+
 // This implementation is a bit naive.
 boolean MojoPlatform_locale(char *buf, size_t len)
 {

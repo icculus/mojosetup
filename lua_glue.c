@@ -1207,6 +1207,7 @@ static int luahook_date(lua_State *L)
 boolean MojoLua_initLua(void)
 {
     const char *envr = cmdlinestr("locale", "MOJOSETUP_LOCALE", NULL);
+    char *homedir = NULL;
     char locale[16];
     char ostype[64];
     char osversion[64];
@@ -1237,6 +1238,8 @@ boolean MojoLua_initLua(void)
     } // if
 
     registerLuaLibs(luaState);
+
+    homedir = MojoPlatform_homedir();
 
     // !!! FIXME: I'd like to change the function name case for the lua hooks.
 
@@ -1278,6 +1281,7 @@ boolean MojoLua_initLua(void)
             set_string(luaState, GMojoSetupLicense, "license");
             set_string(luaState, GLuaLicense, "lualicense");
             set_string(luaState, logLevelString(), "loglevel");
+            set_string(luaState, homedir, "homedir");
             set_string_array(luaState, GArgc, GArgv, "argv");
             lua_newtable(luaState);
                 set_string(luaState, "base", "base");
@@ -1324,6 +1328,8 @@ boolean MojoLua_initLua(void)
             set_cptr(luaState, GBaseArchive, "base");
         lua_setfield(luaState, -2, "archive");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
+
+    free(homedir);
 
     // Set up localization table, if possible.
     MojoLua_runFile("localization");

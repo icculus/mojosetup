@@ -13,6 +13,9 @@ int MojoSetup_main(int argc, char **argv);
 // Caller must free returned string!
 char *MojoPlatform_appBinaryPath(void);
 
+// Caller must free returned string!
+char *MojoPlatform_homedir(void);
+
 uint32 MojoPlatform_ticks(void);
 
 // Make current process kill itself immediately, without any sort of internal
