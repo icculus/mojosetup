@@ -520,9 +520,10 @@ local function do_install(install)
         if install.recommended_destinations ~= nil then
             recommend = {}
             for i,v in ipairs(install.recommended_destinations) do
-                -- !!! FIXME: check write access, not exists.
-                if MojoSetup.platform.exists(v) then
-                    recommend[#recommend+1] = v .. "/" .. install.id
+                if MojoSetup.platform.isdir(v) then
+                    if MojoSetup.platform.writable(v) then
+                        recommend[#recommend+1] = v .. "/" .. install.id
+                    end
                 end
             end
 

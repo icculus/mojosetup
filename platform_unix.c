@@ -503,6 +503,25 @@ boolean MojoPlatform_exists(const char *dir, const char *fname)
 } // MojoPlatform_exists
 
 
+boolean MojoPlatform_writable(const char *fname)
+{
+    return (access(fname, W_OK) == 0);
+} // MojoPlatform_writable
+
+
+boolean MojoPlatform_isdir(const char *dir)
+{
+    boolean retval = false;
+    struct stat statbuf;
+    if (stat(dir, &statbuf) != -1)
+    {
+        if (S_ISDIR(statbuf.st_mode))
+            retval = true;
+    } // if
+    return retval;
+} // MojoPlatform_isdir
+
+
 boolean MojoPlatform_perms(const char *fname, uint16 *p)
 {
     boolean retval = false;

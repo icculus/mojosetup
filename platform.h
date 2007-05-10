@@ -51,6 +51,12 @@ boolean MojoPlatform_rename(const char *src, const char *dst);
 boolean MojoPlatform_exists(const char *dir, const char *fname);
 
 // !!! FIXME: comment me.
+boolean MojoPlatform_writable(const char *fname);
+
+// !!! FIXME: comment me.
+boolean MojoPlatform_isdir(const char *dir);
+
+// !!! FIXME: comment me.
 boolean MojoPlatform_perms(const char *fname, uint16 *p);
 
 // !!! FIXME: comment me.
