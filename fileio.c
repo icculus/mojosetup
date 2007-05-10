@@ -476,6 +476,9 @@ MojoArchive *MojoArchive_initBaseArchive(void)
             else
                 parentdir = ".";  // oh well.
             GBaseArchive = MojoArchive_newFromDirectory(parentdir);
+
+            // !!! FIXME: failing this, maybe default.mojosetup?
+            // !!! FIXME:  maybe a command line?
         } // if
 
         free(basepath);   // appBinaryPath caller free()s this string.
