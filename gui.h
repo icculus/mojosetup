@@ -51,12 +51,12 @@ struct MojoGui
     boolean (*promptyn)(const char *title, const char *text);
     boolean (*start)(const char *title, const char *splash);
     void (*stop)(void);
-    boolean (*readme)(const char *name, const uint8 *data, size_t len,
-                      boolean can_go_back, boolean can_go_forward);
-    boolean (*options)(MojoGuiSetupOptions *opts,
-                       boolean can_go_back, boolean can_go_forward);
+    int (*readme)(const char *name, const uint8 *data, size_t len,
+                  boolean can_go_back, boolean can_go_forward);
+    int (*options)(MojoGuiSetupOptions *opts,
+                   boolean can_go_back, boolean can_go_forward);
     char * (*destination)(const char **recommendations, int reccount,
-                           boolean can_go_back, boolean can_go_forward);
+                          boolean can_go_back, boolean can_go_forward);
     boolean (*insertmedia)(const char *medianame);
     boolean (*progress)(const char *type, const char *component,
                         int percent, const char *item);
@@ -89,11 +89,11 @@ static void MojoGui_##module##_msgbox(const char *title, const char *text); \
 static boolean MojoGui_##module##_promptyn(const char *t1, const char *t2); \
 static boolean MojoGui_##module##_start(const char *t, const char *s); \
 static void MojoGui_##module##_stop(void); \
-static boolean MojoGui_##module##_readme(const char *name, const uint8 *data, \
-                                    size_t len, boolean can_go_back, \
-                                    boolean can_go_forward); \
-static boolean MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
-                       boolean can_go_back, boolean can_go_forward); \
+static int MojoGui_##module##_readme(const char *name, const uint8 *data, \
+                                     size_t len, boolean can_go_back, \
+                                     boolean can_go_forward); \
+static int MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
+                              boolean can_go_back, boolean can_go_forward); \
 static char *MojoGui_##module##_destination(const char **r, int reccount, \
                            boolean can_go_back, boolean can_go_forward); \
 static boolean MojoGui_##module##_insertmedia(const char *medianame); \

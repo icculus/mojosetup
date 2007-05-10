@@ -136,12 +136,12 @@ static void MojoGui_stdio_stop(void)
 } // MojoGui_stdio_stop
 
 
-static boolean MojoGui_stdio_readme(const char *name, const uint8 *data,
+static int MojoGui_stdio_readme(const char *name, const uint8 *data,
                                     size_t datalen, boolean can_go_back,
                                     boolean can_go_forward)
 {
     boolean getout = false;
-    boolean retval = false;
+    int retval = -1;
     int len = 0;
     char buf[128];
 
@@ -151,7 +151,10 @@ static boolean MojoGui_stdio_readme(const char *name, const uint8 *data,
         if ((len = readstr(NULL, buf, sizeof (buf), can_go_back, true)) < 0)
             getout = true;
         else if (len == 0)
-            getout = retval = true;
+        {
+            getout = true;
+            retval = 1;
+        } // else if
     } // while
 
     return retval;
@@ -227,12 +230,12 @@ static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
 } // print_options
 
 
-static boolean MojoGui_stdio_options(MojoGuiSetupOptions *opts,
-                       boolean can_go_back, boolean can_go_forward)
+static int MojoGui_stdio_options(MojoGuiSetupOptions *opts,
+                                 boolean can_go_back, boolean can_go_forward)
 {
     const char *prompt = entry->xstrdup(entry->_("Choose number to change."));
     const char *inst_opts_str = entry->xstrdup(entry->_("Install options:"));
-    boolean retval = false;
+    int retval = -1;
     boolean getout = false;
     char buf[128];
     int len = 0;
@@ -250,7 +253,10 @@ static boolean MojoGui_stdio_options(MojoGuiSetupOptions *opts,
         if ((len = readstr(prompt, buf, sizeof (buf), can_go_back, true)) < 0)
             getout = true;
         else if (len == 0)
-            retval = getout = true;
+        {
+            getout = true;
+            retval = 1;
+        } // else if
         else
         {
             char *endptr = NULL;

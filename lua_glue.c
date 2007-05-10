@@ -854,7 +854,7 @@ static int luahook_gui_readme(lua_State *L)
     if (data == NULL)
         fatal(_("failed to load file '%s'"), fname);
 
-    lua_pushboolean(L, GGui->readme(name, data, len, can_go_back, can_go_fwd));
+    lua_pushnumber(L, GGui->readme(name, data, len, can_go_back, can_go_fwd));
     free((void *) data);
     return 1;
 } // luahook_gui_readme
@@ -1061,7 +1061,7 @@ static int luahook_gui_options(lua_State *L)
     const int maxstage = luaL_checkint(L, 3);
     const boolean can_go_back = canGoBack(thisstage);
     const boolean can_go_fwd = canGoForward(thisstage, maxstage);
-    boolean rc = true;
+    int rc = 0;
     GuiOptions *opts = NULL;
 
     assert(lua_gettop(L) == 3);
@@ -1080,7 +1080,7 @@ static int luahook_gui_options(lua_State *L)
     done_gui_options(L, opts);  // free C structs, update Lua tables...
     lua_pop(L, 1);  // pop table we created.
 
-    return retvalBoolean(L, rc);
+    return retvalNumber(L, rc);
 } // luahook_gui_options
 
 

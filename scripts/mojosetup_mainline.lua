@@ -426,6 +426,10 @@ local function do_install(install)
     -- !!! FIXME:  I would like everything possible to fail here instead of
     -- !!! FIXME:  when a user happens to pick an option no one tested...
 
+    if install.options ~= nil and install.optiongroups ~= nil then
+        MojoSetup.fatal(_("Config bug: no options"))
+    end
+
     -- This is to save us the trouble of a loop every time we have to
     --  find media by id...
     MojoSetup.media = {}
@@ -454,6 +458,7 @@ local function do_install(install)
             if errstr ~= nil then
                 MojoSetup.fatal(errstr)
             end
+            return 1
         end
     end
 
@@ -466,20 +471,20 @@ local function do_install(install)
 
         -- (desc) and (fname) become an upvalues in this function.
         stages[#stages+1] = function (thisstage, maxstage)
-            if not MojoSetup.gui.readme(desc, fname, thisstage, maxstage) then
-                return false
+            local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
+            if retval == 1 then
+                if not MojoSetup.promptyn(desc, _("Accept this license?")) then
+                    MojoSetup.fatal(_("You must accept the license before you may install"))
+                end
             end
-
-            if not MojoSetup.promptyn(desc, _("Accept this license?")) then
-                MojoSetup.fatal(_("You must accept the license before you may install"))
-            end
-            return true
+            return retval
         end
     end
 
     -- Next stage: show any READMEs.
     for k,readme in pairs(install.readmes) do
         local desc = readme.description
+        -- !!! FIXME: pull from archive?
         local fname = "data/" .. readme.source
         -- (desc) and (fname) become upvalues in this function.
         stages[#stages+1] = function(thisstage, maxstage)
@@ -498,11 +503,12 @@ local function do_install(install)
         -- (recommend) becomes an upvalue in this function.
         stages[#stages+1] = function(thisstage, maxstage)
             local x = MojoSetup.gui.destination(recommend, thisstage, maxstage)
+            -- !!! FIXME:  need back/forward/cancel.
             if x == nil then
-                return false   -- go back
+                return -1   -- go back
             end
             set_destination(x)
-            return true
+            return 1  -- go forward
         end
     end
 
@@ -591,7 +597,7 @@ local function do_install(install)
         --  so it only spits out crap if debug-level logging is enabled.
         MojoSetup.dumptable("MojoSetup.files", MojoSetup.files)
 
-        return true   -- always go forward from non-GUI stage.
+        return 1   -- always go forward from non-GUI stage.
     end
 
     -- Next stage: Download external packages.
@@ -627,7 +633,7 @@ local function do_install(install)
                 MojoSetup.downloads[#MojoSetup.downloads+1] = f
             end
         end
-        return true
+        return 1
     end
 
     -- Next stage: actual installation.
@@ -653,7 +659,7 @@ local function do_install(install)
                 local basepath = MojoSetup.findmedia(media.uniquefile)
                 while basepath == nil do
                     if not MojoSetup.gui.insertmedia(media.description) then
-                        MojoSetup.fatal(_("User cancelled."))  -- !!! FIXME: don't like this.
+                        return 0   -- user cancelled.
                     end
                     basepath = MojoSetup.findmedia(media.uniquefile)
                 end
@@ -693,11 +699,10 @@ local function do_install(install)
             end
         end
 
-        return true   -- go to next stage.
+        return 1   -- go to next stage.
     end
 
-    -- Next stage: show results gui
-        -- On failure, back out changes (make this part of fatal()).
+    -- Next stage: show results gui  (!!! FIXME: write me.)
 
     -- Now make all this happen.
     if not MojoSetup.gui.start(install.description, install.splash) then
@@ -714,22 +719,25 @@ local function do_install(install)
     local i = 1
     while MojoSetup.stages[i] ~= nil do
         local stage = MojoSetup.stages[i]
-        local go_forward = stage(i, #MojoSetup.stages)
+        local rc = stage(i, #MojoSetup.stages)
 
         -- Too many times I forgot to return something.   :)
-        if go_forward == nil then
-            MojoSetup.fatal("Bug in the installer: stage returned nil.")
+        if type(rc) ~= "number" then
+            MojoSetup.fatal(_("BUG: stage returned wrong type."))
         end
 
-        if go_forward then
-            i = i + 1
-        else
+        if rc == 1 then
+            i = i + 1   -- next stage.
+        elseif rc == -1 then
             if i == 1 then
-                MojoSetup.logwarning("Stepped back over start of stages")
-                MojoSetup.fatal(_("Internal error"))
+                MojoSetup.fatal(_("BUG: stepped back over start of stages"))
             else
                 i = i - 1
             end
+        elseif rc == 0 then
+            MojoSetup.fatal(_("User cancelled installation."))
+        else
+            MojoSetup.fatal(_("BUG: stage returned wrong value."))
         end
     end
 
@@ -748,6 +756,7 @@ local function do_install(install)
     MojoSetup.gui.stop()
 
     -- Done with these things. Make them eligible for garbage collection.
+    stages = nil
     MojoSetup.destination = nil
     MojoSetup.scratchdir = nil
     MojoSetup.rollbackdir = nil

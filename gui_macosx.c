@@ -135,25 +135,25 @@ static void MojoGui_macosx_stop(void)
 } // MojoGui_macosx_stop
 
 
-static boolean MojoGui_macosx_readme(const char *name, const uint8 *data,
+static int MojoGui_macosx_readme(const char *name, const uint8 *data,
                                     size_t len, boolean can_go_back,
                                     boolean can_go_forward)
 {
     STUBBED("macosx readme");
-    return true;
+    return 1;
 } // MojoGui_macosx_readme
 
 
-static boolean MojoGui_macosx_options(MojoGuiSetupOptions *opts,
+static int MojoGui_macosx_options(MojoGuiSetupOptions *opts,
                        boolean can_go_back, boolean can_go_forward)
 {
     // !!! FIXME: write me.
     STUBBED("macosx options");
-    return true;
+    return 1;
 } // MojoGui_macosx_options
 
 static char *MojoGui_macosx_destination(const char **recommends, int reccount,
-                                       boolean can_go_back, boolean can_go_fwd)
+                                        boolean can_go_back, boolean can_go_fwd)
 {
     // !!! FIXME: write me.
     STUBBED("macosx destination");
@@ -169,12 +169,12 @@ static boolean MojoGui_macosx_insertmedia(const char *medianame)
                      entry->_("OK"), entry->_("Cancel"));
 } // MojoGui_macosx_insertmedia
 
-static boolean MojoGui_macosx_progress(const char *type, const char *component,
+static int MojoGui_macosx_progress(const char *type, const char *component,
                                        int percent, const char *item)
 {
     // !!! FIXME: write me.
     STUBBED(__FUNCTION__)
-    return true;
+    return 1;
 } // MojoGui_macosx_progress
 
 // end of gui_macosx.c ...
