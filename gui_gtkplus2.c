@@ -24,9 +24,12 @@ CREATE_MOJOGUI_ENTRY_POINT(gtkplus2)
 
 typedef enum
 {
+    PAGE_INTRO,
     PAGE_README,
     PAGE_OPTIONS,
     PAGE_DESTINATION,
+    PAGE_PROGRESS,
+    PAGE_STATUS
 } WizardPages;
 
 static GtkWidget *gtkwindow = NULL;
@@ -37,6 +40,10 @@ static GtkWidget *cancel = NULL;
 static GtkWidget *back = NULL;
 static GtkWidget *next = NULL;
 static GtkWidget *msgbox = NULL;
+static GtkWidget *destination = NULL;
+static GtkWidget *progressbar = NULL;
+static GtkWidget *progresslabel = NULL;
+static GtkWidget *componentlabel = NULL;
 
 static volatile enum
 {
@@ -47,16 +54,15 @@ static volatile enum
 } click_value = CLICK_NONE;
 
 
-static int run_wizard(const char *name, gint page,
-                      boolean can_back, boolean can_fwd)
+static void prepare_wizard(const char *name, gint page,
+                           boolean can_back, boolean can_fwd)
 {
-    int retval = 0;
     char *markup = g_markup_printf_escaped(
                         "<span size='large' weight='bold'>%s</span>",
                         name);
 
     gtk_label_set_markup(GTK_LABEL(pagetitle), markup);
-    g_free (markup);
+    g_free(markup);
 
     gtk_widget_set_sensitive(back, can_back);
     gtk_widget_set_sensitive(next, can_fwd);
@@ -65,12 +71,17 @@ static int run_wizard(const char *name, gint page,
     assert(click_value == CLICK_NONE);
     assert(gtkwindow != NULL);
     assert(msgbox == NULL);
+} // prepare_wizard
 
-    while (click_value == CLICK_NONE)
+
+static int pump_events(void)
+{
+    int retval = 0;
+
+    // signals fired under gtk_main_iteration can change click_value, too.
+    while ( (click_value == CLICK_NONE) && (gtk_events_pending()) )
     {
-        // signals fired under gtk_main_iteration can change click_value, too.
         gtk_main_iteration();
-
         if (click_value == CLICK_CANCEL)
         {
             // !!! FIXME: language.
@@ -83,9 +94,22 @@ static int run_wizard(const char *name, gint page,
         } // if
     } // while
 
-    assert(click_value < CLICK_NONE);
+    assert(click_value <= CLICK_NONE);
     retval = (int) click_value;
     click_value = CLICK_NONE;
+    return retval;
+} // pump_events
+
+
+static int run_wizard(const char *name, gint page,
+                      boolean can_back, boolean can_fwd)
+{
+    int retval = CLICK_NONE;
+    prepare_wizard(name, page, can_back, can_fwd);
+    while (retval == ((int) CLICK_NONE))
+        retval = pump_events();
+
+    assert(retval < ((int) CLICK_NONE));
     return retval;
 } // run_wizard
 
@@ -202,6 +226,7 @@ GtkWidget *create_gtkwindow(const char *title)
     GtkWidget *window;
     GtkWidget *widget;
     GtkWidget *box;
+    GtkWidget *alignment;
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), title);
@@ -229,69 +254,6 @@ GtkWidget *create_gtkwindow(const char *title)
                                 (gint) (((float) gdk_screen_width()) * 0.3),
                                 (gint) (((float) gdk_screen_height()) * 0.3));
 
-#if 0
-  empty_notebook_page = gtk_vbox_new(FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook), empty_notebook_page);
-
-  label1 = gtk_label_new (_("intro"));
-  gtk_widget_show (label1);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 0), label1);
-#endif
-
-    widget = gtk_scrolled_window_new(NULL, NULL);
-    gtk_widget_show(widget);
-    gtk_container_add(GTK_CONTAINER(notebook), widget);
-
-    readme = gtk_text_view_new();
-    gtk_widget_show(readme);
-    gtk_container_add(GTK_CONTAINER(widget), readme);
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(readme), FALSE);
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(readme), GTK_WRAP_WORD);
-    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(readme), FALSE);
-
-#if 0
-  empty_notebook_page = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook), empty_notebook_page);
-
-  label3 = gtk_label_new (_("options"));
-  gtk_widget_show (label3);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 2), label3);
-
-  empty_notebook_page = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook), empty_notebook_page);
-
-  label4 = gtk_label_new (_("destination"));
-  gtk_widget_show (label4);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 3), label4);
-
-  empty_notebook_page = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook), empty_notebook_page);
-
-  label5 = gtk_label_new (_("insertmedia"));
-  gtk_widget_show (label5);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 4), label5);
-
-  empty_notebook_page = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook), empty_notebook_page);
-
-  label6 = gtk_label_new (_("progress"));
-  gtk_widget_show (label6);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 5), label6);
-
-  empty_notebook_page = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (empty_notebook_page);
-  gtk_container_add (GTK_CONTAINER (notebook), empty_notebook_page);
-
-  label7 = gtk_label_new (_("status"));
-  gtk_widget_show (label7);
-  gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), 6), label7);
-#endif
-
     widget = gtk_hseparator_new();
     gtk_widget_show(widget);
     gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
@@ -304,6 +266,80 @@ GtkWidget *create_gtkwindow(const char *title)
     cancel = create_button(box, "gtk-cancel", entry->_("Cancel"));
     back = create_button(box, "gtk-go-back", entry->_("Back"));
     next = create_button(box, "gtk-go-forward", entry->_("Next"));
+
+    // !!! FIXME: intro page.
+    widget = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(widget);
+    gtk_container_add(GTK_CONTAINER(notebook), widget);
+
+    // README/EULA page.
+    widget = gtk_scrolled_window_new(NULL, NULL);
+    gtk_widget_show(widget);
+    gtk_container_add(GTK_CONTAINER(notebook), widget);
+
+    readme = gtk_text_view_new();
+    gtk_widget_show(readme);
+    gtk_container_add(GTK_CONTAINER(widget), readme);
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(readme), FALSE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(readme), GTK_WRAP_WORD);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(readme), FALSE);
+
+    // !!! FIXME: options page.
+    widget = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(widget);
+    gtk_container_add(GTK_CONTAINER(notebook), widget);
+
+    // !!! FIXME: destination page.
+    box = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(box);
+    widget = gtk_label_new("!!! FIXME: this GUI stage is a placeholder");
+    gtk_widget_show(widget);
+    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
+    gtk_label_set_line_wrap(GTK_LABEL(widget), TRUE);
+    widget = gtk_label_new("Choose a path or enter your own.");
+    gtk_widget_show(widget);
+    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
+    gtk_label_set_line_wrap(GTK_LABEL(widget), FALSE);
+    alignment = gtk_alignment_new(0.5, 0.5, 1, 0);
+    gtk_widget_show(alignment);
+    destination = gtk_combo_box_entry_new_text();
+    gtk_widget_show(destination);
+    gtk_container_add(GTK_CONTAINER(alignment), destination);
+    gtk_box_pack_start(GTK_BOX(box), alignment, FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(notebook), box);
+
+    // !!! FIXME: progress page.
+    box = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(box);
+    widget = gtk_label_new("!!! FIXME: this GUI stage is a placeholder");
+    gtk_widget_show(widget);
+    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
+    gtk_label_set_line_wrap(GTK_LABEL(widget), TRUE);
+    componentlabel = gtk_label_new("");
+    gtk_widget_show(componentlabel);
+    gtk_box_pack_start(GTK_BOX(box), componentlabel, FALSE, TRUE, 0);
+    gtk_label_set_justify(GTK_LABEL(componentlabel), GTK_JUSTIFY_LEFT);
+    gtk_label_set_line_wrap(GTK_LABEL(componentlabel), FALSE);
+    alignment = gtk_alignment_new(0.5, 0.5, 1, 0);
+    gtk_widget_show(alignment);
+    progressbar = gtk_progress_bar_new();
+    gtk_widget_show(progressbar);
+    gtk_container_add(GTK_CONTAINER(alignment), progressbar);
+    gtk_box_pack_start(GTK_BOX(box), alignment, FALSE, TRUE, 0);
+    progresslabel = gtk_label_new("");
+    gtk_widget_show(progresslabel);
+    gtk_box_pack_start(GTK_BOX(box), progresslabel, FALSE, TRUE, 0);
+    gtk_label_set_justify(GTK_LABEL(progresslabel), GTK_JUSTIFY_LEFT);
+    gtk_label_set_line_wrap(GTK_LABEL(progresslabel), FALSE);
+    gtk_container_add(GTK_CONTAINER(notebook), box);
+
+    // !!! FIXME: status page.
+    widget = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(widget);
+    gtk_container_add(GTK_CONTAINER(notebook), widget);
 
     gtk_signal_connect(GTK_OBJECT(window), "delete-event",
                        GTK_SIGNAL_FUNC(signal_delete), NULL);
@@ -329,6 +365,10 @@ static void MojoGui_gtkplus2_stop(void)
 
     gtkwindow = NULL;
     pagetitle = NULL;
+    componentlabel = NULL;
+    progresslabel = NULL;
+    progressbar = NULL;
+    destination = NULL;
     notebook = NULL;
     readme = NULL;
     cancel = NULL;
@@ -359,9 +399,31 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
                                           int *command, boolean can_back,
                                           boolean can_fwd)
 {
+    GtkComboBox *combo = GTK_COMBO_BOX(destination);
+    gchar *str = NULL;
+    char *retval = NULL;
+    int i;
+
+    for (i = 0; i < recnum; i++)
+        gtk_combo_box_append_text(combo, recommends[i]);
+
     // !!! FIXME: better text.
-    run_wizard(entry->_("Destination"), PAGE_DESTINATION, can_back, can_fwd);
-    return NULL;
+    *command = run_wizard(entry->_("Destination"), PAGE_DESTINATION,
+                          can_back, can_fwd);
+
+    str = gtk_combo_box_get_active_text(combo);
+    if ((str == NULL) || (*str == '\0'))
+        *command = 0;
+    else
+    {
+        retval = entry->xstrdup(str);
+        g_free(str);
+    } // else
+
+    for (i = recnum-1; i >= 0; i--)
+        gtk_combo_box_remove_text(combo, i);
+
+    return retval;
 } // MojoGui_gtkplus2_destination
 
 
@@ -383,7 +445,27 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
 static boolean MojoGui_gtkplus2_progress(const char *type, const char *component,
                                          int percent, const char *item)
 {
-    return true;
+    static uint32 lastTicks = 0;
+    const uint32 ticks = entry->ticks();
+    int rc;
+
+    if ((ticks - lastTicks) > 200)  // just not to spam this...
+    {
+        GtkProgressBar *progress = GTK_PROGRESS_BAR(progressbar);
+        if (percent < 0)
+            gtk_progress_bar_pulse(progress);
+        else
+            gtk_progress_bar_set_fraction(progress, ((gdouble) percent) / 100.0);
+
+        gtk_label_set_text(GTK_LABEL(componentlabel), component);
+        gtk_label_set_text(GTK_LABEL(progresslabel), item);
+        lastTicks = ticks;
+    } // if
+
+    prepare_wizard(type, PAGE_PROGRESS, false, false);
+    rc = pump_events();
+    assert( (rc == ((int) CLICK_CANCEL)) || (rc == ((int) CLICK_NONE)) );
+    return (rc != CLICK_CANCEL);
 } // MojoGui_gtkplus2_progress
 
 // end of gui_gtkplus2.c ...
