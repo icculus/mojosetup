@@ -480,32 +480,36 @@ local function do_install(install)
     end
 
     -- Next stage: show any READMEs.
-    for k,readme in pairs(install.readmes) do
-        local desc = readme.description
-        -- !!! FIXME: pull from archive?
-        local fname = "data/" .. readme.source
-        -- (desc) and (fname) become upvalues in this function.
-        stages[#stages+1] = function(thisstage, maxstage)
-            return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
+    if install.readmes ~= nil then
+        for k,readme in pairs(install.readmes) do
+            local desc = readme.description
+            -- !!! FIXME: pull from archive?
+            local fname = "data/" .. readme.source
+            -- (desc) and (fname) become upvalues in this function.
+            stages[#stages+1] = function(thisstage, maxstage)
+                return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
+            end
         end
     end
 
     -- Next stage: accept all EULAs. Never lets user step back, so they
     --  either accept or reject and go to the next EULA or stage. Rejection
     --  of any EULA is considered fatal.
-    for k,eula in pairs(install.eulas) do
-        local desc = eula.description
-        local fname = "data/" .. eula.source
+    if install.eulas ~= nil then
+        for k,eula in pairs(install.eulas) do
+            local desc = eula.description
+            local fname = "data/" .. eula.source
 
-        -- (desc) and (fname) become an upvalues in this function.
-        stages[#stages+1] = function (thisstage, maxstage)
-            local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
-            if retval == 1 then
-                if not MojoSetup.promptyn(desc, _("Accept this license?")) then
-                    MojoSetup.fatal(_("You must accept the license before you may install"))
+            -- (desc) and (fname) become an upvalues in this function.
+            stages[#stages+1] = function (thisstage, maxstage)
+                local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
+                if retval == 1 then
+                    if not MojoSetup.promptyn(desc, _("Accept this license?")) then
+                        MojoSetup.fatal(_("You must accept the license before you may install"))
+                    end
                 end
+                return retval
             end
-            return retval
         end
     end
 
