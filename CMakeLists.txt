@@ -162,6 +162,7 @@ SET(LUA_SRCS
     ${LUA_DIR}/src/lauxlib.c
     ${LUA_DIR}/src/lbaselib.c
     ${LUA_DIR}/src/lstrlib.c
+    ${LUA_DIR}/src/ltablib.c
 )
 
 SET(LUA_PARSER_SRCS
@@ -193,7 +194,6 @@ SET(MOJOLUAC_SRCS
     ${LUA_DIR}/src/liolib.c
     ${LUA_DIR}/src/lmathlib.c
     ${LUA_DIR}/src/loslib.c
-    ${LUA_DIR}/src/ltablib.c
     ${LUA_DIR}/src/loadlib.c
 )
 
@@ -214,14 +214,6 @@ ENDIF(MOJOSETUP_LUA_PARSER)
 
 
 # Optional bits of the Lua runtime library...
-
-# BINARY SIZE += 2
-OPTION(MOJOSETUP_LUALIB_TABLE "Add Lua 'table' library" TRUE)
-MARK_AS_ADVANCED(MOJOSETUP_LUALIB_TABLE)
-IF(MOJOSETUP_LUALIB_TABLE)
-    ADD_DEFINITIONS(-DSUPPORT_LUALIB_TABLE=1)
-    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/ltablib.c)
-ENDIF(MOJOSETUP_LUALIB_TABLE)
 
 # BINARY SIZE += 4.5
 OPTION(MOJOSETUP_LUALIB_IO "Add Lua 'io' library" TRUE)
