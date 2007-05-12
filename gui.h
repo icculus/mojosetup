@@ -61,6 +61,7 @@ struct MojoGui
     boolean (*insertmedia)(const char *medianame);
     boolean (*progress)(const char *type, const char *component,
                         int percent, const char *item);
+    void (*final)(const char *msg);
 };
 
 typedef const MojoGui* (*MojoGuiEntryPoint)(int revision,
@@ -100,6 +101,7 @@ static char *MojoGui_##module##_destination(const char **r, int recnum, \
 static boolean MojoGui_##module##_insertmedia(const char *medianame); \
 static boolean MojoGui_##module##_progress(const char *typ, const char *comp, \
                                            int percent, const char *item); \
+static void MojoGui_##module##_final(const char *msg); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \
     if (rev == MOJOGUI_INTERFACE_REVISION) { \
@@ -117,6 +119,7 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_destination, \
             MojoGui_##module##_insertmedia, \
             MojoGui_##module##_progress, \
+            MojoGui_##module##_final, \
         }; \
         entry = e; \
         return &retval; \

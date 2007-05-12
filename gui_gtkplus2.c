@@ -29,7 +29,7 @@ typedef enum
     PAGE_OPTIONS,
     PAGE_DESTINATION,
     PAGE_PROGRESS,
-    PAGE_STATUS
+    PAGE_FINAL
 } WizardPages;
 
 static GtkWidget *gtkwindow = NULL;
@@ -39,10 +39,12 @@ static GtkWidget *readme = NULL;
 static GtkWidget *cancel = NULL;
 static GtkWidget *back = NULL;
 static GtkWidget *next = NULL;
+static GtkWidget *finish = NULL;
 static GtkWidget *msgbox = NULL;
 static GtkWidget *destination = NULL;
 static GtkWidget *progressbar = NULL;
 static GtkWidget *progresslabel = NULL;
+static GtkWidget *finallabel = NULL;
 static GtkWidget *componentlabel = NULL;
 
 static volatile enum
@@ -134,7 +136,7 @@ static void signal_clicked(GtkButton *_button, gpointer data)
         click_value = CLICK_BACK;
     else if (button == cancel)
         click_value = CLICK_CANCEL;
-    else if (button == next)
+    else if ((button == next) || (button == finish))
         click_value = CLICK_NEXT;
     else
     {
@@ -273,6 +275,8 @@ GtkWidget *create_gtkwindow(const char *title)
     cancel = create_button(box, "gtk-cancel", entry->_("Cancel"));
     back = create_button(box, "gtk-go-back", entry->_("Back"));
     next = create_button(box, "gtk-go-forward", entry->_("Next"));
+    finish = create_button(box, "gtk-goto-last", entry->_("Finish"));
+    gtk_widget_hide(finish);
 
     // !!! FIXME: intro page.
     widget = gtk_vbox_new(FALSE, 0);
@@ -343,10 +347,15 @@ GtkWidget *create_gtkwindow(const char *title)
     gtk_label_set_line_wrap(GTK_LABEL(progresslabel), FALSE);
     gtk_container_add(GTK_CONTAINER(notebook), box);
 
-    // !!! FIXME: status page.
+    // !!! FIXME: final page.
     widget = gtk_vbox_new(FALSE, 0);
     gtk_widget_show(widget);
     gtk_container_add(GTK_CONTAINER(notebook), widget);
+    finallabel = gtk_label_new("");
+    gtk_widget_show(finallabel);
+    gtk_box_pack_start(GTK_BOX(widget), finallabel, FALSE, TRUE, 0);
+    gtk_label_set_justify(GTK_LABEL(finallabel), GTK_JUSTIFY_LEFT);
+    gtk_label_set_line_wrap(GTK_LABEL(finallabel), FALSE);
 
     gtk_signal_connect(GTK_OBJECT(window), "delete-event",
                        GTK_SIGNAL_FUNC(signal_delete), NULL);
@@ -373,6 +382,7 @@ static void MojoGui_gtkplus2_stop(void)
     gtkwindow = NULL;
     pagetitle = NULL;
     componentlabel = NULL;
+    finallabel = NULL;
     progresslabel = NULL;
     progressbar = NULL;
     destination = NULL;
@@ -381,6 +391,7 @@ static void MojoGui_gtkplus2_stop(void)
     cancel = NULL;
     back = NULL;
     next = NULL;
+    finish = NULL;
 } // MojoGui_gtkplus2_stop
 
 
@@ -595,6 +606,16 @@ static boolean MojoGui_gtkplus2_progress(const char *type, const char *component
     assert( (rc == ((int) CLICK_CANCEL)) || (rc == ((int) CLICK_NONE)) );
     return (rc != CLICK_CANCEL);
 } // MojoGui_gtkplus2_progress
+
+
+static void MojoGui_gtkplus2_final(const char *msg)
+{
+    gtk_widget_hide(next);
+    gtk_widget_show(finish);
+    gtk_widget_set_sensitive(cancel, FALSE);
+    gtk_label_set_text(GTK_LABEL(finallabel), msg);
+    run_wizard(entry->_("Finish"), PAGE_FINAL, false, true);
+} // MojoGui_gtkplus2_final
 
 // end of gui_gtkplus2.c ...
 

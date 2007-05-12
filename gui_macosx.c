@@ -171,6 +171,7 @@ static boolean MojoGui_macosx_insertmedia(const char *medianame)
                      entry->_("OK"), entry->_("Cancel"));
 } // MojoGui_macosx_insertmedia
 
+
 static int MojoGui_macosx_progress(const char *type, const char *component,
                                        int percent, const char *item)
 {
@@ -178,6 +179,13 @@ static int MojoGui_macosx_progress(const char *type, const char *component,
     STUBBED(__FUNCTION__)
     return 1;
 } // MojoGui_macosx_progress
+
+
+static void MojoGui_macosx_final(const char *msg)
+{
+    // !!! FIXME: write me.
+    STUBBED(__FUNCTION__)
+} // MojoGui_macosx_final
 
 // end of gui_macosx.c ...
 

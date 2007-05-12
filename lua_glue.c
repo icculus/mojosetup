@@ -1163,6 +1163,14 @@ static int luahook_gui_progress(lua_State *L)
 } // luahook_gui_progress
 
 
+static int luahook_gui_final(lua_State *L)
+{
+    const char *msg = luaL_checkstring(L, 1);
+    GGui->final(msg);
+    return 0;
+} // luahook_gui_final
+
+
 static const char *logLevelString(void)
 {
     switch (MojoLog_logLevel)
@@ -1339,6 +1347,7 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_gui_destination, "destination");
             set_cfunc(luaState, luahook_gui_insertmedia, "insertmedia");
             set_cfunc(luaState, luahook_gui_progress, "progress");
+            set_cfunc(luaState, luahook_gui_final, "final");
             set_cfunc(luaState, luahook_gui_stop, "stop");
         lua_setfield(luaState, -2, "gui");
 

@@ -73,8 +73,6 @@ static uint8 MojoGui_stdio_priority(void)
 
 static boolean MojoGui_stdio_init(void)
 {
-    free(lastComponent);
-    lastComponent = NULL;
     percentTicks = 0;
     return true;   // always succeeds.
 } // MojoGui_stdio_init
@@ -82,7 +80,8 @@ static boolean MojoGui_stdio_init(void)
 
 static void MojoGui_stdio_deinit(void)
 {
-    // no-op
+    free(lastComponent);
+    lastComponent = NULL;
 } // MojoGui_stdio_deinit
 
 
@@ -355,6 +354,13 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
 
     return true;
 } // MojoGui_stdio_progress
+
+
+static void MojoGui_stdio_final(const char *msg)
+{
+    printf("%s\n\n", msg);
+    fflush(stdout);
+} // MojoGui_stdio_final
 
 // end of gui_stdio.c ...
 

@@ -68,8 +68,14 @@ end
 
 -- This gets called by fatal()...must be a global function.
 function MojoSetup.revertinstall()
+    -- !!! FIXME: language.
+    if MojoSetup.gui_started then
+        MojoSetup.gui.final(_("There were errors. We will now put things back how we found them and exit."));
+    end
+
     MojoSetup.loginfo("Cleaning up half-finished installation...");
 
+    -- !!! FIXME: callbacks here.
     delete_files(MojoSetup.downloads)
     delete_files(MojoSetup.installed_files)
     do_rollbacks()
@@ -748,12 +754,20 @@ local function do_install(install)
 
     run_config_defined_hook(install.postinstall, install)
 
-    -- Next stage: show results gui  (!!! FIXME: write me.)
+    -- Next stage: show results gui
+    stages[#stages+1] = function(thisstage, maxstage)
+        -- !!! FIXME: language.
+        MojoSetup.gui.final(_("Installation was successful."))
+        return 1  -- go forward.
+    end
+
 
     -- Now make all this happen.
     if not MojoSetup.gui.start(install.description, install.splash) then
         MojoSetup.fatal(_("GUI failed to start"))
     end
+
+    MojoSetup.gui_started = true
 
     -- Make the stages available elsewhere.
     MojoSetup.stages = stages
@@ -800,6 +814,7 @@ local function do_install(install)
     MojoSetup.rollbacks = nil
 
     MojoSetup.gui.stop()
+    MojoSetup.gui_started = nil
 
     -- Done with these things. Make them eligible for garbage collection.
     stages = nil

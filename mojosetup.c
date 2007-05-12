@@ -348,7 +348,6 @@ int fatal(const char *fmt, ...)
     GGui->msgbox(_("Fatal error"), buf);
     free(buf);
 
-    //GGui->status(_("There were errors. Click 'OK' to clean up and exit."));
     MojoLua_callProcedure("revertinstall");
 
     deinitEverything();
