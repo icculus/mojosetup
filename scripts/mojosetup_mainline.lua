@@ -672,8 +672,8 @@ local function do_install(install)
                 local fname = string.gsub(url, "^.*/", "", 1)  -- chop the dirs off...
                 local ptype = _("Downloading")  -- !!! FIXME: localization.
                 local component = option.description
-                local callback = function(ticks, bw, total)
-                    MojoSetup.downloaded = MojoSetup.downloaded + bw
+                local callback = function(ticks, justwrote, bw, total)
+                    MojoSetup.downloaded = MojoSetup.downloaded + justwrote
                     local percent = calc_percent(MojoSetup.downloaded,
                                                  MojoSetup.totaldownload)
                     local item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
