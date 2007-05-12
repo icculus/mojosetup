@@ -1203,11 +1203,9 @@ static void registerLuaLibs(lua_State *L)
     static const luaL_Reg lualibs[] = {
         {"", luaopen_base},
         {LUA_STRLIBNAME, luaopen_string},
+        {LUA_TABLIBNAME, luaopen_table},
         #if SUPPORT_LUALIB_PACKAGE
         {LUA_LOADLIBNAME, luaopen_package},
-        #endif
-        #if SUPPORT_LUALIB_TABLE
-        {LUA_TABLIBNAME, luaopen_table},
         #endif
         #if SUPPORT_LUALIB_IO
         {LUA_IOLIBNAME, luaopen_io},
