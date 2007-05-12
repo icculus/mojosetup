@@ -564,7 +564,7 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
     size_t len = strlen(fmt) + strlen(medianame) + 1;
     char *text = (char *) entry->xmalloc(len);
     snprintf(text, len, fmt, medianame);
-    gint rc = do_msgbox(title, text, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK_CANCEL);
+    gint rc = do_msgbox(title, text, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK_CANCEL);
     return (rc == GTK_RESPONSE_OK);
 } // MojoGui_gtkplus2_insertmedia
 
