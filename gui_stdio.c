@@ -211,19 +211,19 @@ static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
         int i;
         int spacing = 1;
         if (opts->is_group_parent)
-            spacing += 7;
+            spacing += 6;
         else
         {
             (*line)++;
             printf("%2d  [%c]", *line, opts->value ? 'X' : ' ');
         } // else
 
-        for (i = 0; i < ((level*2) + spacing); i++)
+        for (i = 0; i < (level + spacing); i++)
             putchar(' ');
 
-        puts(opts->description);
+        printf("%s%s\n", opts->description, opts->is_group_parent ? ":" : "");
 
-        if (opts->value)
+        if ((opts->value) || (opts->is_group_parent))
             print_options(opts->child, line, level+1);
         print_options(opts->next_sibling, line, level);
     } // if
