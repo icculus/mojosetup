@@ -637,7 +637,7 @@ local function do_install(install)
             if optiongroups ~= nil then
                 for k,v in pairs(optiongroups) do
                     if not v.disabled then
-                        build_source_tables(optiongroups)
+                        build_source_tables(v)
                     end
                 end
             end
