@@ -587,7 +587,10 @@ local function do_install(install)
                 if MojoSetup.files.downloads == nil then
                     MojoSetup.files.downloads = {}
                 end
-                MojoSetup.totaldownload = MojoSetup.totaldownload + option.bytes
+
+                if option.bytes > 0 then
+                    MojoSetup.totaldownload = MojoSetup.totaldownload + option.bytes
+                end
                 MojoSetup.files.downloads[file] = option
             end
         end
@@ -596,7 +599,9 @@ local function do_install(install)
         --  This lets us batch all the things from one CD together,
         --  do all the downloads first, etc.
         local function process_option(option)
-            MojoSetup.totalwrite = MojoSetup.totalwrite + option.bytes
+            if option.bytes > 0 then
+                MojoSetup.totalwrite = MojoSetup.totalwrite + option.bytes
+            end
             if option.files ~= nil then
                 for k,v in pairs(option.files) do
                     process_file(option, v)
