@@ -30,6 +30,7 @@ struct MojoGuiSetupOptions
     boolean is_group_parent;
     uint64 size;
     int opaque;  // GUI drivers shouldn't touch this.
+    void *guiopaque;  // For GUI drivers. App won't touch or free this.
     MojoGuiSetupOptions *next_sibling;
     MojoGuiSetupOptions *child;
 };

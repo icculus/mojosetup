@@ -74,29 +74,35 @@ static void prepare_wizard(const char *name, gint page,
 } // prepare_wizard
 
 
-static int pump_events(void)
+static int wait_event(void)
 {
     int retval = 0;
 
-    // signals fired under gtk_main_iteration can change click_value, too.
-    while ( (click_value == CLICK_NONE) && (gtk_events_pending()) )
+    // signals fired under gtk_main_iteration can change click_value.
+    gtk_main_iteration();
+    if (click_value == CLICK_CANCEL)
     {
-        gtk_main_iteration();
-        if (click_value == CLICK_CANCEL)
-        {
-            // !!! FIXME: language.
-            char *title = entry->xstrdup(entry->_("Stop installation"));
-            char *text = entry->xstrdup(entry->_("Are you sure you want to stop installation?"));
-            if (!MojoGui_gtkplus2_promptyn(title, text))
-                click_value = CLICK_NONE;
-            free(title);
-            free(text);
-        } // if
-    } // while
+        // !!! FIXME: language.
+        char *title = entry->xstrdup(entry->_("Stop installation"));
+        char *text = entry->xstrdup(entry->_("Are you sure you want to stop installation?"));
+        if (!MojoGui_gtkplus2_promptyn(title, text))
+            click_value = CLICK_NONE;
+        free(title);
+        free(text);
+    } // if
 
     assert(click_value <= CLICK_NONE);
     retval = (int) click_value;
     click_value = CLICK_NONE;
+    return retval;
+} // wait_event
+
+
+static int pump_events(void)
+{
+    int retval = (int) CLICK_NONE;
+    while ( (retval == ((int) CLICK_NONE)) && (gtk_events_pending()) )
+        retval = wait_event();
     return retval;
 } // pump_events
 
@@ -107,7 +113,7 @@ static int run_wizard(const char *name, gint page,
     int retval = CLICK_NONE;
     prepare_wizard(name, page, can_back, can_fwd);
     while (retval == ((int) CLICK_NONE))
-        retval = pump_events();
+        retval = wait_event();
 
     assert(retval < ((int) CLICK_NONE));
     return retval;
@@ -285,9 +291,9 @@ GtkWidget *create_gtkwindow(const char *title)
     gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(readme), FALSE);
 
     // !!! FIXME: options page.
-    widget = gtk_vbox_new(FALSE, 0);
-    gtk_widget_show(widget);
-    gtk_container_add(GTK_CONTAINER(notebook), widget);
+    box = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(box);
+    gtk_container_add(GTK_CONTAINER(notebook), box);
 
     // !!! FIXME: destination page.
     box = gtk_vbox_new(FALSE, 0);
@@ -387,11 +393,132 @@ static int MojoGui_gtkplus2_readme(const char *name, const uint8 *data,
 } // MojoGui_gtkplus2_readme
 
 
+static void set_option_tree_sensitivity(MojoGuiSetupOptions *opts, boolean val)
+{
+    if (opts != NULL)
+    {
+        gtk_widget_set_sensitive((GtkWidget *) opts->guiopaque, val);
+        set_option_tree_sensitivity(opts->next_sibling, val);
+        set_option_tree_sensitivity(opts->child, val && opts->value);
+    } // if
+} // set_option_tree_sensitivity
+
+
+static void signal_option_toggled(GtkToggleButton *toggle, gpointer data)
+{
+    MojoGuiSetupOptions *opts = (MojoGuiSetupOptions *) data;
+    const boolean enabled = gtk_toggle_button_get_active(toggle);
+    opts->value = enabled;
+    set_option_tree_sensitivity(opts->child, enabled);
+} // signal_option_toggled
+
+
+static GtkWidget *new_option_level(GtkWidget *box)
+{
+    GtkWidget *alignment = gtk_alignment_new(0.0, 0.5, 0, 0);
+    GtkWidget *retval = gtk_vbox_new(FALSE, 0);
+    gtk_alignment_set_padding(GTK_ALIGNMENT(alignment), 0, 0, 15, 0);
+    gtk_widget_show(alignment);
+    gtk_widget_show(retval);
+    gtk_container_add(GTK_CONTAINER(alignment), retval);
+    gtk_box_pack_start(GTK_BOX(box), alignment, TRUE, TRUE, 0);
+    return retval;
+} // new_option_level
+
+
+static void build_options(MojoGuiSetupOptions *opts, GtkWidget *box,
+                          gboolean sensitive)
+{
+    if (opts != NULL)
+    {
+        GtkWidget *widget;
+        if (opts->is_group_parent)
+        {
+            MojoGuiSetupOptions *kids = opts->child;
+            GtkWidget *childbox = NULL;
+            GtkWidget *alignment = gtk_alignment_new(0.0, 0.5, 0, 0);
+            gtk_widget_show(alignment);
+            widget = gtk_label_new(opts->description);
+            opts->guiopaque = widget;
+            gtk_widget_set_sensitive(widget, sensitive);
+            gtk_widget_show(widget);
+            gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_LEFT);
+            gtk_label_set_line_wrap(GTK_LABEL(widget), FALSE);
+            gtk_container_add(GTK_CONTAINER(alignment), widget);
+            gtk_box_pack_start(GTK_BOX(box), alignment, FALSE, TRUE, 0);
+
+            widget = NULL;
+            childbox = new_option_level(box);
+            while (kids)
+            {
+                widget = gtk_radio_button_new_with_label_from_widget(
+                                                    GTK_RADIO_BUTTON(widget),
+                                                    kids->description);
+                kids->guiopaque = widget;
+                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
+                                             kids->value);
+                gtk_widget_set_sensitive(widget, sensitive);
+                gtk_widget_show(widget);
+                gtk_box_pack_start(GTK_BOX(childbox), widget, FALSE, TRUE, 0);
+                gtk_signal_connect(GTK_OBJECT(widget), "toggled",
+                                 GTK_SIGNAL_FUNC(signal_option_toggled), kids);
+                if (kids->child != NULL)
+                {
+                    build_options(kids->child, new_option_level(childbox),
+                                  sensitive);
+                } // if
+                kids = kids->next_sibling;
+            } // while
+        } // if
+
+        else
+        {
+            widget = gtk_check_button_new_with_label(opts->description);
+            opts->guiopaque = widget;
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
+                                         opts->value);
+            gtk_widget_set_sensitive(widget, sensitive);
+            gtk_widget_show(widget);
+            gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+            gtk_signal_connect(GTK_OBJECT(widget), "toggled",
+                               GTK_SIGNAL_FUNC(signal_option_toggled), opts);
+            if (opts->child != NULL)
+            {
+                build_options(opts->child, new_option_level(box),
+                                ((sensitive) && (opts->value)) );
+            } // if
+        } // else
+
+        build_options(opts->next_sibling, box, sensitive);
+    } // if
+} // build_options
+
+
 static int MojoGui_gtkplus2_options(MojoGuiSetupOptions *opts,
                                     boolean can_back, boolean can_fwd)
 {
+    int retval;
+    GtkWidget *widget;
+    GtkWidget *box;
+    GtkWidget *page;  // this is a vbox.
+
+    page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), PAGE_OPTIONS);
+    box = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(box);
+    gtk_box_pack_start(GTK_BOX(page), box, FALSE, FALSE, 0);
+
+    widget = gtk_label_new("!!! FIXME: this GUI stage is a placeholder");
+    gtk_widget_show(widget);
+    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
+    gtk_label_set_line_wrap(GTK_LABEL(widget), TRUE);
+
+    build_options(opts, box, TRUE);
+
     // !!! FIXME: better text.
-    return run_wizard(entry->_("Options"), PAGE_OPTIONS, can_back, can_fwd);
+    retval = run_wizard(entry->_("Options"), PAGE_OPTIONS, can_back, can_fwd);
+    gtk_widget_destroy(box);
+    return retval;
 } // MojoGui_gtkplus2_options
 
 
