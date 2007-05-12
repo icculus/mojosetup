@@ -881,6 +881,8 @@ static int luahook_gui_stop(lua_State *L)
 } // luahook_gui_stop
 
 
+// !!! FIXME: would like to push all this tree walking into Lua, and just
+// !!! FIXME:  build the final C tree without any validating here.
 typedef MojoGuiSetupOptions GuiOptions;   // a little less chatty.
 
 // forward declare this for recursive magic...
@@ -980,6 +982,13 @@ static inline GuiOptions *cleanup_gui_option_list(GuiOptions *opts,
 
     while (opts != NULL)
     {
+        // !!! FIXME: schema should check?
+        if ((is_group) && (opts->is_group_parent))
+        {
+            fatal("OptionGroup '%s' inside OptionGroup '%s'.",
+                  opts->description, parent->description);
+        } // if
+
         if ((is_group) && (opts->value))
         {
             if (seen_enabled)
