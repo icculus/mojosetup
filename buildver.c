@@ -1,3 +1,11 @@
+/**
+ * MojoSetup; a portable, flexible installation application.
+ *
+ * Please see the file LICENSE.txt in the source's root directory.
+ *
+ *  This file written by Ryan C. Gordon.
+ */
+
 /*
  * This is in a separate file so that we can recompile it every time
  *  without it forcing a recompile on something ccache would otherwise not

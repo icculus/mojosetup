@@ -1,3 +1,10 @@
+-- MojoSetup; a portable, flexible installation application.
+--
+-- Please see the file LICENSE.txt in the source's root directory.
+--
+--  This file written by Ryan C. Gordon.
+
+
 -- This is a setup file. Lines that start with "--" are comments.
 --  This config file is actually just Lua code. Even though you'll only
 --  need a small subset of the language, there's a lot of flexibility

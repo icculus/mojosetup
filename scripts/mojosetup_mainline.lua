@@ -1,3 +1,10 @@
+-- MojoSetup; a portable, flexible installation application.
+--
+-- Please see the file LICENSE.txt in the source's root directory.
+--
+--  This file written by Ryan C. Gordon.
+
+
 -- This is where most of the magic happens. Everything is initialized, and
 --  the user's config script has successfully run. This Lua chunk drives the
 --  main application code.

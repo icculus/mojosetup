@@ -1,3 +1,9 @@
+-- MojoSetup; a portable, flexible installation application.
+--
+-- Please see the file LICENSE.txt in the source's root directory.
+--
+--  This file written by Ryan C. Gordon.
+
 
 -- These are various things that need to be exposed to Lua, or are just
 --  better written in Lua than C. All work will be done in the "MojoSetup"

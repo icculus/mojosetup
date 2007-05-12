@@ -1,3 +1,10 @@
+/**
+ * MojoSetup; a portable, flexible installation application.
+ *
+ * Please see the file LICENSE.txt in the source's root directory.
+ *
+ *  This file written by Ryan C. Gordon.
+ */
 
 // Not only does GTK+ 2.x _look_ better than 1.x, it offers a lot of basic
 //  functionality, like message boxes, that you'd expect to exist in a GUI

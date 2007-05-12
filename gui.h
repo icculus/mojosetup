@@ -1,3 +1,11 @@
+/**
+ * MojoSetup; a portable, flexible installation application.
+ *
+ * Please see the file LICENSE.txt in the source's root directory.
+ *
+ *  This file written by Ryan C. Gordon.
+ */
+
 #ifndef _INCL_GUI_H_
 #define _INCL_GUI_H_
 

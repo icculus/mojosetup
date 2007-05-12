@@ -1,3 +1,11 @@
+/**
+ * MojoSetup; a portable, flexible installation application.
+ *
+ * Please see the file LICENSE.txt in the source's root directory.
+ *
+ *  This file written by Ryan C. Gordon.
+ */
+
 #include <unistd.h>  // !!! FIXME: unix dependency for readlink().
 #include <sys/stat.h>  // !!! FIXME: unix dependency for stat().
 

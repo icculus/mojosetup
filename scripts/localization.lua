@@ -1,3 +1,10 @@
+-- MojoSetup; a portable, flexible installation application.
+--
+-- Please see the file LICENSE.txt in the source's root directory.
+--
+--  This file written by Ryan C. Gordon.
+
+
 -- NOTE: If you care about Unicode or ASCII chars above 127, this file _MUST_
 --  be UTF-8 encoded! If you think you're using a certain high-ascii codepage,
 --  you're wrong!

@@ -1,3 +1,11 @@
+/**
+ * MojoSetup; a portable, flexible installation application.
+ *
+ * Please see the file LICENSE.txt in the source's root directory.
+ *
+ *  This file written by Ryan C. Gordon.
+ */
+
 #if !SUPPORT_GUI_MACOSX
 #error Something is wrong in the build system.
 #endif

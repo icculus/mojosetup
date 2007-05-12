@@ -1,3 +1,11 @@
+# MojoSetup; a portable, flexible installation application.
+#
+# Please see the file LICENSE.txt in the source's root directory.
+#
+#  This file written by Ryan C. Gordon.
+
+
+
 # The "BINARY SIZE +=" comments note about how much bulk, in kilobytes, a
 #  given option adds to the binary on x86 Linux (built with gcc 3.3.6
 #  MinSizeRel options and stripped, uncompressed). These numbers will vary,

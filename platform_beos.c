@@ -1,3 +1,11 @@
+/**
+ * MojoSetup; a portable, flexible installation application.
+ *
+ * Please see the file LICENSE.txt in the source's root directory.
+ *
+ *  This file written by Ryan C. Gordon.
+ */
+
 // You also need to compile unix.c, but this lets us add some things that
 //  cause conflicts between the Be headers and MojoSetup, and use C++. These
 //  are largely POSIX things that are missing from BeOS 5...keeping them here
