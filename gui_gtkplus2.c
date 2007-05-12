@@ -177,7 +177,8 @@ static gint do_msgbox(const char *title, const char *text,
                       GtkMessageType mtype, GtkButtonsType btype)
 {
     gint retval = 0;
-    assert(msgbox == NULL);
+    if (msgbox != NULL)
+        gtk_widget_destroy(msgbox);  // oh well.
     msgbox = gtk_message_dialog_new(GTK_WINDOW(gtkwindow), GTK_DIALOG_MODAL,
                                     mtype, btype, "%s", title);
     gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msgbox),
