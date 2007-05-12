@@ -1092,7 +1092,7 @@ static int luahook_gui_options(lua_State *L)
     const int maxstage = luaL_checkint(L, 3);
     const boolean can_go_back = canGoBack(thisstage);
     const boolean can_go_fwd = canGoForward(thisstage, maxstage);
-    int rc = 0;
+    int rc = 1;
     GuiOptions *opts = NULL;
 
     assert(lua_gettop(L) == 3);
