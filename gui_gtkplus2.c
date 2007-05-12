@@ -299,7 +299,7 @@ GtkWidget *create_gtkwindow(const char *title)
     gtk_widget_show(readme);
     gtk_container_add(GTK_CONTAINER(widget), readme);
     gtk_text_view_set_editable(GTK_TEXT_VIEW(readme), FALSE);
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(readme), GTK_WRAP_WORD);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(readme), GTK_WRAP_NONE);
     gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(readme), FALSE);
 
     // !!! FIXME: options page.
