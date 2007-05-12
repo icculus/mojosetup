@@ -214,8 +214,11 @@ boolean wildcardMatch(const char *str, const char *pattern)
 } // wildcardMatch
 
 
-// !!! FIXME: change this later.
+#if ((defined _NDEBUG) || (defined NDEBUG))
+#define DEFLOGLEV "info"
+#else
 #define DEFLOGLEV "everything"
+#endif
 MojoSetupLogLevel MojoLog_logLevel = MOJOSETUP_LOG_EVERYTHING;
 static FILE *logFile = NULL;
 
