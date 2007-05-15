@@ -756,10 +756,9 @@ local function do_install(install)
             end
         end
 
+        run_config_defined_hook(install.postinstall, install)
         return 1   -- go to next stage.
     end
-
-    run_config_defined_hook(install.postinstall, install)
 
     -- Next stage: show results gui
     stages[#stages+1] = function(thisstage, maxstage)
