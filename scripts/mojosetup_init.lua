@@ -5,6 +5,8 @@
 --  This file written by Ryan C. Gordon.
 
 
+-- !!! FIXME: go through the schema and ditch loki_setup things we don't want.
+
 -- These are various things that need to be exposed to Lua, or are just
 --  better written in Lua than C. All work will be done in the "MojoSetup"
 --  table (for generic functionality) or the "Setup" table (for config file
@@ -193,18 +195,6 @@ local function mustBeStringOrNumber(fnname, elem, val)
     end
 end
 
-local function mustBeValidSplashPos(fnname, elem, val)
-    schema_assert(val=="top" or val=="left", fnname, elem,
-                            "must be 'top' or 'left'")
-end
-
-local function mustBeValidInteraction(fnname, elem, val)
-    if (val ~= "expert") and (val ~= "normal") and (val ~= "none") then
-        schema_assert(false, fnname, elem,
-                                "must be 'normal' or 'expert' or 'none'")
-    end
-end
-
 local function mustBeUrl(fnname, elem, val)
     mustBeString(fnname, elem, val)
     cantBeEmpty(fnname, elem, val)
@@ -308,10 +298,8 @@ function Setup.Package(tab)
         { "category", "Games", mustBeString, cantBeEmpty },
         { "promptoverwrite", true, mustBeBool },
         { "binarypath", nil, mustBeString, cantBeEmpty },
-        { "splashpos", "top", mustBeString, mustBeValidSplashPos },
         { "update_url", nil, mustBeString, mustBeUrl },
         { "superuser", false, mustBeBool },
-        { "interaction", "normal", mustBeString, mustBeValidInteraction },
     })
 
     tab._type_ = nil
