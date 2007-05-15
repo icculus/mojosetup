@@ -1,0 +1,533 @@
+
+Using MojoSetup.
+
+If there are gaps in this documentation, please ask on the MojoSetup mailing
+ list: to subscribe, send a blank email to mojosetup-subscribe@icculus.org,
+ and then questions can go to mojosetup@icculus.org. This document will
+ be updated as we see what parts are confusing, so feedback is appreciated.
+
+
+Putting together a MojoSetup installer involves four general steps:
+1) Compile the software.
+2) Set up the installer filesystem structure.
+3) Write a config file.
+4) Package up the final file for distribution.
+
+Each step has a lot of details, but all installers basically follow those same
+ basic development steps.
+
+
+Compile the software:
+
+You will need some tools. First, you'll need your platform's favorite build
+ tools. You'll also need CMake (http://www.cmake.org/), and a Subversion
+ (http://subversion.tigris.org/) client. These are all available for most
+ popular operating systems, and some not-so-popular ones.
+
+Get the latest version of MojoSetup from Subversion:
+
+     svn svn://svn.icculus.org/mojosetup/trunk mojosetup
+
+
+Then you'll need to point CMake at it:
+
+     cd mojosetup
+     ccmake .
+
+Tweak the build settings to your liking. You'll want to set CMAKE_BUILD_TYPE
+ to MinSizeRel, to make the compiled binary be as small as possible, and
+ then trim out features you don't need. For example, you can drop the
+ HTTP and FTP support to save about 25 kilobytes on the binary. You can also
+ drop support for various archive types, pieces of Lua you don't plan to use,
+ etc.
+
+CMake will get you project files for whatever development environment you use
+ (Makefiles, XCode, Visual Studio, etc). Build the project. You should end
+ up with some shared libraries for whatever GUIs you left enabled, and
+ a mojsetup binary. Strip the debug symbols and put these aside for later.
+
+If you are building MojoSetup without the Lua parser, you'll want to build
+ the separate Lua compiler (MOJOSETUP_BUILD_LUAC in ccmake). That will produce
+ a "mojoluac" binary. Put that aside for later, too.
+
+
+Set up the installer filesystem structure:
+
+This is fairly easy. The installer eventually wants to see a directory
+ tree like this:
+
+    data/
+    scripts/
+    guis/
+
+This is called the "base archive," even if it's a real directory tree in the
+ physical filesystem and not in an actual archive, such as a .zip file.
+
+"data" is where the installer looks for files included in the installer itself
+ that need installation (as opposed to those being read from the network
+ or a CD-ROM, etc). READMEs and EULAs go in here, too. The installer
+ doesn't care how things under data/ are arranged.
+
+"guis" is where the installer looks for those shared libraries that got
+ built in the first step. Copy them in here, if you built any.
+
+"scripts" is where Lua scripts go. You'll put your config file in here
+ (config.lua), the translation table (localizations.lua), and whatever other
+ scripts come with MojoSetup, which are required application logic. This
+ directory can hold either .lua files (source code), or their .luac
+ equivalents. If you built MojoSetup without the Lua parser to save space,
+ you'll need to compile the .lua sources into .luac objects now, or the
+ installer won't know what to do with them. It's safe to compile them even
+ if you include the parser.
+
+    cd scripts
+    ../mojoluac -o config.luac config.lua
+    cd ..
+
+You can strip debug symbols from the compiled scripts to save more space,
+ but you'll get less useful information if there's a script error:
+
+    cd scripts
+    ../mojoluac -s -o config.luac config.lua
+    cd ..
+
+Once you finish constructing this directory tree, put it aside for later.
+
+
+Write a config file:
+
+This is the complicated part, and where most of your effort will be spent.
+ This document will try to cover all the provided facilities, but as the
+ configuration file also provides a robust programming language, not only
+ is the full scope beyond this document, you can also accomplish all sorts
+ of things we haven't even considered yet.
+
+Configuration files are Lua scripts. The Lua language and runtime library is
+ documented at http://www.lua.org/, and they sell an excellent book called
+ "Programming in Lua" which is a fast read and will demonstrate all manners
+ of wild and interesting features of the language. That being said, most
+ people rolling config files don't need any significant Lua expertise, and
+ basic config files don't need any programming experience at all.
+
+The config file is named config.lua, and it must be a text file in UTF-8
+ encoding.
+
+Configuration files are a hierarchy of elements that take this form:
+
+ Setup.DataType
+ {
+     someattribute = value1,
+     someotherattribute = value2,
+ }
+
+Elements can nest:
+
+ Setup.DataType
+ {
+     someattribute = value1,
+     someotherattribute = value2,
+     Setup.AnotherDataType
+     {
+         something = value3,
+     }
+ }
+
+
+Here are the elements, and the attributes they can possess.
+
+ There are some specifiers by the attributes:
+  mustExist: Error if is nil (usually if you don't specify it). The other
+             "mustBe" descriptions consider nil to be valid when mustExist
+             isn't explicitly mentioned.
+  no default: This attribute will not have a default if not specified.
+  default X: This attribute defaults to X if not specified.
+  mustBeString: Error if isn't a string.
+  cantBeEmpty: Error is this string is "". String can be nil, though.
+  mustBeBool: Error if isn't true, false, or nil.
+  mustBeFunction: Error if isn't a function (can be C or Lua).
+  mustBeNumber: Error if isn't a number.
+  mustBeUrl: Error if isn't a string that matches the regexp "^.+://.-/.*".
+  mustBeStringOrTableOfStrings: Error if isn't a string or an array of strings.
+
+ Attributes that aren't explicitly specified take on their default value. In
+  cases without a default, they are effectively set to Lua's "nil" value.
+  This makes boolean values be treated as "false." Plan accordingly.
+
+
+ Setup.Package:
+
+  All configurations need at least one Setup.Package element. Everything other
+  element is added under Setup.Package. One full run of the installer is
+  done for each Setup.Package. You can have multiple packages in one file, and
+  the installer will run through for each one as if the program was started
+  multiple times. If there are multiple packages and an installation failure
+  occurs, all successfully-installed packages will remain. In most cases, you
+  only want one Setup.Package and should use Setup.Option to cull pieces
+  of the package.
+
+  Setup.Package attributes:
+
+   id (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a unique identifier for your package. Currently it is used as
+    the base of the install path, but future features may use it for other
+    things. Set this to something short, unique, and human-readable, like
+    "mygame".
+
+
+   disabled (no default, mustBeBool)
+
+    If this is true, the entire package will be skipped by the installer. You
+    probably want this to be true, but you might need to programmatically shut
+    off a whole package.
+
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is your product's name. This will be displayed in the title bar, and
+    other locations during installation.
+
+
+   version (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is the version of this package. This is arbitrary, and doesn't matter
+    to the installer what you specify. It's usually a value like "1.0" or
+    "beta3"
+
+    The installer may use this for future features, like upgrading previous
+    installations.
+
+
+   destination (no default, mustBeString, cantBeEmpty)
+
+    This attribute can be used to force the installation into a specific
+    location in the physical filesystem. Unless you are building something
+    very specific (like device drivers for a well-defined platform), you
+    probably should not use this attribute. If destination isn't forced,
+    the installer will prompt the user for the destination, possibly
+    recommmending locations to her.
+
+
+   recommended_destinations (no default, mustBeStringOrTableOfStrings)
+
+    This attribute lets you define some favorable places to install the
+    package. You can have a table of strings or a single string:
+
+        recommended_destinations = MojoSetup.info.homedir,
+            ...or...
+        recommended_destinations = { "/usr/local/games", "/opt/games" },
+
+    These strings are presented in the UI to the user when selecting a
+    install destination, but they can override them with their own choice.
+    The "id" attribute is appended to these before displaying to the end
+    user, so they'll see, for example, "/usr/local/games/mygame" and
+    "/opt/games/mygame" ... if a listed directory is determined to be
+    unwritable to the user (lack of permissions), it will be removed from the
+    list before presentation to the user.
+
+
+   precheck (no default, mustBeFunction)
+
+    If this attribute is defined, it is called by the installer after the
+    configuration is parsed and the GUI has started, but before the user has
+    interacted with the installer at all. It passes the finalized
+    Setup.Package table as a parameter.
+
+
+   preflight (no default, mustBeFunction)
+
+    If this attribute is defined, it is called by the installer after the
+    user has chosen options to install. The heavy-lifting of the installer
+    is about to begin: downloading files and installing the Package. It
+    passes the finalized Setup.Package table as a parameter.
+
+
+   preinstall (no default, mustBeFunction)
+
+    If this attribute is defined, it is called by the installer after all
+    needed external files are downloaded and installation of files is about
+    to begin. It passes the finalized Setup.Package table as a parameter.
+
+
+   postinstall (no default, mustBeFunction)
+
+    If this attribute is defined, it is called by the installer after the
+    entire package was successfully installed to disk. It passes the finalized
+    Setup.Package table as a parameter.
+
+
+   splash (no default, mustBeString, cantBeEmpty)
+
+    (!!! FIXME) This attribute is for future expansion.
+
+
+   url (no default, mustBeString, cantBeEmpty)
+
+    (!!! FIXME) This attribute is for future expansion.
+
+
+   once (default true, mustBeBool)
+
+    (!!! FIXME) This attribute is for future expansion.
+
+
+   category (default "Games", mustBeString, cantBeEmpty)
+
+    (!!! FIXME) This attribute is for future expansion.
+
+
+   promptoverwrite (default true, mustBeBool)
+
+    (!!! FIXME) This attribute is for future expansion.
+    Please refer to Setup.File.allowoverwrite for now.
+
+
+   binarypath (no default, mustBeString, cantBeEmpty)
+
+    (!!! FIXME) This attribute is for future expansion.
+
+
+   update_url (no default, mustBeString, mustBeUrl)
+
+    (!!! FIXME) This attribute is for future expansion.
+
+
+   superuser (default false, mustBeBool)
+
+    (!!! FIXME) This attribute is for future expansion.
+
+
+ Setup.Readme:
+
+  This element is a child of Setup.Package. It can be used to display a
+  information about the package to the end user, such as a welcome message,
+  FAQs, or other orientation information. There can be multiple Setup.Readme
+  elements listed, in which case the end user will be shown each readme
+  individually before installation may proceed. The readmes are shown first
+  before any other interaction occurs.
+
+  Setup.Readme attributes:
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a brief description of the Readme, used for title bars and such.
+
+
+   source (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a filename in the base archive's "data" directory that contains
+    the readme text. Currently this must be a text file in UTF-8 encoding.
+
+
+ Setup.Eula:
+
+  This element is a child of Setup.Package. It can be used to display a
+  license agreement to the end user, which they must agree to before
+  installation can proceed. If they refuse the license, the installer
+  terminates without installing anything. There can be multiple Setup.Eula
+  elements listed, in which case the end user will be asked to agree to
+  each license individually before installation may proceed. The licenses are
+  shown after any readme elements.
+
+  Setup.Eula attributes:
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a brief description of the license, used for title bars and such.
+
+
+   source (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a filename in the base archive's "data" directory that contains
+    the license text. Currently this must be a text file in UTF-8 encoding.
+
+
+
+ Setup.Media:
+
+  This element is required if you need to install data from removable media,
+  such as a DVD-ROM drive. The installer needs a means to identify the
+  media as the correct source when it is connected to the system.
+
+  Setup.Media attributes:
+
+   id (no default, mustExist, mustBeString, cantBeEmpty)
+
+    (!!! FIXME write me.)
+
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    (!!! FIXME write me.)
+
+
+   uniquefile (no default, mustExist, mustBeString, cantBeEmpty)
+
+    (!!! FIXME write me.)
+
+
+
+
+ Setup.File:
+
+  (!!! FIXME write me.)
+
+  Setup.File attributes:
+
+   source (no default, mustBeUrl)
+
+    (!!! FIXME write me.)
+
+
+   destination (no default, mustBeString, cantBeEmpty)
+
+    (!!! FIXME write me.)
+
+
+   wildcards (no default, mustBeStringOrTableOfStrings)
+
+    (!!! FIXME write me.)
+
+
+   filter (no default, mustBeFunction)
+
+    (!!! FIXME write me.)
+
+
+   allowoverwrite (no default, mustBeBool)
+
+    (!!! FIXME write me.)
+
+
+
+ Setup.Option:
+
+  (!!! FIXME write me.)
+
+  Setup.Option attributes:
+
+   value (default false, mustBeBool)
+
+    (!!! FIXME write me.)
+
+
+   required (default false, mustBeBool)
+
+    (!!! FIXME write me.)
+
+
+   disabled (default false, mustBeBool)
+
+    (!!! FIXME write me.)
+
+
+   bytes (no default, mustExist, mustBeNumber)
+
+    (!!! FIXME write me.)
+
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    (!!! FIXME write me.)
+
+
+
+
+ Setup.OptionGroup:
+
+  (!!! FIXME write me.)
+
+  Setup.OptionGroup attributes:
+
+   disabled (no default, mustBeBool)
+
+    (!!! FIXME write me.)
+
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    (!!! FIXME write me.)
+
+
+
+
+Package up the final file for distribution:
+
+Now you have a MojoSetup binary and a directory tree containing your data, GUI
+ plugins, and scripts (including the config.lua you just wrote). Now you just
+ need to glue them together. MojoSetup will attempt to look at itself as an
+ archive on startup, which works in the same way "self-extracting" exe files
+ worked on other operating systems. If you want MojoSetup to be
+ self-extracting, zip your directory tree up and append it to the binary:
+
+     zip -9r mydata.zip data guis scripts
+     cat mydata.zip >> mojosetup
+
+Now rename "mojosetup" to something meaningful (mygame-1.0-linux-x86.bin or
+ whatever), and you've got an installer.
+
+If you have the luxury of a real filesystem (inside a disk image or on a CD
+ you are shipping, for example), MojoSetup will use the binary's directory
+ if it doesn't find a zipfile appended to the binary itself, so you can just
+ have "data", "scripts" and "guis" in the same directory as "mojosetup" to
+ have it work, too.
+
+
+Now you're done! Give your installer to the public.
+
+
+
+Extra credit:
+
+Localization:
+
+If you added strings to the installer or your config file that you want
+ translated at runtime, you need to add them to localization.lua. This is
+ a Lua script, too, of course, but you really should treat it like a basic
+ config file.
+
+Don't remove strings that are already in the file...MojoSetup uses these
+ internally. Just add your own strings.
+
+The format looks something like this:
+
+    ["Yes"] = {
+        es = "Si";
+        fr = "Oui";
+    };
+
+
+As you can see, the ["Yes"] is a string to translate. These are always English
+ by convention, but this is whatever the string you wish to translate. Please
+ note that the brackets are important, and only used on this specific string.
+
+The fields in this structure are language abbreviations that match a user's
+ locale and the string of translated text.
+
+Please note that you can do locale-specific translations, too:
+
+    ["colors"] = {
+        en_UK = "colours";
+    };
+
+All strings in this file (and all Lua scripts) are UTF-8 encoded. Using a
+ high-ASCII character will not work like you expect at runtime!
+
+These lookup tables are used at runtime to translate strings, both by you and
+ internally by MojoSetup. You can do a translation by calling:
+
+    MojoSetup.translate("colors")
+
+We recommend making a convenience function like this at the top of your
+ config.lua...
+
+    local function _ = MojoSetup.translate
+
+...so that you have a convention for translations that cause minimal clutter:
+
+    Setup.Option {
+        description = _("Level editor utility"),
+        -- ...etc...
+    }
+
+
