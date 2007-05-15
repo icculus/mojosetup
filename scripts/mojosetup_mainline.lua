@@ -847,12 +847,13 @@ end
 --  so it only spits out crap if debug-level logging is enabled.
 MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
 
--- !!! FIXME: is MojoSetup.installs just nil? Should we lose saw_an_installer?
 local saw_an_installer = false
 for installkey,install in pairs(MojoSetup.installs) do
-    saw_an_installer = true
-    do_install(install)
-    MojoSetup.collectgarbage()  -- nuke all the tables we threw around...
+    if not install.disabled then
+        saw_an_installer = true
+        do_install(install)
+        MojoSetup.collectgarbage()  -- nuke all the tables we threw around...
+    end
 end
 
 if not saw_an_installer then

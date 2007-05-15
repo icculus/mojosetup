@@ -293,6 +293,7 @@ function Setup.Package(tab)
     tab = sanitize("Package", tab,
     {
         { "id", nil, mustExist, mustBeString, cantBeEmpty },
+        { "disabled", nil, mustBeBool },
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
         { "version", nil, mustExist, mustBeString, cantBeEmpty },
         { "destination", nil, mustBeString, cantBeEmpty },
