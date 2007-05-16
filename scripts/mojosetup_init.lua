@@ -434,17 +434,5 @@ function Setup.OptionGroup(tab)
     })
 end
 
-function Setup.UI(tab)
-    return sanitize("UI", tab,
-    {
-        -- You should add all existing UIs to this table.
-        { "generic", nil, mustBeString, cantBeEmpty },
-        { "stdio", nil, mustBeString, cantBeEmpty },
-        { "macosx", nil, mustBeString, cantBeEmpty },
-        { "gtkplus", nil, mustBeString, cantBeEmpty },
-        { "windows", nil, mustBeString, cantBeEmpty },
-    })
-end
-
 -- end of mojosetup_init.lua ...
 
