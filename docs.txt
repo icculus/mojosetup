@@ -7,11 +7,12 @@ If there are gaps in this documentation, please ask on the MojoSetup mailing
  be updated as we see what parts are confusing, so feedback is appreciated.
 
 
-Putting together a MojoSetup installer involves four general steps:
+Putting together a MojoSetup installer involves five general steps:
 1) Compile the software.
 2) Set up the installer filesystem structure.
 3) Write a config file.
-4) Package up the final file for distribution.
+4) Add any localized strings.
+5) Package up the final file for distribution.
 
 Each step has a lot of details, but all installers basically follow those same
  basic development steps.
@@ -60,7 +61,7 @@ This is fairly easy. The installer eventually wants to see a directory
     scripts/
     guis/
 
-This is called the "base archive," even if it's a real directory tree in the
+This is called the "Base Archive," even if it's a real directory tree in the
  physical filesystem and not in an actual archive, such as a .zip file.
 
 "data" is where the installer looks for files included in the installer itself
@@ -109,8 +110,13 @@ Configuration files are Lua scripts. The Lua language and runtime library is
  people rolling config files don't need any significant Lua expertise, and
  basic config files don't need any programming experience at all.
 
+MojoSetup provides some functions for your benefit, if you want to add any
+ programming logic to your config. These are documented below.
+
 The config file is named config.lua, and it must be a text file in UTF-8
- encoding.
+ encoding. If you are doing any programming, you may use any symbol you like,
+ so long as the name isn't "Setup", "MojoSetup", or any of the standard Lua
+ runtime names like "string" or "table".
 
 Configuration files are a hierarchy of elements that take this form:
 
@@ -159,7 +165,7 @@ Here are the elements, and the attributes they can possess.
 
  Setup.Package:
 
-  All configurations need at least one Setup.Package element. Everything other
+  All configurations need at least one Setup.Package element. Every other
   element is added under Setup.Package. One full run of the installer is
   done for each Setup.Package. You can have multiple packages in one file, and
   the installer will run through for each one as if the program was started
@@ -318,7 +324,7 @@ Here are the elements, and the attributes they can possess.
 
    source (no default, mustExist, mustBeString, cantBeEmpty)
 
-    This is a filename in the base archive's "data" directory that contains
+    This is a filename in the Base Archive's "data" directory that contains
     the readme text. Currently this must be a text file in UTF-8 encoding.
 
 
@@ -341,7 +347,7 @@ Here are the elements, and the attributes they can possess.
 
    source (no default, mustExist, mustBeString, cantBeEmpty)
 
-    This is a filename in the base archive's "data" directory that contains
+    This is a filename in the Base Archive's "data" directory that contains
     the license text. Currently this must be a text file in UTF-8 encoding.
 
 
@@ -580,36 +586,7 @@ Here are the elements, and the attributes they can possess.
     They are deleted only after a successful install.
 
 
-
-Package up the final file for distribution:
-
-Now you have a MojoSetup binary and a directory tree containing your data, GUI
- plugins, and scripts (including the config.lua you just wrote). Now you just
- need to glue them together. MojoSetup will attempt to look at itself as an
- archive on startup, which works in the same way "self-extracting" exe files
- worked on other operating systems. If you want MojoSetup to be
- self-extracting, zip your directory tree up and append it to the binary:
-
-     zip -9r mydata.zip data guis scripts
-     cat mydata.zip >> mojosetup
-
-Now rename "mojosetup" to something meaningful (mygame-1.0-linux-x86.bin or
- whatever), and you've got an installer.
-
-If you have the luxury of a real filesystem (inside a disk image or on a CD
- you are shipping, for example), MojoSetup will use the binary's directory
- if it doesn't find a zipfile appended to the binary itself, so you can just
- have "data", "scripts" and "guis" in the same directory as "mojosetup" to
- have it work, too.
-
-
-Now you're done! Give your installer to the public.
-
-
-
-Extra credit:
-
-Localization:
+Add any localized strings:
 
 If you added strings to the installer or your config file that you want
  translated at runtime, you need to add them to localization.lua. This is
@@ -661,5 +638,260 @@ We recommend making a convenience function like this at the top of your
     }
 
 
---ryan.
+
+Package up the final file for distribution:
+
+Now you have a MojoSetup binary and a directory tree containing your data, GUI
+ plugins, and scripts (including the config.lua you just wrote). Now you just
+ need to glue them together. MojoSetup will attempt to look at itself as an
+ archive on startup, which works in the same way "self-extracting" exe files
+ worked on other operating systems. If you want MojoSetup to be
+ self-extracting, zip your directory tree up and append it to the binary:
+
+     zip -9r mydata.zip data guis scripts
+     cat mydata.zip >> mojosetup
+
+Now rename "mojosetup" to something meaningful (mygame-1.0-linux-x86.bin or
+ whatever), and you've got an installer.
+
+If you have the luxury of a real filesystem (inside a disk image or on a CD
+ you are shipping, for example), MojoSetup will use the binary's directory
+ if it doesn't find a zipfile appended to the binary itself, so you can just
+ have "data", "scripts" and "guis" in the same directory as "mojosetup" to
+ have it work, too.
+
+
+Now you're done! Give your installer to the public.
+
+
+
+MojoSetup-provided globals:
+
+Your config file is a Lua script, and as such, has access to all of Lua's
+ runtime library (presuming you didn't disable it when building MojoSetup)
+ and several other bits of MojoSetup-specific functionality. Everything the
+ installer provides to your script is under the "MojoSetup" table, so as not
+ to pollute the namespace. Also, the config files use the "Setup" table for
+ the basic config schema. Everything else is free game. Here are the globals
+ that MojoSetup provides:
+
+
+  MojoSetup.fatal(errstr)
+
+   Display (errstr) to the end user and stop the installation. The installer
+   will attempt to clean up any half-finished installation, including rolling
+   back any files that would have been replaced had the installation succeeded.
+   You should never use error() in the standard Lua runtime; use this instead.
+
+
+  MojoSetup.runfile(script)
+
+   Run the code in a given Lua file. This is JUST the base filename. MojoSetup
+   will look for it in the Base Archive in the scripts/ directory, both as
+   script.luac and script.lua. This code chunk will accept no arguments, and
+   return no results, but it can change the global state and alter tables,
+   etc, so it can have lasting side effects. Will return false if the file
+   couldn't be loaded, or true if the chunk successfully ran. Will not return
+   if there's a runtime error in the chunk, as it will call MojoSetup.fatal()
+   instead. You should use this instead of the "require" function in the Lua
+   runtime, as require() won't respect the Base Archive.
+
+
+  MojoSetup.translate(str)
+
+   Find the proper translation for the end user's locale in the localization
+   table. Returns the translation, or the original string if no translation
+   was available. It's common to use this for shorthand:
+
+     local function _ = MojoSetup.translate
+
+   ...so you can be less verbose:  print(_("translate this string"))
+
+
+  MojoSetup.ticks()
+
+    Return the time, in milliseconds, that the process has been running.
+
+
+  MojoSetup.logwarning(str)
+
+    Write a warning to the installation log, if logging settings permit.
+
+
+  MojoSetup.logerror(str)
+
+    Write an error to the installation log, if logging settings permit.
+
+
+  MojoSetup.loginfo(str)
+
+    Write an info string to the installation log, if logging settings permit.
+
+
+  MojoSetup.logdebug(str)
+
+    Write debug info to the installation log, if logging settings permit.
+
+
+  MojoSetup.msgbox(str)
+
+    Show (str) to the user with a GUI message box, and wait until they click
+    an "OK" button.
+
+
+  MojoSetup.promptyn(str)
+
+    Show (str) to the user with a GUI message box, and wait until they click
+    either a "YES" or "NO" button. Returns true if they clicked YES, false
+    if they clicked "NO".
+
+
+  MojoSetup.stackwalk()
+
+    This writes a backtrace of the current Lua callstack to the installation
+    log, if logging settings permit debug-level logging.
+
+
+  MojoSetup.cmdline(flag)
+
+    See if a given flag was on the command line for the process.
+    MojoSetup.cmdline("nosound") will return true if "-nosound", "--nosound",
+    etc was on the command line. The option must start with a '-' on the
+    command line to be noticed by this function. Returns true if flag was on
+    the command line, false otherwise.
+
+
+  MojoSetup.cmdlinestr(flag, envr, deflt)
+
+    Get robust command line options, with optional default for missing ones.
+
+    If the command line was ./myapp --a=b -c=d ----e f
+      - cmdlinestr("a") will return "b"
+      - cmdlinestr("c") will return "d"
+      - cmdlinestr("e") will return "f"
+      - cmdlinestr("g") will return the default string.
+
+    Like MojoSetup.cmdline(), the option must start with a '-'.
+
+    (envr) is an optional environment var to check if command line wasn't
+    found. You can call this function without specifying this parameter, or
+    pass a nil here.
+    (deflt) is the return value if (flag) isn't on the command line.
+
+
+  MojoSetup.collectgarbage()
+
+    Do a complete run of the Lua garbage collector. Use this instead of the
+    version in the Lua standard runtime, since this version does better debug
+    logging.
+
+  MojoSetup.date()
+
+    Return a string of the current date. This is roughly the same as os.date()
+    in the standard Lua runtime, but we didn't want to add the os table
+    dependencies just to write this string into the log.
+
+
+  MojoSetup.info.locale
+
+    This is a string (not a function!) of the current locale, in the format
+    xx_YY, where "xx" is the language code (en for english, de for German, etc)
+    and "YY" is the country code: "en_US" for American English, fr_CA for
+    French Canadian, etc.
+
+
+  MojoSetup.info.platform
+
+    This is a string (not a function!) of the current platform. This is
+    currently one of "macosx", "unix", "windows", or "beos".
+
+
+  MojoSetup.info.arch
+
+    This is a string (not a function!) of the current platform's CPU type.
+    This is currently one of "x86", "x86-64", "powerpc", or "powerpc64".
+
+    Please note that this is the arch of the installer binary...you can run
+    a 32-bit binary on an amd64 chip, in which case it will report "x86"!
+
+
+  MojoSetup.info.ostype
+
+    This is a string (not a function!) of the current platform's operating
+    system. This is currently one of "macosx", "beos", "linux", "freebsd",
+    "netbsd", "openbsd", "bsdi", "aix", "hpux", or "irix".
+
+    Please note that this is the OS target of the installer binary...you can
+    run a Linux binary on FreeBSD through the binary compatibility layer,
+    in which case it will report "linux"!
+
+
+  MojoSetup.info.osversion
+
+    This is a string (not a function!) of the current platform's operating
+    system version. This may not be useful information on many platforms.
+    On Mac OS X, it's the system version (So it might be 10.4.9 on a Tiger
+    install, 10.3.8 on a Panther install, etc).
+
+    On other Unixes, it's the "release" field from uname(), which on Linux
+    gives you the kernel version, which is usually not helpful, but could be
+    on, say, BeOS.
+
+
+  MojoSetup.info.ui
+
+    This is a string (not a function!) of the UI plugin that MojoSetup chose.
+    system. This is currently one of "stdio", "macosx", or "gtkplus2".
+    
+
+  MojoSetup.info.buildver
+
+    This is a string (not a function!) of the build identifier for this binary.
+    You can print this string to stdout by running ./mojosetup --buildver
+    at the command line.
+
+
+  MojoSetup.info.loglevel
+
+    This is a string (not a function!) of the logging level that MojoSetup
+    is enforcing. This is currently one of "nothing", "errors", "warnings",
+    "info", "debug", or "everything" ... each level includes the previous
+    level, so "warnings" will also log error messages, but not info or debug
+    messages.
+
+
+  MojoSetup.info.homedir
+
+    This is a string (not a function!) of the "home directory" of the end-user
+    in the physical filesystem. This is useful if you want to determine a sane
+    default location to write files.
+
+
+  MojoSetup.info.argv
+
+    This is a string array (not a function!) of the installer process's
+    command line arguments. You might find MojoSetup.cmdline() or
+    MojoSetup.cmdlinestr() to be more useful.
+
+
+  MojoSetup.info.supportedurls
+
+    This is a string array (not a function!) of URL types the installer
+    supports. You can either iterate it...
+
+        for k,v in pairs(MojoSetup.info.supportedurls) do
+            print("installer supports " .. v .. ":// URLs")
+        end
+
+    ...or you can query it...
+
+        if MojoSetup.info.supportedurls["http"] ~= nil then
+            print("installer supports http:// URLs")
+        end
+
+    "base" and "media" are included in the list, always. The rest are
+    compile-time options.
+
+
+// end of docs.txt ...
 
