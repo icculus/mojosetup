@@ -26,7 +26,7 @@ You will need some tools. First, you'll need your platform's favorite build
 
 Get the latest version of MojoSetup from Subversion:
 
-     svn svn://svn.icculus.org/mojosetup/trunk mojosetup
+     svn co svn://svn.icculus.org/mojosetup/trunk mojosetup
 
 
 Then you'll need to point CMake at it:
