@@ -214,8 +214,8 @@ Here are the elements, and the attributes they can possess.
     location in the physical filesystem. Unless you are building something
     very specific (like device drivers for a well-defined platform), you
     probably should not use this attribute. If destination isn't forced,
-    the installer will prompt the user for the destination, possibly
-    recommmending locations to her.
+    the installer will prompt the user, possibly recommmending locations
+    to him.
 
 
    recommended_destinations (no default, mustBeStringOrTableOfStrings)
