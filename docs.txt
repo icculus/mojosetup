@@ -74,7 +74,8 @@ This is called the "Base Archive," even if it's a real directory tree in the
 
 "scripts" is where Lua scripts go. You'll put your config file in here
  (config.lua), the translation table (localizations.lua), and whatever other
- scripts come with MojoSetup, which are required application logic. This
+ scripts come with MojoSetup, which are required application logic. The
+ installer will not work if you don't include all these files! This
  directory can hold either .lua files (source code), or their .luac
  equivalents. If you built MojoSetup without the Lua parser to save space,
  you'll need to compile the .lua sources into .luac objects now, or the
