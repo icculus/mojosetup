@@ -534,9 +534,14 @@ local function do_install(install)
         set_destination(install.destination)
     else
         local recommend = nil
-        if install.recommended_destinations ~= nil then
+        local recommended_cfg = install.recommended_destinations
+        if recommended_cfg ~= nil then
+            if type(recommended_cfg) == "string" then
+                recommended_cfg = { recommended_cfg }
+            end
+
             recommend = {}
-            for i,v in ipairs(install.recommended_destinations) do
+            for i,v in ipairs(recommended_cfg) do
                 if MojoSetup.platform.isdir(v) then
                     if MojoSetup.platform.writable(v) then
                         recommend[#recommend+1] = v .. "/" .. install.id
