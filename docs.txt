@@ -133,6 +133,9 @@ Elements can nest:
  }
 
 
+Case is important! Setup.Option and Setup.option are NOT the same thing!
+
+
 Here are the elements, and the attributes they can possess.
 
  There are some specifiers by the attributes:
@@ -342,7 +345,6 @@ Here are the elements, and the attributes they can possess.
     the license text. Currently this must be a text file in UTF-8 encoding.
 
 
-
  Setup.Media:
 
   This element is required if you need to install data from removable media,
@@ -353,101 +355,229 @@ Here are the elements, and the attributes they can possess.
 
    id (no default, mustExist, mustBeString, cantBeEmpty)
 
-    (!!! FIXME write me.)
+    A unique specifier for this media, such as "disc1" or "game-disc". This
+    will be used for Setup.File.source: "media://game-disc/path/filename.zip"
 
 
    description (no default, mustExist, mustBeString, cantBeEmpty)
 
-    (!!! FIXME write me.)
+    A human-readable description of this media, such as "MyGame Disc 2". This
+    string will be used when the end user must be prompted to insert a new
+    piece of media to continue the installation.
 
 
    uniquefile (no default, mustExist, mustBeString, cantBeEmpty)
 
-    (!!! FIXME write me.)
-
-
-
-
- Setup.File:
-
-  (!!! FIXME write me.)
-
-  Setup.File attributes:
-
-   source (no default, mustBeUrl)
-
-    (!!! FIXME write me.)
-
-
-   destination (no default, mustBeString, cantBeEmpty)
-
-    (!!! FIXME write me.)
-
-
-   wildcards (no default, mustBeStringOrTableOfStrings)
-
-    (!!! FIXME write me.)
-
-
-   filter (no default, mustBeFunction)
-
-    (!!! FIXME write me.)
-
-
-   allowoverwrite (no default, mustBeBool)
-
-    (!!! FIXME write me.)
-
+    This is a path that is unique to this media, relative to its root
+    directory, such as "sounds/guitar.wav". The installer looks at all
+    media available to the system until it finds this path exists, to
+    determine if the correct media has been made available by the end user.
 
 
  Setup.Option:
 
-  (!!! FIXME write me.)
+  This element defines an optional section of the install, and is a child
+  of Setup.Package. You must have at least one Setup.Option in your
+  configuration, but you can make it mandatory with the "required" attribute
+  if you don't want it to be actually optional.
+
+  The GUI will show all selectable options to the end user, and they can
+  pick and choose the parts they want. If there are no optional portions of
+  the install, the GUI will skip the option selection screen.
+
+  Setup.Options can nest. If a parent option is unchecked in the GUI, its
+  child options become disabled and will be considered unchecked also when
+  installation proceeds.
+
+      Setup.Option
+      {
+          description = "Wing Commander 1"
+          source = "base:///wc1.zip",
+
+          -- This option can only install if "Wing Commander 1" is checked too.
+          Setup.Option
+          {
+              description = "WC1 Speech Pack",
+              source = "base:///wc1sp.zip",
+          },
+      },
+
 
   Setup.Option attributes:
 
+   disabled (default false, mustBeBool)
+
+    If true, this whole group (including all children) will be removed from
+    the GUI, and the installer will treat all the child options as unchecked.
+    If an option has both "required" and "disabled" set to true, then
+    "disabled" takes precedence.
+
+
    value (default false, mustBeBool)
 
-    (!!! FIXME write me.)
+    If true, the checkbox will be checked by default in the GUI. Checked
+    options are installed.
 
 
    required (default false, mustBeBool)
 
-    (!!! FIXME write me.)
-
-
-   disabled (default false, mustBeBool)
-
-    (!!! FIXME write me.)
+    If true, the option won't be shown to the end user, but will just be
+    treated as if it was checked when installation proceeds. If an option
+    has both "required" and "disabled" set to true, then "disabled" takes
+    precedence.
 
 
    bytes (no default, mustExist, mustBeNumber)
 
-    (!!! FIXME write me.)
+    This is the size, in bytes, of files this option will write to disk. The
+    installer uses this to determine space requirements for the total install.
+    If you don't know the size, you should set this to -1, but this will
+    disable some functionality.
 
 
    description (no default, mustExist, mustBeString, cantBeEmpty)
 
-    (!!! FIXME write me.)
-
-
+    This string will be shown to the end user, as a label with the GUI's
+    checkbox.
 
 
  Setup.OptionGroup:
 
-  (!!! FIXME write me.)
+  This element can be the parent or child of Setup.Option, or a child of
+  Setup.Package. It contains of a collection of Setup.Option elements.
+  The children Setup.Options will be grouped radio buttons in the GUI instead
+  of individual checkboxes. As such, only one child Setup.Option in an
+  Setup.OptionGroup will be checked in the GUI.
+
+      Setup.OptionGroup
+      {
+          description = "Language",
+          Setup.Option { description = "English", source = "base:///en.zip" },
+          Setup.Option { description = "French", source = "base:///fr.zip" },
+          Setup.Option { description = "German", source = "base:///fr.zip" },
+      },
 
   Setup.OptionGroup attributes:
 
    disabled (no default, mustBeBool)
 
-    (!!! FIXME write me.)
+    If true, this option (including all children) will be removed from
+    the GUI, and the installer will treat this and all child options as
+    unchecked.
 
 
    description (no default, mustExist, mustBeString, cantBeEmpty)
 
-    (!!! FIXME write me.)
+    This string will be shown to the end user, as a label with the GUI's
+    radio button group.
 
+
+ Setup.File:
+
+  This element specifies a fileset, a collection of files, to install. These
+  are children of Setup.Option, and you can specify as many as you like per
+  option. Each Setup.File represents an "archive," that is, some set of files,
+  such as a .zip file or a directory.
+
+  Setup.File attributes:
+
+   source (no default, mustBeUrl)
+
+    This is a URL that provides the source for this fileset. You can only
+    specify archives (directories and files like .zip, .tar, etc), not
+    specific individual files. If you need a specific file, use its parent
+    directory here and a "wildcards" attribute.
+
+    There are some standard and non-standard URL handlers you can specify:
+
+      base:///path/file.ext
+
+        This references an archive in the Base Archive, where the "data"
+        directory is the root...so the above looks for data/path/file.ext in
+        the Base Archive.
+
+        This can install from an archive inside an archive, like this:
+
+            base:///mydir/outside.zip/internalpath/inside.tar
+
+
+      media://id/path/file.ext
+
+        This references a file on an external media with a specific id,
+        as defined in a Setup.Media element. The user will be prompted for
+        the correct media if the installer can't find it. This can install
+        archives-in-archives, like the base:/// version can.
+
+
+      ftp://hostname.dom/path/file.ext
+      http://hostname.dom/path/file.ext
+
+        The references a file on an FTP or web server. These files will all be
+        downloaded before local files are installed. You may only specify
+        archives at this time, not individual files or directories.
+        MojoSetup must be built with support for the proper network protocol.
+
+
+   destination (no default, mustBeString, cantBeEmpty)
+
+    This attribute lets you, across the board, redirect files in this archive
+    to a specific destination. This is a path relative to the base of the
+    installation destination path. If the user specified an installation
+    destination of "/games/mygame", this attribute is "gamemod", and the
+    source produces a file "maps/level1.map", then the final file written to
+    disk would be "/games/mygame/gamemod/maps/level1.map".
+
+    After the path is prepared with this attribute, it is tested against the
+    "wildcards" attribute, and if it passes there, it is pushed through the
+    "filter" attribute.
+
+
+   wildcards (no default, mustBeStringOrTableOfStrings)
+
+    This is the first step to culling files from an archive or directory.
+    Files are only installed if they match a specified wildcard.
+    Wildcards are simple to use: they only allow '?' for single character
+    matches and '*' to match a sequence of characters. You may specify a
+    single string, or a list of wildcards, like this:
+
+         -- matches sounds/heroes/laser13.wav and sounds/villians/laser02.wav
+         wildcards = "sounds/*/laser??.wav"
+
+             ...or...
+
+         -- everything in the maps, sounds, and graphics directories.
+         --  (this includes subdirs! '*' matches past '/' separators!)
+         wildcards = { "maps/*", "sounds/*", "graphics/*" }
+
+
+   filter (no default, mustBeFunction)
+
+    This is a function that takes one argument, a string that represents the
+    path of a single file relative to the root of the installation destination.
+    This function may return nil to choose not to install this file, which is
+    useful for culling files from an archive, or a string that represents a
+    new destination for the file, which is useful for renaming some files
+    on-the-fly:
+
+         filter = function(dest)
+            if string.match(dest, ".exe$") then
+                return nil   -- skip Windows .exe files on Unix.
+            end
+            if dest == "SOMEFILE.TXT" then
+                return "somefile.txt"  -- force this to lowercase.
+            end
+            return dest    -- everything else can go through as-is.
+         end
+
+
+   allowoverwrite (no default, mustBeBool)
+
+    If true, the installer will overwrite existing files without warning. If
+    false, the user will be prompted before overwriting each file.
+
+    Files are actually moved out of the way instead of overwritten, so the
+    installer can restore them if the install is cancelled or fails mid-way.
+    They are deleted only after a successful install.
 
 
 
@@ -530,4 +660,6 @@ We recommend making a convenience function like this at the top of your
         -- ...etc...
     }
 
+
+--ryan.
 
