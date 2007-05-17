@@ -298,7 +298,7 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
     *command = -1;
 
     if (recnum > 0)
-        prompt = entry->xstrdup(entry->_("Choose install destination by number, or enter your own."));
+        prompt = entry->xstrdup(entry->_("Choose install destination by number (hit enter for #1), or enter your own."));
     else
         prompt = entry->xstrdup(entry->_("Enter path where files will be installed."));
 
@@ -311,6 +311,14 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
 
         if ((len = readstr(prompt, buf, sizeof (buf), can_back, false)) < 0)
             getout = true;
+
+        else if ((len == 0) && (recnum > 0))   // default to first in list.
+        {
+            retval = entry->xstrdup(recommends[0]);
+            *command = 1;
+            getout = true;
+        } // else if
+
         else if (len > 0)
         {
             char *endptr = NULL;

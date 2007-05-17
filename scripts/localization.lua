@@ -92,7 +92,7 @@ MojoSetup.localization = {
     ["Install destination:"] = {
     };
 
-    ["Choose install destination by number, or enter your own."] = {
+    ["Choose install destination by number (hit enter for #1), or enter your own."] = {
     };
 
     ["Enter path where files will be installed."] = {
