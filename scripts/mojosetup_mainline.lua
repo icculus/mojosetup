@@ -46,6 +46,19 @@ local function delete_files(filelist, callback, error_is_fatal)
     end
 end
 
+local function delete_rollbacks()
+    if MojoSetup.rollbacks == nil then
+        return
+    end
+    local fnames = {}
+    local max = #MojoSetup.rollbacks
+    for id = 1,max,1 do
+        fnames[id] = MojoSetup.rollbackdir .. "/" .. id
+    end
+    MojoSetup.rollbacks = {}   -- just in case this gets called again...
+    delete_files(fnames)
+end
+
 local function delete_scratchdirs()
     do_delete(MojoSetup.downloaddir)
     do_delete(MojoSetup.rollbackdir)
@@ -70,6 +83,8 @@ local function do_rollbacks()
         end
         MojoSetup.loginfo("Restored rollback #" .. id .. ": '" .. src .. "' -> '" .. dest .. "'")
     end
+
+    MojoSetup.rollbacks = {}   -- just in case this gets called again...
 end
 
 
@@ -877,7 +892,7 @@ local function do_install(install)
     -- !!! FIXME: write out manifest.
 
     -- Successful install, so delete conflicts we no longer need to rollback.
-    delete_files(MojoSetup.rollbacks)
+    delete_rollbacks()
     delete_files(MojoSetup.downloads)
     delete_scratchdirs()
 
