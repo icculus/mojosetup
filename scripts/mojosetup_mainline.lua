@@ -99,6 +99,48 @@ local function calc_percent(current, total)
     return MojoSetup.truncatenum((current / total) * 100)
 end
 
+
+local function make_bps_string(bps, bw, total)
+    -- !!! FIXME: localization on all this.
+    local bpsstr = nil
+
+    if bps <= 0 then
+        bpsstr = _("(stalled)")
+    else
+        local bytesleft = total - bw
+        local secsleft = MojoSetup.truncatenum(bytesleft / bps)
+        local minsleft = MojoSetup.truncatenum(secsleft / 60)
+        local hoursleft = MojoSetup.truncatenum(minsleft / 60)
+
+        secsleft = string.sub("00" .. (secsleft - (minsleft * 60)), -2)
+        minsleft = string.sub("00" .. (minsleft - (hoursleft * 60)), -2)
+
+        if hoursleft < 10 then
+            hoursleft = "0" .. hoursleft;
+        else
+            hoursleft = tostring(hoursleft)
+        end
+
+        local timeleft = hoursleft .. ":" .. minsleft .. ":" .. secsleft
+        if bps > 1024 then
+            local kps = MojoSetup.truncatenum(bps / 1024)
+            if total > 0 then
+                bpsstr = " (" .. kps .. _("Kb/s") .. ", " .. timeleft .. " remaining)"
+            else
+                bpsstr = " (" .. kps .. _("Kb/s") .. ")"
+            end
+        else
+            if total > 0 then
+                bpsstr = " (" .. bps .. _("b/s") .. ", " .. timeleft .. " remaining)"
+            else
+                bpsstr = " (" .. bps .. _("b/s") .. ")"
+            end
+        end
+    end
+    return bpsstr
+end
+
+
 local function split_path(path)
     local retval = {}
     for item in string.gmatch(path .. "/", "(.-)/") do
@@ -176,10 +218,13 @@ local function install_file(path, archive, file, option)
     local component = option.description
     local keepgoing = true
     local callback = function(ticks, justwrote, bw, total)
-        MojoSetup.written = MojoSetup.written + justwrote
-        local percent = calc_percent(MojoSetup.written,
-                                     MojoSetup.totalwrite)
-        local item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
+        local percent = -1
+        local item = fname
+        if total >= 0 then
+            MojoSetup.written = MojoSetup.written + justwrote
+            percent = calc_percent(MojoSetup.written, MojoSetup.totalwrite)
+            item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
+        end
         keepgoing = MojoSetup.gui.progress(ptype, component, percent, item)
         return keepgoing
     end
@@ -677,11 +722,28 @@ local function do_install(install)
                 local fname = string.gsub(url, "^.*/", "", 1)  -- chop the dirs off...
                 local ptype = _("Downloading")  -- !!! FIXME: localization.
                 local component = option.description
+                local bps = 0
+                local bpsticks = 0
+                local bpsstr = ''
+                local item = fname
+                local percent = -1
                 local callback = function(ticks, justwrote, bw, total)
-                    MojoSetup.downloaded = MojoSetup.downloaded + justwrote
-                    local percent = calc_percent(MojoSetup.downloaded,
-                                                 MojoSetup.totaldownload)
-                    local item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
+                    if total < 0 then
+                        -- adjust start point for d/l rate calculation...
+                        bpsticks = ticks + 1000
+                    else
+                        if ticks >= bpsticks then
+                            bpsstr = make_bps_string(bps, bw, total)
+                            bpsticks = ticks + 1000
+                            bps = 0
+                        end
+                        bps = bps + justwrote
+                        MojoSetup.downloaded = MojoSetup.downloaded + justwrote
+                        percent = calc_percent(MojoSetup.downloaded,
+                                               MojoSetup.totaldownload)
+
+                        item = fname .. ": " .. calc_percent(bw, total) .. "%" .. bpsstr -- !!! FIXME: localization
+                    end
                     return MojoSetup.gui.progress(ptype, component, percent, item)
                 end
 
