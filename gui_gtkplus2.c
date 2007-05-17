@@ -183,7 +183,8 @@ static void MojoGui_gtkplus2_deinit(void)
 
 
 static gint do_msgbox(const char *title, const char *text,
-                      GtkMessageType mtype, GtkButtonsType btype)
+                      GtkMessageType mtype, GtkButtonsType btype,
+                      void (*addButtonCallback)(GtkWidget *_msgbox))
 {
     gint retval = 0;
     if (msgbox != NULL)
@@ -192,6 +193,10 @@ static gint do_msgbox(const char *title, const char *text,
                                     mtype, btype, "%s", title);
     gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(msgbox),
                                              "%s", text);
+
+    if (addButtonCallback != NULL)
+        addButtonCallback(msgbox);
+
     retval = gtk_dialog_run(GTK_DIALOG(msgbox));
     gtk_widget_destroy(msgbox);
     msgbox = NULL;
@@ -201,15 +206,50 @@ static gint do_msgbox(const char *title, const char *text,
 
 static void MojoGui_gtkplus2_msgbox(const char *title, const char *text)
 {
-    do_msgbox(title, text, GTK_MESSAGE_INFO, GTK_BUTTONS_OK);
+    do_msgbox(title, text, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, NULL);
 } // MojoGui_gtkplus2_msgbox
 
 
 static boolean MojoGui_gtkplus2_promptyn(const char *title, const char *text)
 {
-    gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
+    gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION,
+                        GTK_BUTTONS_YES_NO, NULL);
     return (rc == GTK_RESPONSE_YES);
 } // MojoGui_gtkplus2_promptyn
+
+
+static void promptynanButtonCallback(GtkWidget *_msgbox)
+{
+    char *always = entry->xstrdup(entry->_("Always"));
+    char *never = entry->xstrdup(entry->_("Never"));
+    gtk_dialog_add_buttons(GTK_DIALOG(_msgbox),
+                           GTK_STOCK_YES, GTK_RESPONSE_YES,
+                           GTK_STOCK_NO, GTK_RESPONSE_NO,
+                           always, 1,
+                           never, 0,
+                           NULL, GTK_RESPONSE_NONE);
+                            
+    free(always);
+    free(never);
+} // promptynanButtonCallback
+
+
+static MojoGuiYNAN MojoGui_gtkplus2_promptynan(const char *title,
+                                               const char *text)
+{
+    MojoGuiYNAN retval;
+    const gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION,
+                              GTK_BUTTONS_NONE, promptynanButtonCallback);
+    switch (rc)
+    {
+        case GTK_RESPONSE_YES: return MOJOGUI_YES;
+        case GTK_RESPONSE_NO: return MOJOGUI_NO;
+        case GTK_RESPONSE_ALWAYS: return MOJOGUI_ALWAYS;
+        case GTK_RESPONSE_NEVER: return MOJOGUI_NEVER;
+    } // switch
+
+    return MOJOGUI_NO;  // just in case.
+} // MojoGui_gtkplus2_promptynan
 
 
 static GtkWidget *create_button(GtkWidget *box, const char *iconname,
@@ -575,6 +615,7 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
 
 static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
 {
+    gint rc = 0;
     // !!! FIXME: Use stock GTK icon for "media"?
     // !!! FIXME: better text.
     const char *title = entry->_("Media change");
@@ -583,7 +624,8 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
     size_t len = strlen(fmt) + strlen(medianame) + 1;
     char *text = (char *) entry->xmalloc(len);
     snprintf(text, len, fmt, medianame);
-    gint rc = do_msgbox(title, text, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK_CANCEL);
+    rc = do_msgbox(title, text, GTK_MESSAGE_WARNING,
+                   GTK_BUTTONS_OK_CANCEL, NULL);
     return (rc == GTK_RESPONSE_OK);
 } // MojoGui_gtkplus2_insertmedia
 

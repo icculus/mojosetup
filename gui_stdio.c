@@ -130,6 +130,51 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
 } // MojoGui_stdio_promptyn
 
 
+static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt)
+{
+    MojoGuiYNAN retval = MOJOGUI_NO;
+    if (!feof(stdin))
+    {
+        const char *localized_no = entry->xstrdup(entry->_("N"));
+        const char *localized_yes = entry->xstrdup(entry->_("Y"));
+        const char *localized_always = entry->xstrdup(entry->_("Always"));
+        const char *localized_never = entry->xstrdup(entry->_("Never"));
+        boolean getout = false;
+        char buf[128];
+        while (!getout)
+        {
+            printf(entry->_("%s\n[y/n/Always/Never]: "), txt);
+            fflush(stdout);
+            if (read_stdin(buf, sizeof (buf)) < 0)
+                getout = true;
+            else if (strcasecmp(buf, localized_no) == 0)
+                getout = true;
+            else if (strcasecmp(buf, localized_yes) == 0)
+            {
+                retval = MOJOGUI_YES;
+                getout = true;
+            } // else if
+            else if (strcasecmp(buf, localized_always) == 0)
+            {
+                retval = MOJOGUI_ALWAYS;
+                getout = true;
+            } // else if
+            else if (strcasecmp(buf, localized_never) == 0)
+            {
+                retval = MOJOGUI_NEVER;
+                getout = true;
+            } // else if
+        } // while
+        free((void *) localized_no);
+        free((void *) localized_yes);
+        free((void *) localized_always);
+        free((void *) localized_never);
+    } // if
+
+    return retval;
+} // MojoGui_stdio_promptynan
+
+
 static boolean MojoGui_stdio_start(const char *title, const char *splash)
 {
     printf("%s\n", title);

@@ -747,6 +747,13 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     if they clicked "NO".
 
 
+  MojoSetup.promptynan(str)
+
+    Show (str) to the user with a GUI message box, and wait until they click
+    either a "YES", "NO", "ALWAYS" or "NEVER" button. Returns the string
+    "yes", "no", "always", or "never".
+
+
   MojoSetup.stackwalk()
 
     This writes a backtrace of the current Lua callstack to the installation

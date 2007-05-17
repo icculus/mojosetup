@@ -131,6 +131,14 @@ static boolean MojoGui_macosx_promptyn(const char *title, const char *text)
 } // MojoGui_macosx_promptyn
 
 
+static MojoGuiYNAN MojoGui_macosx_promptynan(const char *title,
+                                             const char *text)
+{
+    STUBBED("ynan");
+    return MojoGui_macosx_promptyn(title, text);  // !!! FIXME
+} // MojoGui_macosx_promptynan
+
+
 static boolean MojoGui_macosx_start(const char *title, const char *splash)
 {
     return true;  // !!! FIXME

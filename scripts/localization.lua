@@ -49,12 +49,24 @@ MojoSetup.localization = {
     ["%s\n[y/n]"] = {
     };
 
+    -- stdio GUI plugin says this for yes/no/always/never prompts (printf format string).
+    ["%s\n[y/n/Always/Never]: "] = {
+    };
+
     -- This is utf8casecmp()'d for "yes" answers in stdio GUI's promptyn().
     ["Y"] = {
     };
 
     -- This is utf8casecmp()'d for "no" answers in stdio GUI's promptyn().
     ["N"] = {
+    };
+
+    -- This is utf8casecmp()'d for "always" answers in stdio GUI's promptyn().
+    ["Always"] = {
+    };
+
+    -- This is utf8casecmp()'d for "never" answers in stdio GUI's promptyn().
+    ["Never"] = {
     };
 
     ["Yes"] = {

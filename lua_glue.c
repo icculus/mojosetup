@@ -520,6 +520,30 @@ static int luahook_promptyn(lua_State *L)
 } // luahook_promptyn
 
 
+static int luahook_promptynan(lua_State *L)
+{
+    MojoGuiYNAN rc = MOJOGUI_NO;
+    if (GGui != NULL)
+    {
+        const char *title = luaL_checkstring(L, 1);
+        const char *text = luaL_checkstring(L, 2);
+        rc = GGui->promptynan(title, text);
+    } // if
+
+    // Never localize these strings!
+    switch (rc)
+    {
+        case MOJOGUI_YES: return retvalString(L, "yes");
+        case MOJOGUI_NO: return retvalString(L, "no");
+        case MOJOGUI_ALWAYS: return retvalString(L, "always");
+        case MOJOGUI_NEVER: return retvalString(L, "never");
+    } // switch
+
+    assert(false && "BUG: unhandled case in switch statement");
+    return 0;  // shouldn't hit this.
+} // luahook_promptynan
+
+
 static int luahook_logwarning(lua_State *L)
 {
     logWarning(luaL_checkstring(L, 1));
@@ -1289,6 +1313,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_fatal, "fatal");
         set_cfunc(luaState, luahook_msgbox, "msgbox");
         set_cfunc(luaState, luahook_promptyn, "promptyn");
+        set_cfunc(luaState, luahook_promptynan, "promptynan");
         set_cfunc(luaState, luahook_stackwalk, "stackwalk");
         set_cfunc(luaState, luahook_logwarning, "logwarning");
         set_cfunc(luaState, luahook_logerror, "logerror");

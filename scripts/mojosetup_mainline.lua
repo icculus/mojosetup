@@ -305,12 +305,30 @@ local function permit_write(dest, entinfo, file)
         if entinfo.type == "dir" then
             allowoverwrite = false
         else
-            allowoverwrite = file.allowoverwrite
-            if not allowoverwrite then
-                -- !!! FIXME: language and formatting.
-                MojoSetup.loginfo("File '" .. dest .. "' already exists.")
-                allowoverwrite = MojoSetup.promptyn(_("Conflict!"), _("File already exists! Replace?"))
+            if MojoSetup.forceoverwrite ~= nil then
+                allowoverwrite = MojoSetup.forceoverwrite
+            else
+                -- !!! FIXME: option/package-wide overwrite?
+                allowoverwrite = file.allowoverwrite
+                if not allowoverwrite then
+                    -- !!! FIXME: language and formatting.
+                    MojoSetup.loginfo("File '" .. dest .. "' already exists.")
+                    local ynan = MojoSetup.promptynan(_("Conflict!"), _("File already exists! Replace?"))
+                    if ynan == "always" then
+                        MojoSetup.forceoverwrite = true
+                        allowoverwrite = true
+                    elseif ynan == "never" then
+                        MojoSetup.forceoverwrite = false
+                        allowoverwrite = false
+                    elseif ynan == "yes" then
+                        allowoverwrite = true
+                    elseif ynan == "no" then
+                        allowoverwrite = false
+                    end
+                end
             end
+
+            -- !!! FIXME: Setup.File.mustoverwrite to override "never"?
 
             if allowoverwrite then
                 local id = #MojoSetup.rollbacks + 1
@@ -509,6 +527,7 @@ end
 
 
 local function do_install(install)
+    MojoSetup.forceoverwrite = nil
     MojoSetup.written = 0
     MojoSetup.totalwrite = 0
     MojoSetup.downloaded = 0
@@ -910,6 +929,7 @@ local function do_install(install)
     MojoSetup.scratchdir = nil
     MojoSetup.rollbackdir = nil
     MojoSetup.downloaddir = nil
+    MojoSetup.forceoverwrite = nil
     MojoSetup.stages = nil
     MojoSetup.files = nil
     MojoSetup.media = nil

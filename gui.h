@@ -26,6 +26,16 @@ typedef enum
 } MojoGuiPluginPriority;
 
 
+typedef enum
+{
+    MOJOGUI_NO,
+    MOJOGUI_YES,
+    MOJOGUI_ALWAYS,
+    MOJOGUI_NEVER
+} MojoGuiYNAN;
+
+
+
 /*
  * Abstract GUI interfaces.
  */
@@ -43,6 +53,7 @@ struct MojoGuiSetupOptions
     MojoGuiSetupOptions *child;
 };
 
+
 #define MOJOGUI_ENTRY_POINT MojoSetup_Gui_GetInterface
 #define MOJOGUI_ENTRY_POINT_STR DEFINE_TO_STR(MOJOGUI_ENTRY_POINT)
 
@@ -58,6 +69,7 @@ struct MojoGui
     void (*deinit)(void);
     void (*msgbox)(const char *title, const char *text);
     boolean (*promptyn)(const char *title, const char *text);
+    MojoGuiYNAN (*promptynan)(const char *title, const char *text);
     boolean (*start)(const char *title, const char *splash);
     void (*stop)(void);
     int (*readme)(const char *name, const uint8 *data, size_t len,
@@ -97,6 +109,8 @@ static boolean MojoGui_##module##_init(void); \
 static void MojoGui_##module##_deinit(void); \
 static void MojoGui_##module##_msgbox(const char *title, const char *text); \
 static boolean MojoGui_##module##_promptyn(const char *t1, const char *t2); \
+static MojoGuiYNAN MojoGui_##module##_promptynan(const char *t1, \
+                                                 const char *t2); \
 static boolean MojoGui_##module##_start(const char *t, const char *s); \
 static void MojoGui_##module##_stop(void); \
 static int MojoGui_##module##_readme(const char *name, const uint8 *data, \
@@ -120,6 +134,7 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_deinit, \
             MojoGui_##module##_msgbox, \
             MojoGui_##module##_promptyn, \
+            MojoGui_##module##_promptynan, \
             MojoGui_##module##_start, \
             MojoGui_##module##_stop, \
             MojoGui_##module##_readme, \
