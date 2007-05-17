@@ -52,6 +52,7 @@ void beos_usleep(unsigned long ticks);
 #endif
 
 #include "platform.h"
+#include "gui.h"
 
 static struct timeval startup_time;
 
@@ -590,6 +591,13 @@ char *MojoPlatform_findMedia(const char *uniquefile)
 void MojoPlatform_log(const char *str)
 {
     syslog(LOG_USER | LOG_INFO, "%s", str);
+
+#if PLATFORM_MACOSX
+    // put to stdout too, if this isn't the stdio UI.
+    // This will let the info show up in /Applications/Utilities/Console.app
+    if ((GGui != NULL) && (strcmp(GGui->name(), "stdio") != 0))
+        printf("%s\n", str);
+#endif
 } // MojoPlatform_log
 
 
