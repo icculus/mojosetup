@@ -227,8 +227,8 @@ static void promptynanButtonCallback(GtkWidget *_msgbox)
                            GTK_STOCK_NO, GTK_RESPONSE_NO,
                            always, 1,
                            never, 0,
-                           NULL, GTK_RESPONSE_NONE);
-                            
+                           NULL);
+
     free(always);
     free(never);
 } // promptynanButtonCallback
@@ -237,17 +237,17 @@ static void promptynanButtonCallback(GtkWidget *_msgbox)
 static MojoGuiYNAN MojoGui_gtkplus2_promptynan(const char *title,
                                                const char *text)
 {
-    MojoGuiYNAN retval;
     const gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION,
                               GTK_BUTTONS_NONE, promptynanButtonCallback);
     switch (rc)
     {
         case GTK_RESPONSE_YES: return MOJOGUI_YES;
         case GTK_RESPONSE_NO: return MOJOGUI_NO;
-        case GTK_RESPONSE_ALWAYS: return MOJOGUI_ALWAYS;
-        case GTK_RESPONSE_NEVER: return MOJOGUI_NEVER;
+        case 1: return MOJOGUI_ALWAYS;
+        case 0: return MOJOGUI_NEVER;
     } // switch
 
+    assert(false && "BUG: unhandled case in switch statement");
     return MOJOGUI_NO;  // just in case.
 } // MojoGui_gtkplus2_promptynan
 
