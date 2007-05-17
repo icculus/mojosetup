@@ -1,0 +1,124 @@
+local _ = MojoSetup.translate
+
+Setup.Package
+{
+    id = "duke3d",
+    description = "Duke Nukem 3D",
+    version = "1.5",
+    splash = "splash.jpg",
+    superuser = false,
+    recommended_destinations =
+    {
+        MojoSetup.info.homedir,
+        "/opt/games",
+        "/usr/local/games"
+    },
+
+    Setup.Eula
+    {
+        description = _("GNU General Public License"),
+        source = _("gpl.txt")
+    },
+
+    Setup.Readme
+    {
+        description = _("MojoSetup README"),
+        source = _("mojosetup_readme.txt")
+    },
+
+    Setup.Readme
+    {
+        description = _("Duke Nukem 3D README"),
+        source = _("duke3d_readme.txt")
+    },
+
+    Setup.Media
+    {
+        id = "mac-cd",
+        description = _("MacSoft Duke3D CD-ROM"),
+        uniquefile = "Goodies/Utilities/Duke File Typer"
+    },
+
+    Setup.Media
+    {
+        id = "pc-cd",
+        description = _("PC Atomic Edition CD-ROM"),
+        uniquefile = "atominst/duke3d.grp"
+    },
+
+    Setup.OptionGroup
+    {
+        description = _("Installation type"),
+
+        Setup.Option
+        {
+            value = true,
+            required = false,
+            disabled = false,
+            bytes = 31102768,
+            description = _("Install Shareware version"),
+
+            Setup.File
+            {
+                wildcards = "*.txt";  -- catch all the EULAs and READMEs.
+            },
+            Setup.File
+            {
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_shareware_bins_" .. MojoSetup.info.ostype .. "_" .. MojoSetup.info.arch .. ".zip"
+            },
+            Setup.File
+            {
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_shareware_data.zip"
+            },
+            Setup.File
+            {
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_unified_content.zip"
+            },
+        },
+
+        Setup.Option
+        {
+            value = false,
+            required = false,
+            disabled = false,
+            bytes = 64525364,
+            description = _("Install full game from Atomic Edition disc"),
+
+            Setup.File
+            {
+                wildcards = "*.txt";  -- catch all the EULAs and READMEs.
+            },
+
+            Setup.File
+            {
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_retail_bins_" .. MojoSetup.info.ostype .. "_" .. MojoSetup.info.arch .. ".zip"
+            },
+
+            Setup.File
+            {
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_unified_content.zip"
+            },
+
+            Setup.File
+            {
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_retail_demos.zip"
+            },
+
+            Setup.File
+            {
+                source = "media://pc-cd/",
+
+                -- do a filter to catch filename case differences.
+                filter = function(dest)
+                if string.lower(dest) == "atominst/duke3d.grp" then
+                    return "duke3d.grp"   -- chop "atominst/".
+                end
+                return nil  -- don't install anything else here.
+                end
+            },
+        },
+    },
+}
+
+-- end of config.lua ...
+
