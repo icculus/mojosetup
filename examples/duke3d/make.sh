@@ -19,7 +19,7 @@ mkdir image/data
 
 # Build MojoSetup binaries from scratch.
 cd ../..
-rm -rf *.so mojosetup `svn propget svn:ignore .`
+rm -rf `svn propget svn:ignore .`
 cmake \
     -DCMAKE_BUILD_TYPE=MinSizeRel \
     -DMOJOSETUP_ARCHIVE_TAR=FALSE \
@@ -31,15 +31,18 @@ cmake \
     -DMOJOSETUP_LUALIB_OS=FALSE \
     -DMOJOSETUP_LUALIB_PACKAGE=FALSE \
     -DMOJOSETUP_LUA_PARSER=FALSE \
+    -DMOJOSETUP_URL_FTP=FALSE \
     .
 make -j5
 
 # Strip the binaries and GUI plugins, put them somewhere useful.
 strip ./mojosetup
 mv ./mojosetup ./examples/duke3d/duke3d-installer
-for feh in *.so ; do
-    strip $feh
-    mv $feh examples/duke3d/image/guis
+for feh in *.so *.dll *.dylib ; do
+    if [ -f $feh ]; then
+        strip $feh
+        mv $feh examples/duke3d/image/guis
+    fi
 done
 
 # Compile the Lua scripts, put them in the base archive.
