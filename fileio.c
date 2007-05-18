@@ -102,7 +102,6 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
         MojoPlatform_sleep(100);
         if (cb != NULL)
         {
-            // !!! FIXME: need a way to say "we're just spinning without a goal."
             if (!cb(MojoPlatform_ticks() - start, 0, 0, -1, data))
                 iofailure = true;
         } // if
