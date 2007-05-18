@@ -990,6 +990,13 @@ static int64 MojoInput_blocking_read(MojoInput *io, void *buf, uint32 bufsize)
     uint32 avail = 0;
     while (!io->ready(io))
         MojoPlatform_sleep(100);
+
+    if (pthread_mutex_lock(&info->mutex) != 0)
+    {
+        info->stop = info->error = true;  // oh well.
+        return -1;
+    } // if
+
     avail = MojoRing_availableForGet(info->ring);
     if (avail > 0)
     {
@@ -997,8 +1004,12 @@ static int64 MojoInput_blocking_read(MojoInput *io, void *buf, uint32 bufsize)
             avail = bufsize;
         MojoRing_get(info->ring, (uint8 *) buf, avail);
         info->bytes_read += avail;
-        return avail;
     } // if
+
+    pthread_mutex_unlock(&info->mutex);
+
+    if (avail > 0)
+        return avail;
 
     if (info->error)
         return -1;
