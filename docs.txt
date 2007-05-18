@@ -604,30 +604,32 @@ Here are the elements, and the attributes they can possess.
 
    permissions (no default, mustBePerms)
 
-    Override the permissions that these files will be created with. This is
-    a string for future expansion (non-Unix systems, extended attributes, etc),
-    and since Lua does not have syntax for specifying octal numbers directly.
+    Override the permissions with which the files will be created. This is
+    a string, not a number...this allows both for future expansion (non-Unix
+    systems, extended attributes, etc), and works around the fact that Lua
+    does not have syntax for specifying octal numbers directly.
 
     Currently this string maps to Unix permissions as an octal number:
     "0644" would be read/write access for the user, and read-only for the
     group and everyone else.
 
-    If not specified, the permissions will be set to whatever is already
-    associated with the file (such as the Unix permissions in a .tar file's
-    entry).
+    If set to nil or not specified, the new file's permissions will be
+    whatever is already associated with the file (such as the Unix permissions
+    in a .tar file's entry).
 
     Please note that files coming from a real filesystem will have their
-    defaults overridden by the installer (to "0644"), since operating systems
-    tend to report every file on a CD-ROMs as read-only and executable on some
-    Unix systems. Plan accordingly.
+    defaults overridden by MojoSetup (to "0644"), since many operating systems
+    tend to report every file on a CD-ROM as read-only and executable, which
+    is frequently not what you want in the installed copy. Plan accordingly.
 
     You can return a permissions string as the second value from your filter
     function as well, which may be more efficient if you only need to change
-    a few files, as each Setup.File has to iterate the whole archive, or need
-    to adjust permissions in only a portion of a downloaded archive. This
-    attribute applies permissions to ever installed file through this element.
-    If this attribute is set and the filter returns a non-nil permission, the
-    filter takes precedence.
+    a few files, (each Setup.File has to iterate the whole archive, so you
+    want to avoid specifying multiple Setup.Files for one archive when
+    possible), or need to adjust permissions in only a portion of a downloaded
+    archive. This attribute applies permissions to every file installed
+    through this element. If this attribute is set and the filter returns a
+    non-nil permission, the filter takes precedence.
 
 
 Add any localized strings:
