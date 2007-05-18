@@ -27,6 +27,7 @@ CREATE_MOJOGUI_ENTRY_POINT(macosx)
 
 static uint8 MojoGui_macosx_priority(void)
 {
+    // obviously this is the thing you want on Mac OS X.
     return MOJOGUI_PRIORITY_TRY_FIRST;
 } // MojoGui_macosx_priority
 
@@ -43,7 +44,11 @@ static boolean MojoGui_macosx_init(void)
         SetFrontProcess(&psn);
     } // if
 
-    return true;
+    // !!! FIXME: make sure we have access to the desktop...may be ssh'd in
+    // !!! FIXME:  as another user that doesn't have the Finder loaded or
+    // !!! FIXME:  something.
+
+    return true;  // always succeeds.
 } // MojoGui_macosx_init
 
 static void MojoGui_macosx_deinit(void)

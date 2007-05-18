@@ -75,7 +75,7 @@ static int readstr(const char *prompt, char *buf, int len,
 
 static uint8 MojoGui_stdio_priority(void)
 {
-    return MOJOGUI_PRIORITY_TRY_LAST;  // always a last resort.
+    return MOJOGUI_PRIORITY_TRY_ABSOLUTELY_LAST;  // always a last resort.
 } // MojoGui_stdio_priority
 
 

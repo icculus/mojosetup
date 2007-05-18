@@ -171,7 +171,12 @@ static boolean MojoGui_gtkplus2_init(void)
     int tmpargc = 0;
     char *args[] = { NULL, NULL };
     char **tmpargv = args;
-    return gtk_init_check(&tmpargc, &tmpargv) ? true : false;
+    if (!gtk_init_check(&tmpargc, &tmpargv))
+    {
+        entry->logInfo("gtkplus2: gtk_init_check() failed, use another UI.");
+        return false;
+    } // if
+    return true;
 } // MojoGui_gtkplus2_init
 
 
