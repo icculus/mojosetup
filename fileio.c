@@ -387,11 +387,11 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
     {
         ar->prevEnum.filesize = statbuf.st_size;
 
-        // !!! FIXME: not sure this is the best thing.
         // We currently force the perms from physical files, since CDs on
         //  Linux tend to mark every files as executable and read-only. If you
         //  want to install something with specific permissions, wrap it in a
-        //  tarball or chmod it from a postinstall hook in your config file.
+        //  tarball, or use Setup.File.permissions, or return a permissions
+        //  string from Setup.File.filter.
         //ar->prevEnum.perms = statbuf.st_mode;
         ar->prevEnum.perms = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 

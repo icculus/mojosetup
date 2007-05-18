@@ -47,7 +47,7 @@ char *MojoPlatform_realpath(const char *path);
 boolean MojoPlatform_symlink(const char *src, const char *dst);
 
 // !!! FIXME: comment me.
-boolean MojoPlatform_mkdir(const char *path);
+boolean MojoPlatform_mkdir(const char *path, uint16 perms);
 
 // Move a file to a new name. This has to be a fast (if not atomic) operation,
 //  so if it would require a legitimate copy to another filesystem or device,
@@ -72,6 +72,20 @@ boolean MojoPlatform_chmod(const char *fname, uint16 p);
 
 // !!! FIXME: comment me.
 char *MojoPlatform_findMedia(const char *uniquefile);
+
+// Convert a string into a permissions bitmask. On Unix, this is currently
+//  expected to be an octal string like "0755", but may except other forms
+//  in the future, and other platforms may need to interpret permissions
+//  differently. (str) may be NULL for defaults, and is considered valid.
+// If (str) is not valid, return a reasonable default and set (*valid) to
+//  false. Otherwise, set (*valid) to true and return the converted value.
+uint16 MojoPlatform_makePermissions(const char *str, boolean *valid);
+
+// Return a default, sane set of permissions for a newly-created file.
+uint16 MojoPlatform_defaultFilePerms(void);
+
+// Return a default, sane set of permissions for a newly-created directory.
+uint16 MojoPlatform_defaultDirPerms(void);
 
 // Wrappers for Unix dlopen/dlsym/dlclose, sort of. Instead of a filename,
 //  these take a memory buffer for the library. If you can't load this

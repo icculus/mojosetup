@@ -673,16 +673,35 @@ static int luahook_writefile(lua_State *L)
 {
     MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
     const char *path = luaL_checkstring(L, 2);
+    uint16 perms = archive->prevEnum.perms;
     boolean retval = false;
     MojoInput *in = archive->openCurrentEntry(archive);
     if (in != NULL)
     {
-        retval = MojoInput_toPhysicalFile(in, path, archive->prevEnum.perms,
-                                              writeCallback, L);
+        if (!lua_isnil(L, 3))
+        {
+            boolean valid = false;
+            const char *permstr = luaL_checkstring(L, 3);
+            perms = MojoPlatform_makePermissions(permstr, &valid);
+            if (!valid)
+                fatal(_("BUG: '%s' is not a valid permission string"), permstr);
+        } // if
+        retval = MojoInput_toPhysicalFile(in, path, perms, writeCallback, L);
     } // if
 
     return retvalBoolean(L, retval);
 } // luahook_writefile
+
+
+static int luahook_isvalidperms(lua_State *L)
+{
+    boolean valid = false;
+    const char *permstr = NULL;
+    if (!lua_isnil(L, 1))
+        permstr = luaL_checkstring(L, 1);
+    MojoPlatform_makePermissions(permstr, &valid);
+    return retvalBoolean(L, valid);
+} // luahook_isvalidperms
 
 
 static int luahook_download(lua_State *L)
@@ -811,7 +830,18 @@ static int luahook_platform_symlink(lua_State *L)
 static int luahook_platform_mkdir(lua_State *L)
 {
     const char *dir = luaL_checkstring(L, 1);
-    return retvalBoolean(L, MojoPlatform_mkdir(dir));
+    uint16 perms = 0;
+    if (lua_isnil(L, 2))
+        perms = MojoPlatform_defaultDirPerms();
+    else
+    {
+        boolean valid = false;
+        const char *permstr = luaL_checkstring(L, 2);
+        perms = MojoPlatform_makePermissions(permstr, &valid);
+        if (!valid)
+            fatal(_("BUG: '%s' is not a valid permission string"), permstr);
+    } // if
+    return retvalBoolean(L, MojoPlatform_mkdir(dir, perms));
 } // luahook_platform_mkdir
 
 
@@ -1330,6 +1360,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_wildcardmatch, "wildcardmatch");
         set_cfunc(luaState, luahook_truncatenum, "truncatenum");
         set_cfunc(luaState, luahook_date, "date");
+        set_cfunc(luaState, luahook_isvalidperms, "isvalidperms");
 
         // Set some information strings...
         lua_newtable(luaState);

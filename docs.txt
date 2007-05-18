@@ -157,6 +157,7 @@ Here are the elements, and the attributes they can possess.
   mustBeFunction: Error if isn't a function (can be C or Lua).
   mustBeNumber: Error if isn't a number.
   mustBeUrl: Error if isn't a string that matches the regexp "^.+://.-/.*".
+  mustBePerms: Error if isn't a valid permissions string for the platform.
   mustBeStringOrTableOfStrings: Error if isn't a string or an array of strings.
 
  Attributes that aren't explicitly specified take on their default value. In
@@ -576,6 +577,20 @@ Here are the elements, and the attributes they can possess.
             return dest    -- everything else can go through as-is.
          end
 
+    Filters can optionally return a second argument, a string, that defines
+    the destination file's permissions. This can be omitted, or nil, to use
+    the default permissions:
+
+        filter = function(dest)
+            if dest == "mygame-binary" then
+                return dest, "0755"   -- make sure it's executable.
+            end
+            return dest   -- everything else just goes through as-is.
+        end
+
+    Please see the documentation for Setup.File's "permissions" attribute for
+    further discussion.
+
 
    allowoverwrite (no default, mustBeBool)
 
@@ -585,6 +600,34 @@ Here are the elements, and the attributes they can possess.
     Files are actually moved out of the way instead of overwritten, so the
     installer can restore them if the install is cancelled or fails mid-way.
     They are deleted only after a successful install.
+
+
+   permissions (no default, mustBePerms)
+
+    Override the permissions that these files will be created with. This is
+    a string for future expansion (non-Unix systems, extended attributes, etc),
+    and since Lua does not have syntax for specifying octal numbers directly.
+
+    Currently this string maps to Unix permissions as an octal number:
+    "0644" would be read/write access for the user, and read-only for the
+    group and everyone else.
+
+    If not specified, the permissions will be set to whatever is already
+    associated with the file (such as the Unix permissions in a .tar file's
+    entry).
+
+    Please note that files coming from a real filesystem will have their
+    defaults overridden by the installer (to "0644"), since operating systems
+    tend to report every file on a CD-ROMs as read-only and executable on some
+    Unix systems. Plan accordingly.
+
+    You can return a permissions string as the second value from your filter
+    function as well, which may be more efficient if you only need to change
+    a few files, as each Setup.File has to iterate the whole archive, or need
+    to adjust permissions in only a portion of a downloaded archive. This
+    attribute applies permissions to ever installed file through this element.
+    If this attribute is set and the filter returns a non-nil permission, the
+    filter takes precedence.
 
 
 Add any localized strings:

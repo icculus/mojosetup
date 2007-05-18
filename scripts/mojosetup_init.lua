@@ -128,6 +128,7 @@ Setup = {}
 
 local function schema_assert(test, fnname, elem, errstr)
     if not test then
+        -- !!! FIXME: error()? localization?
         error(fnname .. "::" .. elem .. " " .. errstr .. ".", 0)
     end
 end
@@ -207,6 +208,12 @@ local function mustBeUrl(fnname, elem, val)
         local supported = MojoSetup.info.supportedurls[prot]
         schema_assert(supported, fnname, elem, "URL protocol is unsupported")
     end
+end
+
+local function mustBePerms(fnname, elem, val)
+    mustBeString(fnname, elem, val)
+    local valid = MojoSetup.isvalidperms(val)
+    schema_assert(valid, fnname, elem, "Permission string is invalid")
 end
 
 local function sanitize(fnname, tab, elems)
@@ -412,6 +419,7 @@ function Setup.File(tab)
         { "wildcards", nil, mustBeStringOrTableOfStrings },
         { "filter", nil, mustBeFunction },
         { "allowoverwrite", nil, mustBeBool },
+        { "permissions", nil, mustBePerms },
     })
 end
 

@@ -482,10 +482,10 @@ boolean MojoPlatform_symlink(const char *src, const char *dst)
 } // MojoPlatform_symlink
 
 
-boolean MojoPlatform_mkdir(const char *path)
+boolean MojoPlatform_mkdir(const char *path, uint16 perms)
 {
     // !!! FIXME: error if already exists?
-    return (mkdir(path, 0755) == 0);
+    return (mkdir(path, perms) == 0);
 } // MojoPlatform_mkdir
 
 
@@ -542,6 +542,37 @@ boolean MojoPlatform_perms(const char *fname, uint16 *p)
     } // if
     return retval;
 } // MojoPlatform_perms
+
+
+uint16 MojoPlatform_defaultFilePerms(void)
+{
+    return 0644;
+} // MojoPlatform_defaultFilePerms
+
+
+uint16 MojoPlatform_defaultDirPerms(void)
+{
+    return 0755;
+} // MojoPlatform_defaultDirPerms
+
+
+uint16 MojoPlatform_makePermissions(const char *str, boolean *_valid)
+{
+    uint16 retval = 0644;
+    boolean valid = true;
+    if (str != NULL)
+    {
+        char *endptr = NULL;
+        long strval = strtol(str, &endptr, 8);
+        // complete string was a valid number?
+        valid = ((*endptr == '\0') && (strval >= 0) && (strval <= 0xFFFF));
+        if (valid)
+            retval = (uint16) strval;
+    } // if
+
+    *_valid = valid;
+    return retval;
+} // MojoPlatform_makePermissions
 
 
 boolean MojoPlatform_chmod(const char *fname, uint16 p)

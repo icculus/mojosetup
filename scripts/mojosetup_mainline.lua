@@ -226,7 +226,7 @@ local function drill_for_archive(archive, path, arclist)
 end
 
 
-local function install_file(path, archive, file, option)
+local function install_file(path, archive, file, option, perms)
     -- Upvalued so we don't look these up each time...
     local fname = string.gsub(path, "^.*/", "", 1)  -- chop the dirs off...
     local ptype = _("Installing")  -- !!! FIXME: localization.
@@ -245,7 +245,7 @@ local function install_file(path, archive, file, option)
     end
 
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
-    if not MojoSetup.writefile(archive, path, callback) then
+    if not MojoSetup.writefile(archive, path, perms, callback) then
         -- !!! FIXME: formatting!
         if not keepgoing then
             MojoSetup.logerror("User cancelled install during file write.")
@@ -270,9 +270,9 @@ local function install_symlink(path, lndest)
 end
 
 
-local function install_directory(path)
+local function install_directory(path, perms)
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
-    if not MojoSetup.platform.mkdir(path) then
+    if not MojoSetup.platform.mkdir(path, perms) then
         -- !!! FIXME: formatting
         MojoSetup.logerror("Failed to create dir '" .. path .. "'")
         MojoSetup.fatal(_("mkdir failed"))
@@ -291,7 +291,7 @@ local function install_parent_dirs(path)
         if item ~= "" then
             fullpath = fullpath .. "/" .. item
             if not MojoSetup.platform.exists(fullpath) then
-                install_directory(fullpath)
+                install_directory(fullpath, nil)
             end
         end
     end
@@ -361,8 +361,14 @@ local function install_archive_entry(archive, ent, file, option)
         dest = dest .. "/" .. entdest
     end
 
+    local perms = file.permissions   -- may be nil
+
     if file.filter ~= nil then
-        dest = file.filter(dest)
+        local filterperms
+        dest, filterperms = file.filter(dest)
+        if filterperms ~= nil then
+            perms = filterperms
+        end
     end
 
     if dest ~= nil then  -- Only install if file wasn't filtered out
@@ -370,9 +376,9 @@ local function install_archive_entry(archive, ent, file, option)
         if permit_write(dest, ent, file) then
             install_parent_dirs(dest)
             if ent.type == "file" then
-                install_file(dest, archive, file, option)
+                install_file(dest, archive, file, option, perms)
             elseif ent.type == "dir" then
-                install_directory(dest)
+                install_directory(dest, perms)
             elseif ent.type == "symlink" then
                 install_symlink(dest, ent.linkdest)
             else  -- !!! FIXME: device nodes, etc...
