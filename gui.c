@@ -66,7 +66,10 @@ static PluginList *initGuiPluginsByPriority(PluginList *plugins)
         for (i = plugins->next; i != NULL; i = i->next)
         {
             if ( (i->priority == p) && (i->gui->init()) )
+            {
+                logInfo("Selected '%s' UI.", i->gui->name());
                 return i;
+            } // if
         } // for
     } // for
 
