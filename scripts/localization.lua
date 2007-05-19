@@ -137,7 +137,7 @@ MojoSetup.localization = {
     ["failed to load file '%s'"] = {
     };
 
-    ["Please insert '%s'\n"] = {
+    ["Please insert '%s'"] = {
     };
 };
 

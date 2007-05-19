@@ -389,7 +389,8 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
 static boolean MojoGui_stdio_insertmedia(const char *medianame)
 {
     char buf[32];
-    printf(entry->_("Please insert '%s'\n"), medianame);
+    printf(entry->_("Please insert '%s'"), medianame);
+    printf("\n");
     return (readstr(NULL, buf, sizeof (buf), false, true) >= 0);
 } // MojoGui_stdio_insertmedia
 
