@@ -380,9 +380,14 @@ int panic(const char *err)
 
     else if (panic_runs == 2)
     {
-        if ((GGui != NULL) && (GGui->msgbox != NULL))
+        boolean domsgbox = ((GGui != NULL) && (GGui->msgbox != NULL));
+        if (domsgbox)
             GGui->msgbox(_("PANIC"), err);
-        else
+
+        if (GGui->deinit != NULL)
+            GGui->deinit();
+
+        if (!domsgbox)
             panic(err);  /* no GUI plugin...double-panic. */
     } // if
 
