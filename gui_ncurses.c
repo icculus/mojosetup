@@ -87,19 +87,21 @@ static char **splitText(char *text, int *_count, int *_w)
     *_count = *_w = 0;
     while (*text)
     {
+        int pos = 0;
         int furthest = 0;
-        for (i = 0; (*text) && (i < (scrw-4)); i++)
+
+        for (i = 0; (text[i]) && (i < (scrw-4)); i++)
         {
             const int ch = text[i];
             if ((ch == '\r') || (ch == '\n'))
             {
-                text[i] = '\0';
                 count++;
                 retval = (char **) entry->xrealloc(retval,
                                                    count * sizeof (char *));
+                text[i] = '\0';
                 retval[count-1] = entry->xstrdup(text);
-                *text = ch;
                 text += i;
+                *text = ch;
                 if ((ch == '\r') && (text[1] == '\n'))
                     text++;
                 text++;
@@ -114,25 +116,25 @@ static char **splitText(char *text, int *_count, int *_w)
             } // else if
         } // for
 
-        if (*text)  // line overflow, need to wrap...
+        // line overflow or end of stream...
+        pos = (*text) ? furthest : i;
+        if ((*text) && (furthest == 0))  // uhoh, no split at all...hack it.
         {
-            int pos = furthest;
-            char ch;
-            if (furthest == 0)  // uhoh, no split at all...hack it.
-            {
-                // !!! FIXME: might be chopping in the middle of a UTF-8 seq.
-                pos = strlen(text);
-                if (pos > scrw-4)
-                    pos = scrw-4;
-            } // if
+            // !!! FIXME: might be chopping in the middle of a UTF-8 seq.
+            pos = strlen(text);
+            if (pos > scrw-4)
+                pos = scrw-4;
+        } // if
 
-            ch = text[pos];
-            text[pos] = '\0';
+        if (pos > 0)
+        {
+            char ch = text[pos];
             count++;
             retval = (char **) entry->xrealloc(retval, count * sizeof (char*));
+            text[pos] = '\0';
             retval[count-1] = entry->xstrdup(text);
-            *text = ch;
             text += pos;
+            *text = ch;
             if (pos > w)
                 w = pos;
         } // if
@@ -170,9 +172,13 @@ static void drawButton(MojoBox *mojobox, int button)
 static void drawText(MojoBox *mojobox)
 {
     int i;
-    wclear(mojobox->textwin);
-    for (i = 0; i+mojobox->textpos < mojobox->textlinecount; i++)
-        mvwaddstr(mojobox->textwin, i, 0, mojobox->textlines[i]);
+    int pos = mojobox->textpos;
+    int w, h;
+    WINDOW *win = mojobox->textwin;
+    getmaxyx(win, h, w);
+    wclear(mojobox->textwin);  // !!! FIXME: flickers...
+    for (i = 0; (pos < mojobox->textlinecount) && (i < h); i++, pos++)
+        mvwaddstr(win, i, 0, mojobox->textlines[pos]);
 } // drawText
 
 
@@ -222,7 +228,7 @@ static MojoBox *makeBox(const char *title, const char *text,
     if (bcount > 0)
     {
         for (i = 0; i < bcount; i++)
-            buttonsw += strcells(buttons[i]) + 6;
+            buttonsw += strcells(buttons[i]) + 5;  // '<', ' ', ' ', '>', ' '
         if (buttonsw > w)
             w = buttonsw;
         // !!! FIXME: what if these overflow the screen?
@@ -264,17 +270,17 @@ static MojoBox *makeBox(const char *title, const char *text,
 
     if (bcount > 0)
     {
-        int pos = (w - buttonsw) / 2;
+        const int buttony = (((scrh - h) / 2) + h)-2;
+        int buttonx = (((scrw - w) / 2) + w) - ((w - buttonsw) / 2);
         wmove(win, h-3, 1);
         whline(win, ACS_HLINE | A_BOLD | COLOR_PAIR(MOJOCOLOR_BORDERTOP), w-2);
         for (i = 0; i < bcount; i++)
         {
             len = strcells(buttons[i]) + 4;
-            pos += len-2;
-            win = retval->buttons[i] = newwin(1, len, (((scrh - h) / 2) + h)-2,
-                                              (((scrw - w) / 2) + w)-pos);
-
-	        keypad(win, TRUE);
+            buttonx -= len+1;
+            win = retval->buttons[i] = newwin(1, len, buttony, buttonx);
+	        buttonx -= 1;
+            keypad(win, TRUE);
             nodelay(win, ndelay);
         } // for
     } // if
@@ -345,6 +351,8 @@ static void freeBox(MojoBox *mojobox, boolean clearscreen)
 
 static int upkeepBox(MojoBox **_mojobox, int ch)
 {
+    static boolean justResized = false;
+    int w, h;
     MojoBox *mojobox = *_mojobox;
     if (mojobox == NULL)
         return -2;
@@ -352,6 +360,11 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
     switch (ch)
     {
         case ERR:
+            if (justResized)   // !!! FIXME: this is a kludge.
+            {
+                justResized = false;
+                return -1;
+            } // if
             return -2;
 
         case '\r':
@@ -363,11 +376,86 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
         case '\e':
             return mojobox->buttoncount-1;
 
+        case KEY_UP:
+            if (mojobox->textpos > 0)
+            {
+                mojobox->textpos--;
+                drawText(mojobox);
+                wrefresh(mojobox->textwin);
+            } // if
+            return -1;
+
+        case KEY_DOWN:
+            getmaxyx(mojobox->textwin, h, w);
+            if (mojobox->textpos < (mojobox->textlinecount-h))
+            {
+                mojobox->textpos++;
+                drawText(mojobox);
+                wrefresh(mojobox->textwin);
+            } // if
+            return -1;
+
+        case KEY_PPAGE:
+            if (mojobox->textpos > 0)
+            {
+                getmaxyx(mojobox->textwin, h, w);
+                mojobox->textpos -= h;
+                if (mojobox->textpos < 0)
+                    mojobox->textpos = 0;
+                drawText(mojobox);
+                wrefresh(mojobox->textwin);
+            } // if
+            return -1;
+
+        case KEY_NPAGE:
+            getmaxyx(mojobox->textwin, h, w);
+            if (mojobox->textpos < (mojobox->textlinecount-h))
+            {
+                mojobox->textpos += h;
+                if (mojobox->textpos > (mojobox->textlinecount-h))
+                    mojobox->textpos = (mojobox->textlinecount-h);
+                drawText(mojobox);
+                wrefresh(mojobox->textwin);
+            } // if
+            return -1;
+
+        case KEY_LEFT:
+            if (mojobox->buttoncount > 1)
+            {
+                if (mojobox->hoverover < (mojobox->buttoncount-1))
+                {
+                    mojobox->hoverover++;
+                    drawButton(mojobox, mojobox->hoverover-1);
+                    drawButton(mojobox, mojobox->hoverover);
+                    wrefresh(mojobox->buttons[mojobox->hoverover-1]);
+                    wrefresh(mojobox->buttons[mojobox->hoverover]);
+                } // if
+            } // if
+            return -1;
+
+        case KEY_RIGHT:
+            if (mojobox->buttoncount > 1)
+            {
+                if (mojobox->hoverover > 0)
+                {
+                    mojobox->hoverover--;
+                    drawButton(mojobox, mojobox->hoverover+1);
+                    drawButton(mojobox, mojobox->hoverover);
+                    wrefresh(mojobox->buttons[mojobox->hoverover+1]);
+                    wrefresh(mojobox->buttons[mojobox->hoverover]);
+                } // if
+            } // if
+            return -1;
+
         case KEY_RESIZE:
+            justResized = true;  // !!! FIXME: kludge.
             mojobox = makeBox(mojobox->title, mojobox->text,
                               mojobox->buttontext, mojobox->buttoncount,
                               mojobox->ndelay, mojobox->hidecursor);
+            mojobox->cursval = (*_mojobox)->cursval;  // keep this sane.
             freeBox(*_mojobox, false);
+            if (mojobox->hidecursor)
+                curs_set(0); // make sure this stays sane.
             *_mojobox = mojobox;
             return -1;
     } // switch
