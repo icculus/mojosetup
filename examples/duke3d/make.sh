@@ -4,11 +4,29 @@
 #  example, but invest effort in what it's trying to do, and what it produces.
 #  (make sure you don't build in features you don't need, etc).
 
+# Stop if anything produces an error.
+set -e
+
+DEBUG=0
+if [ "$1" = "--debug" ]; then
+    echo "debug build!"
+    DEBUG=1
+fi
+
 # Show everything that we do here on stdout.
 set -x
 
-# Stop if anything produces an error.
-set -e
+if [ "$DEBUG" = "1" ]; then
+    LUASTRIPOPT=-s
+    BUILDTYPE=Debug
+    TRUEIFDEBUG=TRUE
+    FALSEIFDEBUG=FALSE
+else
+    LUASTRIPOPT=
+    BUILDTYPE=MinSizeRel
+    TRUEIFDEBUG=FALSE
+    FALSEIFDEBUG=TRUE
+fi
 
 # Clean up previous run, build fresh dirs for Base Archive.
 rm -rf image duke3d-installer pdata.zip
@@ -21,7 +39,7 @@ mkdir image/data
 cd ../..
 rm -rf `svn propget svn:ignore .`
 cmake \
-    -DCMAKE_BUILD_TYPE=MinSizeRel \
+    -DCMAKE_BUILD_TYPE=$BUILDTYPE \
     -DMOJOSETUP_ARCHIVE_TAR=FALSE \
     -DMOJOSETUP_ARCHIVE_TAR_BZ2=FALSE \
     -DMOJOSETUP_ARCHIVE_TAR_GZ=FALSE \
@@ -30,29 +48,34 @@ cmake \
     -DMOJOSETUP_LUALIB_MATH=FALSE \
     -DMOJOSETUP_LUALIB_OS=FALSE \
     -DMOJOSETUP_LUALIB_PACKAGE=FALSE \
-    -DMOJOSETUP_LUA_PARSER=FALSE \
+    -DMOJOSETUP_LUA_PARSER=$TRUEIFDEBUG \
     -DMOJOSETUP_URL_FTP=FALSE \
     .
 make -j5
 
 # Strip the binaries and GUI plugins, put them somewhere useful.
-strip ./mojosetup
+if [ "$DEBUG" != "1" ]; then
+    strip ./mojosetup
+fi
+
 mv ./mojosetup ./examples/duke3d/duke3d-installer
 for feh in *.so *.dll *.dylib ; do
     if [ -f $feh ]; then
-        strip $feh
+        if [ "$DEBUG" != "1" ]; then
+            strip $feh
+        fi
         mv $feh examples/duke3d/image/guis
     fi
 done
 
 # Compile the Lua scripts, put them in the base archive.
 for feh in scripts/*.lua ; do
-    ./mojoluac -s -o examples/duke3d/image/${feh}c $feh
+    ./mojoluac $LUASTRIPOPT -o examples/duke3d/image/${feh}c $feh
 done
 
 # Don't want the example config...use our's instead.
 rm -f examples/duke3d/image/scripts/config.luac
-./mojoluac -s -o examples/duke3d/image/scripts/config.luac examples/duke3d/scripts/config.lua
+./mojoluac $LUASTRIPOPT -o examples/duke3d/image/scripts/config.luac examples/duke3d/scripts/config.lua
 
 # Fill in the rest of the Base Archive...
 cd examples/duke3d
@@ -72,5 +95,19 @@ rm -f pdata.zip
 set +e
 set +x
 echo "Successfully built!"
+
+if [ "$DEBUG" = "1" ]; then
+    echo
+    echo
+    echo
+    echo 'ATTENTION: THIS IS A DEBUG BUILD!'
+    echo " DON'T DISTRIBUTE TO THE PUBLIC."
+    echo ' THIS IS PROBABLY BIGGER AND SLOWER THAN IT SHOULD BE.'
+    echo ' YOU HAVE BEEN WARNED!'
+    echo
+    echo
+    echo
+fi
+
 exit 0
 
