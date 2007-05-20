@@ -31,7 +31,8 @@ CREATE_MOJOGUI_ENTRY_POINT(ncurses)
 //
 // ncurses is almost always installed as a shared library, though, so we'll
 //  just talk to it directly. Fortunately we don't need much of what dialog(1)
-//  offers, so rolling our own isn't too painful.
+//  offers, so rolling our own isn't too painful (well, compared to massive
+//  head trauma, I guess).
 //
 // Pradeep Padala's ncurses HOWTO was very helpful in teaching me curses
 //  quickly: http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html
@@ -72,6 +73,11 @@ typedef struct
     boolean ndelay;
     int cursval;
 } MojoBox;
+
+
+static char *lastComponent = NULL;
+static uint32 percentTicks = 0;
+static char *title = NULL;
 
 
 // !!! FIXME: this is not really Unicode friendly...
@@ -182,6 +188,18 @@ static void drawText(MojoBox *mojobox)
 } // drawText
 
 
+static void drawBackground(WINDOW *win)
+{
+    wclear(win);
+    if (title != NULL)
+    {
+        wattron(win, COLOR_PAIR(MOJOCOLOR_BACKGROUND) | A_BOLD);
+        mvwaddstr(win, 0, 0, title);
+        wattroff(win, COLOR_PAIR(MOJOCOLOR_BACKGROUND) | A_BOLD);
+    } // if
+} // drawBackground
+
+
 static MojoBox *makeBox(const char *title, const char *text,
                         char **buttons, int bcount,
                         boolean ndelay, boolean hidecursor)
@@ -197,7 +215,8 @@ static MojoBox *makeBox(const char *title, const char *text,
     int i;
 
     getmaxyx(stdscr, scrh, scrw);
-    if (scrw < 16)
+    scrh--; // -1 to save the title at the top of the screen...
+    if ((scrw < 16) || (scrh < 16))
         return NULL;
 
     retval = (MojoBox *) entry->xmalloc(sizeof (MojoBox));
@@ -242,7 +261,7 @@ static MojoBox *makeBox(const char *title, const char *text,
     if (h > scrh)
         h = scrh;
 
-    win = retval->mainwin = newwin(h, w, (scrh - h) / 2, (scrw - w) / 2);
+    win = retval->mainwin = newwin(h, w, ((scrh - h) / 2)+1, (scrw - w) / 2);
 	keypad(win, TRUE);
     nodelay(win, ndelay);
     wbkgdset(win, COLOR_PAIR(MOJOCOLOR_TEXT));
@@ -270,7 +289,7 @@ static MojoBox *makeBox(const char *title, const char *text,
 
     if (bcount > 0)
     {
-        const int buttony = (((scrh - h) / 2) + h)-2;
+        const int buttony = (((scrh - h) / 2) + h)-1;
         int buttonx = (((scrw - w) / 2) + w) - ((w - buttonsw) / 2);
         wmove(win, h-3, 1);
         whline(win, ACS_HLINE | A_BOLD | COLOR_PAIR(MOJOCOLOR_BORDERTOP), w-2);
@@ -279,7 +298,6 @@ static MojoBox *makeBox(const char *title, const char *text,
             len = strcells(buttons[i]) + 4;
             buttonx -= len+1;
             win = retval->buttons[i] = newwin(1, len, buttony, buttonx);
-	        buttonx -= 1;
             keypad(win, TRUE);
             nodelay(win, ndelay);
         } // for
@@ -288,13 +306,13 @@ static MojoBox *makeBox(const char *title, const char *text,
     texth = h-2;
     if (bcount > 0)
         texth -= 2;
-    win = retval->textwin = newwin(texth, w-4, ((scrh-h)/2)+1, ((scrw-w)/2)+2);
+    win = retval->textwin = newwin(texth, w-4, ((scrh-h)/2)+2, ((scrw-w)/2)+2);
 	keypad(win, TRUE);
     nodelay(win, ndelay);
     wbkgdset(win, COLOR_PAIR(MOJOCOLOR_TEXT));
     drawText(retval);
 
-    wclear(stdscr);
+    drawBackground(stdscr);
     wrefresh(stdscr);
     wrefresh(retval->mainwin);
     wrefresh(retval->textwin);
@@ -357,14 +375,16 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
     if (mojobox == NULL)
         return -2;
 
+    if (justResized)   // !!! FIXME: this is a kludge.
+    {
+        justResized = false;
+        if (ch == ERR)
+            return -1;
+    } // if
+
     switch (ch)
     {
         case ERR:
-            if (justResized)   // !!! FIXME: this is a kludge.
-            {
-                justResized = false;
-                return -1;
-            } // if
             return -2;
 
         case '\r':
@@ -448,24 +468,22 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
             return -1;
 
         case KEY_RESIZE:
-            justResized = true;  // !!! FIXME: kludge.
             mojobox = makeBox(mojobox->title, mojobox->text,
                               mojobox->buttontext, mojobox->buttoncount,
                               mojobox->ndelay, mojobox->hidecursor);
             mojobox->cursval = (*_mojobox)->cursval;  // keep this sane.
+            mojobox->hoverover = (*_mojobox)->hoverover;
             freeBox(*_mojobox, false);
             if (mojobox->hidecursor)
                 curs_set(0); // make sure this stays sane.
             *_mojobox = mojobox;
+            justResized = true;  // !!! FIXME: kludge.
             return -1;
     } // switch
 
     return -1;
 } // upkeepBox
 
-
-static char *lastComponent = NULL;
-static uint32 percentTicks = 0;
 
 static uint8 MojoGui_ncurses_priority(void)
 {
@@ -498,15 +516,15 @@ static boolean MojoGui_ncurses_init(void)
 	cbreak();
 	keypad(stdscr, TRUE);
 	noecho();
-    //nodelay(stdscr, TRUE);
     start_color();
-    init_pair(MOJOCOLOR_BACKGROUND, COLOR_BLUE, COLOR_BLUE);
+    init_pair(MOJOCOLOR_BACKGROUND, COLOR_CYAN, COLOR_BLUE);
     init_pair(MOJOCOLOR_BORDERTOP, COLOR_WHITE, COLOR_WHITE);
     init_pair(MOJOCOLOR_BORDERBOTTOM, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BORDERSHADOW, COLOR_BLACK, COLOR_BLACK);
     init_pair(MOJOCOLOR_TEXT, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BUTTONHOVER, COLOR_WHITE, COLOR_BLUE);
     init_pair(MOJOCOLOR_BUTTONNORMAL, COLOR_BLACK, COLOR_WHITE);
+
     wbkgdset(stdscr, COLOR_PAIR(MOJOCOLOR_BACKGROUND));
     wclear(stdscr);
     wrefresh(stdscr);
@@ -521,6 +539,8 @@ static void MojoGui_ncurses_deinit(void)
     endwin();
     delwin(stdscr);  // not sure if this is safe, but valgrind said it leaks.
     stdscr = NULL;
+    free(title);
+    title = NULL;
     free(lastComponent);
     lastComponent = NULL;
 } // MojoGui_ncurses_deinit
@@ -581,9 +601,11 @@ static MojoGuiYNAN MojoGui_ncurses_promptynan(const char *title,
 } // MojoGui_ncurses_promptynan
 
 
-static boolean MojoGui_ncurses_start(const char *title, const char *splash)
+static boolean MojoGui_ncurses_start(const char *_title, const char *splash)
 {
-    wclear(stdscr);
+    free(title);
+    title = entry->xstrdup(_title);
+    drawBackground(stdscr);
     wrefresh(stdscr);
     return true;
 } // MojoGui_ncurses_start
@@ -591,7 +613,9 @@ static boolean MojoGui_ncurses_start(const char *title, const char *splash)
 
 static void MojoGui_ncurses_stop(void)
 {
-    wclear(stdscr);
+    free(title);
+    title = NULL;
+    drawBackground(stdscr);
     wrefresh(stdscr);
 } // MojoGui_ncurses_stop
 
@@ -638,10 +662,287 @@ static int MojoGui_ncurses_readme(const char *name, const uint8 *data,
 } // MojoGui_ncurses_readme
 
 
+static int toggle_option(MojoGuiSetupOptions *parent,
+                         MojoGuiSetupOptions *opts, int *line, int target)
+{
+    int rc = -1;
+    if ((opts != NULL) && (target > *line))
+    {
+        if (++(*line) == target)
+        {
+            const boolean toggled = ((opts->value) ? false : true);
+
+            if (opts->is_group_parent)
+                return 0;
+
+            // "radio buttons" in a group?
+            if ((parent) && (parent->is_group_parent))
+            {
+                if (toggled)  // drop unless we weren't the current toggle.
+                {
+                    // set all siblings to false...
+                    MojoGuiSetupOptions *i = parent->child;
+                    while (i != NULL)
+                    {
+                        i->value = false;
+                        i = i->next_sibling;
+                    } // while
+                    opts->value = true;  // reset us to be true.
+                } // if
+            } // if
+
+            else  // individual "check box" was chosen.
+            {
+                opts->value = toggled;
+            } // else
+
+            return 1;  // we found it, bail.
+        } // if
+
+        if (opts->value) // if option is toggled on, descend to children.
+            rc = toggle_option(opts, opts->child, line, target);
+        if (rc == -1)
+            rc = toggle_option(parent, opts->next_sibling, line, target);
+    } // if
+
+    return rc;
+} // toggle_option
+
+
+// This code is pretty scary.
+static void build_options(MojoGuiSetupOptions *opts, int *line, int level,
+                          int maxw, char **lines)
+{
+    if (opts != NULL)
+    {
+        char *spacebuf = (char *) entry->xmalloc(maxw+1);
+        char *buf = (char *) entry->xmalloc(maxw+1);
+        int len = 0;
+        int spacing = 1+level;
+
+        if (spacing > (maxw-5))
+            spacing = 0;  // oh well.
+
+        if (spacing > 0)
+            memset(spacebuf, ' ', spacing);  // null-term'd by xmalloc().
+
+        if (opts->is_group_parent)
+            len = snprintf(buf, maxw-2, "%s%s", spacebuf, opts->description);
+        else
+        {
+            (*line)++;
+            len = snprintf(buf, maxw-2, "%s[%c] %s", spacebuf,
+                            opts->value ? 'X' : ' ',
+                            opts->description);
+        } // else
+
+        free(spacebuf);
+
+        if (len >= maxw-1)
+            strcpy(buf+(maxw-4), "...");  // !!! FIXME: Unicode issues!
+
+        *lines = (char*) entry->xrealloc(*lines, strlen(*lines)+strlen(buf)+2);
+        strcat(*lines, buf);
+        strcat(*lines, "\n");  // I'm sorry, Joel Spolsky!
+
+        if ((opts->value) || (opts->is_group_parent))
+            build_options(opts->child, line, level+1, maxw, lines);
+        build_options(opts->next_sibling, line, level, maxw, lines);
+    } // if
+} // build_options
+
+
 static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
                                  boolean can_back, boolean can_fwd)
 {
-    return 1;
+    char *title = entry->xstrdup(entry->_("Options"));
+    MojoBox *mojobox = NULL;
+    char *buttons[4] = { NULL, NULL, NULL, NULL };
+    boolean ignoreerr = false;
+    int lasthoverover = 0;
+    int lasttextpos = 0;
+    int bcount = 0;
+    int backbutton = -99;
+    int fwdbutton = -99;
+    int togglebutton = -99;
+    int cancelbutton = -99;
+    int selected = 0;
+    int ch = 0;
+    int rc = -1;
+    int i = 0;
+
+    if (can_fwd)
+    {
+        fwdbutton = bcount++;
+        buttons[fwdbutton] = entry->xstrdup(entry->_("Next"));
+    } // if
+
+    if (can_back)
+    {
+        backbutton = bcount++;
+        buttons[backbutton] = entry->xstrdup(entry->_("Back"));
+    } // if
+
+    lasthoverover = togglebutton = bcount++;
+    buttons[togglebutton] = entry->xstrdup(entry->_("Toggle"));
+    cancelbutton = bcount++;
+    buttons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+
+    do
+    {
+        if (mojobox == NULL)
+        {
+            int y = 0;
+            int line = 0;
+            int maxw, maxh;
+            getmaxyx(stdscr, maxh, maxw);
+            char *text = entry->xstrdup("");
+            build_options(opts, &line, 1, maxw-6, &text);
+            mojobox = makeBox(title, text, buttons, bcount, false, true);
+            free(text);
+
+            getmaxyx(mojobox->textwin, maxh, maxw);
+
+            if (lasthoverover != mojobox->hoverover)
+            {
+                const int orighover = mojobox->hoverover;
+                mojobox->hoverover = lasthoverover;
+                drawButton(mojobox, orighover);
+                drawButton(mojobox, lasthoverover);
+                wrefresh(mojobox->buttons[orighover]);
+                wrefresh(mojobox->buttons[lasthoverover]);
+            } // if
+
+            if (lasttextpos != mojobox->textpos)
+            {
+                mojobox->textpos = lasttextpos;
+                drawText(mojobox);
+            } // if
+
+            if (selected >= (mojobox->textlinecount - 1))
+                selected = mojobox->textlinecount - 1;
+            if (selected >= mojobox->textpos+maxh)
+                selected = (mojobox->textpos+maxh) - 1;
+            y = selected - lasttextpos;
+
+            wattron(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+            mvwhline(mojobox->textwin, y, 0, ' ', maxw);
+            mvwaddstr(mojobox->textwin, y, 0, mojobox->textlines[selected]);
+            wattroff(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+            wrefresh(mojobox->textwin);
+        } // if
+
+        lasttextpos = mojobox->textpos;
+        lasthoverover = mojobox->hoverover;
+
+        ch = wgetch(mojobox->mainwin);
+
+        if (ignoreerr)  // kludge.
+        {
+            ignoreerr = false;
+            if (ch == ERR)
+                continue;
+        } // if
+
+        if (ch == KEY_RESIZE)
+        {
+            freeBox(mojobox, false);  // catch and rebuild without upkeepBox,
+            mojobox = NULL;           //  so we can rebuild the text ourself.
+            ignoreerr = true;  // kludge.
+        } // if
+
+        else if (ch == KEY_UP)
+        {
+            if (selected > 0)
+            {
+                WINDOW *win = mojobox->textwin;
+                int maxw, maxh;
+                int y = --selected - mojobox->textpos;
+                getmaxyx(win, maxh, maxw);
+                if (selected < mojobox->textpos)
+                {
+                    upkeepBox(&mojobox, ch);  // upkeepBox does scrolling
+                    y++;
+                } // if
+                else
+                {
+                    wattron(win, COLOR_PAIR(MOJOCOLOR_TEXT));
+                    mvwhline(win, y+1, 0, ' ', maxw);
+                    mvwaddstr(win, y+1, 0, mojobox->textlines[selected+1]);
+                    wattroff(win, COLOR_PAIR(MOJOCOLOR_TEXT));
+                } // else
+                wattron(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                mvwhline(win, y, 0, ' ', maxw);
+                mvwaddstr(win, y, 0, mojobox->textlines[selected]);
+                wattroff(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                wrefresh(win);
+            } // if
+        } // else if
+
+        else if (ch == KEY_DOWN)
+        {
+            if (selected < (mojobox->textlinecount-1))
+            {
+                WINDOW *win = mojobox->textwin;
+                int maxw, maxh;
+                int y = ++selected - mojobox->textpos;
+                getmaxyx(win, maxh, maxw);
+                if (selected >= mojobox->textpos+maxh)
+                {
+                    upkeepBox(&mojobox, ch);  // upkeepBox does scrolling
+                    y--;
+                } // if
+                else
+                {
+                    wattron(win, COLOR_PAIR(MOJOCOLOR_TEXT));
+                    mvwhline(win, y-1, 0, ' ', maxw);
+                    mvwaddstr(win, y-1, 0, mojobox->textlines[selected-1]);
+                    wattroff(win, COLOR_PAIR(MOJOCOLOR_TEXT));
+                } // else
+                wattron(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                mvwhline(win, y, 0, ' ', maxw);
+                mvwaddstr(win, y, 0, mojobox->textlines[selected]);
+                wattroff(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                wrefresh(win);
+            } // if
+        } // else if
+
+        else if ((ch == KEY_NPAGE) || (ch == KEY_NPAGE))
+        {
+            // !!! FIXME: maybe handle this when I'm not so lazy.
+            // !!! FIXME:  For now, this if statement is to block
+            // !!! FIXME:  upkeepBox() from scrolling and screwing up state.
+        } // else if
+
+        else  // let upkeepBox handle other input (button selection, etc).
+        {
+            rc = upkeepBox(&mojobox, ch);
+            if (rc == togglebutton)
+            {
+                int line = 0;
+                rc = -1;  // reset so we don't stop processing input.
+                if (toggle_option(NULL, opts, &line, selected+1) == 1)
+                {
+                    freeBox(mojobox, false);  // rebuild to reflect new options...
+                    mojobox = NULL;
+                } // if
+            } // if
+        } // else
+    } while (rc == -1);
+
+    freeBox(mojobox, true);
+
+    for (i = 0; i < bcount; i++)
+        free(buttons[i]);
+
+    free(title);
+
+    if (rc == backbutton)
+        return -1;
+    else if (rc == fwdbutton)
+        return 1;
+
+    return 0;  // error? Cancel?
 } // MojoGui_ncurses_options
 
 
@@ -649,7 +950,9 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
                                        int *command, boolean can_back,
                                        boolean can_fwd)
 {
-    return NULL;
+    // !!! FIXME: clearly this isn't right.
+    *command = 1;
+    return entry->xstrdup("/home/icculus/duke3d");
 } // MojoGui_ncurses_destination
 
 

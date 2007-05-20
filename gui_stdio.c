@@ -332,7 +332,7 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
                                        int *command, boolean can_back,
                                        boolean can_fwd)
 {
-    const char *instdeststr = entry->xstrdup(entry->_("Install destination:"));
+    const char *instdeststr = entry->xstrdup(entry->_("Destination"));
     const char *prompt = NULL;
     char *retval = NULL;
     boolean getout = false;

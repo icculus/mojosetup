@@ -98,10 +98,10 @@ MojoSetup.localization = {
     ["> "] = {
     };
 
-    ["Install options:"] = {
+    ["Options"] = {
     };
 
-    ["Install destination:"] = {
+    ["Destination"] = {
     };
 
     ["Choose install destination by number (hit enter for #1), or enter your own."] = {
