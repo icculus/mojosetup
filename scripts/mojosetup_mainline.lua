@@ -111,7 +111,14 @@ local function calc_percent(current, total)
     elseif total < 0 then
         return -1
     end
-    return MojoSetup.truncatenum((current / total) * 100)
+
+    local retval = MojoSetup.truncatenum((current / total) * 100)
+    if retval > 100 then
+        retval = 100
+    elseif retval < 0 then
+        retval = 0
+    end
+    return retval
 end
 
 
