@@ -21,6 +21,7 @@ CREATE_MOJOGUI_ENTRY_POINT(stdio)
 
 #include <ctype.h>
 
+static char *lastProgressType = NULL;
 static char *lastComponent = NULL;
 static uint32 percentTicks = 0;
 
@@ -88,7 +89,9 @@ static boolean MojoGui_stdio_init(void)
 
 static void MojoGui_stdio_deinit(void)
 {
+    free(lastProgressType);
     free(lastComponent);
+    lastProgressType = NULL;
     lastComponent = NULL;
 } // MojoGui_stdio_deinit
 
@@ -399,9 +402,15 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
                                       int percent, const char *item)
 {
     const uint32 now = entry->ticks();
-    if ((lastComponent == NULL) || (strcmp(lastComponent, component) != 0))
+
+    if ( (lastComponent == NULL) ||
+         (strcmp(lastComponent, component) != 0) ||
+         (lastProgressType == NULL) ||
+         (strcmp(lastProgressType, type) != 0) )
     {
+        free(lastProgressType);
         free(lastComponent);
+        lastProgressType = entry->xstrdup(type);
         lastComponent = entry->xstrdup(component);
         printf("%s\n%s\n", type, component);
     } // if
