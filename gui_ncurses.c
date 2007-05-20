@@ -46,6 +46,8 @@ typedef enum
     MOJOCOLOR_TEXT,
     MOJOCOLOR_BUTTONHOVER,
     MOJOCOLOR_BUTTONNORMAL,
+    MOJOCOLOR_TODO,
+    MOJOCOLOR_DONE,
 } MojoColor;
 
 
@@ -75,9 +77,11 @@ typedef struct
 } MojoBox;
 
 
+static char *lastProgressType = NULL;
 static char *lastComponent = NULL;
 static uint32 percentTicks = 0;
 static char *title = NULL;
+static MojoBox *progressBox = NULL;
 
 
 // !!! FIXME: this is not really Unicode friendly...
@@ -123,8 +127,8 @@ static char **splitText(char *text, int *_count, int *_w)
         } // for
 
         // line overflow or end of stream...
-        pos = (*text) ? furthest : i;
-        if ((*text) && (furthest == 0))  // uhoh, no split at all...hack it.
+        pos = (text[i]) ? furthest : i;
+        if ((text[i]) && (furthest == 0))  // uhoh, no split at all...hack it.
         {
             // !!! FIXME: might be chopping in the middle of a UTF-8 seq.
             pos = strlen(text);
@@ -524,6 +528,8 @@ static boolean MojoGui_ncurses_init(void)
     init_pair(MOJOCOLOR_TEXT, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BUTTONHOVER, COLOR_WHITE, COLOR_BLUE);
     init_pair(MOJOCOLOR_BUTTONNORMAL, COLOR_BLACK, COLOR_WHITE);
+    init_pair(MOJOCOLOR_DONE, COLOR_YELLOW, COLOR_RED);
+    init_pair(MOJOCOLOR_TODO, COLOR_CYAN, COLOR_BLUE);
 
     wbkgdset(stdscr, COLOR_PAIR(MOJOCOLOR_BACKGROUND));
     wclear(stdscr);
@@ -536,6 +542,8 @@ static boolean MojoGui_ncurses_init(void)
 
 static void MojoGui_ncurses_deinit(void)
 {
+    freeBox(progressBox, false);
+    progressBox = NULL;
     endwin();
     delwin(stdscr);  // not sure if this is safe, but valgrind said it leaks.
     stdscr = NULL;
@@ -543,6 +551,8 @@ static void MojoGui_ncurses_deinit(void)
     title = NULL;
     free(lastComponent);
     lastComponent = NULL;
+    free(lastProgressType);
+    lastProgressType = NULL;
 } // MojoGui_ncurses_deinit
 
 
@@ -951,8 +961,14 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
                                        boolean can_fwd)
 {
     // !!! FIXME: clearly this isn't right.
-    *command = 1;
-    return entry->xstrdup("/home/icculus/duke3d");
+    if (recnum > 0)
+    {
+        *command = 1;
+        return entry->xstrdup(recommends[0]);
+    } // if
+
+    *command = 0;
+    return NULL;
 } // MojoGui_ncurses_destination
 
 
@@ -982,9 +998,115 @@ static boolean MojoGui_ncurses_insertmedia(const char *medianame)
 
 
 static boolean MojoGui_ncurses_progress(const char *type, const char *component,
-                                      int percent, const char *item)
+                                        int percent, const char *item)
 {
-    return true;
+    const uint32 now = entry->ticks();
+    boolean rebuild = (progressBox == NULL);
+    int ch = 0;
+    int rc = -1;
+
+    if ( (lastComponent == NULL) ||
+         (strcmp(lastComponent, component) != 0) ||
+         (lastProgressType == NULL) ||
+         (strcmp(lastProgressType, type) != 0) )
+    {
+        free(lastProgressType);
+        free(lastComponent);
+        lastProgressType = entry->xstrdup(type);
+        lastComponent = entry->xstrdup(component);
+        rebuild = true;
+    } // if
+
+    if (rebuild)
+    {
+        int w, h;
+        char *text = NULL;
+        char *localized_cancel = entry->xstrdup(entry->_("Cancel"));
+        char *buttons[] = { localized_cancel };
+        char *spacebuf = NULL;
+        getmaxyx(stdscr, h, w);
+        w -= 10;
+        text = (char *) entry->xmalloc((w * 3) + 16);
+        if (snprintf(text, w, "%s", component) > (w-4))
+            strcpy((text+w)-4, "...");  // !!! FIXME: Unicode problem.
+        strcat(text, "\n\n");
+        spacebuf = (char *) entry->xmalloc(w+1);
+        memset(spacebuf, ' ', w);  // xmalloc provides null termination.
+        strcat(text, spacebuf);
+        free(spacebuf);
+        strcat(text, "\n\n ");
+
+        freeBox(progressBox, false);
+        progressBox = makeBox(type, text, buttons, 1, true, true);
+        free(text);
+        free(localized_cancel);
+    } // if
+
+    // limit update spam... will only write every one second, tops.
+    if ((rebuild) || (percentTicks <= now))
+    {
+        static boolean unknownToggle = false;
+        char *buf = NULL;
+        WINDOW *win = progressBox->textwin;
+        int w, h;
+        getmaxyx(win, h, w);
+        w -= 2;
+        buf = (char *) entry->xmalloc(w+1);
+
+        if (percent < 0)
+        {
+            const boolean origToggle = unknownToggle;
+            int i;
+            wmove(win, h-3, 1);
+            for (i = 0; i < w; i++)
+            {
+                if (unknownToggle)
+                    waddch(win, ' ' | COLOR_PAIR(MOJOCOLOR_TODO));
+                else
+                    waddch(win, ' ' | COLOR_PAIR(MOJOCOLOR_DONE));
+                unknownToggle = !unknownToggle;
+            } // for
+            unknownToggle = !origToggle;  // animate by reversing next time.
+        } // if
+        else
+        {
+            int cells = (int) ( ((double) w) * (((double) percent) / 100.0) );
+            snprintf(buf, w+1, "%d%%", percent);
+            mvwaddstr(win, h-3, ((w+2) - strcells(buf)) / 2, buf);
+            mvwchgat(win, h-3, 1, cells, A_BOLD, MOJOCOLOR_DONE, NULL);
+            mvwchgat(win, h-3, 1+cells, w-cells, A_BOLD, MOJOCOLOR_TODO, NULL);
+        } // else
+
+        wtouchln(win, h-3, 1, 1);  // force reattributed cells to update.
+
+        if (snprintf(buf, w+1, "%s", item) > (w-4))
+            strcpy((buf+w)-4, "...");  // !!! FIXME: Unicode problem.
+        mvwhline(win, h-2, 1, ' ', w);
+        mvwaddstr(win, h-2, ((w+2) - strcells(buf)) / 2, buf);
+
+        free(buf);
+        wrefresh(win);
+
+        percentTicks = now + 1000;
+    } // if
+
+    // !!! FIXME: check for input here for cancel button, resize, etc...
+    ch = wgetch(progressBox->mainwin);
+    if (ch == KEY_RESIZE)
+    {
+        freeBox(progressBox, false);
+        progressBox = NULL;
+    } // if
+    else if (ch == ERR)  // can't distinguish between an error and a timeout!
+    {
+        // do nothing...
+    } // else if
+    else
+    {
+        rc = upkeepBox(&progressBox, ch);
+    } // else
+
+    return (rc == -1);
 } // MojoGui_ncurses_progress
 
 
