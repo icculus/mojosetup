@@ -483,15 +483,36 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
 
 
 MojoArchive *GBaseArchive = NULL;
+const char *GBaseArchivePath = NULL;
 
 MojoArchive *MojoArchive_initBaseArchive(void)
 {
+    char *basepath = NULL;
+    const char *cmd = NULL;
+    MojoInput *io = NULL;
+
     if (GBaseArchive != NULL)
-        return GBaseArchive;
+        return GBaseArchive;  // already initialized.
+
+    if ((cmd = cmdlinestr("base", "MOJOSETUP_BASE", NULL)) != NULL)
+    {
+        if (MojoPlatform_isdir(cmd))
+            GBaseArchive = MojoArchive_newFromDirectory(cmd);
+        else
+        {
+            io = MojoInput_newFromFile(cmd);
+            if (io != NULL)
+                GBaseArchive = MojoArchive_newFromInput(io, cmd);
+        } // else
+
+        if (GBaseArchive != NULL)
+            basepath = xstrdup(cmd);
+    } // else if
+
     else
     {
-        char *basepath = MojoPlatform_appBinaryPath();
-        MojoInput *io = MojoInput_newFromFile(basepath);
+        basepath = MojoPlatform_appBinaryPath();
+        io = MojoInput_newFromFile(basepath);
 
         if (io != NULL)
             GBaseArchive = MojoArchive_newFromInput(io, basepath);
@@ -499,20 +520,27 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         if (GBaseArchive == NULL)
         {
             // Just use the same directory as the binary instead.
-            const char *parentdir = basepath;
             char *ptr = strrchr(basepath, '/');
             if (ptr != NULL)
                 *ptr = '\0';
             else
-                parentdir = ".";  // oh well.
-            GBaseArchive = MojoArchive_newFromDirectory(parentdir);
+            {
+                free(basepath);  // oh well, try cwd.
+                basepath = MojoPlatform_currentWorkingDir();
+            } // else
+            GBaseArchive = MojoArchive_newFromDirectory(basepath);
 
             // !!! FIXME: failing this, maybe default.mojosetup?
-            // !!! FIXME:  maybe a command line?
         } // if
 
-        free(basepath);   // appBinaryPath caller free()s this string.
     } // else
+
+    if (GBaseArchive == NULL)
+    {
+        free(basepath);
+        basepath = NULL;
+    } // if
+    GBaseArchivePath = basepath;
 
     return GBaseArchive;
 } // MojoArchive_initBaseArchive
@@ -525,6 +553,9 @@ void MojoArchive_deinitBaseArchive(void)
         GBaseArchive->close(GBaseArchive);
         GBaseArchive = NULL;
     } // if
+
+    free((void *) GBaseArchivePath);
+    GBaseArchivePath = NULL;
 } // MojoArchive_deinitBaseArchive
 
 

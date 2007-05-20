@@ -93,6 +93,7 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname);
 MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname);
 
 extern MojoArchive *GBaseArchive;
+extern const char *GBaseArchivePath;
 MojoArchive *MojoArchive_initBaseArchive(void);
 void MojoArchive_deinitBaseArchive(void);
 

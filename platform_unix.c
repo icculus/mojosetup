@@ -56,7 +56,7 @@ void beos_usleep(unsigned long ticks);
 
 static struct timeval startup_time;
 
-static char *getCurrentWorkingDir(void)
+char *MojoPlatform_currentWorkingDir(void)
 {
     char *retval = NULL;
     size_t len;
@@ -79,7 +79,7 @@ static char *getCurrentWorkingDir(void)
 
     free(retval);
     return NULL;
-} // getCurrentWorkingDir
+} // MojoPlatform_currentWorkingDir
 
 
 static void *guaranteeAllocation(void *ptr, size_t len, size_t *_alloclen)
@@ -123,7 +123,7 @@ static char *realpathInternal(char *path, const char *cwd, int linkloop)
             retval = xstrdup(cwd);
         else
         {
-            if ((retval = getCurrentWorkingDir()) == NULL)
+            if ((retval = MojoPlatform_currentWorkingDir()) == NULL)
                 return NULL;
         } // else
         len = strlen(retval);
@@ -714,6 +714,41 @@ void MojoPlatform_dlclose(void *lib)
     dlclose(lib);
 } // MojoPlatform_dlclose
 
+
+#if SUPPORT_MULTIARCH
+void MojoPlatform_switchBin(const uint8 *img, size_t len)
+{
+    const char *dirs[] = { "/dev/shm", getenv("TMPDIR"), P_tmpdir, "/tmp" };
+    const char *tmpl = "mojosetup-switch-bin-XXXXXX";
+    char fname[PATH_MAX];
+    int i = 0;
+
+    for (i = 0; i < STATICARRAYLEN(dirs); i++)
+    {
+        if (testTmpDir(dirs[i], fname, len, tmpl))
+        {
+            const int fd = mkstemp(fname);
+            if (fd != -1)
+            {
+                const size_t bw = write(fd, img, len);
+                const int rc = close(fd);
+                if ((bw == len) && (rc != -1))
+                {
+                    const char *tmpstr = GArgv[0];
+                    chmod(fname, 0700);
+                    GArgv[0] = fname;
+                    execv(fname, (char * const *) GArgv);
+                    // only hits this line if process wasn't replaced.
+                    GArgv[0] = tmpstr;
+                } // if
+                unlink(fname);
+            } // if
+        } // if
+    } // for
+
+    // couldn't replace current process.
+} // MojoPlatform_switchBin
+#endif
 
 
 static void signal_catcher(int sig)

@@ -213,6 +213,16 @@ ELSE(MOJOSETUP_LUA_PARSER)
 ENDIF(MOJOSETUP_LUA_PARSER)
 
 
+# Kludge for Linux x86/amd64 bins...
+IF(UNIX AND NOT MACOSX)  # Just use Mach-O Universal/"fat" binaries on OS X.
+    OPTION(MOJOSETUP_MULTIARCH "Allow multiarch hack." FALSE)
+    MARK_AS_ADVANCED(MOJOSETUP_MULTIARCH)
+    IF(MOJOSETUP_MULTIARCH)
+        ADD_DEFINITIONS(-DSUPPORT_MULTIARCH=1)
+    ENDIF(MOJOSETUP_MULTIARCH)
+ENDIF(UNIX AND NOT MACOSX)
+
+
 # Optional bits of the Lua runtime library...
 
 # BINARY SIZE += 4.5

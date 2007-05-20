@@ -22,6 +22,9 @@ int MojoSetup_main(int argc, char **argv);
 char *MojoPlatform_appBinaryPath(void);
 
 // Caller must free returned string!
+char *MojoPlatform_currentWorkingDir(void);
+
+// Caller must free returned string!
 char *MojoPlatform_homedir(void);
 
 uint32 MojoPlatform_ticks(void);
@@ -96,6 +99,12 @@ uint16 MojoPlatform_defaultDirPerms(void);
 void *MojoPlatform_dlopen(const uint8 *img, size_t len);
 void *MojoPlatform_dlsym(void *lib, const char *sym);
 void MojoPlatform_dlclose(void *lib);
+
+#if !SUPPORT_MULTIARCH
+#define MojoPlatform_switchBin(img, len)
+#else
+void MojoPlatform_switchBin(const uint8 *img, size_t len);
+#endif
 
 // Put the calling process to sleep for at least (ticks) milliseconds.
 //  This is meant to yield the CPU while spinning in a loop that is polling

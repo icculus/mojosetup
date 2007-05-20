@@ -60,6 +60,56 @@ void MojoSetup_terminated(void)
 } // MojoSetup_crash
 
 
+#if !SUPPORT_MULTIARCH
+#define trySwitchBinaries()
+#else
+static void trySwitchBinary(MojoArchive *ar)
+{
+    MojoInput *io = ar->openCurrentEntry(ar);
+    if (io != NULL)
+    {
+        const uint32 imglen = (uint32) io->length(io);
+        uint8 *img = (uint8 *) xmalloc(imglen);
+        const uint32 br = io->read(io, img, imglen);
+        io->close(io);
+        if (br == imglen)
+        {
+            logInfo("Switching binary with '%s'...", ar->prevEnum.filename);
+            MojoPlatform_switchBin(img, imglen);  // no return on success.
+            logError("...Switch binary failed.");
+        } // if
+        free(img);
+    } // if
+} // trySwitchBinary
+
+
+static void trySwitchBinaries(void)
+{
+    if (cmdlinestr("nobinswitch", "MOJOSETUP_NOBINSWITCH", NULL) != NULL)
+        return;  // we are already switched or the user is preventing it.
+
+    setenv("MOJOSETUP_NOSWITCHBIN", "1", 1);
+    setenv("MOJOSETUP_BASE", GBaseArchivePath, 1);
+
+    if (GBaseArchive->enumerate(GBaseArchive))
+    {
+        const MojoArchiveEntry *entinfo;
+        while ((entinfo = GBaseArchive->enumNext(GBaseArchive)) != NULL)
+        {
+            if (entinfo->type != MOJOARCHIVE_ENTRY_FILE)
+                continue;
+
+            if (strncmp(entinfo->filename, "arch/", 5) != 0)
+                continue;
+
+            trySwitchBinary(GBaseArchive);
+        } // while
+    } // if
+    
+} // trySwitchBinaries
+#endif
+
+
 static boolean initEverything(void)
 {
     MojoLog_initLogging();
@@ -75,7 +125,9 @@ static boolean initEverything(void)
     if (!MojoArchive_initBaseArchive())
         panic("Initial setup failed. Cannot continue.");
 
-    else if (!MojoGui_initGuiPlugin())
+    trySwitchBinaries();  // may not return.
+
+    if (!MojoGui_initGuiPlugin())
         panic("Initial GUI setup failed. Cannot continue.");
 
     else if (!MojoLua_initLua())
