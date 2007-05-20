@@ -143,9 +143,27 @@ Setup.Package
             Setup.Option
             {
                 value = string.match(MojoSetup.info.locale, "^fr_") ~= nil,
-                bytes = megabytes(10),
+                bytes = 0,
                 description = "French",
-                Setup.File { source = "base:///Lang/French.zip" },
+                Setup.OptionGroup
+                {
+                    disabled = false,
+                    description = "French locale",
+                    Setup.Option
+                    {
+                        value = (MojoSetup.info.locale == fr_CA),
+                        bytes = megabytes(10),
+                        description = "French Canadian",
+                        Setup.File { source = "base:///Lang/FrenchCA.zip" },
+                    },
+                    Setup.Option
+                    {
+                        value = (MojoSetup.info.locale ~= fr_CA),
+                        bytes = megabytes(10),
+                        description = "Generic French",
+                        Setup.File { source = "base:///Lang/French.zip" },
+                    },
+                },
             },
             Setup.Option
             {
