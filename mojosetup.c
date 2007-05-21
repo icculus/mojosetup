@@ -88,7 +88,7 @@ static void trySwitchBinaries(void)
     if (cmdlinestr("nobinswitch", "MOJOSETUP_NOBINSWITCH", NULL) != NULL)
         return;  // we are already switched or the user is preventing it.
 
-    setenv("MOJOSETUP_NOSWITCHBIN", "1", 1);
+    setenv("MOJOSETUP_NOBINSWITCH", "1", 1);
     setenv("MOJOSETUP_BASE", GBaseArchivePath, 1);
 
     if (GBaseArchive->enumerate(GBaseArchive))
