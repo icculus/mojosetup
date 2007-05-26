@@ -201,7 +201,7 @@ static void drawText(MojoBox *mojobox)
     WINDOW *win = mojobox->textwin;
     getmaxyx(win, h, w);
 
-    werase(mojobox->textwin);  // !!! FIXME: flickers...
+    werase(mojobox->textwin);
     for (i = 0; (pos < tcount) && (i < h); i++, pos++)
         mvwaddstr(win, i, 0, mojobox->textlines[pos]);
 
