@@ -195,13 +195,24 @@ static void drawButton(MojoBox *mojobox, int button)
 static void drawText(MojoBox *mojobox)
 {
     int i;
+    const int tcount = mojobox->textlinecount;
     int pos = mojobox->textpos;
     int w, h;
     WINDOW *win = mojobox->textwin;
     getmaxyx(win, h, w);
+
     wclear(mojobox->textwin);  // !!! FIXME: flickers...
-    for (i = 0; (pos < mojobox->textlinecount) && (i < h); i++, pos++)
+    for (i = 0; (pos < tcount) && (i < h); i++, pos++)
         mvwaddstr(win, i, 0, mojobox->textlines[pos]);
+
+    if (tcount > h)
+    {
+        const int pct = (int) ((((double) pos) / ((double) tcount)) * 100.0);
+        win = mojobox->mainwin;
+        wattron(win, COLOR_PAIR(MOJOCOLOR_BORDERTITLE) | A_BOLD);
+        mvwprintw(win, h+1, w-5, "(%3d%%)", pct);
+        wattroff(win, COLOR_PAIR(MOJOCOLOR_BORDERTITLE) | A_BOLD);
+    } // if
 } // drawText
 
 
