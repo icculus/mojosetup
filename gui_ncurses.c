@@ -42,6 +42,7 @@ typedef enum
     MOJOCOLOR_BACKGROUND=1,
     MOJOCOLOR_BORDERTOP,
     MOJOCOLOR_BORDERBOTTOM,
+    MOJOCOLOR_BORDERTITLE,
     MOJOCOLOR_TEXT,
     MOJOCOLOR_BUTTONHOVER,
     MOJOCOLOR_BUTTONNORMAL,
@@ -225,6 +226,8 @@ static MojoBox *makeBox(const char *title, const char *text,
     int scrw, scrh;
     int len = 0;
     int buttonsw = 0;
+    int x = 0;
+    int y = 0;
     int h = 0;
     int w = 0;
     int texth = 0;
@@ -277,7 +280,9 @@ static MojoBox *makeBox(const char *title, const char *text,
     if (h > scrh)
         h = scrh;
 
-    win = retval->mainwin = newwin(h, w, ((scrh - h) / 2)+1, (scrw - w) / 2);
+    x = (scrw - w) / 2;
+    y = ((scrh - h) / 2) + 1;
+    win = retval->mainwin = newwin(h, w, y, x);
 	keypad(win, TRUE);
     nodelay(win, ndelay);
     wbkgdset(win, COLOR_PAIR(MOJOCOLOR_TEXT));
@@ -298,15 +303,17 @@ static MojoBox *makeBox(const char *title, const char *text,
 
     len = strcells(retval->title);
     wmove(win, 0, ((w-len)/2)-1);
-    waddch(win, ' ' | COLOR_PAIR(MOJOCOLOR_TEXT));
+    wattron(win, COLOR_PAIR(MOJOCOLOR_BORDERTITLE) | A_BOLD);
+    waddch(win, ' ');
     waddstr(win, retval->title);
     wmove(win, 0, ((w-len)/2)+len);
-    waddch(win, ' ' | COLOR_PAIR(MOJOCOLOR_TEXT));
+    waddch(win, ' ');
+    wattroff(win, COLOR_PAIR(MOJOCOLOR_BORDERTITLE) | A_BOLD);
 
     if (bcount > 0)
     {
-        const int buttony = (((scrh - h) / 2) + h)-1;
-        int buttonx = (((scrw - w) / 2) + w) - ((w - buttonsw) / 2);
+        const int buttony = (y + h) - 2;
+        int buttonx = (x + w) - ((w - buttonsw) / 2);
         wmove(win, h-3, 1);
         whline(win, ACS_HLINE | A_BOLD | COLOR_PAIR(MOJOCOLOR_BORDERTOP), w-2);
         for (i = 0; i < bcount; i++)
@@ -322,7 +329,7 @@ static MojoBox *makeBox(const char *title, const char *text,
     texth = h-2;
     if (bcount > 0)
         texth -= 2;
-    win = retval->textwin = newwin(texth, w-4, ((scrh-h)/2)+2, ((scrw-w)/2)+2);
+    win = retval->textwin = newwin(texth, w-4, y+1, x+2);
 	keypad(win, TRUE);
     nodelay(win, ndelay);
     wbkgdset(win, COLOR_PAIR(MOJOCOLOR_TEXT));
@@ -536,6 +543,7 @@ static boolean MojoGui_ncurses_init(void)
     init_pair(MOJOCOLOR_BACKGROUND, COLOR_CYAN, COLOR_BLUE);
     init_pair(MOJOCOLOR_BORDERTOP, COLOR_WHITE, COLOR_WHITE);
     init_pair(MOJOCOLOR_BORDERBOTTOM, COLOR_BLACK, COLOR_WHITE);
+    init_pair(MOJOCOLOR_BORDERTITLE, COLOR_YELLOW, COLOR_WHITE);
     init_pair(MOJOCOLOR_TEXT, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BUTTONHOVER, COLOR_YELLOW, COLOR_BLUE);
     init_pair(MOJOCOLOR_BUTTONNORMAL, COLOR_BLACK, COLOR_WHITE);
