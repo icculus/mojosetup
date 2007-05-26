@@ -174,7 +174,7 @@ static void drawButton(MojoBox *mojobox, int button)
         wbkgdset(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
     } // else
 
-    wclear(win);
+    werase(win);
     wmove(win, 0, 0);
     waddch(win, borderattr | '<');
     wmove(win, 0, w-1);
@@ -201,7 +201,7 @@ static void drawText(MojoBox *mojobox)
     WINDOW *win = mojobox->textwin;
     getmaxyx(win, h, w);
 
-    wclear(mojobox->textwin);  // !!! FIXME: flickers...
+    werase(mojobox->textwin);  // !!! FIXME: flickers...
     for (i = 0; (pos < tcount) && (i < h); i++, pos++)
         mvwaddstr(win, i, 0, mojobox->textlines[pos]);
 
@@ -350,14 +350,16 @@ static MojoBox *makeBox(const char *title, const char *text,
     drawText(retval);
 
     drawBackground(stdscr);
-    wrefresh(stdscr);
-    wrefresh(retval->mainwin);
-    wrefresh(retval->textwin);
+    wnoutrefresh(stdscr);
+    wnoutrefresh(retval->mainwin);
+    wnoutrefresh(retval->textwin);
     for (i = 0; i < bcount; i++)
     {
         drawButton(retval, i);
-        wrefresh(retval->buttons[i]);
+        wnoutrefresh(retval->buttons[i]);
     } // for
+
+    doupdate();  // push it all to the screen.
 
     return retval;
 } // makeBox
