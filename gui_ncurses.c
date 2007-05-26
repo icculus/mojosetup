@@ -46,6 +46,7 @@ typedef enum
     MOJOCOLOR_TEXT,
     MOJOCOLOR_BUTTONHOVER,
     MOJOCOLOR_BUTTONNORMAL,
+    MOJOCOLOR_BUTTONBORDER,
     MOJOCOLOR_TODO,
     MOJOCOLOR_DONE,
 } MojoColor;
@@ -159,23 +160,35 @@ static char **splitText(char *text, int *_count, int *_w)
 static void drawButton(MojoBox *mojobox, int button)
 {
     const boolean hover = (mojobox->hoverover == button);
+    int borderattr = 0;
     WINDOW *win = mojobox->buttons[button];
     const char *str = mojobox->buttontext[button];
     int w, h;
     getmaxyx(win, h, w);
 
-    if (hover)
-        wbkgdset(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
-    else
+    if (!hover)
         wbkgdset(win, COLOR_PAIR(MOJOCOLOR_BUTTONNORMAL));
+    else
+    {
+        borderattr = COLOR_PAIR(MOJOCOLOR_BUTTONBORDER) | A_BOLD;
+        wbkgdset(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+    } // else
 
     wclear(win);
     wmove(win, 0, 0);
-    waddch(win, '<');
+    waddch(win, borderattr | '<');
     wmove(win, 0, w-1);
-    waddch(win, '>');
+    waddch(win, borderattr | '>');
     wmove(win, 0, 2);
-    waddstr(win, str);
+
+    if (!hover)
+        waddstr(win, str);
+    else
+    {
+        wattron(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
+        waddstr(win, str);
+        wattroff(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
+    } // else
 } // drawButton
 
 
@@ -526,8 +539,9 @@ static boolean MojoGui_ncurses_init(void)
     init_pair(MOJOCOLOR_BORDERBOTTOM, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BORDERSHADOW, COLOR_BLACK, COLOR_BLACK);
     init_pair(MOJOCOLOR_TEXT, COLOR_BLACK, COLOR_WHITE);
-    init_pair(MOJOCOLOR_BUTTONHOVER, COLOR_WHITE, COLOR_BLUE);
+    init_pair(MOJOCOLOR_BUTTONHOVER, COLOR_YELLOW, COLOR_BLUE);
     init_pair(MOJOCOLOR_BUTTONNORMAL, COLOR_BLACK, COLOR_WHITE);
+    init_pair(MOJOCOLOR_BUTTONBORDER, COLOR_WHITE, COLOR_BLUE);
     init_pair(MOJOCOLOR_DONE, COLOR_YELLOW, COLOR_RED);
     init_pair(MOJOCOLOR_TODO, COLOR_CYAN, COLOR_BLUE);
 
