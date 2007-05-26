@@ -407,6 +407,7 @@ static void freeBox(MojoBox *mojobox, boolean clearscreen)
 static int upkeepBox(MojoBox **_mojobox, int ch)
 {
     static boolean justResized = false;
+    MEVENT mevt;
     int w, h;
     MojoBox *mojobox = *_mojobox;
     if (mojobox == NULL)
@@ -516,6 +517,24 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
             *_mojobox = mojobox;
             justResized = true;  // !!! FIXME: kludge.
             return -1;
+
+        case KEY_MOUSE:
+            if ((getmouse(&mevt) == OK) && (mevt.bstate & BUTTON1_CLICKED))
+            {
+                int i;
+                for (i = 0; i < mojobox->buttoncount; i++)
+                {
+                    int x1, y1, x2, y2;
+                    getbegyx(mojobox->buttons[i], y1, x1);
+                    getmaxyx(mojobox->buttons[i], y2, x2);
+                    x2 += x1;
+                    y2 += y1;
+                    if ( (mevt.x >= x1) && (mevt.x < x2) &&
+                         (mevt.y >= y1) && (mevt.y < y2) )
+                        return i;
+                } // for
+            } // if
+            return -1;
     } // switch
 
     return -1;
@@ -554,6 +573,7 @@ static boolean MojoGui_ncurses_init(void)
 	keypad(stdscr, TRUE);
 	noecho();
     start_color();
+    mousemask(BUTTON1_CLICKED, NULL);
     init_pair(MOJOCOLOR_BACKGROUND, COLOR_CYAN, COLOR_BLUE);
     init_pair(MOJOCOLOR_BORDERTOP, COLOR_WHITE, COLOR_WHITE);
     init_pair(MOJOCOLOR_BORDERBOTTOM, COLOR_BLACK, COLOR_WHITE);
