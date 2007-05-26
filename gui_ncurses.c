@@ -42,7 +42,6 @@ typedef enum
     MOJOCOLOR_BACKGROUND=1,
     MOJOCOLOR_BORDERTOP,
     MOJOCOLOR_BORDERBOTTOM,
-    MOJOCOLOR_BORDERSHADOW,
     MOJOCOLOR_TEXT,
     MOJOCOLOR_BUTTONHOVER,
     MOJOCOLOR_BUTTONNORMAL,
@@ -537,7 +536,6 @@ static boolean MojoGui_ncurses_init(void)
     init_pair(MOJOCOLOR_BACKGROUND, COLOR_CYAN, COLOR_BLUE);
     init_pair(MOJOCOLOR_BORDERTOP, COLOR_WHITE, COLOR_WHITE);
     init_pair(MOJOCOLOR_BORDERBOTTOM, COLOR_BLACK, COLOR_WHITE);
-    init_pair(MOJOCOLOR_BORDERSHADOW, COLOR_BLACK, COLOR_BLACK);
     init_pair(MOJOCOLOR_TEXT, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BUTTONHOVER, COLOR_YELLOW, COLOR_BLUE);
     init_pair(MOJOCOLOR_BUTTONNORMAL, COLOR_BLACK, COLOR_WHITE);
@@ -849,10 +847,10 @@ static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
                 selected = (mojobox->textpos+maxh) - 1;
             y = selected - lasttextpos;
 
-            wattron(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+            wattron(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
             mvwhline(mojobox->textwin, y, 0, ' ', maxw);
             mvwaddstr(mojobox->textwin, y, 0, mojobox->textlines[selected]);
-            wattroff(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+            wattroff(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
             wrefresh(mojobox->textwin);
         } // if
 
@@ -895,10 +893,10 @@ static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
                     mvwaddstr(win, y+1, 0, mojobox->textlines[selected+1]);
                     wattroff(win, COLOR_PAIR(MOJOCOLOR_TEXT));
                 } // else
-                wattron(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                wattron(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
                 mvwhline(win, y, 0, ' ', maxw);
                 mvwaddstr(win, y, 0, mojobox->textlines[selected]);
-                wattroff(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                wattroff(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
                 wrefresh(win);
             } // if
         } // else if
@@ -923,10 +921,10 @@ static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
                     mvwaddstr(win, y-1, 0, mojobox->textlines[selected-1]);
                     wattroff(win, COLOR_PAIR(MOJOCOLOR_TEXT));
                 } // else
-                wattron(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                wattron(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
                 mvwhline(win, y, 0, ' ', maxw);
                 mvwaddstr(win, y, 0, mojobox->textlines[selected]);
-                wattroff(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER));
+                wattroff(win, COLOR_PAIR(MOJOCOLOR_BUTTONHOVER) | A_BOLD);
                 wrefresh(win);
             } // if
         } // else if
