@@ -210,8 +210,11 @@ static void drawBackground(WINDOW *win)
     wclear(win);
     if (title != NULL)
     {
+        int w, h;
+        getmaxyx(win, h, w);
         wattron(win, COLOR_PAIR(MOJOCOLOR_BACKGROUND) | A_BOLD);
         mvwaddstr(win, 0, 0, title);
+        mvwhline(win, 1, 1, ACS_HLINE, w-2);
         wattroff(win, COLOR_PAIR(MOJOCOLOR_BACKGROUND) | A_BOLD);
     } // if
 } // drawBackground
@@ -277,8 +280,8 @@ static MojoBox *makeBox(const char *title, const char *text,
     if (bcount > 0)
         h += 2;
 
-    if (h > scrh)
-        h = scrh;
+    if (h > scrh-2)
+        h = scrh-2;
 
     x = (scrw - w) / 2;
     y = ((scrh - h) / 2) + 1;
