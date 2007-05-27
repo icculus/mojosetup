@@ -626,8 +626,8 @@ static int luahook_cmdlinestr(lua_State *L)
 {
     const int argc = lua_gettop(L);
     const char *arg = luaL_checkstring(L, 1);
-    const char *envr = (argc < 2) ? NULL : lua_tostring(L, 2);
-    const char *deflt = (argc < 3) ? NULL : lua_tostring(L, 3);
+    const char *envr = (argc < 2) ? NULL : luaL_checkstring(L, 2);
+    const char *deflt = (argc < 3) ? NULL : luaL_checkstring(L, 3);
     return retvalString(L, cmdlinestr(arg, envr, deflt));
 } // luahook_cmdlinestr
 
@@ -887,9 +887,10 @@ static int luahook_platform_symlink(lua_State *L)
 
 static int luahook_platform_mkdir(lua_State *L)
 {
+    const int argc = lua_gettop(L);
     const char *dir = luaL_checkstring(L, 1);
     uint16 perms = 0;
-    if (lua_isnil(L, 2))
+    if ( (argc < 2) || (lua_isnil(L, 2)) )
         perms = MojoPlatform_defaultDirPerms();
     else
     {
