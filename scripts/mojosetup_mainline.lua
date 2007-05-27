@@ -233,7 +233,7 @@ local function drill_for_archive(archive, path, arclist)
 end
 
 
-local function install_file(dest, archive, file, option, perms)
+local function install_file(dest, archive, file, perms, option)
     -- Upvalued so we don't look these up each time...
     local fname = string.gsub(dest, "^.*/", "", 1)  -- chop the dirs off...
     local ptype = _("Installing")  -- !!! FIXME: localization.
@@ -264,19 +264,25 @@ local function install_file(dest, archive, file, option, perms)
         end
     end
 
-    MojoSetup.manifest[#MojoSetup.manifest+1] =
-    {
-        type = "file",
-        path = dest,
-        checksums = sums,
-        mode = perms,
-    }
+    if option ~= nil then
+        if MojoSetup.manifest[option] == nil then
+            MojoSetup.manifest[option] = {}
+        end
+        local manifest = MojoSetup.manifest[option]
+        manifest[#manifest+1] =
+        {
+            type = "file",
+            path = dest,
+            checksums = sums,
+            mode = perms,
+        }
+    end
 
     MojoSetup.loginfo("Created file '" .. dest .. "'")
 end
 
 
-local function install_symlink(dest, lndest)
+local function install_symlink(dest, lndest, option)
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
     if not MojoSetup.platform.symlink(dest, lndest) then
         -- !!! FIXME: formatting!
@@ -284,18 +290,24 @@ local function install_symlink(dest, lndest)
         MojoSetup.fatal(_("symlink creation failed!"))
     end
 
-    MojoSetup.manifest[#MojoSetup.manifest+1] =
-    {
-        type = "symlink",
-        path = dest,
-        linkdest = lndest,
-    }
+    if option ~= nil then
+        if MojoSetup.manifest[option] == nil then
+            MojoSetup.manifest[option] = {}
+        end
+        local manifest = MojoSetup.manifest[option]
+        manifest[#manifest+1] =
+        {
+            type = "symlink",
+            path = dest,
+            linkdest = lndest,
+        }
+    end
 
     MojoSetup.loginfo("Created symlink '" .. dest .. "' -> '" .. lndest .. "'")
 end
 
 
-local function install_directory(dest, perms)
+local function install_directory(dest, perms, option)
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
     if not MojoSetup.platform.mkdir(dest, perms) then
         -- !!! FIXME: formatting
@@ -303,18 +315,24 @@ local function install_directory(dest, perms)
         MojoSetup.fatal(_("mkdir failed"))
     end
 
-    MojoSetup.manifest[#MojoSetup.manifest+1] =
-    {
-        type = "dir",
-        path = dest,
-        mode = perms,
-    }
+    if option ~= nil then
+        if MojoSetup.manifest[option] == nil then
+            MojoSetup.manifest[option] = {}
+        end
+        local manifest = MojoSetup.manifest[option]
+        manifest[#manifest+1] =
+        {
+            type = "dir",
+            path = dest,
+            mode = perms,
+        }
+    end
 
     MojoSetup.loginfo("Created directory '" .. dest .. "'")
 end
 
 
-local function install_parent_dirs(path)
+local function install_parent_dirs(path, option)
     -- Chop any '/' chars from the end of the string...
     path = string.gsub(path, "/+$", "")
 
@@ -324,7 +342,7 @@ local function install_parent_dirs(path)
         if item ~= "" then
             fullpath = fullpath .. "/" .. item
             if not MojoSetup.platform.exists(fullpath) then
-                install_directory(fullpath, nil)
+                install_directory(fullpath, nil, option)
             end
         end
     end
@@ -367,7 +385,7 @@ local function permit_write(dest, entinfo, file)
                 local id = #MojoSetup.rollbacks + 1
                 local f = MojoSetup.rollbackdir .. "/" .. id
                 -- !!! FIXME: don't add (f) to the installed_files table...
-                install_parent_dirs(f)
+                install_parent_dirs(f, nil)
                 MojoSetup.rollbacks[id] = dest
                 if not MojoSetup.movefile(dest, f) then
                     -- !!! FIXME: formatting
@@ -407,13 +425,13 @@ local function install_archive_entry(archive, ent, file, option)
     if dest ~= nil then  -- Only install if file wasn't filtered out
         dest = MojoSetup.destination .. "/" .. dest
         if permit_write(dest, ent, file) then
-            install_parent_dirs(dest)
+            install_parent_dirs(dest, option)
             if ent.type == "file" then
-                install_file(dest, archive, file, option, perms)
+                install_file(dest, archive, file, perms, option)
             elseif ent.type == "dir" then
-                install_directory(dest, perms)
+                install_directory(dest, perms, option)
             elseif ent.type == "symlink" then
-                install_symlink(dest, ent.linkdest)
+                install_symlink(dest, ent.linkdest, option)
             else  -- !!! FIXME: device nodes, etc...
                 -- !!! FIXME: formatting!
                 -- !!! FIXME: should this be fatal?
@@ -571,6 +589,7 @@ local function do_install(install)
     MojoSetup.totalwrite = 0
     MojoSetup.downloaded = 0
     MojoSetup.totaldownload = 0
+    MojoSetup.install = install
 
     -- !!! FIXME: try to sanity check everything we can here
     -- !!! FIXME:  (unsupported URLs, bogus media IDs, etc.)
@@ -787,7 +806,7 @@ local function do_install(install)
             for file,option in pairs(MojoSetup.files.downloads) do
                 local f = MojoSetup.downloaddir .. "/" .. id
                 -- !!! FIXME: don't add (f) to the installed_files table...
-                install_parent_dirs(f)
+                install_parent_dirs(f, nil)
                 id = id + 1
 
                 -- Upvalued so we don't look these up each time...
@@ -971,6 +990,7 @@ local function do_install(install)
     MojoSetup.scratchdir = nil
     MojoSetup.rollbackdir = nil
     MojoSetup.downloaddir = nil
+    MojoSetup.install = nil
     MojoSetup.forceoverwrite = nil
     MojoSetup.stages = nil
     MojoSetup.files = nil

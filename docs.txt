@@ -957,7 +957,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
 
   MojoSetup.manifest
 
-    This is an array of tables (not a function!) that is built during the
+    This is a table of tables (not a function!) that is built during the
     course of the installation. As changes are made to the destination
     filesystem, they are noted in MojoSetup.manifest, so this will be
     complete and most useful during a postinstall hook in your config file.
@@ -966,11 +966,21 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     so you should treat it as read-only. Modifying this table from your config
     script will result in undefined (but probably bad) behaviour.
 
-    The format of the tables in the array vary depending on type. They all
-    have a "type" field, which is a string. Based on the type, different
-    fields are available:
+    There is one element in the array for each Setup.Option that generated
+    a change to the filesystem. Each of these elements is an array of tables.
 
-      if (item.type = "file") then
+      for option,items in pairs(MojoSetup.manifest) do
+          print("Option: " .. option.description)
+          for i,item in ipairs(items) do
+              -- ... do stuff with "item" here ...
+          end
+      end
+
+    The format of the item tables vary depending on type. They all have a
+    "type" field, which is a string. Based on the type, different fields are
+    available:
+
+      if item.type == "file" then
           print("file created at " .. item.path)
           print("with permissions" ... item.mode)  -- This is a string!
 
@@ -982,12 +992,12 @@ Your config file is a Lua script, and as such, has access to all of Lua's
           end
       end
 
-      if (item.type = "dir") then
+      if item.type == "dir" then
           print("directory created at " .. item.path)
           print("with permissions" ... item.mode)  -- This is a string!
       end
 
-      if (item.type = "symlink") then
+      if item.type == "symlink" then
           print("symbolic link created at " .. item.path)
           print("pointing to " .. item.linkdest)
       end
