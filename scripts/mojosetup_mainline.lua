@@ -233,9 +233,9 @@ local function drill_for_archive(archive, path, arclist)
 end
 
 
-local function install_file(path, archive, file, option, perms)
+local function install_file(dest, archive, file, option, perms)
     -- Upvalued so we don't look these up each time...
-    local fname = string.gsub(path, "^.*/", "", 1)  -- chop the dirs off...
+    local fname = string.gsub(dest, "^.*/", "", 1)  -- chop the dirs off...
     local ptype = _("Installing")  -- !!! FIXME: localization.
     local component = option.description
     local keepgoing = true
@@ -251,41 +251,66 @@ local function install_file(path, archive, file, option, perms)
         return keepgoing
     end
 
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
-    local written, sums = MojoSetup.writefile(archive, path, perms, callback)
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
+    local written, sums = MojoSetup.writefile(archive, dest, perms, callback)
     if not written then
         -- !!! FIXME: formatting!
         if not keepgoing then
             MojoSetup.logerror("User cancelled install during file write.")
             MojoSetup.fatal(_("User cancelled installation."))
         else
-            MojoSetup.logerror("Failed to create file '" .. path .. "'")
+            MojoSetup.logerror("Failed to create file '" .. dest .. "'")
             MojoSetup.fatal(_("File creation failed!"))
         end
     end
-    MojoSetup.loginfo("Created file '" .. path .. "'")
+
+    MojoSetup.manifest[#MojoSetup.manifest+1] =
+    {
+        type = "file",
+        path = dest,
+        checksums = sums,
+        mode = perms,
+    }
+
+    MojoSetup.loginfo("Created file '" .. dest .. "'")
 end
 
 
-local function install_symlink(path, lndest)
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
-    if not MojoSetup.platform.symlink(path, lndest) then
+local function install_symlink(dest, lndest)
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
+    if not MojoSetup.platform.symlink(dest, lndest) then
         -- !!! FIXME: formatting!
-        MojoSetup.logerror("Failed to create symlink '" .. path .. "'")
+        MojoSetup.logerror("Failed to create symlink '" .. dest .. "'")
         MojoSetup.fatal(_("symlink creation failed!"))
     end
-    MojoSetup.loginfo("Created symlink '" .. path .. "' -> '" .. lndest .. "'")
+
+    MojoSetup.manifest[#MojoSetup.manifest+1] =
+    {
+        type = "symlink",
+        path = dest,
+        linkdest = lndest,
+    }
+
+    MojoSetup.loginfo("Created symlink '" .. dest .. "' -> '" .. lndest .. "'")
 end
 
 
-local function install_directory(path, perms)
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
-    if not MojoSetup.platform.mkdir(path, perms) then
+local function install_directory(dest, perms)
+    MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
+    if not MojoSetup.platform.mkdir(dest, perms) then
         -- !!! FIXME: formatting
-        MojoSetup.logerror("Failed to create dir '" .. path .. "'")
+        MojoSetup.logerror("Failed to create dir '" .. dest .. "'")
         MojoSetup.fatal(_("mkdir failed"))
     end
-    MojoSetup.loginfo("Created directory '" .. path .. "'")
+
+    MojoSetup.manifest[#MojoSetup.manifest+1] =
+    {
+        type = "dir",
+        path = dest,
+        mode = perms,
+    }
+
+    MojoSetup.loginfo("Created directory '" .. dest .. "'")
 end
 
 
@@ -894,6 +919,7 @@ local function do_install(install)
     -- Make the stages available elsewhere.
     MojoSetup.stages = stages
 
+    MojoSetup.manifest = {}
     MojoSetup.installed_files = {}
     MojoSetup.rollbacks = {}
     MojoSetup.downloads = {}
@@ -940,6 +966,7 @@ local function do_install(install)
 
     -- Done with these things. Make them eligible for garbage collection.
     stages = nil
+    MojoSetup.manifest = nil
     MojoSetup.destination = nil
     MojoSetup.scratchdir = nil
     MojoSetup.rollbackdir = nil

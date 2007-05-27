@@ -838,6 +838,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     version in the Lua standard runtime, since this version does better debug
     logging.
 
+
   MojoSetup.date()
 
     Return a string of the current date. This is roughly the same as os.date()
@@ -945,6 +946,51 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     "base" and "media" are included in the list, always. The rest are
     compile-time options.
 
+
+  MojoSetup.destination
+
+    This is a string (not a function!) of the path on the physical filesystem
+    where the package is being installed. This is not available until the
+    user has selected a destination, but could be useful in your postinstall
+    script.
+
+
+  MojoSetup.manifest
+
+    This is an array of tables (not a function!) that is built during the
+    course of the installation. As changes are made to the destination
+    filesystem, they are noted in MojoSetup.manifest, so this will be
+    complete and most useful during a postinstall hook in your config file.
+
+    As with most other globals listed here, MojoSetup depends on this data,
+    so you should treat it as read-only. Modifying this table from your config
+    script will result in undefined (but probably bad) behaviour.
+
+    The format of the tables in the array vary depending on type. They all
+    have a "type" field, which is a string. Based on the type, different
+    fields are available:
+
+      if (item.type = "file") then
+          print("file created at " .. item.path)
+          print("with permissions" ... item.mode)  -- This is a string!
+
+          -- Checksums may or may not exist in this table, depending on how
+          --  MojoSetup was compiled. You can iterate to find out what's there:
+          print("checksums:")
+          for k,v in pairs(item.checksums) do
+              print("  " .. k .. ": " .. v)   -- "crc32: 92FAB211E", etc.
+          end
+      end
+
+      if (item.type = "dir") then
+          print("directory created at " .. item.path)
+          print("with permissions" ... item.mode)  -- This is a string!
+      end
+
+      if (item.type = "symlink") then
+          print("symbolic link created at " .. item.path)
+          print("pointing to " .. item.linkdest)
+      end
 
 // end of docs.txt ...
 
