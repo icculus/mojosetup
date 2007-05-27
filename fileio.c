@@ -84,6 +84,7 @@ void MojoArchive_resetEntry(MojoArchiveEntry *info)
 // !!! FIXME: I'd rather not use a callback here, but I can't see a cleaner
 // !!! FIXME:  way right now...
 boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
+                                 MojoChecksums *checksums,
                                  MojoInput_FileCopyCallback cb, void *data)
 {
     boolean retval = false;
@@ -92,9 +93,16 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
     boolean iofailure = false;
     int64 flen = 0;
     int64 bw = 0;
+    MojoChecksumContext sumctx;
 
     if (in == NULL)
         return false;
+
+    if (checksums != NULL)
+    {
+        memset(checksums, '\0', sizeof (MojoChecksums));
+        MojoChecksum_init(&sumctx);
+    } // if
 
     // Wait for a ready(), so length() can be meaningful on network streams.
     while ((!in->ready(in)) && (!iofailure))
@@ -137,7 +145,11 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                     if (fwrite(scratchbuf_128k, br, 1, out) != 1)
                         iofailure = true;
                     else
+                    {
+                        if (checksums != NULL)
+                            MojoChecksum_append(&sumctx, scratchbuf_128k, br);
                         bw += br;
+                    } // else
                 } // else
             } // else
 
@@ -156,6 +168,8 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
         else
         {
             MojoPlatform_chmod(fname, perms);
+            if (checksums != NULL)
+                MojoChecksum_finish(&sumctx, checksums);
             retval = true;
         } // else
     } // if

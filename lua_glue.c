@@ -152,6 +152,49 @@ static inline int retvalLightUserData(lua_State *L, void *data)
 } // retvalLightUserData
 
 
+static int retvalChecksums(lua_State *L, const MojoChecksums *sums)
+{
+    lua_newtable(L);
+
+    #if SUPPORT_CRC32
+    {
+        char buf[64];
+        snprintf(buf, sizeof (buf), "%X", (unsigned int) sums->crc32);
+        set_string(L, buf, "crc32");
+    }
+    #endif
+
+    #if SUPPORT_MD5
+    {
+        char buf[64];
+        const uint8 *dig = sums->md5;
+        snprintf(buf, sizeof (buf), "%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X",
+                    (int) dig[0],  (int) dig[1],  (int) dig[2],  (int) dig[3],
+                    (int) dig[4],  (int) dig[5],  (int) dig[6],  (int) dig[7],
+                    (int) dig[8],  (int) dig[9],  (int) dig[10], (int) dig[11],
+                    (int) dig[12], (int) dig[13], (int) dig[14], (int) dig[15]);
+        set_string(L, buf, "md5");
+    }
+    #endif
+
+    #if SUPPORT_SHA1
+    {
+        char buf[64];
+        const uint8 *dig = sums->sha1;
+        snprintf(buf, sizeof (buf), "%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X%X",
+                    (int) dig[0],  (int) dig[1],  (int) dig[2],  (int) dig[3],
+                    (int) dig[4],  (int) dig[5],  (int) dig[6],  (int) dig[7],
+                    (int) dig[8],  (int) dig[9],  (int) dig[10], (int) dig[11],
+                    (int) dig[12], (int) dig[13], (int) dig[14], (int) dig[15],
+                    (int) dig[16], (int) dig[17], (int) dig[18], (int) dig[19]);
+        set_string(L, buf, "sha1");
+    }
+    #endif
+
+    return 1;
+} // retvalChecksums
+
+
 static inline int snprintfcat(char **ptr, size_t *len, const char *fmt, ...)
 {
     int bw = 0;
@@ -673,8 +716,10 @@ static int luahook_writefile(lua_State *L)
 {
     MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
     const char *path = luaL_checkstring(L, 2);
+    int retval = 0;
+    boolean rc = false;
     uint16 perms = archive->prevEnum.perms;
-    boolean retval = false;
+    MojoChecksums sums;
     MojoInput *in = archive->openCurrentEntry(archive);
     if (in != NULL)
     {
@@ -686,10 +731,14 @@ static int luahook_writefile(lua_State *L)
             if (!valid)
                 fatal(_("BUG: '%s' is not a valid permission string"), permstr);
         } // if
-        retval = MojoInput_toPhysicalFile(in, path, perms, writeCallback, L);
+        rc = MojoInput_toPhysicalFile(in, path, perms, &sums,
+                                          writeCallback, L);
     } // if
 
-    return retvalBoolean(L, retval);
+    retval += retvalBoolean(L, rc);
+    if (rc)
+        retval += retvalChecksums(L, &sums);
+    return retval;
 } // luahook_writefile
 
 
@@ -706,14 +755,23 @@ static int luahook_isvalidperms(lua_State *L)
 
 static int luahook_download(lua_State *L)
 {
-    boolean retval = false;
     const char *url = luaL_checkstring(L, 1);
     const char *dst = luaL_checkstring(L, 2);
+    int retval = 0;
+    boolean rc = false;
+    MojoChecksums sums;
     MojoInput *in = MojoInput_fromURL(url);
-    // !!! FIXME: Unix-specific permissions thing here.
     if (in != NULL)
-        retval = MojoInput_toPhysicalFile(in, dst, 0644, writeCallback, L);
-    return retvalBoolean(L, retval);
+    {
+        // !!! FIXME: Unix-specific permissions thing here.
+        rc = MojoInput_toPhysicalFile(in, dst, 0644, &sums,
+                                          writeCallback, L);
+    } // if
+
+    retval += retvalBoolean(L, rc);
+    if (rc)
+        retval += retvalChecksums(L, &sums);
+    return retval;
 } // luahook_download
 
 
@@ -858,7 +916,7 @@ static int luahook_movefile(lua_State *L)
         {
             uint16 perms = 0;
             MojoPlatform_perms(src, &perms);
-            retval = MojoInput_toPhysicalFile(in, dst, perms, NULL, NULL);
+            retval = MojoInput_toPhysicalFile(in, dst, perms, NULL, NULL, NULL);
             if (retval)
             {
                 retval = MojoPlatform_unlink(src);

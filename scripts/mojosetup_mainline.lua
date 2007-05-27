@@ -252,7 +252,8 @@ local function install_file(path, archive, file, option, perms)
     end
 
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = path
-    if not MojoSetup.writefile(archive, path, perms, callback) then
+    local written, sums = MojoSetup.writefile(archive, path, perms, callback)
+    if not written then
         -- !!! FIXME: formatting!
         if not keepgoing then
             MojoSetup.logerror("User cancelled install during file write.")
@@ -795,7 +796,8 @@ local function do_install(install)
                 end
 
                 MojoSetup.loginfo("Download '" .. url .. "' to '" .. f .. "'")
-                if not MojoSetup.download(url, f, callback) then
+                local downloaded, sums = MojoSetup.download(url, f, callback)
+                if not downloaded then
                     -- !!! FIXME: formatting!
                     MojoSetup.fatal(_("file download failed!"))
                 end

@@ -178,6 +178,9 @@ SET(MOJOSETUP_SRCS
     fileio.c
     archive_zip.c
     archive_tar.c
+    checksum_crc32.c
+    checksum_md5.c
+    checksum_sha1.c
     platform_unix.c
     platform_beos.c
     lua_glue.c
@@ -264,6 +267,27 @@ IF(MOJOSETUP_LUALIB_PACKAGE)
     ADD_DEFINITIONS(-DSUPPORT_LUALIB_PACKAGE=1)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/loadlib.c)
 ENDIF(MOJOSETUP_LUALIB_PACKAGE)
+
+
+# Checksums...
+
+# BINARY SIZE += !!! FIXME: check this.
+OPTION(MOJOSETUP_CHECKSUM_CRC32 "Enable CRC-32 checksum support" TRUE)
+IF(MOJOSETUP_CHECKSUM_CRC32)
+    ADD_DEFINITIONS(-DSUPPORT_CRC32=1)
+ENDIF(MOJOSETUP_CHECKSUM_CRC32)
+
+# BINARY SIZE += !!! FIXME: check this.
+OPTION(MOJOSETUP_CHECKSUM_MD5 "Enable MD5 checksum support" TRUE)
+IF(MOJOSETUP_CHECKSUM_MD5)
+    ADD_DEFINITIONS(-DSUPPORT_MD5=1)
+ENDIF(MOJOSETUP_CHECKSUM_MD5)
+
+# BINARY SIZE += !!! FIXME: check this.
+OPTION(MOJOSETUP_CHECKSUM_SHA1 "Enable SHA-1 checksum support" TRUE)
+IF(MOJOSETUP_CHECKSUM_SHA1)
+    ADD_DEFINITIONS(-DSUPPORT_SHA1=1)
+ENDIF(MOJOSETUP_CHECKSUM_SHA1)
 
 
 # GUI plugins...

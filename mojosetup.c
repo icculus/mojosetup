@@ -159,6 +159,50 @@ static void deinitEverything(void)
 } // deinitEverything
 
 
+void MojoChecksum_init(MojoChecksumContext *ctx)
+{
+    memset(ctx, '\0', sizeof (MojoChecksumContext));
+    #if SUPPORT_CRC32
+    MojoCrc32_init(&ctx->crc32);
+    #endif
+    #if SUPPORT_MD5
+    MojoMd5_init(&ctx->md5);
+    #endif
+    #if SUPPORT_SHA1
+    MojoSha1_init(&ctx->sha1);
+    #endif
+} // MojoChecksum_init
+
+
+void MojoChecksum_append(MojoChecksumContext *ctx, const uint8 *d, uint32 len)
+{
+    #if SUPPORT_CRC32
+    MojoCrc32_append(&ctx->crc32, d, len);
+    #endif
+    #if SUPPORT_MD5
+    MojoMd5_append(&ctx->md5, d, len);
+    #endif
+    #if SUPPORT_SHA1
+    MojoSha1_append(&ctx->sha1, d, len);
+    #endif
+} // MojoChecksum_append
+
+
+void MojoChecksum_finish(MojoChecksumContext *ctx, MojoChecksums *sums)
+{
+    memset(sums, '\0', sizeof (MojoChecksums));
+    #if SUPPORT_CRC32
+    MojoCrc32_finish(&ctx->crc32, &sums->crc32);
+    #endif
+    #if SUPPORT_MD5
+    MojoMd5_finish(&ctx->md5, sums->md5);
+    #endif
+    #if SUPPORT_SHA1
+    MojoSha1_finish(&ctx->sha1, sums->sha1);
+    #endif
+} // MojoChecksum_finish
+
+
 boolean cmdline(const char *arg)
 {
     int argc = GArgc;

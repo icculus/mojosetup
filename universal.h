@@ -181,6 +181,59 @@ void logError(const char *fmt, ...) ISPRINTF(1,2);
 void logInfo(const char *fmt, ...) ISPRINTF(1,2);
 void logDebug(const char *fmt, ...) ISPRINTF(1,2);
 
+
+// Checksums.
+
+typedef uint32 MojoCrc32;
+void MojoCrc32_init(MojoCrc32 *context);
+void MojoCrc32_append(MojoCrc32 *context, const uint8 *buf, uint32 len);
+void MojoCrc32_finish(MojoCrc32 *context, uint32 *digest);
+
+
+typedef struct MojoMd5
+{
+    uint32 count[2];
+    uint32 abcd[4];
+    uint8 buf[64];
+} MojoMd5;
+
+void MojoMd5_init(MojoMd5 *pms);
+void MojoMd5_append(MojoMd5 *pms, const uint8 *data, int nbytes);
+void MojoMd5_finish(MojoMd5 *pms, uint8 digest[16]);
+
+
+typedef struct
+{
+    uint32 state[5];
+    uint32 count[2];
+    uint8 buffer[64];
+} MojoSha1;
+
+void MojoSha1_init(MojoSha1 *context);
+void MojoSha1_append(MojoSha1 *context, const uint8 *data, uint32 len);
+void MojoSha1_finish(MojoSha1 *context, uint8 digest[20]);
+
+typedef struct MojoChecksumContext
+{
+    MojoCrc32 crc32;
+    MojoMd5 md5;
+    MojoSha1 sha1;
+} MojoChecksumContext;
+
+
+typedef struct MojoChecksums
+{
+    uint32 crc32;
+    uint8 md5[16];
+    uint8 sha1[20];
+} MojoChecksums;
+
+
+void MojoChecksum_init(MojoChecksumContext *ctx);
+void MojoChecksum_append(MojoChecksumContext *c, const uint8 *data, uint32 ln);
+void MojoChecksum_finish(MojoChecksumContext *c, MojoChecksums *sums);
+
+
 // A pointer to this struct is passed to plugins, so they can access
 //  functionality in the base application. (Add to this as you need to.)
 typedef struct MojoSetupEntryPoints
