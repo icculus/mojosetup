@@ -410,6 +410,7 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
 {
     static boolean justResized = false;
     MEVENT mevt;
+    int i;
     int w, h;
     MojoBox *mojobox = *_mojobox;
     if (mojobox == NULL)
@@ -505,6 +506,21 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
                     wrefresh(mojobox->buttons[mojobox->hoverover]);
                 } // if
             } // if
+            return -1;
+
+        case 12:  // ctrl-L...redraw everything on the screen.
+            redrawwin(stdscr);
+            wnoutrefresh(stdscr);
+            redrawwin(mojobox->mainwin);
+            wnoutrefresh(mojobox->mainwin);
+            redrawwin(mojobox->textwin);
+            wnoutrefresh(mojobox->textwin);
+            for (i = 0; i < mojobox->buttoncount; i++)
+            {
+                redrawwin(mojobox->buttons[i]);
+                wnoutrefresh(mojobox->buttons[i]);
+            } // for
+            doupdate();  // push it all to the screen.
             return -1;
 
         case KEY_RESIZE:
