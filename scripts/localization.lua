@@ -139,6 +139,9 @@ MojoSetup.localization = {
 
     ["Please insert '%s'"] = {
     };
+
+    ["(I want to specify a path.)"] = {
+    };
 };
 
 -- end of localization.lua ...

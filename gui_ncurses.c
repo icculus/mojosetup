@@ -44,6 +44,7 @@ typedef enum
     MOJOCOLOR_BORDERBOTTOM,
     MOJOCOLOR_BORDERTITLE,
     MOJOCOLOR_TEXT,
+    MOJOCOLOR_TEXTENTRY,
     MOJOCOLOR_BUTTONHOVER,
     MOJOCOLOR_BUTTONNORMAL,
     MOJOCOLOR_BUTTONBORDER,
@@ -597,6 +598,7 @@ static boolean MojoGui_ncurses_init(void)
     init_pair(MOJOCOLOR_BORDERBOTTOM, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BORDERTITLE, COLOR_YELLOW, COLOR_WHITE);
     init_pair(MOJOCOLOR_TEXT, COLOR_BLACK, COLOR_WHITE);
+    init_pair(MOJOCOLOR_TEXTENTRY, COLOR_WHITE, COLOR_BLUE);
     init_pair(MOJOCOLOR_BUTTONHOVER, COLOR_YELLOW, COLOR_BLUE);
     init_pair(MOJOCOLOR_BUTTONNORMAL, COLOR_BLACK, COLOR_WHITE);
     init_pair(MOJOCOLOR_BUTTONBORDER, COLOR_WHITE, COLOR_BLUE);
@@ -750,7 +752,11 @@ static int toggle_option(MojoGuiSetupOptions *parent,
     int rc = -1;
     if ((opts != NULL) && (target > *line))
     {
-        if (++(*line) == target)
+        const char *desc = opts->description;
+        boolean blanked = false;
+        blanked = ( (opts->is_group_parent) && ((!desc) || (!(*desc))) );
+
+        if ((!blanked) && (++(*line) == target))
         {
             const boolean toggled = ((opts->value) ? false : true);
 
@@ -797,10 +803,14 @@ static void build_options(MojoGuiSetupOptions *opts, int *line, int level,
 {
     if (opts != NULL)
     {
-        char *spacebuf = (char *) entry->xmalloc(maxw+1);
-        char *buf = (char *) entry->xmalloc(maxw+1);
+        const char *desc = opts->description;
+        char *spacebuf = (char *) entry->xmalloc(maxw + 1);
+        char *buf = (char *) entry->xmalloc(maxw + 1);
         int len = 0;
-        int spacing = 1+level;
+        int spacing = level * 2;
+
+        if ((desc != NULL) && (*desc == '\0'))
+            desc = NULL;
 
         if (spacing > (maxw-5))
             spacing = 0;  // oh well.
@@ -809,13 +819,15 @@ static void build_options(MojoGuiSetupOptions *opts, int *line, int level,
             memset(spacebuf, ' ', spacing);  // null-term'd by xmalloc().
 
         if (opts->is_group_parent)
-            len = snprintf(buf, maxw-2, "%s%s", spacebuf, opts->description);
+        {
+            if (desc != NULL)
+                len = snprintf(buf, maxw-2, "%s%s", spacebuf, desc);
+        } // if
         else
         {
             (*line)++;
             len = snprintf(buf, maxw-2, "%s[%c] %s", spacebuf,
-                            opts->value ? 'X' : ' ',
-                            opts->description);
+                            opts->value ? 'X' : ' ', desc);
         } // else
 
         free(spacebuf);
@@ -823,21 +835,30 @@ static void build_options(MojoGuiSetupOptions *opts, int *line, int level,
         if (len >= maxw-1)
             strcpy(buf+(maxw-4), "...");  // !!! FIXME: Unicode issues!
 
-        *lines = (char*) entry->xrealloc(*lines, strlen(*lines)+strlen(buf)+2);
-        strcat(*lines, buf);
-        strcat(*lines, "\n");  // I'm sorry, Joel Spolsky!
+        if (len > 0)
+        {
+            const size_t newlen = strlen(*lines) + strlen(buf) + 2;
+            *lines = (char*) entry->xrealloc(*lines, newlen);
+            strcat(*lines, buf);
+            strcat(*lines, "\n");  // I'm sorry, Joel Spolsky!
+        } // if
 
         if ((opts->value) || (opts->is_group_parent))
-            build_options(opts->child, line, level+1, maxw, lines);
+        {
+            int newlev = level + 1;
+            if ((opts->is_group_parent) && (desc == NULL))
+                newlev--;
+            build_options(opts->child, line, newlev, maxw, lines);
+        } // if
+
         build_options(opts->next_sibling, line, level, maxw, lines);
     } // if
 } // build_options
 
 
-static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
-                                 boolean can_back, boolean can_fwd)
+static int optionBox(const char *title, MojoGuiSetupOptions *opts,
+                     boolean can_back, boolean can_fwd)
 {
-    char *title = entry->xstrdup(entry->_("Options"));
     MojoBox *mojobox = NULL;
     char *buttons[4] = { NULL, NULL, NULL, NULL };
     boolean ignoreerr = false;
@@ -879,7 +900,7 @@ static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
             int maxw, maxh;
             getmaxyx(stdscr, maxh, maxw);
             char *text = entry->xstrdup("");
-            build_options(opts, &line, 1, maxw-6, &text);
+            build_options(opts, &line, 0, maxw-6, &text);
             mojobox = makeBox(title, text, buttons, bcount, false, true);
             free(text);
 
@@ -1017,28 +1038,229 @@ static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
     for (i = 0; i < bcount; i++)
         free(buttons[i]);
 
-    free(title);
-
     if (rc == backbutton)
         return -1;
     else if (rc == fwdbutton)
         return 1;
 
     return 0;  // error? Cancel?
+} // optionBox
+
+
+static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
+                                   boolean can_back, boolean can_fwd)
+{
+    char *title = entry->xstrdup(entry->_("Options"));
+    int rc = optionBox(title, opts, can_back, can_fwd);
+    free(title);
+    return rc;
 } // MojoGui_ncurses_options
 
 
-static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
-                                       int *command, boolean can_back,
-                                       boolean can_fwd)
+static char *inputBox(const char *prompt, int *command, boolean can_back)
 {
-    // !!! FIXME: clearly this isn't right.
-    if (recnum > 0)
+    char *text = NULL;
+    int w, h;
+    int i;
+    int ch;
+    int rc = -1;
+    MojoBox *mojobox = NULL;
+    size_t retvalalloc = 64;
+    size_t retvallen = 0;
+    char *retval = (char *) entry->xmalloc(retvalalloc);
+    char *buttons[3] = { NULL, NULL, NULL };
+    int drawpos = 0;
+    int drawlen = 0;
+    int bcount = 0;
+    int backbutton = -1;
+    int cancelbutton = -1;
+
+    buttons[bcount++] = entry->xstrdup(entry->_("OK"));
+
+    if (can_back)
     {
-        *command = 1;
-        return entry->xstrdup(recommends[0]);
+        backbutton = bcount++;
+        buttons[backbutton] = entry->xstrdup(entry->_("Back"));
     } // if
 
+    cancelbutton = bcount++;
+    buttons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+
+    getmaxyx(stdscr, h, w);
+    w -= 10;
+    text = (char *) entry->xmalloc(w+4);
+    text[0] = '\n';
+    memset(text+1, ' ', w);
+    text[w+1] = '\n';
+    text[w+2] = ' ';
+    text[w+3] = '\0';
+    mojobox = makeBox(prompt, text, buttons, bcount, false, false);
+    free(text);
+    text = NULL;
+
+    do
+    {
+        getmaxyx(mojobox->textwin, h, w);
+        w -= 2;
+
+        if (drawpos >= retvallen)
+            drawpos = 0;
+        while ((drawlen = (retvallen - drawpos)) >= w)
+            drawpos += 5;
+
+        wattron(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_TEXTENTRY) | A_BOLD);
+        mvwhline(mojobox->textwin, 1, 1, ' ', w);  // blank line...
+        mvwaddstr(mojobox->textwin, 1, 1, retval + drawpos);
+        wattroff(mojobox->textwin, COLOR_PAIR(MOJOCOLOR_TEXTENTRY) | A_BOLD);
+        wrefresh(mojobox->textwin);
+
+        ch = wgetch(mojobox->mainwin);
+        if ( (ch > 0) && (ch < KEY_MIN) && (isprint(ch)) )  // regular key.
+        {
+            if (retvalalloc <= retvallen)
+            {
+                retvalalloc *= 2;
+                retval = entry->xrealloc(retval, retvalalloc);
+            } // if
+            retval[retvallen++] = (char) ch;
+            retval[retvallen] = '\0';
+        } // if
+
+        else if (ch == KEY_BACKSPACE)
+        {
+            if (retvallen > 0)
+                retval[--retvallen] = '\0';
+        } // else if
+
+        else if (ch == KEY_RESIZE)
+        {
+            wrefresh(stdscr);
+            getmaxyx(stdscr, h, w);
+            w -= 10;
+            text = (char *) entry->xrealloc(mojobox->text, w+4);
+            text[0] = '\n';
+            memset(text+1, ' ', w);
+            text[w+1] = '\n';
+            text[w+2] = ' ';
+            text[w+3] = '\0';
+            mojobox->text = text;
+            text = NULL;
+            upkeepBox(&mojobox, KEY_RESIZE);  // let real resize happen...
+        } // else if
+
+        else
+        {
+            rc = upkeepBox(&mojobox, ch);
+        } // else
+    } while (rc == -1);
+
+    freeBox(mojobox, true);
+
+    for (i = 0; i < bcount; i++)
+        free(buttons[i]);
+
+    if (rc == backbutton)
+        *command = -1;
+    else if (rc == cancelbutton)
+        *command = 0;
+    else
+        *command = 1;
+
+    if (*command <= 0)
+    {
+        free(retval);
+        retval = NULL;
+    } // if
+
+    return retval;
+} // inputBox
+
+
+static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
+                                         int *command, boolean can_back,
+                                         boolean can_fwd)
+{
+    char *retval = NULL;
+    while (true)
+    {
+        const char *localized = NULL;
+        char *title = NULL;
+        char *choosetxt = NULL;
+        int rc = 0;
+
+        if (recnum > 0)  // recommendations available.
+        {
+            int chosen = -1;
+            MojoGuiSetupOptions opts;
+            MojoGuiSetupOptions *prev = &opts;
+            MojoGuiSetupOptions *next = NULL;
+            MojoGuiSetupOptions *opt = NULL;
+            memset(&opts, '\0', sizeof (MojoGuiSetupOptions));
+            int i;
+            for (i = 0; i < recnum; i++)
+            {
+                opt = (MojoGuiSetupOptions *) entry->xmalloc(sizeof (*opt));
+                opt->description = recommends[i];
+                opt->size = -1;
+                prev->next_sibling = opt;
+                prev = opt;
+            } // for
+
+            choosetxt = entry->xstrdup(entry->_("(I want to specify a path.)"));
+            opt = (MojoGuiSetupOptions *) entry->xmalloc(sizeof (*opt));
+            opt->description = choosetxt;
+            opt->size = -1;
+            prev->next_sibling = opt;
+            prev = opt;
+
+            opts.child = opts.next_sibling;  // fix this field.
+            opts.next_sibling = NULL;
+            opts.value = opts.child->value = true;  // make first default.
+            opts.is_group_parent = true;
+            opts.size = -1;
+
+            title = entry->xstrdup(entry->_("Destination"));
+            rc = optionBox(title, &opts, can_back, can_fwd);
+            free(title);
+
+            for (i = 0, next = opts.child; next != NULL; i++)
+            {
+                if (next->value)
+                    chosen = i;
+                prev = next;
+                next = prev->next_sibling;
+                free(prev);
+            } // for
+
+            free(choosetxt);
+
+            *command = rc;
+            if (rc <= 0)  // back or cancel.
+                return NULL;
+
+            else if ((chosen >= 0) && (chosen < recnum))  // a specific entry
+                return entry->xstrdup(recommends[chosen]);
+        } // if
+
+        // either no recommendations or user wants to enter own path...
+
+        localized = entry->_("Enter path where files will be installed.");
+        title = entry->xstrdup(localized);
+        retval = inputBox(title, &rc, (can_back) || (recnum > 0));
+        free(title);
+
+        // user cancelled or entered text, or hit back and we aren't falling
+        //  back to the option list...return.
+        if ( (rc >= 0) || ((rc == -1) && (recnum == 0)) )
+        {
+            *command = rc;
+            return retval;
+        } // if
+
+        // falling back to the option list again...loop.
+    } // while
+
+    // Shouldn't ever hit this, but just in case...
     *command = 0;
     return NULL;
 } // MojoGui_ncurses_destination
