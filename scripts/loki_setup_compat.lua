@@ -20,11 +20,10 @@ MojoSetup.Loki = {}
 
 -- !!! FIXME: some of these are currently-undocumented MojoSetup.* methods...
 
-function MojoSetup.Loki.manifest(update_url)
-    local install = MojoSetup.install
+function MojoSetup.Loki.manifest(install, update_url)
     local manifestdir = MojoSetup.destination .. "/.manifest"
     MojoSetup.installed_files[#MojoSetup.installed_files+1] = manifestdir
-    if not MojoSetup.platform.mkdir(dest, perms) then
+    if not MojoSetup.platform.mkdir(manifestdir) then
         -- !!! FIXME: formatting
         MojoSetup.logerror("Failed to create dir '" .. manifestdir .. "'")
         MojoSetup.fatal(_("mkdir failed"))
@@ -52,13 +51,18 @@ function MojoSetup.Loki.manifest(update_url)
     f:write('  <component name="Default" version="' .. install.version ..
             '" default="yes">\n')
 
-    local destlen = string.length(MojoSetup.destination) + 2
+    local destlen = string.len(MojoSetup.destination) + 2
     for option,items in pairs(MojoSetup.manifest) do
         f:write('    <option name="' .. option.description .. '">\n')
         for i,item in ipairs(items) do
             local type = item.type
             if type == "dir" then
                 type = "directory"
+            end
+
+            local mode = item.mode
+            if mode == nil then
+                mode = "0600"   -- !!! FIXME
             end
 
             local path = item.path
@@ -72,9 +76,9 @@ function MojoSetup.Loki.manifest(update_url)
                 for k,v in pairs(item.checksums) do
                     xml = xml .. ' ' .. k .. '="' .. v .. '"'
                 end
-                xml = xml .. ' mode="' .. item.mode .. '"'
+                xml = xml .. ' mode="' .. mode .. '"'
             elseif type == "directory" then
-                xml = xml .. ' mode="' .. item.mode .. '"'
+                xml = xml .. ' mode="' .. mode .. '"'
             elseif type == "symlink" then
                 xml = xml .. ' dest="' .. item.linkdest .. '" mode="0777"'
             end
@@ -82,6 +86,7 @@ function MojoSetup.Loki.manifest(update_url)
             xml = xml .. '>' .. path .. "</" .. type .. ">\n"
             f:write(xml)
         end
+        f:write('    </option>\n')
     end
 
     f:write('  </component>\n')

@@ -264,6 +264,8 @@ local function install_file(dest, archive, file, perms, option)
         end
     end
 
+    -- !!! FIXME: perms may be null...we need a MojoSetup.defaultPermsString()...
+
     if option ~= nil then
         if MojoSetup.manifest[option] == nil then
             MojoSetup.manifest[option] = {}
