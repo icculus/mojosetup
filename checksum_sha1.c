@@ -43,15 +43,15 @@ A million repetitions of "a"
 
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
-static void MojoSha1_transform(uint32_t state[5], const uint8_t buffer[64])
+static void MojoSha1_transform(uint32 state[5], const uint8 buffer[64])
 {
-    uint32_t a, b, c, d, e;
+    uint32 a, b, c, d, e;
     typedef union {
-        uint8_t c[64];
-        uint32_t l[16];
+        uint8 c[64];
+        uint32 l[16];
     } CHAR64LONG16;
     CHAR64LONG16* block;
-    static uint8_t workspace[64];
+    static uint8 workspace[64];
     block = (CHAR64LONG16*)workspace;
     memcpy(block, buffer, 64);
     /* Copy context->state[] to working vars */
@@ -108,9 +108,9 @@ void MojoSha1_init(MojoSha1 *context)
 
 /* Run your data through this. */
 
-void MojoSha1_append(MojoSha1 *context, const uint8_t *data, uint32_t len)
+void MojoSha1_append(MojoSha1 *context, const uint8 *data, uint32 len)
 {
-    uint32_t i, j;
+    uint32 i, j;
 
     j = (context->count[0] >> 3) & 63;
     if ((context->count[0] += len << 3) < (len << 3)) context->count[1]++;
@@ -130,22 +130,22 @@ void MojoSha1_append(MojoSha1 *context, const uint8_t *data, uint32_t len)
 
 /* Add padding and return the message digest. */
 
-void MojoSha1_finish(MojoSha1 *context, uint8_t digest[20])
+void MojoSha1_finish(MojoSha1 *context, uint8 digest[20])
 {
-    uint32_t i, j;
-    uint8_t finalcount[8];
+    uint32 i, j;
+    uint8 finalcount[8];
 
     for (i = 0; i < 8; i++) {
-        finalcount[i] = (uint8_t)((context->count[(i >= 4 ? 0 : 1)]
+        finalcount[i] = (uint8)((context->count[(i >= 4 ? 0 : 1)]
          >> ((3-(i & 3)) * 8) ) & 255);  /* Endian independent */
     }
-    MojoSha1_append(context, (uint8_t *)"\200", 1);
+    MojoSha1_append(context, (uint8 *)"\200", 1);
     while ((context->count[0] & 504) != 448) {
-        MojoSha1_append(context, (uint8_t *)"\0", 1);
+        MojoSha1_append(context, (uint8 *)"\0", 1);
     }
     MojoSha1_append(context, finalcount, 8);  /* Should cause a MojoSha1_transform() */
     for (i = 0; i < 20; i++) {
-        digest[i] = (uint8_t)
+        digest[i] = (uint8)
          ((context->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
     }
     /* Wipe variables */
@@ -173,11 +173,11 @@ int main(int argc, char **argv)
             perror("fopen");
         else
         {
-            uint8_t dig[20];
+            uint8 dig[20];
             int err = 0;
             while ( (!err) && (!feof(in)) )
             {
-                uint8_t buf[1024];
+                uint8 buf[1024];
                 size_t rc = fread(buf, 1, sizeof (buf), in);
                 if (rc > 0)
                     MojoSha1_append(&ctx, buf, rc);
