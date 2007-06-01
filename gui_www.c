@@ -236,7 +236,7 @@ static char *htmlescape(const char *str)
     char *retval = NULL;
     char ch;
 
-    for (ch = *str; ch != '\0'; ch = *(str++))
+    while ((ch = *(str++)) != '\0')
     {
         switch (ch)
         {
@@ -565,6 +565,15 @@ static SOCKET create_listen_socket(short portnum)
         addr.sin_family = AF_INET;
         addr.sin_port = htons(portnum);
         addr.sin_addr.s_addr = INADDR_ANY;  // !!! FIXME: bind to localhost.
+
+        // So we can bind this socket over and over in debug runs...
+        #if ((!defined _NDEBUG) && (!defined NDEBUG))
+        {
+            int on = 1;
+            setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &on, sizeof (on));
+        }
+        #endif
+
         if (bind(s, (struct sockaddr *) &addr, sizeof (addr)) == SOCKET_ERROR)
             entry->logError("www: bind() failed ('%s')", sockStrError());
         else if (listen(s, 5) == SOCKET_ERROR)
@@ -621,7 +630,7 @@ static void MojoGui_www_deinit(void)
     size_t len = 0, alloc = 0;
     char *html = NULL;
 
-    strAdd(&html, &len, &alloc, "<center><h1>%s</h1></center>", donetext);
+    strAdd(&html, &len, &alloc, "<hr><center>%s</center><hr>", donetext);
     setHtml(donetitle, html);
     free(html);
     free(donetitle);
@@ -650,9 +659,9 @@ static void MojoGui_www_deinit(void)
 } // MojoGui_www_deinit
 
 
-static int doPromptPage(const char *title, const char *text,
+static int doPromptPage(const char *title, const char *text, boolean centertxt,
                         const char *pagename,
-                        const char **buttons, const char **localizedButtons,
+                        const char **buttons, const char **locButtons,
                         int bcount)
 {
     char *htmltitle = htmlescape(title);
@@ -661,20 +670,21 @@ static int doPromptPage(const char *title, const char *text,
     int i = 0;
     char *html = NULL;
     size_t len = 0, alloc = 0;
+    const char *align = ((centertxt) ? " align='center'" : "");
 
     strAdd(&html, &len, &alloc,
         "<center>"
         "<form name='form_%s' method='get'>"  // pagename
          "<input type='hidden' name='page' value='%s'>"  // pagename
          "<table>"
-          "<tr><td align='center'>%s</td></tr>"   // text
+          "<tr><td%s>%s</td></tr>"   // align, text
           "<tr>"
-           "<td align='center'>", pagename, pagename, text);
+           "<td align='center'>", pagename, pagename, align, text);
 
     for (i = 0; i < bcount; i++)
     {
         const char *button = buttons[i];
-        const char *loc = localizedButtons[i];
+        const char *loc = locButtons[i];
         strAdd(&html, &len, &alloc,
             "<input type='submit' name='%s' value='%s'>", button, loc);
     } // for
@@ -723,12 +733,12 @@ static int doPromptPage(const char *title, const char *text,
 
 static void MojoGui_www_msgbox(const char *title, const char *text)
 {
-    char *buttons[] = { "ok" };
-    char *localizedButtons[] = { htmlescape(entry->_("OK")) };
+    const char *buttons[] = { "ok" };
+    const char *locButtons[] = { htmlescape(entry->_("OK")) };
     char *htmltext = htmlescape(text);
-    doPromptPage(title, htmltext, "msgbox", buttons, localizedButtons, 1);
+    doPromptPage(title, htmltext, true, "msgbox", buttons, locButtons, 1);
     free(htmltext);
-    free(localizedButtons[0]);
+    free((void *) locButtons[0]);
 } // MojoGui_www_msgbox
 
 
@@ -736,43 +746,43 @@ static boolean MojoGui_www_promptyn(const char *title, const char *text)
 {
     int i, rc;
     char *htmltext = htmlescape(text);
-    char *buttons[] = { "no", "yes" };
-    char *localizedButtons[] = {
-            htmlescape(entry->_("No"))
+    const char *buttons[] = { "no", "yes" };
+    const char *locButtons[] = {
+            htmlescape(entry->_("No")),
             htmlescape(entry->_("Yes")),
     };
-    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(localizedButtons));
+    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
-    rc = doPromptPage(title, htmltext, "promptyn", buttons, localizedButtons,
+    rc = doPromptPage(title, htmltext, true, "promptyn", buttons, locButtons,
                       STATICARRAYLEN(buttons));
     free(htmltext);
 
-    for (i = 0; i < STATICARRAYLEN(localizedButtons); i++)
-        free(localizedButtons[i]);
+    for (i = 0; i < STATICARRAYLEN(locButtons); i++)
+        free((void *) locButtons[i]);
 
     return (rc == 1);
 } // MojoGui_www_promptyn
 
 
-static MojoGuiYNAN MojoGui_www_promptynan(const char *title, const char *txt)
+static MojoGuiYNAN MojoGui_www_promptynan(const char *title, const char *text)
 {
     int i, rc;
     char *htmltext = htmlescape(text);
-    char *buttons[] = { "no", "yes", "always", "never" };
-    char *localizedButtons[] = {
-            htmlescape(entry->_("No"))
+    const char *buttons[] = { "no", "yes", "always", "never" };
+    const char *locButtons[] = {
+            htmlescape(entry->_("No")),
             htmlescape(entry->_("Yes")),
             htmlescape(entry->_("Always")),
             htmlescape(entry->_("Never")),
     };
-    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(localizedButtons));
+    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
-    rc = doPromptPage(title, htmltext, "promptynan", buttons, localizedButtons,
+    rc = doPromptPage(title, htmltext, true, "promptynan", buttons, locButtons,
                       STATICARRAYLEN(buttons));
 
     free(htmltext);
-    for (i = 0; i < STATICARRAYLEN(localizedButtons); i++)
-        free(localizedButtons[i]);
+    for (i = 0; i < STATICARRAYLEN(locButtons); i++)
+        free((void *) locButtons[i]);
 
     return (MojoGuiYNAN) rc;
 } // MojoGui_www_promptynan
@@ -796,42 +806,42 @@ static int MojoGui_www_readme(const char *name, const uint8 *data,
 {
     char *text = NULL;
     size_t len = 0, alloc = 0;
-    char *htmldata = htmlescape(data);
+    char *htmldata = htmlescape((const char *) data);
     int i, rc;
     int cancelbutton = -1;
     int backbutton = -1;
     int fwdbutton = -1;
     int bcount = 0;
-    char *buttons[4] = { NULL, NULL, NULL, NULL };
-    char *localizedButtons[4] = { NULL, NULL, NULL, NULL };
-    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(localizedButtons));
+    const char *buttons[4] = { NULL, NULL, NULL, NULL };
+    const char *locButtons[4] = { NULL, NULL, NULL, NULL };
+    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
     cancelbutton = bcount++;
     buttons[cancelbutton] = "next";
-    localizedButtons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+    locButtons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
 
     if (can_back)
     {
         backbutton = bcount++;
         buttons[backbutton] = "back";
-        localizedButtons[backbutton] = entry->xstrdup(entry->_("Back"));
+        locButtons[backbutton] = entry->xstrdup(entry->_("Back"));
     } // if
 
     if (can_fwd)
     {
         fwdbutton = bcount++;
         buttons[fwdbutton] = "next";
-        localizedButtons[fwdbutton] = entry->xstrdup(entry->_("Next"));
+        locButtons[fwdbutton] = entry->xstrdup(entry->_("Next"));
     } // if
 
     strAdd(&text, &len, &alloc, "<pre>\n%s\n</pre>", htmldata);
     free(htmldata);
 
-    rc = doPromptPage(name, text, "readme", buttons, localizedButtons, bcount);
+    rc = doPromptPage(name, text, false, "readme", buttons, locButtons, bcount);
 
     free(text);
-    for (i = 0; i < STATICARRAYLEN(localizedButtons); i++)
-        free(localizedButtons[i]);
+    for (i = 0; i < STATICARRAYLEN(locButtons); i++)
+        free((void *) locButtons[i]);
 
     if (rc == backbutton)
         return -1;
@@ -864,7 +874,7 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
     size_t len = 0, alloc = 0;
 
     // !!! FIXME: better text.
-    const char *title = entry->xstrdup(entry->_("Media change"));
+    char *title = entry->xstrdup(entry->_("Media change"));
     // !!! FIXME: better text.
     strAdd(&text, &len, &alloc, entry->_("Please insert '%s'"), medianame);
 
@@ -872,20 +882,20 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
     free(text);
 
     int i, rc;
-    char *buttons[] = { "cancel", "ok" };
-    char *localizedButtons[] = {
-            htmlescape(entry->_("Cancel"))
+    const char *buttons[] = { "cancel", "ok" };
+    const char *locButtons[] = {
+            htmlescape(entry->_("Cancel")),
             htmlescape(entry->_("OK")),
     };
-    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(localizedButtons));
+    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
-    rc = doPromptPage(title, htmltext, "insertmedia", buttons,
-                      localizedButtons, STATICARRAYLEN(buttons));
+    rc = doPromptPage(title, htmltext, true, "insertmedia", buttons,
+                      locButtons, STATICARRAYLEN(buttons));
 
     free(title);
     free(htmltext);
-    for (i = 0; i < STATICARRAYLEN(localizedButtons); i++)
-        free(localizedButtons[i]);
+    for (i = 0; i < STATICARRAYLEN(locButtons); i++)
+        free((void *) locButtons[i]);
 
     return (rc == 1);
 } // MojoGui_www_insertmedia
