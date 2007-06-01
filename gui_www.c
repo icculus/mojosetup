@@ -817,7 +817,7 @@ static int MojoGui_www_readme(const char *name, const uint8 *data,
     assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
     cancelbutton = bcount++;
-    buttons[cancelbutton] = "next";
+    buttons[cancelbutton] = "cancel";
     locButtons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
 
     if (can_back)
