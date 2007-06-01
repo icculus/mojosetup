@@ -58,6 +58,16 @@ typedef int boolean;
 #define ISPRINTF(x,y)
 #endif
 
+// Compiler-enforced sentinel safety helper.
+// This is appended to function declarations that use sentinel-style semantics,
+//  and will make sure your passed the right params to "..." where a NULL
+//  is needed at the end of the list.
+#ifdef __GNUC__
+#define ISSENTINEL __attribute__((sentinel))
+#else
+#define ISSENTINEL
+#endif
+
 // Command line access outside of main().
 extern int GArgc;
 extern const char **GArgv;
