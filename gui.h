@@ -169,6 +169,7 @@ const MojoGui *MOJOGUI_ENTRY_POINT(int rev, const MojoSetupEntryPoints *e) \
 const MojoGui *MojoGuiPlugin_stdio(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_ncurses(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_gtkplus2(int rev, const MojoSetupEntryPoints *e);
+const MojoGui *MojoGuiPlugin_www(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_macosx(int rev, const MojoSetupEntryPoints *e);
 
 // !!! FIXME: Qt? KDE? Gnome? Console? Cocoa?

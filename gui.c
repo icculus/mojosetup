@@ -32,6 +32,9 @@ static const MojoGuiEntryPoint staticGui[] =
 #if GUI_STATIC_LINK_GTKPLUS2
     MojoGuiPlugin_gtkplus2,
 #endif
+#if GUI_STATIC_LINK_WWW
+    MojoGuiPlugin_www,
+#endif
 #if GUI_STATIC_LINK_NCURSES
     MojoGuiPlugin_ncurses,
 #endif

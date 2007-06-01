@@ -142,6 +142,17 @@ MojoSetup.localization = {
 
     ["(I want to specify a path.)"] = {
     };
+
+    -- as in "404 Not Found" in a web browser.
+    ["Not Found"] = {
+    };
+
+    -- title bar in browser page, used with next item for page's text.
+    ["Shutting down..."] = {
+    };
+
+    ["Setup program is shutting down. You can close this browser now."] = {
+    };
 };
 
 -- end of localization.lua ...
