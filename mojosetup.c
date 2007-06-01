@@ -321,7 +321,7 @@ static FILE *logFile = NULL;
 void MojoLog_initLogging(void)
 {
     const char *level = cmdlinestr("loglevel","MOJOSETUP_LOGLEVEL", DEFLOGLEV);
-    const char *fname = cmdlinestr("logfile", "MOJOSETUP_LOGFILE", NULL);
+    const char *fname = cmdlinestr("log", "MOJOSETUP_LOG", NULL);
 
     if (strcmp(level, "nothing") == 0)
         MojoLog_logLevel = MOJOSETUP_LOG_NOTHING;
