@@ -625,7 +625,7 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
     // !!! FIXME: better text.
     const char *title = entry->_("Media change");
     // !!! FIXME: better text.
-    const char *fmt = entry->_("Please insert %s");
+    const char *fmt = entry->_("Please insert '%s'");
     size_t len = strlen(fmt) + strlen(medianame) + 1;
     char *text = (char *) entry->xmalloc(len);
     snprintf(text, len, fmt, medianame);
