@@ -169,9 +169,9 @@ static void addWebRequest(const char *key, const char *val)
 static int hexVal(char ch)
 {
     if ((ch >= 'a') && (ch <= 'f'))
-        return (ch - 'a') + 16;
+        return (ch - 'a') + 10;
     else if ((ch >= 'A') && (ch <= 'F'))
-        return (ch - 'A') + 16;
+        return (ch - 'A') + 10;
     else if ((ch >= '0') && (ch <= '9'))
         return (ch - '0');
     return -1;
@@ -724,7 +724,7 @@ static int doPromptPage(const char *title, const char *text, boolean centertxt,
             } // else
 
             req = req->next;
-        } // for
+        } // while
     } // while
 
     return answer;
@@ -862,8 +862,109 @@ static char *MojoGui_www_destination(const char **recommends, int recnum,
                                      int *command, boolean can_back,
                                      boolean can_fwd)
 {
-    *command = 0;
-    return NULL;
+    char *retval = NULL;
+    char *title = entry->xstrdup(entry->_("Destination"));
+    char *html = NULL;
+    size_t len = 0, alloc = 0;
+    boolean checked = true;
+    int cancelbutton = -1;
+    int backbutton = -1;
+    int fwdbutton = -1;
+    int bcount = 0;
+    int rc = 0;
+    int i = 0;
+    const char *buttons[4] = { NULL, NULL, NULL, NULL };
+    const char *locButtons[4] = { NULL, NULL, NULL, NULL };
+    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
+
+    cancelbutton = bcount++;
+    buttons[cancelbutton] = "cancel";
+    locButtons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+
+    if (can_back)
+    {
+        backbutton = bcount++;
+        buttons[backbutton] = "back";
+        locButtons[backbutton] = entry->xstrdup(entry->_("Back"));
+    } // if
+
+    if (can_fwd)
+    {
+        fwdbutton = bcount++;
+        buttons[fwdbutton] = "next";
+        locButtons[fwdbutton] = entry->xstrdup(entry->_("Next"));
+    } // if
+
+    strAdd(&html, &len, &alloc,
+        "<form name='form_destination' method='get'>"
+          "<table>");
+
+    for (i = 0; i < recnum; i++)
+    {
+        strAdd(&html, &len, &alloc,
+           "<tr>"
+            "<td>"
+             "<input type='radio' name='dest' %s value='%s'>%s"
+            "</td>"
+           "</tr>",
+            ((checked) ? "checked='true'" : ""), recommends[i], recommends[i]);
+        checked = false;
+    } // for
+
+    strAdd(&html, &len, &alloc,
+           "<tr>"
+            "<td>"
+             "<input type='radio' name='dest' %s value='*'>"
+             "<input type='text' name='customdest' value=''>"
+            "</td>"
+           "</tr>"
+          "</table>"
+         "</form>", ((checked) ? "checked='true'" : ""));
+
+    rc = doPromptPage(title, html, true, "destination",
+                      buttons, locButtons, bcount);
+
+    free(title);
+    free(html);
+    for (i = 0; i < STATICARRAYLEN(locButtons); i++)
+        free((void *) locButtons[i]);
+
+    if (rc == backbutton)
+        *command = -1;
+    else if (rc == cancelbutton)
+        *command = 0;
+    else
+    {
+        const char *dest = NULL;
+        const char *customdest = NULL;
+        WebRequest *req = webRequest;
+        while (req != NULL)
+        {
+            const char *k = req->key;
+            const char *v = req->value;
+            if (strcmp(k, "dest") == 0)
+                dest = v;
+            else if (strcmp(k, "customdest") == 0)
+                customdest = v;
+            req = req->next;
+        } // while
+
+        if (dest != NULL)
+        {
+            if (strcmp(dest, "*") == 0)
+                dest = customdest;
+        } // if
+
+        if (dest == NULL)
+            *command = 0;   // !!! FIXME: maybe loop with doPromptPage again.
+        else
+        {
+            retval = entry->xstrdup(dest);
+            *command = 1;
+        } // else
+    } // else
+
+    return retval;
 } // MojoGui_www_destination
 
 
@@ -910,6 +1011,7 @@ static boolean MojoGui_www_progress(const char *type, const char *component,
 
 static void MojoGui_www_final(const char *msg)
 {
+    MojoGui_www_msgbox(entry->_("Finish"), msg);
 } // MojoGui_www_final
 
 // end of gui_www.c ...
