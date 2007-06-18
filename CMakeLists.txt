@@ -292,6 +292,12 @@ ENDIF(MOJOSETUP_CHECKSUM_SHA1)
 
 # GUI plugins...
 
+MACRO(MOJOSETUP_ADD_LIBRARY _TARGET _SRCS)
+    ADD_LIBRARY(${_TARGET} SHARED ${_SRCS})
+    SET(MOJOSETUP_TARGETS "${MOJOSETUP_TARGETS};${_TARGET}")
+ENDMACRO(MOJOSETUP_ADD_LIBRARY)
+
+
 # BINARY SIZE += 2.5
 OPTION(MOJOSETUP_GUI_STDIO "Enable stdio GUI" TRUE)
 IF(MOJOSETUP_GUI_STDIO)
@@ -301,7 +307,7 @@ IF(MOJOSETUP_GUI_STDIO)
         ADD_DEFINITIONS(-DGUI_STATIC_LINK_STDIO=1)
         SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_stdio.c)
     ELSE(MOJOSETUP_GUI_STDIO_STATIC)
-        ADD_LIBRARY(mojosetupgui_stdio SHARED gui_stdio.c)
+        MOJOSETUP_ADD_LIBRARY(mojosetupgui_stdio gui_stdio.c)
     ENDIF(MOJOSETUP_GUI_STDIO_STATIC)
 ENDIF(MOJOSETUP_GUI_STDIO)
 
@@ -318,7 +324,7 @@ IF(MOJOSETUP_GUI_NCURSES)
         SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_ncurses.c)
         SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} -lncurses)  # !!! FIXME
     ELSE(MOJOSETUP_GUI_NCURSES_STATIC)
-        ADD_LIBRARY(mojosetupgui_ncurses SHARED gui_ncurses.c)
+        MOJOSETUP_ADD_LIBRARY(mojosetupgui_ncurses gui_ncurses.c)
         TARGET_LINK_LIBRARIES(mojosetupgui_ncurses "-lncurses")  # !!! FIXME
     ENDIF(MOJOSETUP_GUI_NCURSES_STATIC)
 ENDIF(MOJOSETUP_GUI_NCURSES)
@@ -335,7 +341,7 @@ IF(MACOSX)
             ADD_DEFINITIONS(-DGUI_STATIC_LINK_MACOSX=1)
             SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_macosx.c)
         ELSE(MOJOSETUP_GUI_MACOSX_STATIC)
-            ADD_LIBRARY(mojosetupgui_macosx SHARED gui_macosx.c)
+            MOJOSETUP_ADD_LIBRARY(mojosetupgui_macosx gui_macosx.c)
             TARGET_LINK_LIBRARIES(mojosetupgui_macosx
                 "-framework Carbon -mmacosx-version-min=10.2"
             )
@@ -364,7 +370,7 @@ ELSE(NOT LIBGTK_LINK_FLAGS)
             SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_gtkplus2.c)
             SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${LIBGTK_LINK_FLAGS})
         ELSE(MOJOSETUP_GUI_GTKPLUS2_STATIC)
-            ADD_LIBRARY(mojosetupgui_gtkplus2 SHARED gui_gtkplus2.c)
+            MOJOSETUP_ADD_LIBRARY(mojosetupgui_gtkplus2 gui_gtkplus2.c)
             ADD_DEFINITIONS(${LIBGTK_CFLAGS})
             TARGET_LINK_LIBRARIES(mojosetupgui_gtkplus2 ${LIBGTK_LINK_FLAGS})
         ENDIF(MOJOSETUP_GUI_GTKPLUS2_STATIC)
@@ -383,7 +389,7 @@ IF(MOJOSETUP_GUI_WWW)
         ADD_DEFINITIONS(-DGUI_STATIC_LINK_WWW=1)
         SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_www.c)
     ELSE(MOJOSETUP_GUI_WWW_STATIC)
-        ADD_LIBRARY(mojosetupgui_www SHARED gui_www.c)
+        MOJOSETUP_ADD_LIBRARY(mojosetupgui_www gui_www.c)
     ENDIF(MOJOSETUP_GUI_WWW_STATIC)
 ENDIF(MOJOSETUP_GUI_WWW)
 
@@ -532,7 +538,25 @@ IF(MOJOSETUP_BUILD_LUAC)
 ENDIF(MOJOSETUP_BUILD_LUAC)
 
 ADD_EXECUTABLE(mojosetup ${MOJOSETUP_SRCS} ${OPTIONAL_SRCS})
+GET_TARGET_PROPERTY(MOJOSETUP_BINARY_LOCATION mojosetup LOCATION)
 TARGET_LINK_LIBRARIES(mojosetup ${OPTIONAL_LIBS})
+SET(MOJOSETUP_TARGETS "${MOJOSETUP_TARGETS};mojosetup")
+
+# For cobbling together a skeleton installer...
+
+ADD_CUSTOM_TARGET(skeleton
+    COMMENT "Assembling Skeleton..."
+    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/rm_recurse.cmake
+    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
+    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/scripts -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
+    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/guis -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
+    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/data -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
+    COMMAND ${CMAKE_COMMAND} -DFROM=${CMAKE_SOURCE_DIR}/scripts/*.lua -DTO=${CMAKE_BINARY_DIR}/skeleton/scripts -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
+    COMMAND ${CMAKE_COMMAND} -DFROM=${CMAKE_SOURCE_DIR}/*mojosetupgui*.* -DTO=${CMAKE_BINARY_DIR}/skeleton/guis -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
+    COMMAND ${CMAKE_COMMAND} -DFROM=${MOJOSETUP_BINARY_LOCATION} -DTO=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
+)
+
+ADD_DEPENDENCIES(skeleton ${MOJOSETUP_TARGETS})
 
 # end of CMakeLists.txt ...
 
