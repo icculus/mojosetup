@@ -114,14 +114,52 @@ char *xstrdup(const char *str);
 // strncpy() that promises to null-terminate the string, even on overflow.
 char *xstrncpy(char *dst, const char *src, size_t len);
 
+
+#ifdef malloc
+#undef malloc
+#endif
 #define malloc(x) DO_NOT_CALL_MALLOC__USE_XMALLOC_INSTEAD
+
+#ifdef calloc
+#undef calloc
+#endif
 #define calloc(x,y) DO_NOT_CALL_CALLOC__USE_XMALLOC_INSTEAD
+
+#ifdef realloc
+#undef realloc
+#endif
 #define realloc(x,y) DO_NOT_CALL_REALLOC__USE_XREALLOC_INSTEAD
+
+#ifdef strdup
+#undef strdup
+#endif
 #define strdup(x) DO_NOT_CALL_STRDUP__USE_XSTRDUP_INSTEAD
+
+#ifdef strncpy
+#undef strncpy
+#endif
 #define strncpy(x,y,z) DO_NOT_CALL_STRNCPY__USE_XSTRNCPY_INSTEAD
-//#define strcasecmp(x,y) DO_NOT_CALL_STRCASECMP__USE_UTF8STRICMP_INSTEAD
-//#define stricmp(x,y) DO_NOT_CALL_STRICMP__USE_UTF8STRICMP_INSTEAD
-//#define strcmpi(x,y) DO_NOT_CALL_STRCMPI__USE_UTF8STRICMP_INSTEAD
+
+#if 0  // !!! FIXME: write me.
+#ifdef strcasecmp
+#undef strcasecmp
+#endif
+#define strcasecmp(x,y) DO_NOT_CALL_STRCASECMP__USE_UTF8STRICMP_INSTEAD
+#endif
+
+#if 0  // !!! FIXME: write me.
+#ifdef stricmp
+#undef stricmp
+#endif
+#define stricmp(x,y) DO_NOT_CALL_STRICMP__USE_UTF8STRICMP_INSTEAD
+#endif
+
+#if 0  // !!! FIXME: write me.
+#ifdef strcmpi
+#undef strcmpi
+#endif
+#define strcmpi(x,y) DO_NOT_CALL_STRCMPI__USE_UTF8STRICMP_INSTEAD
+#endif
 
 // Localization support.
 const char *translate(const char *str);
