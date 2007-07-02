@@ -47,18 +47,18 @@ Setup.Package
     --  Generally these return the table you pass to them, but they
     --  may sanitize the values, add defaults, and verify the data.
 
-    -- End User License Agreement(s). You can specify multiple files.
+    -- End User License Agreement(s). You can specify multiple
+    --  Setup.Eula sections here.
     --  Also, Note the "translate" call.
+    --  This shows up as the first thing the user sees, and must
+    --  agree to before anything goes forward. You could put this
+    --  in the base Setup.Option and they won't be shown it until
+    --  installation is about to start, if you would rather
+    --  defer this until necessary and/or show the README first.
     Setup.Eula
     {
         description = "My Game License",
         source = MojoSetup.translate("MyGame_EULA.html")
-    },
-
-    Setup.Eula
-    {
-        description = "Punkbuster License",
-        source = MojoSetup.translate("PunkBuster_EULA.html"),
     },
 
     -- README file(s) to show and install.
@@ -126,6 +126,27 @@ Setup.Package
                 if fn == "Single/x/dontinstall.map" then return nil end
                 return fn
             end
+        },
+
+        -- Here's an option that has it's own EULA.
+        Setup.Option
+        {
+            value = true,
+            required = false,
+            disabled = false,
+            bytes = megabytes(1),
+            description = "PunkBuster support",
+
+            Setup.Eula
+            {
+                description = "Punkbuster License",
+                source = MojoSetup.translate("PunkBuster_EULA.html"),
+            },
+
+            Setup.File
+            {
+                source = "media://cd1/pb.zip",
+            },
         },
 
         -- Radio buttons.

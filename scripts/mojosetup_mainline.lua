@@ -631,22 +631,9 @@ local function do_install(install)
         end
     end
 
-    -- Next stage: show any READMEs.
-    if install.readmes ~= nil then
-        for k,readme in pairs(install.readmes) do
-            local desc = readme.description
-            -- !!! FIXME: pull from archive?
-            local fname = "data/" .. readme.source
-            -- (desc) and (fname) become upvalues in this function.
-            stages[#stages+1] = function(thisstage, maxstage)
-                return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
-            end
-        end
-    end
-
-    -- Next stage: accept all EULAs. Never lets user step back, so they
-    --  either accept or reject and go to the next EULA or stage. Rejection
-    --  of any EULA is considered fatal.
+    -- Next stage: accept all global EULAs. Rejection of any EULA is considered
+    --  fatal. These are global EULAs for the install, per-option EULAs come
+    --  later.
     if install.eulas ~= nil then
         for k,eula in pairs(install.eulas) do
             local desc = eula.description
@@ -661,6 +648,19 @@ local function do_install(install)
                     end
                 end
                 return retval
+            end
+        end
+    end
+
+    -- Next stage: show any READMEs.
+    if install.readmes ~= nil then
+        for k,readme in pairs(install.readmes) do
+            local desc = readme.description
+            -- !!! FIXME: pull from archive?
+            local fname = "data/" .. readme.source
+            -- (desc) and (fname) become upvalues in this function.
+            stages[#stages+1] = function(thisstage, maxstage)
+                return MojoSetup.gui.readme(desc, fname, thisstage, maxstage)
             end
         end
     end
@@ -705,14 +705,71 @@ local function do_install(install)
     end
 
     -- Next stage: let user choose install options.
-    if install.options ~= nil or install.optiongroups ~= nil then
-        -- (install) becomes an upvalue in this function.
-        stages[#stages+1] = function(thisstage, maxstage)
-            -- This does some complex stuff with a hierarchy of tables in C.
-            return MojoSetup.gui.options(install, thisstage, maxstage)
-        end
+    --  This may not produce a GUI stage if it decides that all options
+    --  are either required or disabled.
+    -- (install) becomes an upvalue in this function.
+    stages[#stages+1] = function(thisstage, maxstage)
+        -- This does some complex stuff with a hierarchy of tables in C.
+        return MojoSetup.gui.options(install, thisstage, maxstage)
     end
 
+
+    -- Next stage: accept all option-specific EULAs.
+    --  Rejection of any EULA will put you back one stage (usually to the
+    --  install options), but if there is no previous stage, this becomes
+    --  fatal.
+    -- This may not produce a GUI stage if there are no selected options with
+    --  EULAs to accept.
+    stages[#stages+1] = function(thisstage, maxstage)
+        local option_eulas = {}
+
+        local function find_option_eulas(opts)
+            local options = opts['options']
+            if options ~= nil then
+                for k,v in pairs(options) do
+                    if v.value and v.eulas then
+                        for ek,ev in pairs(v.eulas) do
+                            option_eulas[#option_eulas+1] = ev
+                        end
+                        find_option_eulas(v)
+                    end
+                end
+            end
+
+            local optiongroups = opts['optiongroups']
+            if optiongroups ~= nil then
+                for k,v in pairs(optiongroups) do
+                    if not v.disabled then
+                        find_option_eulas(v)
+                    end
+                end
+            end
+        end
+
+        find_option_eulas(install)
+
+        for k,eula in pairs(option_eulas) do
+            local desc = eula.description
+            local fname = "data/" .. eula.source
+            local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
+            if retval == 1 then
+                if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
+                    -- can't go back? We have to die here instead.
+                    if thisstage == 1 then
+                        MojoSetup.fatal(_("You must accept the license before you may install"))
+                    else
+                        retval = -1  -- just step back a stage.
+                    end
+                end
+            end
+
+            if retval ~= 1 then
+                return retval
+            end
+        end
+
+        return 1   -- all licenses were agreed to. Go to the next stage.
+    end
 
     -- Next stage: Make sure source list is sane.
     --  This is not a GUI stage, it just needs to run between them.
