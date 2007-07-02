@@ -308,37 +308,19 @@ Here are the elements, and the attributes they can possess.
     (!!! FIXME) This attribute is for future expansion.
 
 
- Setup.Readme:
-
-  This element is a child of Setup.Package. It can be used to display a
-  information about the package to the end user, such as a welcome message,
-  FAQs, or other orientation information. There can be multiple Setup.Readme
-  elements listed, in which case the end user will be shown each readme
-  individually before installation may proceed. The readmes are shown first
-  before any other interaction occurs.
-
-  Setup.Readme attributes:
-
-   description (no default, mustExist, mustBeString, cantBeEmpty)
-
-    This is a brief description of the Readme, used for title bars and such.
-
-
-   source (no default, mustExist, mustBeString, cantBeEmpty)
-
-    This is a filename in the Base Archive's "data" directory that contains
-    the readme text. Currently this must be a text file in UTF-8 encoding.
-
-
  Setup.Eula:
 
-  This element is a child of Setup.Package. It can be used to display a
-  license agreement to the end user, which they must agree to before
-  installation can proceed. If they refuse the license, the installer
-  terminates without installing anything. There can be multiple Setup.Eula
-  elements listed, in which case the end user will be asked to agree to
-  each license individually before installation may proceed. The licenses are
-  shown after any readme elements.
+  This element can be a child of Setup.Package or Setup.Option. It can be
+  used to display a license agreement to the end user, which they must agree
+  to before installation can proceed. If they refuse the license, the installer
+  terminates without installing anything (or, in the Setup.Option case, steps
+  back in the installation to let them change options, so they can disable the
+  installation of whatever they disagree with). There can be multiple
+  Setup.Eula elements listed, in which case the end user will be asked to
+  agree to each license individually before installation may proceed. The
+  Setup.Package licenses are shown first before any other interaction occurs,
+  and the Setup.Option licenses are shown after the user selects her install
+  options.
 
   Setup.Eula attributes:
 
@@ -351,6 +333,29 @@ Here are the elements, and the attributes they can possess.
 
     This is a filename in the Base Archive's "data" directory that contains
     the license text. Currently this must be a text file in UTF-8 encoding.
+
+
+ Setup.Readme:
+
+  This element is a child of Setup.Package. It can be used to display a
+  information about the package to the end user, such as a welcome message,
+  FAQs, or other orientation information. There can be multiple Setup.Readme
+  elements listed, in which case the end user will be shown each readme
+  individually before installation may proceed. The readmes are shown after
+  any EULA elements in the Setup.Package. EULA elements in a Setup.Option
+  are shown later, however.
+
+  Setup.Readme attributes:
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a brief description of the Readme, used for title bars and such.
+
+
+   source (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a filename in the Base Archive's "data" directory that contains
+    the readme text. Currently this must be a text file in UTF-8 encoding.
 
 
  Setup.Media:
