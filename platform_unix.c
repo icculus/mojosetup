@@ -82,6 +82,29 @@ char *MojoPlatform_currentWorkingDir(void)
 } // MojoPlatform_currentWorkingDir
 
 
+char *MojoPlatform_readlink(const char *linkname)
+{
+    size_t alloclen = 16;
+    char *retval = NULL;
+    char *buf = NULL;
+    size_t len = -1;
+
+    do
+    {
+        alloclen *= 2;
+        buf = xrealloc(buf, alloclen);
+        len = readlink(linkname, buf, alloclen-1);
+        if ( (len != -1) && (len < (alloclen-1)) )  // !error && !overflow
+        {
+            buf[len] = '\0';  // readlink() doesn't null-terminate!
+            retval = xrealloc(buf, len+1);  // shrink it down.
+        } // if
+    } while (len >= (alloclen-1));  // loop if we need a bigger buffer.
+
+    return retval;  // caller must free() this.
+} // MojoPlatform_readlink
+
+
 static void *guaranteeAllocation(void *ptr, size_t len, size_t *_alloclen)
 {
     void *retval = NULL;
@@ -176,18 +199,12 @@ static char *realpathInternal(char *path, const char *cwd, int linkloop)
         else if (S_ISLNK(statbuf.st_mode))
         {
             char *newresolve = NULL;
-            int br = 0;
-
             if (linkloop > 255)
                 goto realpathInternal_failed;
 
-            linkname = (char *) xmalloc(statbuf.st_size + 1);
-            br = readlink(retval, linkname, statbuf.st_size);
-            if (br < 0)
+            linkname = MojoPlatform_readlink(retval);
+            if (linkname == NULL)
                 goto realpathInternal_failed;
-
-            // readlink() doesn't null-terminate!
-            linkname[br] = '\0';
 
             // chop off symlink name for its cwd.
             retval[len] = '\0';
@@ -202,6 +219,7 @@ static char *realpathInternal(char *path, const char *cwd, int linkloop)
             strcpy(retval, newresolve);
             free(newresolve);
             free(linkname);
+            linkname = NULL;
         } // else if
 
         else

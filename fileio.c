@@ -6,7 +6,6 @@
  *  This file written by Ryan C. Gordon.
  */
 
-#include <unistd.h>  // !!! FIXME: unix dependency for readlink().
 #include <sys/stat.h>  // !!! FIXME: unix dependency for stat().
 
 #include "fileio.h"
@@ -415,13 +414,12 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
         else if (S_ISLNK(statbuf.st_mode))
         {
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-            ar->prevEnum.linkdest = (char *) xmalloc(statbuf.st_size + 1);
-            if (readlink(fullpath, ar->prevEnum.linkdest, statbuf.st_size) < 0)
+            ar->prevEnum.linkdest = MojoPlatform_readlink(fullpath);
+            if (ar->prevEnum.linkdest == NULL)
             {
                 free(fullpath);
                 return MojoArchive_dir_enumNext(ar);
             } // if
-            ar->prevEnum.linkdest[statbuf.st_size] = '\0';
         } // else if
 
         else if (S_ISDIR(statbuf.st_mode))

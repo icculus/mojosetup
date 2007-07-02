@@ -49,6 +49,11 @@ char *MojoPlatform_realpath(const char *path);
 //  syscall! Returns true if link was created, false otherwise.
 boolean MojoPlatform_symlink(const char *src, const char *dst);
 
+// Read the destination from symlink (linkname). Returns a pointer
+//  allocated with xmalloc() containing the linkdest on success, and NULL
+//  on failure. The caller is responsible for freeing the returned pointer!
+char *MojoPlatform_readlink(const char *linkname);
+
 // !!! FIXME: comment me.
 boolean MojoPlatform_mkdir(const char *path, uint16 perms);
 
