@@ -127,20 +127,22 @@ static boolean do_prompt(const char *title, const char *text,
     } // if
 
     return retval;
-} // do_promptyn
+} // do_prompt
 
 
-static boolean MojoGui_macosx_promptyn(const char *title, const char *text)
+static boolean MojoGui_macosx_promptyn(const char *title, const char *text
+                                       boolean defval)
 {
-    return do_prompt(title, text, true, entry->_("Yes"), entry->_("No"));
+    return do_prompt(title, text, defval, entry->_("Yes"), entry->_("No"));
 } // MojoGui_macosx_promptyn
 
 
 static MojoGuiYNAN MojoGui_macosx_promptynan(const char *title,
-                                             const char *text)
+                                             const char *text,
+                                             boolean defval)
 {
     STUBBED("ynan");
-    return MojoGui_macosx_promptyn(title, text);  // !!! FIXME
+    return MojoGui_macosx_promptyn(title, text, defval);  // !!! FIXME
 } // MojoGui_macosx_promptynan
 
 

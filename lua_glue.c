@@ -556,7 +556,8 @@ static int luahook_promptyn(lua_State *L)
     {
         const char *title = luaL_checkstring(L, 1);
         const char *text = luaL_checkstring(L, 2);
-        rc = GGui->promptyn(title, text);
+        const boolean defval = lua_toboolean(L, 3);
+        rc = GGui->promptyn(title, text, defval);
     } // if
 
     return retvalBoolean(L, rc);
@@ -570,7 +571,8 @@ static int luahook_promptynan(lua_State *L)
     {
         const char *title = luaL_checkstring(L, 1);
         const char *text = luaL_checkstring(L, 2);
-        rc = GGui->promptynan(title, text);
+        const boolean defval = lua_toboolean(L, 3);
+        rc = GGui->promptynan(title, text, defval);
     } // if
 
     // Never localize these strings!

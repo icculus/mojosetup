@@ -94,7 +94,7 @@ static int wait_event(void)
         // !!! FIXME: language.
         char *title = entry->xstrdup(entry->_("Stop installation"));
         char *text = entry->xstrdup(entry->_("Are you sure you want to stop installation?"));
-        if (!MojoGui_gtkplus2_promptyn(title, text))
+        if (!MojoGui_gtkplus2_promptyn(title, text, false))
             click_value = CLICK_NONE;
         free(title);
         free(text);
@@ -215,8 +215,10 @@ static void MojoGui_gtkplus2_msgbox(const char *title, const char *text)
 } // MojoGui_gtkplus2_msgbox
 
 
-static boolean MojoGui_gtkplus2_promptyn(const char *title, const char *text)
+static boolean MojoGui_gtkplus2_promptyn(const char *title, const char *text,
+                                         boolean defval)
 {
+    // !!! FIXME: support defval.
     gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION,
                         GTK_BUTTONS_YES_NO, NULL);
     return (rc == GTK_RESPONSE_YES);
@@ -240,8 +242,10 @@ static void promptynanButtonCallback(GtkWidget *_msgbox)
 
 
 static MojoGuiYNAN MojoGui_gtkplus2_promptynan(const char *title,
-                                               const char *text)
+                                               const char *text,
+                                               boolean defval)
 {
+    // !!! FIXME: support defval.
     const gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION,
                               GTK_BUTTONS_NONE, promptynanButtonCallback);
     switch (rc)

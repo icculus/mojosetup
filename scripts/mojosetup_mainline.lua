@@ -366,7 +366,7 @@ local function permit_write(dest, entinfo, file)
                 if not allowoverwrite then
                     -- !!! FIXME: language and formatting.
                     MojoSetup.loginfo("File '" .. dest .. "' already exists.")
-                    local ynan = MojoSetup.promptynan(_("Conflict!"), _("File already exists! Replace?"))
+                    local ynan = MojoSetup.promptynan(_("Conflict!"), _("File already exists! Replace?"), true)
                     if ynan == "always" then
                         MojoSetup.forceoverwrite = true
                         allowoverwrite = true
@@ -656,7 +656,7 @@ local function do_install(install)
             stages[#stages+1] = function (thisstage, maxstage)
                 local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
                 if retval == 1 then
-                    if not MojoSetup.promptyn(desc, _("Accept this license?")) then
+                    if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
                         MojoSetup.fatal(_("You must accept the license before you may install"))
                     end
                 end

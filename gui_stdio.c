@@ -105,7 +105,8 @@ static void MojoGui_stdio_msgbox(const char *title, const char *text)
 } // MojoGui_stdio_msgbox
 
 
-static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
+static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
+                                      boolean defval)
 {
     boolean retval = false;
     if (!feof(stdin))
@@ -116,6 +117,8 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
         char buf[128];
         while (!getout)
         {
+            // !!! FIXME:
+            // We currently ignore defval and make you type out your choice.
             printf(entry->_("%s\n[y/n]: "), text);
             fflush(stdout);
             if (read_stdin(buf, sizeof (buf)) < 0)
@@ -133,7 +136,8 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text)
 } // MojoGui_stdio_promptyn
 
 
-static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt)
+static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt,
+                                            boolean defval)
 {
     MojoGuiYNAN retval = MOJOGUI_NO;
     if (!feof(stdin))
@@ -146,6 +150,8 @@ static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt)
         char buf[128];
         while (!getout)
         {
+            // !!! FIXME:
+            // We currently ignore defval and make you type out your choice.
             printf(entry->_("%s\n[y/n/Always/Never]: "), txt);
             fflush(stdout);
             if (read_stdin(buf, sizeof (buf)) < 0)

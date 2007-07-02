@@ -69,8 +69,8 @@ struct MojoGui
     boolean (*init)(void);
     void (*deinit)(void);
     void (*msgbox)(const char *title, const char *text);
-    boolean (*promptyn)(const char *title, const char *text);
-    MojoGuiYNAN (*promptynan)(const char *title, const char *text);
+    boolean (*promptyn)(const char *title, const char *text, boolean def);
+    MojoGuiYNAN (*promptynan)(const char *title, const char *text, boolean def);
     boolean (*start)(const char *title, const char *splash);
     void (*stop)(void);
     int (*readme)(const char *name, const uint8 *data, size_t len,
@@ -109,9 +109,10 @@ static const char* MojoGui_##module##_name(void) { return #module; } \
 static boolean MojoGui_##module##_init(void); \
 static void MojoGui_##module##_deinit(void); \
 static void MojoGui_##module##_msgbox(const char *title, const char *text); \
-static boolean MojoGui_##module##_promptyn(const char *t1, const char *t2); \
+static boolean MojoGui_##module##_promptyn(const char *t1, const char *t2, \
+                                           boolean d); \
 static MojoGuiYNAN MojoGui_##module##_promptynan(const char *t1, \
-                                                 const char *t2); \
+                                                 const char *t2, boolean d); \
 static boolean MojoGui_##module##_start(const char *t, const char *s); \
 static void MojoGui_##module##_stop(void); \
 static int MojoGui_##module##_readme(const char *name, const uint8 *data, \

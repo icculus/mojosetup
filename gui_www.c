@@ -742,8 +742,12 @@ static void MojoGui_www_msgbox(const char *title, const char *text)
 } // MojoGui_www_msgbox
 
 
-static boolean MojoGui_www_promptyn(const char *title, const char *text)
+static boolean MojoGui_www_promptyn(const char *title, const char *text,
+                                    boolean defval)
 {
+    // !!! FIXME:
+    // We currently ignore defval
+
     int i, rc;
     char *htmltext = htmlescape(text);
     const char *buttons[] = { "no", "yes" };
@@ -764,8 +768,12 @@ static boolean MojoGui_www_promptyn(const char *title, const char *text)
 } // MojoGui_www_promptyn
 
 
-static MojoGuiYNAN MojoGui_www_promptynan(const char *title, const char *text)
+static MojoGuiYNAN MojoGui_www_promptynan(const char *title, const char *text,
+                                          boolean defval)
 {
+    // !!! FIXME:
+    // We currently ignore defval
+
     int i, rc;
     char *htmltext = htmlescape(text);
     const char *buttons[] = { "no", "yes", "always", "never" };

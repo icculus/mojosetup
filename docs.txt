@@ -779,24 +779,30 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     Write debug info to the installation log, if logging settings permit.
 
 
-  MojoSetup.msgbox(str)
+  MojoSetup.msgbox(title, str)
 
     Show (str) to the user with a GUI message box, and wait until they click
-    an "OK" button.
+    an "OK" button. (title) is the message box's title.
 
 
-  MojoSetup.promptyn(str)
+  MojoSetup.promptyn(title, str, defval)
 
     Show (str) to the user with a GUI message box, and wait until they click
     either a "YES" or "NO" button. Returns true if they clicked YES, false
-    if they clicked "NO".
+    if they clicked "NO". (title) is the message box's title.
+    (defval) is an optional boolean value: whether the default action should
+    be "YES" or "NO". If (defval) isn't specified, it defaults to false.
 
 
-  MojoSetup.promptynan(str)
+  MojoSetup.promptynan(title, str, defval)
 
     Show (str) to the user with a GUI message box, and wait until they click
     either a "YES", "NO", "ALWAYS" or "NEVER" button. Returns the string
-    "yes", "no", "always", or "never".
+    "yes", "no", "always", or "never". (title) is the message box's title.
+    (defval) is an optional boolean value: whether the default action should
+    be "YES" or "NO" ... "always" and "never" can not be the default, since
+    these tend to be destructive actions that the user should consciously
+    choose to do. If (defval) isn't specified, it defaults to false.
 
 
   MojoSetup.stackwalk()

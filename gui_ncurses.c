@@ -640,13 +640,25 @@ static void MojoGui_ncurses_msgbox(const char *title, const char *text)
 } // MojoGui_ncurses_msgbox
 
 
-static boolean MojoGui_ncurses_promptyn(const char *title, const char *text)
+static boolean MojoGui_ncurses_promptyn(const char *title, const char *text,
+                                        boolean defval)
 {
     char *localized_yes = entry->xstrdup(entry->_("Yes"));
     char *localized_no = entry->xstrdup(entry->_("No"));
     char *buttons[] = { localized_yes, localized_no };
     MojoBox *mojobox = makeBox(title, text, buttons, 2, false, true);
     int rc = 0;
+
+    // set the default to "no" instead of "yes"?
+    if (defval == false)
+    {
+        mojobox->hoverover = 1;
+        drawButton(mojobox, 0);
+        drawButton(mojobox, 1);
+        wrefresh(mojobox->buttons[0]);
+        wrefresh(mojobox->buttons[1]);
+    } // if
+
     while ((rc = upkeepBox(&mojobox, wgetch(mojobox->mainwin))) == -1) {}
     freeBox(mojobox, true);
     free(localized_yes);
@@ -656,7 +668,8 @@ static boolean MojoGui_ncurses_promptyn(const char *title, const char *text)
 
 
 static MojoGuiYNAN MojoGui_ncurses_promptynan(const char *title,
-                                              const char *text)
+                                              const char *text,
+                                              boolean defval)
 {
     char *loc_yes = entry->xstrdup(entry->_("Yes"));
     char *loc_no = entry->xstrdup(entry->_("No"));
@@ -665,6 +678,17 @@ static MojoGuiYNAN MojoGui_ncurses_promptynan(const char *title,
     char *buttons[] = { loc_yes, loc_always, loc_never, loc_no };
     MojoBox *mojobox = makeBox(title, text, buttons, 4, false, true);
     int rc = 0;
+
+    // set the default to "no" instead of "yes"?
+    if (defval == false)
+    {
+        mojobox->hoverover = 3;
+        drawButton(mojobox, 0);
+        drawButton(mojobox, 3);
+        wrefresh(mojobox->buttons[0]);
+        wrefresh(mojobox->buttons[3]);
+    } // if
+
     while ((rc = upkeepBox(&mojobox, wgetch(mojobox->mainwin))) == -1) {}
     freeBox(mojobox, true);
     free(loc_yes);
