@@ -53,6 +53,8 @@ static GtkWidget *progressbar = NULL;
 static GtkWidget *progresslabel = NULL;
 static GtkWidget *finallabel = NULL;
 static GtkWidget *componentlabel = NULL;
+static GtkWidget *dirselect = NULL;
+static GtkWidget *browse = NULL;
 
 static volatile enum
 {
@@ -150,6 +152,20 @@ static void signal_clicked(GtkButton *_button, gpointer data)
         assert(0 && "Unknown click event.");
     } // else
 } // signal_clicked
+
+static void signal_browse_clicked(GtkButton *_button, gpointer data)
+{
+    gtk_widget_show(dirselect);
+}
+
+static void dirselect_ok_sel( GtkWidget *w, GtkFileSelection *fs )
+{
+    GtkComboBox *combo = GTK_COMBO_BOX(destination);
+    const char *path = gtk_file_selection_get_filename(GTK_FILE_SELECTION (fs));
+    gtk_combo_box_prepend_text(combo, path);
+    gtk_combo_box_set_active (combo, 0);
+    gtk_widget_hide(dirselect);
+}
 
 
 static uint8 MojoGui_gtkplus2_priority(void)
@@ -262,7 +278,9 @@ static MojoGuiYNAN MojoGui_gtkplus2_promptynan(const char *title,
 
 
 static GtkWidget *create_button(GtkWidget *box, const char *iconname,
-                                const char *text)
+                                const char *text,
+                                void (*signal_callback)
+                                    (GtkButton *button, gpointer data))
 {
     // !!! FIXME: gtk_button_set_use_stock()?
     GtkWidget *button = gtk_button_new();
@@ -281,7 +299,7 @@ static GtkWidget *create_button(GtkWidget *box, const char *iconname,
     gtk_widget_show (label);
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                       GTK_SIGNAL_FUNC(signal_clicked), NULL);
+                       GTK_SIGNAL_FUNC(signal_callback), NULL);
     return button;
 } // create_button
 
@@ -328,10 +346,10 @@ GtkWidget *create_gtkwindow(const char *title)
     gtk_box_pack_start(GTK_BOX(box), widget, FALSE, FALSE, 0);
 
     box = widget;
-    cancel = create_button(box, "gtk-cancel", entry->_("Cancel"));
-    back = create_button(box, "gtk-go-back", entry->_("Back"));
-    next = create_button(box, "gtk-go-forward", entry->_("Next"));
-    finish = create_button(box, "gtk-goto-last", entry->_("Finish"));
+    cancel = create_button(box, "gtk-cancel", entry->_("Cancel"), signal_clicked);
+    back = create_button(box, "gtk-go-back", entry->_("Back"), signal_clicked);
+    next = create_button(box, "gtk-go-forward", entry->_("Next"), signal_clicked);
+    finish = create_button(box, "gtk-goto-last", entry->_("Finish"), signal_clicked);
     gtk_widget_hide(finish);
 
     // !!! FIXME: intro page.
@@ -375,7 +393,16 @@ GtkWidget *create_gtkwindow(const char *title)
     gtk_widget_show(destination);
     gtk_container_add(GTK_CONTAINER(alignment), destination);
     gtk_box_pack_start(GTK_BOX(box), alignment, FALSE, TRUE, 0);
+    browse = create_button(box, "fileopen", entry->_("Browse"), signal_browse_clicked);
     gtk_container_add(GTK_CONTAINER(notebook), box);
+
+    // Install Path selection
+    dirselect = gtk_file_selection_new("Install Path");
+    g_signal_connect (G_OBJECT (GTK_FILE_SELECTION (dirselect)->ok_button),
+                      "clicked", G_CALLBACK (dirselect_ok_sel), (gpointer) dirselect);
+    g_signal_connect_swapped (G_OBJECT (GTK_FILE_SELECTION (dirselect)->cancel_button),
+                              "clicked", G_CALLBACK (gtk_widget_destroy),
+                              G_OBJECT (dirselect));
 
     // !!! FIXME: progress page.
     box = gtk_vbox_new(FALSE, 0);
