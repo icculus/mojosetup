@@ -310,18 +310,17 @@ extern MojoSetupEntryPoints GEntryPoints;
 #endif
 #endif  // DOXYGEN_SHOULD_IGNORE_THIS
 
-#if 1
+#ifndef DOXYGEN_SHOULD_IGNORE_THIS
 #define STUBBED(x) \
-{ \
+do { \
     static boolean seen_this = false; \
     if (!seen_this) \
     { \
         seen_this = true; \
-        fprintf(stderr, "STUBBED: %s at %s:%d\n", x, __FILE__, __LINE__); \
+        fprintf(stderr, "STUBBED: %s at %s (%s:%d)\n", x, __FUNCTION__, \
+                __FILE__, __LINE__); \
     } \
-}
-#else
-#define STUBBED(x)
+} while (false)
 #endif
 
 #define STATICARRAYLEN(x) ( (sizeof ((x))) / (sizeof ((x)[0])) )
