@@ -130,7 +130,7 @@ static boolean do_prompt(const char *title, const char *text,
 } // do_prompt
 
 
-static boolean MojoGui_macosx_promptyn(const char *title, const char *text
+static boolean MojoGui_macosx_promptyn(const char *title, const char *text,
                                        boolean defval)
 {
     return do_prompt(title, text, defval, entry->_("Yes"), entry->_("No"));
