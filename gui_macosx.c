@@ -199,7 +199,7 @@ static int MojoGui_macosx_progress(const char *type, const char *component,
                                        int percent, const char *item)
 {
     // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
+    STUBBED("macosx progress");
     return 1;
 } // MojoGui_macosx_progress
 
@@ -207,7 +207,7 @@ static int MojoGui_macosx_progress(const char *type, const char *component,
 static void MojoGui_macosx_final(const char *msg)
 {
     // !!! FIXME: write me.
-    STUBBED(__FUNCTION__)
+    STUBBED("macosx final");
 } // MojoGui_macosx_final
 
 // end of gui_macosx.c ...
