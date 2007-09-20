@@ -305,16 +305,15 @@ MojoInput *MojoInput_newFromFile(const char *path)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
-#include <dirent.h>
 
 typedef struct DirStack
 {
-    DIR *dir;
+    void *dir;
     char *basepath;
     struct DirStack *next;
 } DirStack;
 
-static void pushDirStack(DirStack **_stack, const char *basepath, DIR *dir)
+static void pushDirStack(DirStack **_stack, const char *basepath, void *dir)
 {
     DirStack *stack = (DirStack *) xmalloc(sizeof (DirStack));
     stack->dir = dir;
@@ -330,7 +329,7 @@ static void popDirStack(DirStack **_stack)
     {
         DirStack *next = stack->next;
         if (stack->dir)
-            closedir(stack->dir);
+            MojoPlatform_closedir(stack->dir);
         free(stack->basepath);
         free(stack);
         *_stack = next;
@@ -353,12 +352,12 @@ typedef struct
 static boolean MojoArchive_dir_enumerate(MojoArchive *ar)
 {
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    DIR *dir = NULL;
+    void *dir = NULL;
 
     freeDirStack(&inst->dirs);
     MojoArchive_resetEntry(&ar->prevEnum);
 
-    dir = opendir(inst->base);
+    dir = MojoPlatform_opendir(inst->base);
     if (dir != NULL)
         pushDirStack(&inst->dirs, inst->base, dir);
 
@@ -370,28 +369,29 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
 {
     struct stat statbuf;
     char *fullpath = NULL;
-    struct dirent *dent = NULL;
+    char *dent = NULL;  // "dent" == "directory entry"
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
+    const char *basepath = inst->dirs->basepath;
 
     MojoArchive_resetEntry(&ar->prevEnum);
 
     if (inst->dirs == NULL)
         return NULL;
 
-    dent = readdir(inst->dirs->dir);
+    // if readdir fails, it's end of dir (!!! FIXME: what about i/o failures?)
+    dent = MojoPlatform_readdir(inst->dirs->dir);
     if (dent == NULL)  // end of dir?
     {
         popDirStack(&inst->dirs);
         return MojoArchive_dir_enumNext(ar);  // try higher level in tree.
     } // if
 
-    if ((strcmp(dent->d_name, ".") == 0) || (strcmp(dent->d_name, "..") == 0))
-        return MojoArchive_dir_enumNext(ar);  // skip these.
+    // MojoPlatform layer shouldn't return "." or ".." paths.
+    assert((strcmp(dent, ".") != 0) && (strcmp(dent, "..") != 0));
 
-    fullpath = (char *) xmalloc(strlen(inst->dirs->basepath) +
-                                strlen(dent->d_name) + 2);
-
-    sprintf(fullpath, "%s/%s", inst->dirs->basepath, dent->d_name);
+    fullpath = (char *) xmalloc(strlen(basepath) + strlen(dent) + 2);
+    sprintf(fullpath, "%s/%s", basepath, dent);
+    free(dent);
     ar->prevEnum.filename = xstrdup(fullpath + strlen(inst->base) + 1);
 
     if (lstat(fullpath, &statbuf) == -1)
@@ -424,7 +424,7 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
 
         else if (S_ISDIR(statbuf.st_mode))
         {
-            DIR *dir = opendir(fullpath);
+            void *dir = MojoPlatform_opendir(fullpath);
             ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
             if (dir == NULL)
             {

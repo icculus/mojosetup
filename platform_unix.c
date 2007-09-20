@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <syslog.h>
+#include <dirent.h>
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
@@ -547,6 +548,39 @@ boolean MojoPlatform_isdir(const char *dir)
     } // if
     return retval;
 } // MojoPlatform_isdir
+
+
+void *MojoPlatform_opendir(const char *dirname)
+{
+    return opendir(dirname);
+} // MojoPlatform_opendir
+
+
+char *MojoPlatform_readdir(void *_dirhandle)
+{
+    DIR *dirhandle = (DIR *) _dirhandle;
+    struct dirent *dent = NULL;
+
+    while ((dent = readdir(dirhandle)) != NULL)
+    {
+        if (strcmp(dent->d_name, ".") == 0)
+            continue;  // skip these.
+
+        else if (strcmp(dent->d_name, "..") == 0)
+            continue;  // skip these, too.
+
+        else
+            break;  // found a valid entry, go on.
+    } // while
+
+    return ((dent) ? xstrdup(dent->d_name) : NULL);
+} // MojoPlatform_readdir
+
+
+void MojoPlatform_closedir(void *dirhandle)
+{
+    closedir((DIR *) dirhandle);
+} // MojoPlatform_closedir
 
 
 boolean MojoPlatform_perms(const char *fname, uint16 *p)

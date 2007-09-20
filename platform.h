@@ -81,6 +81,24 @@ boolean MojoPlatform_chmod(const char *fname, uint16 p);
 // !!! FIXME: comment me.
 char *MojoPlatform_findMedia(const char *uniquefile);
 
+// Enumerate a directory. Returns an opaque pointer that can be used with
+//  repeated calls to MojoPlatform_readdir() to enumerate the names of
+//  directory entries. Returns NULL on error. Non-NULL values should be passed
+//  to MojoPlatform_closedir() for cleanup when you are done with them.
+void *MojoPlatform_opendir(const char *dirname);
+
+// Get the next entry in the directory. (dirhandle) is an opaque pointer
+//  returned by MojoPlatform_opendir(). Returns NULL if we're at the end of
+//  the directory, or a null-terminated UTF-8 string otherwise. The order of
+//  results are not guaranteed, and may change between two iterations.
+// Caller must free returned string!
+char *MojoPlatform_readdir(void *dirhandle);
+
+// Clean up resources used by a directory enumeration. (dirhandle) is an
+//  opaque pointer returned by MojoPlatform_opendir(), and becomes invalid
+//  after this call.
+void MojoPlatform_closedir(void *dirhandle);
+
 // Convert a string into a permissions bitmask. On Unix, this is currently
 //  expected to be an octal string like "0755", but may except other forms
 //  in the future, and other platforms may need to interpret permissions
