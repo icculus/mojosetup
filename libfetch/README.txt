@@ -9,6 +9,9 @@ Checkout was from May 5th, 2007, 1pm EST.
 This just has minor modifications to make it play nicely with our build system,
  and code, and stuff we don't need was trimmed out.
 
+Changes made for MojoSetup that aren't part of a virgin copy of libfetch are
+ noted with "#if __MOJOSETUP__" sections.
+
 
 Here is the libfetch copyright from common.c ...
 
