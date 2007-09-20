@@ -25,6 +25,7 @@
 #include <signal.h>
 #include <syslog.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
