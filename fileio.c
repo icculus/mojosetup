@@ -6,8 +6,6 @@
  *  This file written by Ryan C. Gordon.
  */
 
-#include <sys/stat.h>  // !!! FIXME: unix dependency for stat().
-
 #include "fileio.h"
 #include "platform.h"
 
@@ -88,7 +86,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
 {
     boolean retval = false;
     uint32 start = MojoPlatform_ticks();
-    FILE *out = NULL;
+    void *out = NULL;
     boolean iofailure = false;
     int64 flen = 0;
     int64 bw = 0;
@@ -120,7 +118,11 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
 
     MojoPlatform_unlink(fname);
     if (!iofailure)
-        out = fopen(fname, "wb");
+    {
+        const uint32 flags = MOJOFILE_WRITE|MOJOFILE_CREATE|MOJOFILE_TRUNCATE;
+        const uint16 mode = MojoPlatform_defaultFilePerms();
+        out = MojoPlatform_open(fname, flags, mode);
+    } // if
 
     if (out != NULL)
     {
@@ -141,7 +143,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                     iofailure = true;
                 else
                 {
-                    if (fwrite(scratchbuf_128k, br, 1, out) != 1)
+                    if (MojoPlatform_write(out, scratchbuf_128k, br) != br)
                         iofailure = true;
                     else
                     {
@@ -159,7 +161,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
             } // if
         } // while
 
-        if (fclose(out) != 0)
+        if (MojoPlatform_close(out) != 0)
             iofailure = true;
 
         if (iofailure)
@@ -204,7 +206,7 @@ MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname)
 
 typedef struct
 {
-    FILE *handle;
+    void *handle;
     char *path;
 } MojoInputFileInstance;
 
@@ -217,43 +219,25 @@ static boolean MojoInput_file_ready(MojoInput *io)
 static int64 MojoInput_file_read(MojoInput *io, void *buf, uint32 bufsize)
 {
     MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
-    return (int64) fread(buf, 1, bufsize, inst->handle);
+    return MojoPlatform_read(inst->handle, buf, bufsize);
 } // MojoInput_file_read
 
 static boolean MojoInput_file_seek(MojoInput *io, uint64 pos)
 {
     MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
-#if 1
-    rewind(inst->handle);
-    while (pos)
-    {
-        // do in a loop to make sure we seek correctly in > 2 gig files.
-        if (fseek(inst->handle, (long) (pos & 0x7FFFFFFF), SEEK_CUR) == -1)
-            return false;
-        pos -= (pos & 0x7FFFFFFF);
-    } // while
-    return true;
-#else
-    return (fseeko(inst->handle, pos, SEEK_SET) == 0);
-#endif
+    return (MojoPlatform_seek(inst->handle, pos, MOJOSEEK_SET) == pos);
 } // MojoInput_file_seek
 
 static int64 MojoInput_file_tell(MojoInput *io)
 {
     MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
-//    return (int64) ftello(inst->handle);
-    STUBBED("ftell is 32 bit!\n");
-    return (int64) ftell(inst->handle);
+    return MojoPlatform_tell(inst->handle);
 } // MojoInput_file_tell
 
 static int64 MojoInput_file_length(MojoInput *io)
 {
     MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
-    int fd = fileno(inst->handle);
-    struct stat statbuf;
-    if ((fd == -1) || (fstat(fd, &statbuf) == -1))
-        return -1;
-    return((int64) statbuf.st_size);
+    return MojoPlatform_flen(inst->handle);
 } // MojoInput_file_length
 
 static MojoInput *MojoInput_file_duplicate(MojoInput *io)
@@ -265,7 +249,7 @@ static MojoInput *MojoInput_file_duplicate(MojoInput *io)
 static void MojoInput_file_close(MojoInput *io)
 {
     MojoInputFileInstance *inst = (MojoInputFileInstance *) io->opaque;
-    fclose(inst->handle);
+    MojoPlatform_close(inst->handle);
     free(inst->path);
     free(inst);
     free(io);
@@ -274,9 +258,9 @@ static void MojoInput_file_close(MojoInput *io)
 MojoInput *MojoInput_newFromFile(const char *path)
 {
     MojoInput *io = NULL;
-    FILE *f = NULL;
+    void *f = NULL;
 
-    f = fopen(path, "rb");
+    f = MojoPlatform_open(path, MOJOFILE_READ, 0);
     if (f != NULL)
     {
         MojoInputFileInstance *inst;
@@ -300,11 +284,6 @@ MojoInput *MojoInput_newFromFile(const char *path)
 
 
 // MojoArchives from directories on the OS filesystem.
-
-// !!! FIXME: abstract the unixy bits into the platform/ dir.
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/param.h>
 
 typedef struct DirStack
 {
@@ -367,7 +346,7 @@ static boolean MojoArchive_dir_enumerate(MojoArchive *ar)
 
 static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
 {
-    struct stat statbuf;
+    uint16 perms = 0644; //(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     char *fullpath = NULL;
     char *dent = NULL;  // "dent" == "directory entry"
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
@@ -392,48 +371,53 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
     fullpath = (char *) xmalloc(strlen(basepath) + strlen(dent) + 2);
     sprintf(fullpath, "%s/%s", basepath, dent);
     free(dent);
-    ar->prevEnum.filename = xstrdup(fullpath + strlen(inst->base) + 1);
 
-    if (lstat(fullpath, &statbuf) == -1)
-        ar->prevEnum.type = MOJOARCHIVE_ENTRY_UNKNOWN;
+    ar->prevEnum.filename = xstrdup(fullpath + strlen(inst->base) + 1);
+    ar->prevEnum.filesize = 0;
+    ar->prevEnum.type = MOJOARCHIVE_ENTRY_UNKNOWN;
+
+    // We currently force the perms from physical files, since CDs on
+    //  Linux tend to mark every files as executable and read-only. If you
+    //  want to install something with specific permissions, wrap it in a
+    //  tarball, or use Setup.File.permissions, or return a permissions
+    //  string from Setup.File.filter.
+    //MojoPlatform_perms(fullpath, &perms);
+    ar->prevEnum.perms = perms;
+
+    if (MojoPlatform_isfile(fullpath))
+    {
+        ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+        ar->prevEnum.filesize = MojoPlatform_filesize(fullpath);
+    } // if
+
+    else if (MojoPlatform_issymlink(fullpath))
+    {
+        ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
+        ar->prevEnum.linkdest = MojoPlatform_readlink(fullpath);
+        if (ar->prevEnum.linkdest == NULL)
+        {
+            free(fullpath);
+            return MojoArchive_dir_enumNext(ar);
+        } // if
+    } // else if
+
+    else if (MojoPlatform_isdir(fullpath))
+    {
+        void *dir = MojoPlatform_opendir(fullpath);
+        ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
+        if (dir == NULL)
+        {
+            free(fullpath);
+            return MojoArchive_dir_enumNext(ar);
+        } // if
+
+        // push this dir on the stack. Next enum will start there.
+        pushDirStack(&inst->dirs, fullpath, dir);
+    } // else if
+
     else
     {
-        ar->prevEnum.filesize = statbuf.st_size;
-
-        // We currently force the perms from physical files, since CDs on
-        //  Linux tend to mark every files as executable and read-only. If you
-        //  want to install something with specific permissions, wrap it in a
-        //  tarball, or use Setup.File.permissions, or return a permissions
-        //  string from Setup.File.filter.
-        //ar->prevEnum.perms = statbuf.st_mode;
-        ar->prevEnum.perms = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-
-        if (S_ISREG(statbuf.st_mode))
-            ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
-
-        else if (S_ISLNK(statbuf.st_mode))
-        {
-            ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-            ar->prevEnum.linkdest = MojoPlatform_readlink(fullpath);
-            if (ar->prevEnum.linkdest == NULL)
-            {
-                free(fullpath);
-                return MojoArchive_dir_enumNext(ar);
-            } // if
-        } // else if
-
-        else if (S_ISDIR(statbuf.st_mode))
-        {
-            void *dir = MojoPlatform_opendir(fullpath);
-            ar->prevEnum.type = MOJOARCHIVE_ENTRY_DIR;
-            if (dir == NULL)
-            {
-                free(fullpath);
-                return MojoArchive_dir_enumNext(ar);
-            } // if
-            // push this dir on the stack. Next enum will start there.
-            pushDirStack(&inst->dirs, fullpath, dir);
-        } // else if
+        assert(false && "possible file i/o error?");
     } // else
 
     free(fullpath);
@@ -475,9 +459,14 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
     MojoArchive *ar = NULL;
     MojoArchiveDirInstance *inst;
     char *real = MojoPlatform_realpath(dirname);
-    struct stat st;
 
-    if ( (real == NULL) || (stat(real, &st) == -1) || (!S_ISDIR(st.st_mode)) )
+    if (real == NULL)
+        return NULL;
+
+    if (!MojoPlatform_exists(real, NULL))
+        return NULL;
+
+    if (!MojoPlatform_isdir(real))
         return NULL;
 
     inst = (MojoArchiveDirInstance *) xmalloc(sizeof (MojoArchiveDirInstance));
@@ -508,17 +497,23 @@ MojoArchive *MojoArchive_initBaseArchive(void)
 
     if ((cmd = cmdlinestr("base", "MOJOSETUP_BASE", NULL)) != NULL)
     {
-        if (MojoPlatform_isdir(cmd))
-            GBaseArchive = MojoArchive_newFromDirectory(cmd);
-        else
+        char *real = MojoPlatform_realpath(cmd);
+        if (real != NULL)
         {
-            io = MojoInput_newFromFile(cmd);
-            if (io != NULL)
-                GBaseArchive = MojoArchive_newFromInput(io, cmd);
-        } // else
+            if (MojoPlatform_isdir(real))
+                GBaseArchive = MojoArchive_newFromDirectory(real);
+            else
+            {
+                io = MojoInput_newFromFile(real);
+                if (io != NULL)
+                    GBaseArchive = MojoArchive_newFromInput(io, real);
+            } // else
 
-        if (GBaseArchive != NULL)
-            basepath = xstrdup(cmd);
+            if (GBaseArchive != NULL)
+                basepath = real;
+            else
+                free(real);
+        } // if
     } // else if
 
     else

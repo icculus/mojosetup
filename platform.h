@@ -73,6 +73,15 @@ boolean MojoPlatform_writable(const char *fname);
 boolean MojoPlatform_isdir(const char *dir);
 
 // !!! FIXME: comment me.
+boolean MojoPlatform_issymlink(const char *fname);
+
+// !!! FIXME: comment me.
+boolean MojoPlatform_isfile(const char *fname);
+
+// !!! FIXME: comment me.
+int64 MojoPlatform_filesize(const char *fname);
+
+// !!! FIXME: comment me.
 boolean MojoPlatform_perms(const char *fname, uint16 *p);
 
 // !!! FIXME: comment me.
@@ -80,6 +89,42 @@ boolean MojoPlatform_chmod(const char *fname, uint16 p);
 
 // !!! FIXME: comment me.
 char *MojoPlatform_findMedia(const char *uniquefile);
+
+// Flag values for MojoPlatform_fopen().
+typedef enum
+{
+    MOJOFILE_READ=(1<<0),
+    MOJOFILE_WRITE=(1<<1),
+    MOJOFILE_CREATE=(1<<2),
+    MOJOFILE_EXCLUSIVE=(1<<3),
+    MOJOFILE_TRUNCATE=(1<<4),
+    MOJOFILE_APPEND=(1<<5),
+} MojoFileFlags;
+
+typedef enum
+{
+    MOJOSEEK_SET,
+    MOJOSEEK_CURRENT,
+    MOJOSEEK_END
+} MojoFileSeek;
+
+// !!! FIXME: comment me.
+void *MojoPlatform_open(const char *fname, uint32 flags, uint16 mode);
+// !!! FIXME: comment me.
+int64 MojoPlatform_read(void *fd, void *buf, uint32 bytes);
+// !!! FIXME: comment me.
+int64 MojoPlatform_write(void *fd, const void *buf, uint32 bytes);
+// !!! FIXME: comment me.
+int64 MojoPlatform_tell(void *fd);
+// !!! FIXME: comment me.
+int64 MojoPlatform_seek(void *fd, int64 offset, MojoFileSeek whence);
+// !!! FIXME: comment me.
+int64 MojoPlatform_flen(void *fd);
+// !!! FIXME: comment me.
+boolean MojoPlatform_flush(void *fd);
+// !!! FIXME: comment me.
+boolean MojoPlatform_close(void *fd);
+
 
 // Enumerate a directory. Returns an opaque pointer that can be used with
 //  repeated calls to MojoPlatform_readdir() to enumerate the names of
@@ -100,7 +145,7 @@ char *MojoPlatform_readdir(void *dirhandle);
 void MojoPlatform_closedir(void *dirhandle);
 
 // Convert a string into a permissions bitmask. On Unix, this is currently
-//  expected to be an octal string like "0755", but may except other forms
+//  expected to be an octal string like "0755", but may expect other forms
 //  in the future, and other platforms may need to interpret permissions
 //  differently. (str) may be NULL for defaults, and is considered valid.
 // If (str) is not valid, return a reasonable default and set (*valid) to
@@ -173,6 +218,13 @@ boolean MojoPlatform_osVersion(char *buf, size_t len);
 #define PLATFORM_ARCH "x86"
 #else
 #error Unknown processor architecture.
+#endif
+
+// Other basic truths...
+#if PLATFORM_WINDOWS
+#define MOJOPLATFORM_ENDLINE "\r\n"
+#else
+#define MOJOPLATFORM_ENDLINE "\n"
 #endif
 
 #ifdef __cplusplus

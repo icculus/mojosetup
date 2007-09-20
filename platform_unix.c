@@ -541,13 +541,132 @@ boolean MojoPlatform_isdir(const char *dir)
 {
     boolean retval = false;
     struct stat statbuf;
-    if (stat(dir, &statbuf) != -1)
+    if (lstat(dir, &statbuf) != -1)
     {
         if (S_ISDIR(statbuf.st_mode))
             retval = true;
     } // if
     return retval;
 } // MojoPlatform_isdir
+
+
+boolean MojoPlatform_issymlink(const char *dir)
+{
+    boolean retval = false;
+    struct stat statbuf;
+    if (lstat(dir, &statbuf) != -1)
+    {
+        if (S_ISLNK(statbuf.st_mode))
+            retval = true;
+    } // if
+    return retval;
+} // MojoPlatform_issymlink
+
+
+boolean MojoPlatform_isfile(const char *dir)
+{
+    boolean retval = false;
+    struct stat statbuf;
+    if (lstat(dir, &statbuf) != -1)
+    {
+        if (S_ISREG(statbuf.st_mode))
+            retval = true;
+    } // if
+    return retval;
+} // MojoPlatform_issymlink
+
+
+void *MojoPlatform_open(const char *fname, uint32 flags, uint16 mode)
+{
+    void *retval = NULL;
+    int fd = -1;
+    int unixflags = 0;
+
+    if ((flags & MOJOFILE_READ) && (flags & MOJOFILE_WRITE))
+        unixflags |= O_RDWR;
+    else if (flags & MOJOFILE_READ)
+        unixflags |= O_RDONLY;
+    else if (flags & MOJOFILE_WRITE)
+        unixflags |= O_WRONLY;
+    else
+        return NULL;  // have to specify SOMETHING.
+
+    if (flags & MOJOFILE_APPEND)
+        unixflags |= O_APPEND;
+    if (flags & MOJOFILE_TRUNCATE)
+        unixflags |= O_TRUNC;
+    if (flags & MOJOFILE_CREATE)
+        unixflags |= O_CREAT;
+    if (flags & MOJOFILE_EXCLUSIVE)
+        unixflags |= O_EXCL;
+
+    fd = open(fname, unixflags, (mode_t) mode);
+    if (fd != -1)
+    {
+        int *intptr = (int *) xmalloc(sizeof (int));
+        *intptr = fd;
+        retval = intptr;
+    } // if
+
+    return retval;
+} // MojoPlatform_open
+
+
+int64 MojoPlatform_read(void *fd, void *buf, uint32 bytes)
+{
+    return (int64) read(*((int *) fd), buf, bytes);
+} // MojoPlatform_read
+
+
+int64 MojoPlatform_write(void *fd, const void *buf, uint32 bytes)
+{
+    return (int64) write(*((int *) fd), buf, bytes);
+} // MojoPlatform_write
+
+
+int64 MojoPlatform_tell(void *fd)
+{
+    return (int64) lseek(*((int *) fd), 0, SEEK_CUR);
+} // MojoPlatform_tell
+
+
+int64 MojoPlatform_seek(void *fd, int64 offset, MojoFileSeek whence)
+{
+    int unixwhence;
+    switch (whence)
+    {
+        case MOJOSEEK_SET: unixwhence = SEEK_SET; break;
+        case MOJOSEEK_CURRENT: unixwhence = SEEK_CUR; break;
+        case MOJOSEEK_END: unixwhence = SEEK_END; break;
+        default: return -1;  // !!! FIXME: maybe just abort?
+    } // switch
+
+    return (int64) lseek(*((int *) fd), offset, unixwhence);
+} // MojoPlatform_seek
+
+
+int64 MojoPlatform_flen(void *fd)
+{
+    struct stat statbuf;
+    if (fstat(*((int *) fd), &statbuf) == -1)
+        return -1;
+    return((int64) statbuf.st_size);
+} // MojoPlatform_flen
+
+
+boolean MojoPlatform_flush(void *fd)
+{
+    return (fsync(*((int *) fd)) == 0);
+} // MojoPlatform_flush
+
+
+boolean MojoPlatform_close(void *fd)
+{
+    boolean retval = false;
+    if (close(*((int *) fd)) == 0)
+        free(fd);
+    return retval;
+} // MojoPlatform_close
 
 
 void *MojoPlatform_opendir(const char *dirname)
@@ -581,6 +700,16 @@ void MojoPlatform_closedir(void *dirhandle)
 {
     closedir((DIR *) dirhandle);
 } // MojoPlatform_closedir
+
+
+int64 MojoPlatform_filesize(const char *fname)
+{
+    int retval = -1;
+    struct stat statbuf;
+    if (stat(fname, &statbuf) != -1)
+        retval = (int64) statbuf.st_size;
+    return retval;
+} // MojoPlatform_filesize
 
 
 boolean MojoPlatform_perms(const char *fname, uint16 *p)

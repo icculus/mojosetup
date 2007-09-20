@@ -876,7 +876,21 @@ static int luahook_platform_isdir(lua_State *L)
 {
     const char *dir = luaL_checkstring(L, 1);
     return retvalBoolean(L, MojoPlatform_isdir(dir));
-} // luahook_platform_writable
+} // luahook_platform_isdir
+
+
+static int luahook_platform_issymlink(lua_State *L)
+{
+    const char *fname = luaL_checkstring(L, 1);
+    return retvalBoolean(L, MojoPlatform_issymlink(fname));
+} // luahook_platform_issymlink
+
+
+static int luahook_platform_isfile(lua_State *L)
+{
+    const char *fname = luaL_checkstring(L, 1);
+    return retvalBoolean(L, MojoPlatform_isfile(fname));
+} // luahook_platform_isfile
 
 
 static int luahook_platform_symlink(lua_State *L)
@@ -1458,6 +1472,8 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_platform_exists, "exists");
             set_cfunc(luaState, luahook_platform_writable, "writable");
             set_cfunc(luaState, luahook_platform_isdir, "isdir");
+            set_cfunc(luaState, luahook_platform_issymlink, "issymlink");
+            set_cfunc(luaState, luahook_platform_isfile, "isfile");
             set_cfunc(luaState, luahook_platform_symlink, "symlink");
             set_cfunc(luaState, luahook_platform_mkdir, "mkdir");
         lua_setfield(luaState, -2, "platform");

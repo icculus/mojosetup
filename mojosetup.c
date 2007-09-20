@@ -316,7 +316,7 @@ boolean wildcardMatch(const char *str, const char *pattern)
 #define DEFLOGLEV "everything"
 #endif
 MojoSetupLogLevel MojoLog_logLevel = MOJOSETUP_LOG_EVERYTHING;
-static FILE *logFile = NULL;
+static void *logFile = NULL;
 
 void MojoLog_initLogging(void)
 {
@@ -336,16 +336,23 @@ void MojoLog_initLogging(void)
     else  // Unknown string gets everything...that'll teach you.
         MojoLog_logLevel = MOJOSETUP_LOG_EVERYTHING;
 
+    // !!! FIXME: allow logging to stdout on Unix.
     if (fname != NULL)
-        logFile = fopen(fname, "w");
+    {
+        const uint32 flags = MOJOFILE_WRITE|MOJOFILE_CREATE|MOJOFILE_TRUNCATE;
+        const uint16 mode = MojoPlatform_defaultFilePerms();
+        logFile = MojoPlatform_open(fname, flags, mode);
+    } // if
 } // MojoLog_initLogging
 
 
 void MojoLog_deinitLogging(void)
 {
     if (logFile != NULL)
-        fclose(logFile);
-    logFile = NULL;
+    {
+        MojoPlatform_close(logFile);
+        logFile = NULL;
+    } // if
 } // MojoLog_deinitLogging
 
 
@@ -364,9 +371,10 @@ static inline void addLog(MojoSetupLogLevel level, char levelchar,
         MojoPlatform_log(buf);
         if (logFile != NULL)
         {
-            fputs(buf, logFile);
-            fputs("\n", logFile);
-            fflush(logFile);
+            const char *endl = MOJOPLATFORM_ENDLINE;
+            MojoPlatform_write(logFile, buf, strlen(buf));
+            MojoPlatform_write(logFile, endl, strlen(endl));
+            MojoPlatform_flush(logFile);
         } // if
     } // if
 } // addLog
