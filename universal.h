@@ -317,7 +317,7 @@ do { \
     if (!seen_this) \
     { \
         seen_this = true; \
-        fprintf(stderr, "STUBBED: %s at %s (%s:%d)\n", x, __FUNCTION__, \
+        logDebug("STUBBED: %s at %s (%s:%d)\n", x, __FUNCTION__, \
                 __FILE__, __LINE__); \
     } \
 } while (false)
