@@ -114,8 +114,6 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
 
     flen = in->length(in);
 
-    STUBBED("fopen?");
-
     MojoPlatform_unlink(fname);
     if (!iofailure)
     {
