@@ -54,7 +54,10 @@ boolean MojoPlatform_symlink(const char *src, const char *dst);
 //  on failure. The caller is responsible for freeing the returned pointer!
 char *MojoPlatform_readlink(const char *linkname);
 
-// !!! FIXME: comment me.
+// !!! FIXME: we really can't do this in a 16-bit value...non-Unix platforms
+// !!! FIXME:  and Extended Attributes need more.
+// Create a directory in the physical filesystem, with (perms) permissions.
+//  returns true if directory is created, false otherwise.
 boolean MojoPlatform_mkdir(const char *path, uint16 perms);
 
 // Move a file to a new name. This has to be a fast (if not atomic) operation,
@@ -63,31 +66,55 @@ boolean MojoPlatform_mkdir(const char *path, uint16 perms);
 // Returns true on successful rename, false otherwise.
 boolean MojoPlatform_rename(const char *src, const char *dst);
 
-// !!! FIXME: comment me.
+// Determine if dir/fname exists in the native filesystem. It doesn't matter
+//  if it's a directory, file, symlink, etc, we're just looking for the
+//  existance of the entry itself. (fname) may be NULL, in which case,
+//  (dir) contains the whole path, otherwise, the platform layer needs to
+//  build the path: (on Unix: dir/path, on Windows: dir\\path, etc).
+//  This is a convenience thing for the caller.
+// Returns true if path in question exists, false otherwise.
 boolean MojoPlatform_exists(const char *dir, const char *fname);
 
-// !!! FIXME: comment me.
+// Returns true if (fname) in the native filesystem is writable. If (fname)
+//  is a directory, this means that the contents of the directory can be
+//  added to (create files, delete files, etc). If (fname) is a file, this
+//  means that this process has write access to the file.
+// Returns false if (fname) isn't writable.
 boolean MojoPlatform_writable(const char *fname);
 
-// !!! FIXME: comment me.
+// Returns true if (dir) is a directory in the physical filesystem, false
+//  otherwise (including if (dir) doesn't exist). Don't follow symlinks.
 boolean MojoPlatform_isdir(const char *dir);
 
-// !!! FIXME: comment me.
+// Returns true if (fname) is a symlink in the physical filesystem, false
+//  otherwise (including if (fname) doesn't exist). Don't follow symlinks.
 boolean MojoPlatform_issymlink(const char *fname);
 
-// !!! FIXME: comment me.
+// Returns true if (fname) is a regular file in the physical filesystem, false
+//  otherwise (including if (fname) doesn't exist). Don't follow symlinks.
 boolean MojoPlatform_isfile(const char *fname);
 
-// !!! FIXME: comment me.
+// Returns size, in bytes, of the file (fname) in the physical filesystem.
+//  Return -1 if file is missing or not a file. Don't follow symlinks.
 int64 MojoPlatform_filesize(const char *fname);
 
+// !!! FIXME: we really can't do this in a 16-bit value...non-Unix platforms
+// !!! FIXME:  and Extended Attributes need more.
 // !!! FIXME: comment me.
 boolean MojoPlatform_perms(const char *fname, uint16 *p);
 
+// !!! FIXME: we really can't do this in a 16-bit value...non-Unix platforms
+// !!! FIXME:  and Extended Attributes need more.
 // !!! FIXME: comment me.
 boolean MojoPlatform_chmod(const char *fname, uint16 p);
 
-// !!! FIXME: comment me.
+// Try to locate a specific piece of media (usually an inserted CD or DVD).
+//  (uniquefile) is a path that should exist on the media; its presence
+//  should uniquely identify the media.
+// Returns the path of the media's mount point in the physical filesystem
+//  (something like "E:\\" on Windows or "/mnt/cdrom" on Unix), or NULL if
+//  the media isn't found (needed disc isn't inserted, etc).
+// Caller must free return value!
 char *MojoPlatform_findMedia(const char *uniquefile);
 
 // Flag values for MojoPlatform_fopen().
@@ -108,23 +135,44 @@ typedef enum
     MOJOSEEK_END
 } MojoFileSeek;
 
-// !!! FIXME: comment me.
+// !!! FIXME: we really can't do this in a 16-bit value...non-Unix platforms
+// !!! FIXME:  and Extended Attributes need more.
+// Open file (fname). This wraps a subset of the Unix open() syscall. Use
+//  MojoFileFlags for (flags). If creating a file, use (mode) for the new
+//  file's permissions.
+// Returns an opaque handle on success, NULL on error. Caller must free
+//  handle with MojoPlatform_close() when done with it.
 void *MojoPlatform_open(const char *fname, uint32 flags, uint16 mode);
-// !!! FIXME: comment me.
-int64 MojoPlatform_read(void *fd, void *buf, uint32 bytes);
-// !!! FIXME: comment me.
-int64 MojoPlatform_write(void *fd, const void *buf, uint32 bytes);
-// !!! FIXME: comment me.
-int64 MojoPlatform_tell(void *fd);
-// !!! FIXME: comment me.
-int64 MojoPlatform_seek(void *fd, int64 offset, MojoFileSeek whence);
-// !!! FIXME: comment me.
-int64 MojoPlatform_flen(void *fd);
-// !!! FIXME: comment me.
-boolean MojoPlatform_flush(void *fd);
-// !!! FIXME: comment me.
-boolean MojoPlatform_close(void *fd);
 
+// Read (bytes) bytes from (fd) into (buf). This wraps the Unix read() syscall.
+//  Returns number of bytes read, -1 on error.
+int64 MojoPlatform_read(void *fd, void *buf, uint32 bytes);
+
+// Write (bytes) bytes from (buf) into (fd). This wraps the Unix write()
+//  syscall. Returns number of bytes read, -1 on error.
+int64 MojoPlatform_write(void *fd, const void *buf, uint32 bytes);
+
+// Reports byte offset of file pointer in (fd), or -1 on error.
+int64 MojoPlatform_tell(void *fd);
+
+// Seek to (offset) byte offset of file pointer in (fd), relative to (whence).
+//  This wraps the Unix lseek() syscall. Returns byte offset from the start
+//  of the file, -1 on error.
+int64 MojoPlatform_seek(void *fd, int64 offset, MojoFileSeek whence);
+
+// Get the size, in bytes, of a file, referenced by its opaque handle.
+//  (This pulls the data through an fstat() on Unix.) Retuns -1 on error.
+int64 MojoPlatform_flen(void *fd);
+
+// Force any pending data to disk, returns true on success, false if there
+//  was an i/o error.
+boolean MojoPlatform_flush(void *fd);
+
+// Free any resources associated with (fd), flushing any pending data to disk,
+//  and closing the file. (fd) becomes invalid after this call returns
+//  successfully. This wraps the Unix close() syscall. Returns true on
+//  success, false on i/o error.
+boolean MojoPlatform_close(void *fd);
 
 // Enumerate a directory. Returns an opaque pointer that can be used with
 //  repeated calls to MojoPlatform_readdir() to enumerate the names of
