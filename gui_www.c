@@ -19,16 +19,13 @@ MOJOGUI_PLUGIN(www)
 CREATE_MOJOGUI_ENTRY_POINT(www)
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdarg.h>
 
 #define FREE_AND_NULL(x) { free(x); x = NULL; }
 
-
 // tapdance between things WinSock and BSD Sockets define differently...
 #if PLATFORM_WINDOWS
+    #define WIN32_LEAN_AND_MEAN
     #include <winsock.h>
 
     typedef int socklen_t;
