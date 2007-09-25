@@ -430,7 +430,7 @@ uint32 profile(const char *what, uint32 start_time)
 int fatal(const char *fmt, ...)
 {
     static boolean in_fatal = false;
-    size_t len = 128;
+    int len = 128;
     char *buf = NULL;
     int rc = 0;
     va_list ap;

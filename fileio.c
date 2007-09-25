@@ -141,12 +141,12 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                     iofailure = true;
                 else
                 {
-                    if (MojoPlatform_write(out, scratchbuf_128k, br) != br)
+                    if (MojoPlatform_write(out, scratchbuf_128k, (uint32) br) != br)
                         iofailure = true;
                     else
                     {
                         if (checksums != NULL)
-                            MojoChecksum_append(&sumctx, scratchbuf_128k, br);
+                            MojoChecksum_append(&sumctx, scratchbuf_128k, (uint32) br);
                         bw += br;
                     } // else
                 } // else

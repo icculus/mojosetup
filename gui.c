@@ -132,7 +132,7 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
     {
         const uint32 imglen = (uint32) io->length(io);
         uint8 *img = (uint8 *) xmalloc(imglen);
-        const uint32 br = io->read(io, img, imglen);
+        const uint32 br = (uint32) io->read(io, img, imglen);
         io->close(io);
         if (br == imglen)
             lib = MojoPlatform_dlopen(img, imglen);
