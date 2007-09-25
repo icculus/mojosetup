@@ -48,6 +48,11 @@ typedef int boolean;
 #define true 1
 #define false 0
 
+// MSVC doesn't support the "inline" keyword for normal C sources, just C++.
+#if defined(_MSC_VER) && !defined(__cplusplus) && !defined(inline)
+#define inline __inline
+#endif
+
 // Compiler-enforced printf() safety helper.
 // This is appended to function declarations that use printf-style semantics,
 //  and will make sure your passed the right params to "..." for the
