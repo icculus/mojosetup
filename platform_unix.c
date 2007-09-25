@@ -707,7 +707,7 @@ int64 MojoPlatform_filesize(const char *fname)
 {
     int retval = -1;
     struct stat statbuf;
-    if (stat(fname, &statbuf) != -1)
+    if ( (lstat(fname, &statbuf) != -1) && (S_ISREG(statbuf.st_mode)) )
         retval = (int64) statbuf.st_size;
     return retval;
 } // MojoPlatform_filesize
