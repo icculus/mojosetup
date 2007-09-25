@@ -20,6 +20,19 @@
 #include <assert.h>
 #include <time.h>  // !!! FIXME: maybe use this in platform layer?
 
+// Windows system headers conflict with MojoSetup typedefs, so chop out
+//  all the massive and unnecessary dependencies that windows.h pulls in...
+#if PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+
+#if _MSC_VER
+#include <malloc.h>  // need this to get alloca() in MSVC.
+// !!! FIXME: temporary solution.
+#define snprintf _snprintf
+#define strcasecmp(x,y) _stricmp(x,y)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -79,8 +79,8 @@ static PHYSFS_sint64 __PHYSFS_platformRead(void *opaque, void *buffer,
                                     PHYSFS_uint32 size, PHYSFS_uint32 count)
 {
     MojoInput *io = (MojoInput *) opaque;
-    uint32 rc = io->read(io, buffer, size * count);
-    return rc / size;
+    int64 rc = io->read(io, buffer, size * count);
+    return rc / size;  // !!! FIXME: what if rc == -1?
 }
 
 static int __PHYSFS_platformSeek(void *opaque, PHYSFS_uint64 pos)

@@ -12,7 +12,7 @@ void MojoCrc32_append(MojoCrc32 *_crc, const uint8 *buf, uint32 len)
 {
     uint32 crc = (uint32) *_crc;
 
-    int n;
+    uint32 n;
     for (n = 0; n < len; n++)
     {
         uint32 xorval = (uint32) ((crc ^ buf[n]) & 0xFF);

@@ -28,15 +28,15 @@
 #endif
 
 #ifndef __VERSION__
-#define __VERSION__ (Unknown compiler version)
+#define __VERSION__ "(Unknown compiler version)"
 #endif
 
 #ifndef __DATE__
-#define __DATE__ (Unknown build date)
+#define __DATE__ "(Unknown build date)"
 #endif
 
 #ifndef __TIME__
-#define __TIME__ (Unknown build time)
+#define __TIME__ "(Unknown build time)"
 #endif
 
 #ifndef COMPILER

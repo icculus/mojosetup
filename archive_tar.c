@@ -129,7 +129,7 @@ static int64 MojoInput_gzip_read(MojoInput *io, void *buf, uint32 bufsize)
                     if (br > GZIP_READBUFSIZE)
                         br = GZIP_READBUFSIZE;
 
-                    br = origio->read(origio, info->buffer, br);
+                    br = origio->read(origio, info->buffer, (uint32) br);
                     if (br <= 0)
                         return -1;
 
@@ -338,7 +338,7 @@ static int64 MojoInput_bzip2_read(MojoInput *io, void *buf, uint32 bufsize)
                     if (br > BZIP2_READBUFSIZE)
                         br = BZIP2_READBUFSIZE;
 
-                    br = origio->read(origio, info->buffer, br);
+                    br = origio->read(origio, info->buffer, (uint32) br);
                     if (br <= 0)
                         return -1;
 
@@ -444,7 +444,7 @@ static int64 MojoInput_tar_read(MojoInput *io, void *buf, uint32 bufsize)
     TARinput *input = (TARinput *) io->opaque;
     int64 pos = io->tell(io);
     if ((pos + bufsize) > input->fsize)
-        bufsize = input->fsize - pos;
+        bufsize = (uint32) (input->fsize - pos);
     return input->ar->io->read(input->ar->io, buf, bufsize);
 } // MojoInput_tar_read
 
@@ -452,7 +452,7 @@ static boolean MojoInput_tar_seek(MojoInput *io, uint64 pos)
 {
     TARinput *input = (TARinput *) io->opaque;
     boolean retval = false;
-    if (pos < input->fsize)
+    if (pos < ((uint64) input->fsize))
         retval = input->ar->io->seek(input->ar->io, input->offset + pos);
     return retval;
 } // MojoInput_tar_seek

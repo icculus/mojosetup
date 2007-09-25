@@ -25,11 +25,11 @@ CREATE_MOJOGUI_ENTRY_POINT(www)
 
 // tapdance between things WinSock and BSD Sockets define differently...
 #if PLATFORM_WINDOWS
-    #define WIN32_LEAN_AND_MEAN
     #include <winsock.h>
 
     typedef int socklen_t;
 
+    #define setprotoent(x) assert(x == 0)
     #define sockErrno() WSAGetLastError()
     #define wouldBlockError(err) (err == WSAEWOULDBLOCK)
     #define intrError(err) (err == WSAEINTR)
@@ -204,7 +204,7 @@ static void unescapeUri(char *uri)
 
 static int strAdd(char **ptr, size_t *len, size_t *alloc, const char *fmt, ...)
 {
-    int bw = 0;
+    size_t bw = 0;
     size_t avail = *alloc - *len;
     va_list ap;
     va_start(ap, fmt);
@@ -567,7 +567,7 @@ static SOCKET create_listen_socket(short portnum)
         #if ((!defined _NDEBUG) && (!defined NDEBUG))
         {
             int on = 1;
-            setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &on, sizeof (on));
+            setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char*) &on, sizeof (on));
         }
         #endif
 
@@ -978,6 +978,13 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
     char *htmltext = NULL;
     char *text = NULL;
     size_t len = 0, alloc = 0;
+    int i, rc;
+
+    const char *buttons[] = { "cancel", "ok" };
+    const char *locButtons[] = {
+            htmlescape(entry->_("Cancel")),
+            htmlescape(entry->_("OK")),
+    };
 
     // !!! FIXME: better text.
     char *title = entry->xstrdup(entry->_("Media change"));
@@ -987,12 +994,6 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
     htmltext = htmlescape(text);
     free(text);
 
-    int i, rc;
-    const char *buttons[] = { "cancel", "ok" };
-    const char *locButtons[] = {
-            htmlescape(entry->_("Cancel")),
-            htmlescape(entry->_("OK")),
-    };
     assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
     rc = doPromptPage(title, htmltext, true, "insertmedia", buttons,

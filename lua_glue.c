@@ -834,7 +834,7 @@ static int luahook_archive_enumnext(lua_State *L)
         lua_newtable(L);
         set_string(L, entinfo->filename, "filename");
         set_string(L, entinfo->linkdest, "linkdest");
-        set_number(L, entinfo->filesize, "filesize");
+        set_number(L, (lua_Number) entinfo->filesize, "filesize");
         set_string(L, typestr, "type");
     } // else
 
@@ -1257,7 +1257,7 @@ static int luahook_gui_destination(lua_State *L)
 
     if (lua_istable(L, 1))
     {
-        int i;
+        size_t i;
 
         reccount = lua_objlen(L, 1);
         recommend = (char **) alloca(reccount * sizeof (char *));
