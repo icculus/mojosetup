@@ -15,7 +15,7 @@
 //  I wrote all this code under the same open source license, and own the
 //  copyright on it anyhow, so transferring it here is "safe".
 
-/* Forcibly disable UNICODE, since we manage this ourselves. */
+// Forcibly disable UNICODE, since we manage this ourselves.
 #ifdef UNICODE
 #undef UNICODE
 #endif
@@ -41,21 +41,19 @@ static uint32 startupTime = 0;
 #define LOWORDER_UINT64(pos) ((uint32) (pos & 0xFFFFFFFF))
 #define HIGHORDER_UINT64(pos) ((uint32) ((pos >> 32) & 0xFFFFFFFF))
 
-/*
- * Users without the platform SDK don't have this defined.  The original docs
- *  for SetFilePointer() just said to compare with 0xFFFFFFFF, so this should
- *  work as desired.
- */
+// Users without the platform SDK don't have this defined.  The original docs
+//  for SetFilePointer() just said to compare with 0xFFFFFFFF, so this should
+//  work as desired.
 #ifndef INVALID_SET_FILE_POINTER
 #define INVALID_SET_FILE_POINTER 0xFFFFFFFF
 #endif
 
-/* just in case... */
+// just in case...
 #ifndef INVALID_FILE_ATTRIBUTES
 #define INVALID_FILE_ATTRIBUTES 0xFFFFFFFF
 #endif
 
-/* Not defined before the Vista SDK. */
+// Not defined before the Vista SDK.
 #ifndef IO_REPARSE_TAG_SYMLINK
 #define IO_REPARSE_TAG_SYMLINK 0xA000000C
 #endif
@@ -65,6 +63,7 @@ static uint32 startupTime = 0;
 #define CSIDL_PERSONAL 0x0005
 #endif
 
+// This is in shlobj.h, but we can't include it due to universal.h conflicts.
 #ifndef SHGFP_TYPE_CURRENT
 #define SHGFP_TYPE_CURRENT 0x0000
 #endif
@@ -80,53 +79,51 @@ static uint32 utf8codepoint(const char **_str)
     uint32 octet = (uint32) ((uint8) *str);
     uint32 octet2, octet3, octet4;
 
-    if (octet == 0)  /* null terminator, end of string. */
+    if (octet == 0)  // null terminator, end of string.
         return 0;
 
-    else if (octet < 128)  /* one octet char: 0 to 127 */
+    else if (octet < 128)  // one octet char: 0 to 127
     {
-        (*_str)++;  /* skip to next possible start of codepoint. */
+        (*_str)++;  // skip to next possible start of codepoint.
         return(octet);
-    } /* else if */
+    } // else if
 
-    else if ((octet > 127) && (octet < 192))  /* bad (starts with 10xxxxxx). */
+    else if ((octet > 127) && (octet < 192))  // bad (starts with 10xxxxxx).
     {
-        /*
-         * Apparently each of these is supposed to be flagged as a bogus
-         *  char, instead of just resyncing to the next valid codepoint.
-         */
-        (*_str)++;  /* skip to next possible start of codepoint. */
+        // Apparently each of these is supposed to be flagged as a bogus
+        //  char, instead of just resyncing to the next valid codepoint.
+        (*_str)++;  // skip to next possible start of codepoint.
         return UNICODE_BOGUS_CHAR_VALUE;
-    } /* else if */
+    } // else if
 
-    else if (octet < 224)  /* two octets */
+    else if (octet < 224)  // two octets
     {
         octet -= (128+64);
         octet2 = (uint32) ((uint8) *(++str));
-        if ((octet2 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet2 & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
-        *_str += 2;  /* skip to next possible start of codepoint. */
+        *_str += 2;  // skip to next possible start of codepoint.
         retval = ((octet << 6) | (octet2 - 128));
         if ((retval >= 0x80) && (retval <= 0x7FF))
             return retval;
-    } /* else if */
+    } // else if
 
-    else if (octet < 240)  /* three octets */
+    else if (octet < 240)  // three octets
     {
         octet -= (128+64+32);
         octet2 = (uint32) ((uint8) *(++str));
-        if ((octet2 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet2 & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet3 = (uint32) ((uint8) *(++str));
-        if ((octet3 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet3 & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
-        *_str += 3;  /* skip to next possible start of codepoint. */
+        *_str += 3;  // skip to next possible start of codepoint.
         retval = ( ((octet << 12)) | ((octet2-128) << 6) | ((octet3-128)) );
 
-        /* There are seven "UTF-16 surrogates" that are illegal in UTF-8. */
+        // There are seven "UTF-16 surrogates" that are illegal in UTF-8.
         switch (retval)
         {
             case 0xD800:
@@ -137,95 +134,93 @@ static uint32 utf8codepoint(const char **_str)
             case 0xDF80:
             case 0xDFFF:
                 return UNICODE_BOGUS_CHAR_VALUE;
-        } /* switch */
+        } // switch
 
-        /* 0xFFFE and 0xFFFF are illegal, too, so we check them at the edge. */
+        // 0xFFFE and 0xFFFF are illegal, too, so we check them at the edge.
         if ((retval >= 0x800) && (retval <= 0xFFFD))
             return retval;
-    } /* else if */
+    } // else if
 
-    else if (octet < 248)  /* four octets */
+    else if (octet < 248)  // four octets
     {
         octet -= (128+64+32+16);
         octet2 = (uint32) ((uint8) *(++str));
-        if ((octet2 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet2 & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet3 = (uint32) ((uint8) *(++str));
-        if ((octet3 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet3 & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet4 = (uint32) ((uint8) *(++str));
-        if ((octet4 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet4 & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
-        *_str += 4;  /* skip to next possible start of codepoint. */
+        *_str += 4;  // skip to next possible start of codepoint.
         retval = ( ((octet << 18)) | ((octet2 - 128) << 12) |
                    ((octet3 - 128) << 6) | ((octet4 - 128)) );
         if ((retval >= 0x10000) && (retval <= 0x10FFFF))
             return retval;
-    } /* else if */
+    } // else if
 
-    /*
-     * Five and six octet sequences became illegal in rfc3629.
-     *  We throw the codepoint away, but parse them to make sure we move
-     *  ahead the right number of bytes and don't overflow the buffer.
-     */
+    // Five and six octet sequences became illegal in rfc3629.
+    //  We throw the codepoint away, but parse them to make sure we move
+    //  ahead the right number of bytes and don't overflow the buffer.
 
-    else if (octet < 252)  /* five octets */
+    else if (octet < 252)  // five octets
     {
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
-        *_str += 5;  /* skip to next possible start of codepoint. */
+        *_str += 5;  // skip to next possible start of codepoint.
         return UNICODE_BOGUS_CHAR_VALUE;
-    } /* else if */
+    } // else if
 
-    else  /* six octets */
+    else  // six octets
     {
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
         octet = (uint32) ((uint8) *(++str));
-        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+        if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
-        *_str += 6;  /* skip to next possible start of codepoint. */
+        *_str += 6;  // skip to next possible start of codepoint.
         return UNICODE_BOGUS_CHAR_VALUE;
-    } /* else if */
+    } // else if
 
     return UNICODE_BOGUS_CHAR_VALUE;
-} /* utf8codepoint */
+} // utf8codepoint
 
 void utf8ToUcs2(const char *src, uint16 *dst, uint64 len)
 {
-    len -= sizeof (uint16);   /* save room for null char. */
+    len -= sizeof (uint16);   // save room for null char.
     while (len >= sizeof (uint16))
     {
         uint32 cp = utf8codepoint(&src);
@@ -234,16 +229,16 @@ void utf8ToUcs2(const char *src, uint16 *dst, uint64 len)
         else if (cp == UNICODE_BOGUS_CHAR_VALUE)
             cp = UNICODE_BOGUS_CHAR_CODEPOINT;
 
-        /* !!! BLUESKY: UTF-16 surrogates? */
+        // !!! FIXME: UTF-16 surrogates?
         if (cp > 0xFFFF)
             cp = UNICODE_BOGUS_CHAR_CODEPOINT;
 
         *(dst++) = cp;
         len -= sizeof (uint16);
-    } /* while */
+    } // while
 
     *dst = 0;
-} /* utf8ToUcs2 */
+} // utf8ToUcs2
 
 static void utf8fromcodepoint(uint32 cp, char **_dst, uint64 *_len)
 {
@@ -255,11 +250,11 @@ static void utf8fromcodepoint(uint32 cp, char **_dst, uint64 *_len)
 
     if (cp > 0x10FFFF)
         cp = UNICODE_BOGUS_CHAR_CODEPOINT;
-    else if ((cp == 0xFFFE) || (cp == 0xFFFF))  /* illegal values. */
+    else if ((cp == 0xFFFE) || (cp == 0xFFFF))  // illegal values.
         cp = UNICODE_BOGUS_CHAR_CODEPOINT;
     else
     {
-        /* There are seven "UTF-16 surrogates" that are illegal in UTF-8. */
+        // There are seven "UTF-16 surrogates" that are illegal in UTF-8.
         switch (cp)
         {
             case 0xD800:
@@ -270,15 +265,15 @@ static void utf8fromcodepoint(uint32 cp, char **_dst, uint64 *_len)
             case 0xDF80:
             case 0xDFFF:
                 cp = UNICODE_BOGUS_CHAR_CODEPOINT;
-        } /* switch */
-    } /* else */
+        } // switch
+    } // else
 
-    /* Do the encoding... */
+    // Do the encoding...
     if (cp < 0x80)
     {
         *(dst++) = (char) cp;
         len--;
-    } /* if */
+    } // if
 
     else if (cp < 0x800)
     {
@@ -289,8 +284,8 @@ static void utf8fromcodepoint(uint32 cp, char **_dst, uint64 *_len)
             *(dst++) = (char) ((cp >> 6) | 128 | 64);
             *(dst++) = (char) (cp & 0x3F) | 128;
             len -= 2;
-        } /* else */
-    } /* else if */
+        } // else
+    } // else if
 
     else if (cp < 0x10000)
     {
@@ -302,8 +297,8 @@ static void utf8fromcodepoint(uint32 cp, char **_dst, uint64 *_len)
             *(dst++) = (char) ((cp >> 6) & 0x3F) | 128;
             *(dst++) = (char) (cp & 0x3F) | 128;
             len -= 3;
-        } /* else */
-    } /* else if */
+        } // else
+    } // else if
 
     else
     {
@@ -316,12 +311,12 @@ static void utf8fromcodepoint(uint32 cp, char **_dst, uint64 *_len)
             *(dst++) = (char) ((cp >> 6) & 0x3F) | 128;
             *(dst++) = (char) (cp & 0x3F) | 128;
             len -= 4;
-        } /* else if */
-    } /* else */
+        } // else if
+    } // else
 
     *_dst = dst;
     *_len = len;
-} /* utf8fromcodepoint */
+} // utf8fromcodepoint
 
 #define UTF8FROMTYPE(typ, src, dst, len) \
     len--;  \
@@ -385,12 +380,12 @@ static char *codepageToUtf8Heap(const char *cpstr)
         retval = (char *) xmalloc(len * 4);
         utf8FromUcs2(wbuf, retval, len * 4);
         smallFree(wbuf);
-    } /* if */
+    } // if
     return(retval);
-} /* codepageToUtf8Heap */
+} // codepageToUtf8Heap
 
 
-/* pointers for APIs that may not exist on some Windows versions... */
+// pointers for APIs that may not exist on some Windows versions...
 static HANDLE libKernel32 = NULL;
 static HANDLE libUserEnv = NULL;
 static HANDLE libAdvApi32 = NULL;
@@ -417,13 +412,12 @@ static HRESULT (WINAPI *pSHGetFolderPathA)(HWND, int, HANDLE, DWORD, LPTSTR);
 static BOOL (WINAPI *pMoveFileW)(LPCWSTR, LPCWSTR);
 static void (WINAPI *pOutputDebugStringW)(LPCWSTR);
 
-/*
- * Fallbacks for missing Unicode functions on Win95/98/ME. These are filled
- *  into the function pointers if looking up the real Unicode entry points
- *  in the system DLLs fails, so they're never used on WinNT/XP/Vista/etc.
- * They make an earnest effort to convert to/from UTF-8 and UCS-2 to 
- *  the user's current codepage.
- */
+
+// Fallbacks for missing Unicode functions on Win95/98/ME. These are filled
+//  into the function pointers if looking up the real Unicode entry points
+//  in the system DLLs fails, so they're never used on WinNT/XP/Vista/etc.
+// They make an earnest effort to convert to/from UTF-8 and UCS-2 to
+//  the user's current codepage.
 
 static BOOL WINAPI fallbackGetUserNameW(LPWSTR buf, LPDWORD len)
 {
@@ -434,7 +428,7 @@ static BOOL WINAPI fallbackGetUserNameW(LPWSTR buf, LPDWORD len)
         MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, cpstr, cplen, buf, *len);
     smallFree(cpstr);
     return(retval);
-} /* fallbackGetUserNameW */
+} // fallbackGetUserNameW
 
 static DWORD WINAPI fallbackFormatMessageW(DWORD dwFlags, LPCVOID lpSource,
                                            DWORD dwMessageId, DWORD dwLangId,
@@ -448,7 +442,7 @@ static DWORD WINAPI fallbackFormatMessageW(DWORD dwFlags, LPCVOID lpSource,
         MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,cpbuf,retval,lpBuf,nSize);
     smallFree(cpbuf);
     return(retval);
-} /* fallbackFormatMessageW */
+} // fallbackFormatMessageW
 
 static DWORD WINAPI fallbackGetModuleFileNameW(HMODULE hMod, LPWCH lpBuf,
                                                DWORD nSize)
@@ -459,7 +453,7 @@ static DWORD WINAPI fallbackGetModuleFileNameW(HMODULE hMod, LPWCH lpBuf,
         MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,cpbuf,retval,lpBuf,nSize);
     smallFree(cpbuf);
     return(retval);
-} /* fallbackGetModuleFileNameW */
+} // fallbackGetModuleFileNameW
 
 static DWORD WINAPI fallbackGetFileAttributesW(LPCWSTR fname)
 {
@@ -470,7 +464,7 @@ static DWORD WINAPI fallbackGetFileAttributesW(LPCWSTR fname)
     retval = GetFileAttributesA(cpstr);
     smallFree(cpstr);
     return(retval);
-} /* fallbackGetFileAttributesW */
+} // fallbackGetFileAttributesW
 
 static DWORD WINAPI fallbackGetCurrentDirectoryW(DWORD buflen, LPWSTR buf)
 {
@@ -483,9 +477,9 @@ static DWORD WINAPI fallbackGetCurrentDirectoryW(DWORD buflen, LPWSTR buf)
     {
         MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,cpbuf,retval,buf,buflen);
         smallFree(cpbuf);
-    } /* if */
-    return(retval);
-} /* fallbackGetCurrentDirectoryW */
+    } // if
+    return retval;
+} // fallbackGetCurrentDirectoryW
 
 static BOOL WINAPI fallbackRemoveDirectoryW(LPCWSTR dname)
 {
@@ -496,7 +490,7 @@ static BOOL WINAPI fallbackRemoveDirectoryW(LPCWSTR dname)
     retval = RemoveDirectoryA(cpstr);
     smallFree(cpstr);
     return(retval);
-} /* fallbackRemoveDirectoryW */
+} // fallbackRemoveDirectoryW
 
 static BOOL WINAPI fallbackCreateDirectoryW(LPCWSTR dname, 
                                             LPSECURITY_ATTRIBUTES attr)
@@ -508,7 +502,7 @@ static BOOL WINAPI fallbackCreateDirectoryW(LPCWSTR dname,
     retval = CreateDirectoryA(cpstr, attr);
     smallFree(cpstr);
     return(retval);
-} /* fallbackCreateDirectoryW */
+} // fallbackCreateDirectoryW
 
 static BOOL WINAPI fallbackDeleteFileW(LPCWSTR fname)
 {
@@ -519,7 +513,7 @@ static BOOL WINAPI fallbackDeleteFileW(LPCWSTR fname)
     retval = DeleteFileA(cpstr);
     smallFree(cpstr);
     return(retval);
-} /* fallbackDeleteFileW */
+} // fallbackDeleteFileW
 
 static HANDLE WINAPI fallbackCreateFileW(LPCWSTR fname, 
                 DWORD dwDesiredAccess, DWORD dwShareMode,
@@ -535,7 +529,7 @@ static HANDLE WINAPI fallbackCreateFileW(LPCWSTR fname,
                          dwCreationDisposition, dwFlagsAndAttrs, hTemplFile);
     smallFree(cpstr);
     return(retval);
-} /* fallbackCreateFileW */
+} // fallbackCreateFileW
 
 static BOOL WINAPI fallbackMoveFileW(LPCWSTR src, LPCWSTR dst)
 {
@@ -550,7 +544,7 @@ static BOOL WINAPI fallbackMoveFileW(LPCWSTR src, LPCWSTR dst)
     smallFree(srccpstr);
     smallFree(dstcpstr);
     return(retval);
-} /* fallbackMoveFileW */
+} // fallbackMoveFileW
 
 static void WINAPI fallbackOutputDebugStringW(LPCWSTR str)
 {
@@ -562,11 +556,11 @@ static void WINAPI fallbackOutputDebugStringW(LPCWSTR str)
 } // fallbackOutputDebugStringW
 
 
-/* A blatant abuse of pointer casting... */
+// A blatant abuse of pointer casting...
 static int symLookup(HMODULE dll, void **addr, const char *sym)
 {
     return( (*addr = GetProcAddress(dll, sym)) != NULL );
-} /* symLookup */
+} // symLookup
 
 
 static int findApiSymbols(void)
@@ -586,19 +580,19 @@ static int findApiSymbols(void)
             p##x = fallback##x; \
     }
 
-    /* Apparently Win9x HAS the Unicode entry points, they just don't WORK. */
-    /*  ...so don't look them up unless we're on NT+. (see osHasUnicode.) */
+    // Apparently Win9x HAS the Unicode entry points, they just don't WORK.
+    //  ...so don't look them up unless we're on NT+. (see osHasUnicode.)
 
     dll = libUserEnv = LoadLibraryA("userenv.dll");
     if (dll != NULL)
         LOOKUP_NOFALLBACK(GetUserProfileDirectoryW, osHasUnicode);
 
-    /* !!! FIXME: what do they call advapi32.dll on Win64? */
+    // !!! FIXME: what do they call advapi32.dll on Win64?
     dll = libAdvApi32 = LoadLibraryA("advapi32.dll");
     if (dll != NULL)
         LOOKUP(GetUserNameW, osHasUnicode);
 
-    /* !!! FIXME: what do they call kernel32.dll on Win64? */
+    // !!! FIXME: what do they call kernel32.dll on Win64?
     dll = libKernel32 = LoadLibraryA("kernel32.dll");
     if (dll != NULL)
     {
@@ -616,9 +610,9 @@ static int findApiSymbols(void)
         LOOKUP(DeleteFileW, osHasUnicode);
         LOOKUP(MoveFileW, osHasUnicode);
         LOOKUP(OutputDebugStringW, osHasUnicode);
-    } /* if */
+    } // if
 
-    /* !!! FIXME: what do they call shell32.dll on Win64? */
+    // !!! FIXME: what do they call shell32.dll on Win64?
     dll = libShell32 = LoadLibraryA("shell32.dll");
     if (dll != NULL)
         LOOKUP_NOFALLBACK(SHGetFolderPathA, 1);
@@ -627,7 +621,7 @@ static int findApiSymbols(void)
     #undef LOOKUP
 
     return(1);
-} /* findApiSymbols */
+} // findApiSymbols
 
 
 
@@ -645,12 +639,12 @@ char *MojoPlatform_currentWorkingDir(void)
     pGetCurrentDirectoryW(buflen, wbuf);
 
     if (wbuf[buflen - 2] == '\\')
-        wbuf[buflen - 1] = '\0';  /* just in case... */
+        wbuf[buflen - 1] = '\0';  // just in case...
     else
     {
         wbuf[buflen - 1] = '\\'; 
         wbuf[buflen] = '\0'; 
-    } /* else */
+    } // else
 
     retval = unicodeToUtf8Heap(wbuf);
     smallFree(wbuf);
@@ -681,10 +675,8 @@ char *MojoPlatform_realpath(const char *path)
 
     retval = (char *) xmalloc(MAX_PATH);
 
-    /*
-     * If in \\server\path format, it's already an absolute path.
-     *  We'll need to check for "." and ".." dirs, though, just in case.
-     */
+    // If in \\server\path format, it's already an absolute path.
+    //  We'll need to check for "." and ".." dirs, though, just in case.
     if ((path[0] == '\\') && (path[1] == '\\'))
         strcpy(retval, path);
 
@@ -697,7 +689,7 @@ char *MojoPlatform_realpath(const char *path)
             return NULL;
         } // if
 
-        if (path[1] == ':')   /* drive letter specified? */
+        if (path[1] == ':')   // drive letter specified?
         {
             // Apparently, "D:mypath" is the same as "D:\\mypath" if
             //  D: is not the current drive. However, if D: is the
@@ -711,7 +703,7 @@ char *MojoPlatform_realpath(const char *path)
                 {
                     strcpy(retval, currentDir);
                     strcat(retval, path + 2);
-                } /* if */
+                } // if
 
                 else  // not current drive; absolute.
                 {
@@ -730,7 +722,7 @@ char *MojoPlatform_realpath(const char *path)
                 retval[0] = currentDir[0];
                 retval[1] = ':';
                 strcpy(retval + 2, path);
-            } /* if */
+            } // if
             else
             {
                 strcpy(retval, currentDir);
@@ -1083,12 +1075,11 @@ static boolean isSymlinkAttrs(const DWORD attr, const DWORD tag)
 
 boolean MojoPlatform_issymlink(const char *fname)
 {
-    /* !!! FIXME:
-     * Windows Vista can have NTFS symlinks. Can older Windows releases have
-     *  them when talking to a network file server? What happens when you
-     *  mount a NTFS partition on XP that was plugged into a Vista install
-     *  that made a symlink?
-     */
+    // !!! FIXME:
+    // Windows Vista can have NTFS symlinks. Can older Windows releases have
+    //  them when talking to a network file server? What happens when you
+    //  mount a NTFS partition on XP that was plugged into a Vista install
+    //  that made a symlink?
 
     boolean retval = false;
     LPWSTR wpath;
