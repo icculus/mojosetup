@@ -69,6 +69,275 @@ static uint32 startupTime = 0;
 #define SHGFP_TYPE_CURRENT 0x0000
 #endif
 
+
+#define UNICODE_BOGUS_CHAR_VALUE 0xFFFFFFFF
+#define UNICODE_BOGUS_CHAR_CODEPOINT '?'
+
+static uint32 utf8codepoint(const char **_str)
+{
+    const char *str = *_str;
+    uint32 retval = 0;
+    uint32 octet = (uint32) ((uint8) *str);
+    uint32 octet2, octet3, octet4;
+
+    if (octet == 0)  /* null terminator, end of string. */
+        return 0;
+
+    else if (octet < 128)  /* one octet char: 0 to 127 */
+    {
+        (*_str)++;  /* skip to next possible start of codepoint. */
+        return(octet);
+    } /* else if */
+
+    else if ((octet > 127) && (octet < 192))  /* bad (starts with 10xxxxxx). */
+    {
+        /*
+         * Apparently each of these is supposed to be flagged as a bogus
+         *  char, instead of just resyncing to the next valid codepoint.
+         */
+        (*_str)++;  /* skip to next possible start of codepoint. */
+        return UNICODE_BOGUS_CHAR_VALUE;
+    } /* else if */
+
+    else if (octet < 224)  /* two octets */
+    {
+        octet -= (128+64);
+        octet2 = (uint32) ((uint8) *(++str));
+        if ((octet2 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        *_str += 2;  /* skip to next possible start of codepoint. */
+        retval = ((octet << 6) | (octet2 - 128));
+        if ((retval >= 0x80) && (retval <= 0x7FF))
+            return retval;
+    } /* else if */
+
+    else if (octet < 240)  /* three octets */
+    {
+        octet -= (128+64+32);
+        octet2 = (uint32) ((uint8) *(++str));
+        if ((octet2 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet3 = (uint32) ((uint8) *(++str));
+        if ((octet3 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        *_str += 3;  /* skip to next possible start of codepoint. */
+        retval = ( ((octet << 12)) | ((octet2-128) << 6) | ((octet3-128)) );
+
+        /* There are seven "UTF-16 surrogates" that are illegal in UTF-8. */
+        switch (retval)
+        {
+            case 0xD800:
+            case 0xDB7F:
+            case 0xDB80:
+            case 0xDBFF:
+            case 0xDC00:
+            case 0xDF80:
+            case 0xDFFF:
+                return UNICODE_BOGUS_CHAR_VALUE;
+        } /* switch */
+
+        /* 0xFFFE and 0xFFFF are illegal, too, so we check them at the edge. */
+        if ((retval >= 0x800) && (retval <= 0xFFFD))
+            return retval;
+    } /* else if */
+
+    else if (octet < 248)  /* four octets */
+    {
+        octet -= (128+64+32+16);
+        octet2 = (uint32) ((uint8) *(++str));
+        if ((octet2 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet3 = (uint32) ((uint8) *(++str));
+        if ((octet3 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet4 = (uint32) ((uint8) *(++str));
+        if ((octet4 & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        *_str += 4;  /* skip to next possible start of codepoint. */
+        retval = ( ((octet << 18)) | ((octet2 - 128) << 12) |
+                   ((octet3 - 128) << 6) | ((octet4 - 128)) );
+        if ((retval >= 0x10000) && (retval <= 0x10FFFF))
+            return retval;
+    } /* else if */
+
+    /*
+     * Five and six octet sequences became illegal in rfc3629.
+     *  We throw the codepoint away, but parse them to make sure we move
+     *  ahead the right number of bytes and don't overflow the buffer.
+     */
+
+    else if (octet < 252)  /* five octets */
+    {
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        *_str += 5;  /* skip to next possible start of codepoint. */
+        return UNICODE_BOGUS_CHAR_VALUE;
+    } /* else if */
+
+    else  /* six octets */
+    {
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        octet = (uint32) ((uint8) *(++str));
+        if ((octet & (128+64)) != 128)  /* Format isn't 10xxxxxx? */
+            return UNICODE_BOGUS_CHAR_VALUE;
+
+        *_str += 6;  /* skip to next possible start of codepoint. */
+        return UNICODE_BOGUS_CHAR_VALUE;
+    } /* else if */
+
+    return UNICODE_BOGUS_CHAR_VALUE;
+} /* utf8codepoint */
+
+void utf8ToUcs2(const char *src, uint16 *dst, uint64 len)
+{
+    len -= sizeof (uint16);   /* save room for null char. */
+    while (len >= sizeof (uint16))
+    {
+        uint32 cp = utf8codepoint(&src);
+        if (cp == 0)
+            break;
+        else if (cp == UNICODE_BOGUS_CHAR_VALUE)
+            cp = UNICODE_BOGUS_CHAR_CODEPOINT;
+
+        /* !!! BLUESKY: UTF-16 surrogates? */
+        if (cp > 0xFFFF)
+            cp = UNICODE_BOGUS_CHAR_CODEPOINT;
+
+        *(dst++) = cp;
+        len -= sizeof (uint16);
+    } /* while */
+
+    *dst = 0;
+} /* utf8ToUcs2 */
+
+static void utf8fromcodepoint(uint32 cp, char **_dst, uint64 *_len)
+{
+    char *dst = *_dst;
+    uint64 len = *_len;
+
+    if (len == 0)
+        return;
+
+    if (cp > 0x10FFFF)
+        cp = UNICODE_BOGUS_CHAR_CODEPOINT;
+    else if ((cp == 0xFFFE) || (cp == 0xFFFF))  /* illegal values. */
+        cp = UNICODE_BOGUS_CHAR_CODEPOINT;
+    else
+    {
+        /* There are seven "UTF-16 surrogates" that are illegal in UTF-8. */
+        switch (cp)
+        {
+            case 0xD800:
+            case 0xDB7F:
+            case 0xDB80:
+            case 0xDBFF:
+            case 0xDC00:
+            case 0xDF80:
+            case 0xDFFF:
+                cp = UNICODE_BOGUS_CHAR_CODEPOINT;
+        } /* switch */
+    } /* else */
+
+    /* Do the encoding... */
+    if (cp < 0x80)
+    {
+        *(dst++) = (char) cp;
+        len--;
+    } /* if */
+
+    else if (cp < 0x800)
+    {
+        if (len < 2)
+            len = 0;
+        else
+        {
+            *(dst++) = (char) ((cp >> 6) | 128 | 64);
+            *(dst++) = (char) (cp & 0x3F) | 128;
+            len -= 2;
+        } /* else */
+    } /* else if */
+
+    else if (cp < 0x10000)
+    {
+        if (len < 3)
+            len = 0;
+        else
+        {
+            *(dst++) = (char) ((cp >> 12) | 128 | 64 | 32);
+            *(dst++) = (char) ((cp >> 6) & 0x3F) | 128;
+            *(dst++) = (char) (cp & 0x3F) | 128;
+            len -= 3;
+        } /* else */
+    } /* else if */
+
+    else
+    {
+        if (len < 4)
+            len = 0;
+        else
+        {
+            *(dst++) = (char) ((cp >> 18) | 128 | 64 | 32 | 16);
+            *(dst++) = (char) ((cp >> 12) & 0x3F) | 128;
+            *(dst++) = (char) ((cp >> 6) & 0x3F) | 128;
+            *(dst++) = (char) (cp & 0x3F) | 128;
+            len -= 4;
+        } /* else if */
+    } /* else */
+
+    *_dst = dst;
+    *_len = len;
+} /* utf8fromcodepoint */
+
+#define UTF8FROMTYPE(typ, src, dst, len) \
+    len--;  \
+    while (len) \
+    { \
+        const uint32 cp = (uint32) *(src++); \
+        if (cp == 0) break; \
+        utf8fromcodepoint(cp, &dst, &len); \
+    } \
+    *dst = '\0'; \
+
+void utf8FromUcs2(const uint16 *src, char *dst, uint64 len)
+{
+    UTF8FROMTYPE(uint64, src, dst, len);
+} // utf8FromUcs4
+
 #define UTF8_TO_UNICODE_STACK_MACRO(w_assignto, str) { \
     if (str == NULL) \
         w_assignto = NULL; \
