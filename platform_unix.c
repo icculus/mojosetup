@@ -574,7 +574,7 @@ boolean MojoPlatform_isfile(const char *dir)
             retval = true;
     } // if
     return retval;
-} // MojoPlatform_issymlink
+} // MojoPlatform_isfile
 
 
 void *MojoPlatform_open(const char *fname, uint32 flags, uint16 mode)
@@ -845,7 +845,7 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 
     // /dev/shm may be able to avoid writing to physical media...try it first.
     const char *dirs[] = { "/dev/shm", getenv("TMPDIR"), P_tmpdir, "/tmp" };
-    const char *tmpl = "mojosetup-gui-plugin-XXXXXX";
+    const char *tmpl = "mojosetup-plugin-XXXXXX";
     char fname[PATH_MAX];
     void *retval = NULL;
     int i = 0;
