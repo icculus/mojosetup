@@ -189,6 +189,7 @@ SET(MOJOSETUP_SRCS
     checksum_sha1.c
     platform_unix.c
     platform_beos.c
+    platform_windows.c
     lua_glue.c
     ${LUA_SRCS}
 )
