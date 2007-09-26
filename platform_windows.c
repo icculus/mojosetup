@@ -85,7 +85,7 @@ static uint32 utf8codepoint(const char **_str)
     else if (octet < 128)  // one octet char: 0 to 127
     {
         (*_str)++;  // skip to next possible start of codepoint.
-        return(octet);
+        return octet;
     } // else if
 
     else if ((octet > 127) && (octet < 192))  // bad (starts with 10xxxxxx).
@@ -349,7 +349,7 @@ static uint32 wStrLen(const WCHAR *wstr)
     uint32 len = 0;
     while (*(wstr++))
         len++;
-    return(len);
+    return len;
 } // wStrLen
 
 
@@ -364,7 +364,7 @@ static char *unicodeToUtf8Heap(const WCHAR *w_str)
         utf8FromUcs2((const uint16 *) w_str, retval, len);
         retval = xrealloc(retval, strlen(retval) + 1);  // shrink.
     } // if
-    return(retval);
+    return retval;
 } // unicodeToUtf8Heap
 
 
@@ -381,7 +381,7 @@ static char *codepageToUtf8Heap(const char *cpstr)
         utf8FromUcs2(wbuf, retval, len * 4);
         smallFree(wbuf);
     } // if
-    return(retval);
+    return retval;
 } // codepageToUtf8Heap
 
 
@@ -427,7 +427,7 @@ static BOOL WINAPI fallbackGetUserNameW(LPWSTR buf, LPDWORD len)
     if (buf != NULL)
         MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, cpstr, cplen, buf, *len);
     smallFree(cpstr);
-    return(retval);
+    return retval;
 } // fallbackGetUserNameW
 
 static DWORD WINAPI fallbackFormatMessageW(DWORD dwFlags, LPCVOID lpSource,
@@ -441,7 +441,7 @@ static DWORD WINAPI fallbackFormatMessageW(DWORD dwFlags, LPCVOID lpSource,
     if (retval > 0)
         MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,cpbuf,retval,lpBuf,nSize);
     smallFree(cpbuf);
-    return(retval);
+    return retval;
 } // fallbackFormatMessageW
 
 static DWORD WINAPI fallbackGetModuleFileNameW(HMODULE hMod, LPWCH lpBuf,
@@ -452,7 +452,7 @@ static DWORD WINAPI fallbackGetModuleFileNameW(HMODULE hMod, LPWCH lpBuf,
     if (retval > 0)
         MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,cpbuf,retval,lpBuf,nSize);
     smallFree(cpbuf);
-    return(retval);
+    return retval;
 } // fallbackGetModuleFileNameW
 
 static DWORD WINAPI fallbackGetFileAttributesW(LPCWSTR fname)
@@ -463,7 +463,7 @@ static DWORD WINAPI fallbackGetFileAttributesW(LPCWSTR fname)
     WideCharToMultiByte(CP_ACP, 0, fname, buflen, cpstr, buflen, NULL, NULL);
     retval = GetFileAttributesA(cpstr);
     smallFree(cpstr);
-    return(retval);
+    return retval;
 } // fallbackGetFileAttributesW
 
 static DWORD WINAPI fallbackGetCurrentDirectoryW(DWORD buflen, LPWSTR buf)
@@ -489,7 +489,7 @@ static BOOL WINAPI fallbackRemoveDirectoryW(LPCWSTR dname)
     WideCharToMultiByte(CP_ACP, 0, dname, buflen, cpstr, buflen, NULL, NULL);
     retval = RemoveDirectoryA(cpstr);
     smallFree(cpstr);
-    return(retval);
+    return retval;
 } // fallbackRemoveDirectoryW
 
 static BOOL WINAPI fallbackCreateDirectoryW(LPCWSTR dname, 
@@ -501,7 +501,7 @@ static BOOL WINAPI fallbackCreateDirectoryW(LPCWSTR dname,
     WideCharToMultiByte(CP_ACP, 0, dname, buflen, cpstr, buflen, NULL, NULL);
     retval = CreateDirectoryA(cpstr, attr);
     smallFree(cpstr);
-    return(retval);
+    return retval;
 } // fallbackCreateDirectoryW
 
 static BOOL WINAPI fallbackDeleteFileW(LPCWSTR fname)
@@ -512,7 +512,7 @@ static BOOL WINAPI fallbackDeleteFileW(LPCWSTR fname)
     WideCharToMultiByte(CP_ACP, 0, fname, buflen, cpstr, buflen, NULL, NULL);
     retval = DeleteFileA(cpstr);
     smallFree(cpstr);
-    return(retval);
+    return retval;
 } // fallbackDeleteFileW
 
 static HANDLE WINAPI fallbackCreateFileW(LPCWSTR fname, 
@@ -528,7 +528,7 @@ static HANDLE WINAPI fallbackCreateFileW(LPCWSTR fname,
     retval = CreateFileA(cpstr, dwDesiredAccess, dwShareMode, lpSecurityAttrs,
                          dwCreationDisposition, dwFlagsAndAttrs, hTemplFile);
     smallFree(cpstr);
-    return(retval);
+    return retval;
 } // fallbackCreateFileW
 
 static BOOL WINAPI fallbackMoveFileW(LPCWSTR src, LPCWSTR dst)
@@ -543,7 +543,7 @@ static BOOL WINAPI fallbackMoveFileW(LPCWSTR src, LPCWSTR dst)
     retval = MoveFileA(srccpstr, dstcpstr);
     smallFree(srccpstr);
     smallFree(dstcpstr);
-    return(retval);
+    return retval;
 } // fallbackMoveFileW
 
 static void WINAPI fallbackOutputDebugStringW(LPCWSTR str)
@@ -559,11 +559,11 @@ static void WINAPI fallbackOutputDebugStringW(LPCWSTR str)
 // A blatant abuse of pointer casting...
 static int symLookup(HMODULE dll, void **addr, const char *sym)
 {
-    return( (*addr = GetProcAddress(dll, sym)) != NULL );
+    return ((*addr = GetProcAddress(dll, sym)) != NULL);
 } // symLookup
 
 
-static int findApiSymbols(void)
+static boolean findApiSymbols(void)
 {
     const boolean osHasUnicode = !osIsWin9x;
     HMODULE dll = NULL;
@@ -620,7 +620,7 @@ static int findApiSymbols(void)
     #undef LOOKUP_NOFALLBACK
     #undef LOOKUP
 
-    return(1);
+    return true;
 } // findApiSymbols
 
 
@@ -648,7 +648,7 @@ char *MojoPlatform_currentWorkingDir(void)
 
     retval = unicodeToUtf8Heap(wbuf);
     smallFree(wbuf);
-    return(retval);
+    return retval;
 } // MojoPlatform_currentWorkingDir
 
 
@@ -773,7 +773,7 @@ char *MojoPlatform_realpath(const char *path)
     } // while
 
     // shrink the retval's memory block if possible...
-    return((char *) xrealloc(retval, strlen(retval) + 1));
+    return (char *) xrealloc(retval, strlen(retval) + 1);
 } // MojoPlatform_realpath
 
 
@@ -824,7 +824,7 @@ char *MojoPlatform_appBinaryPath(void)
     } // else
 
     free(modpath);
-    return(retval);
+    return retval;
 } // MojoPlatform_appBinaryPath
 
 
