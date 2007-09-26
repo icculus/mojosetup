@@ -559,7 +559,7 @@ char *xstrdup(const char *str)
 #if MOJOSETUP_INTERNAL_BZLIB && BZ_NO_STDIO
 void bz_internal_error(int errcode)
 {
-    fatal(_("bzlib triggered an internal error: %d", errcode));
+    fatal(_("bzlib triggered an internal error: %d"), errcode);
 } // bz_internal_error
 #endif
 

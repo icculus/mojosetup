@@ -32,16 +32,14 @@ static uint32 startupTime = 0;
 
 // These allocation macros are much more complicated in PhysicsFS.
 #define smallAlloc(x) xmalloc(x)
-#define smallFree(x) xfree(x)
+#define smallFree(x) free(x)
 
 // ...so is this.
 #define BAIL_IF_MACRO(cond, err, ret) if (cond) return ret;
 #define BAIL_MACRO(err, ret) return ret;
 
-#define LOWORDER_UINT64(pos) (PHYSFS_uint32) \
-    (pos & 0x00000000FFFFFFFF)
-#define HIGHORDER_UINT64(pos) (PHYSFS_uint32) \
-    (((pos & 0xFFFFFFFF00000000) >> 32) & 0x00000000FFFFFFFF)
+#define LOWORDER_UINT64(pos) ((uint32) (pos & 0xFFFFFFFF))
+#define HIGHORDER_UINT64(pos) ((uint32) ((pos >> 32) & 0xFFFFFFFF))
 
 /*
  * Users without the platform SDK don't have this defined.  The original docs
@@ -62,20 +60,29 @@ static uint32 startupTime = 0;
 #define IO_REPARSE_TAG_SYMLINK 0xA000000C
 #endif
 
+// This is in shlobj.h, but we can't include it due to universal.h conflicts.
+#ifndef CSIDL_PERSONAL
+#define CSIDL_PERSONAL 0x0005
+#endif
+
+#ifndef SHGFP_TYPE_CURRENT
+#define SHGFP_TYPE_CURRENT 0x0000
+#endif
+
 #define UTF8_TO_UNICODE_STACK_MACRO(w_assignto, str) { \
     if (str == NULL) \
         w_assignto = NULL; \
     else { \
-        const uint64 len = (uint64) ((strlen(str) * 4) + 1); \
+        const uint32 len = (uint32) ((strlen(str) * 4) + 1); \
         w_assignto = (WCHAR *) smallAlloc(len); \
         if (w_assignto != NULL) \
             utf8ToUcs2(str, (uint16 *) w_assignto, len); \
     } \
 } \
 
-static uint64 wStrLen(const WCHAR *wstr)
+static uint32 wStrLen(const WCHAR *wstr)
 {
-    uint64 len = 0;
+    uint32 len = 0;
     while (*(wstr++))
         len++;
     return(len);
@@ -88,7 +95,7 @@ static char *unicodeToUtf8Heap(const WCHAR *w_str)
     if (w_str != NULL)
     {
         void *ptr = NULL;
-        const uint64 len = (wStrLen(w_str) * 4) + 1;
+        const uint32 len = (wStrLen(w_str) * 4) + 1;
         retval = (char *) xmalloc(len);
         utf8FromUcs2((const uint16 *) w_str, retval, len);
         retval = xrealloc(retval, strlen(retval) + 1);  // shrink.
@@ -281,7 +288,7 @@ static void WINAPI fallbackOutputDebugStringW(LPCWSTR str)
     const int buflen = (int) (wStrLen(str) + 1);
     char *cpstr = (char *) smallAlloc(buflen);
     WideCharToMultiByte(CP_ACP, 0, str, buflen, cpstr, buflen, NULL, NULL);
-    retval = OutputDebugStringA(cpstr);
+    OutputDebugStringA(cpstr);
     smallFree(cpstr);
 } // fallbackOutputDebugStringW
 
@@ -356,8 +363,6 @@ static int findApiSymbols(void)
 
 
 // ok, now the actual platform layer implementation...
-
-static struct timeval startup_time;
 
 char *MojoPlatform_currentWorkingDir(void)
 {
@@ -615,11 +620,11 @@ char *MojoPlatform_homedir(void)
     if (userDir == NULL)  // couldn't get profile for some reason.
     {
         // Might just be a non-NT system; try SHGetFolderPathA()...
-        if (pSHGetFolderPath != NULL)  // can be NULL if IE5+ isn't installed!
+        if (pSHGetFolderPathA != NULL)  // can be NULL if IE5+ isn't installed!
         {
             char shellPath[MAX_PATH];
-            HRESULT status = pSHGetFolderPath(NULL, CSIDL_PERSONAL, NULL,
-                                              SHGFP_TYPE_CURRENT, shellPath);
+            HRESULT status = pSHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL,
+                                               SHGFP_TYPE_CURRENT, shellPath);
             if (SUCCEEDED(status))
                 userDir = codepageToUtf8Heap(shellPath);
         } // if
@@ -652,7 +657,7 @@ boolean MojoPlatform_locale(char *buf, size_t len)
                                        country, sizeof (country));
 
     // Win95 systems will fail, because they don't have LOCALE_SISO*NAME ...
-    if (langrc != 0) && (ctryrc != 0)
+    if ((langrc != 0) && (ctryrc != 0))
     {
         snprintf(buf, len, "%s_%s", lang, country);
         retval = true;
@@ -803,7 +808,7 @@ boolean MojoPlatform_isdir(const char *dir)
 static boolean isSymlinkAttrs(const DWORD attr, const DWORD tag)
 {
     return ( (attr & FILE_ATTRIBUTE_REPARSE_POINT) && 
-             (tag == PHYSFS_IO_REPARSE_TAG_SYMLINK) );
+             (tag == IO_REPARSE_TAG_SYMLINK) );
 } // isSymlinkAttrs
 
 
@@ -928,10 +933,11 @@ int64 MojoPlatform_tell(void *fd)
 } // MojoPlatform_tell
 
 
-int64 MojoPlatform_seek(void *fd, int64 offset, MojoFileSeek whence)
+int64 MojoPlatform_seek(void *fd, int64 pos, MojoFileSeek whence)
 {
     HANDLE handle = *((HANDLE *) fd);
-    DWORD HighOrderPos = HIGHORDER_UINT64(pos);
+    DWORD highpos = HIGHORDER_UINT64(pos);
+    const DWORD lowpos = LOWORDER_UINT64(pos);
     DWORD winwhence = 0;
     DWORD rc = 0;
 
@@ -943,11 +949,11 @@ int64 MojoPlatform_seek(void *fd, int64 offset, MojoFileSeek whence)
         default: return -1;  // !!! FIXME: maybe just abort?
     } // switch
 
-    rc = SetFilePointer(handle,LOWORDER_UINT64(pos),&HighOrderPos,winwhence);
+    rc = SetFilePointer(handle, lowpos, &highpos, winwhence);
     if ( (rc == INVALID_SET_FILE_POINTER) && (GetLastError() != NO_ERROR) )
         return -1;
 
-    return (int64) ((((uint64) HighOrderPos) << 32) | ((uint64) rc));
+    return (int64) ((((uint64) highpos) << 32) | ((uint64) rc));
 } // MojoPlatform_seek
 
 
@@ -1051,7 +1057,7 @@ void *MojoPlatform_opendir(const char *dirname)
 char *MojoPlatform_readdir(void *_dirhandle)
 {
     const int unicode = (pFindFirstFileW != NULL) && (pFindNextFileW != NULL);
-    const WinApiDir *dir = (WinApiDir *) _dirhandle;
+    WinApiDir *dir = (WinApiDir *) _dirhandle;
     char *utf8 = NULL;
 
     if (dir->done)
@@ -1079,18 +1085,18 @@ char *MojoPlatform_readdir(void *_dirhandle)
     {
         do
         {
-            const DWORD attr = ent.dwFileAttributes;
-            const DWORD tag = ent.dwReserved0;
-            const char *fn = ent.cFileName;
+            const DWORD attr = dir->ent.dwFileAttributes;
+            const DWORD tag = dir->ent.dwReserved0;
+            const char *fn = dir->ent.cFileName;
             if ((fn[0] == '.') && (fn[1] == '\0'))
                 continue;
             if ((fn[0] == '.') && (fn[1] == '.') && (fn[2] == '\0'))
                 continue;
 
             utf8 = codepageToUtf8Heap(fn);
-            dir->done = (FindNextFileA(dir, &ent) == 0);
+            dir->done = (FindNextFileA(dir->dir, &dir->ent) == 0);
             return utf8;
-        } while (FindNextFileA(dir, &ent) != 0);
+        } while (FindNextFileA(dir->dir, &dir->ent) != 0);
     } // else
 
     dir->done = true;
@@ -1113,7 +1119,7 @@ int64 MojoPlatform_filesize(const char *fname)
 {
     // !!! FIXME: this is lame.
     int64 retval = -1;
-    void *fd = MojoPlatform_open(const char *fname, MOJOFILE_READ, 0);
+    void *fd = MojoPlatform_open(fname, MOJOFILE_READ, 0);
     STUBBED("use a stat()-like thing instead");
     if (fd != NULL)
     {
@@ -1286,11 +1292,11 @@ void *MojoPlatform_dlsym(void *_lib, const char *sym)
 
 void MojoPlatform_dlclose(void *_lib)
 {
-    const WinApiDll *lib = (const WinApiDll *) _lib;
+    WinApiDll *lib = (WinApiDll *) _lib;
     if (lib)
     {
         FreeLibrary(lib->dll);
-        CloseHandle(lib->handle);  // this also deletes the temp file.
+        CloseHandle(lib->file);  // this also deletes the temp file.
         free(lib);
     } // if
 } // MojoPlatform_dlclose
@@ -1345,7 +1351,7 @@ static void platformDeinit(void)
 } // platformDeinit
 
 
-static void buildCommandlineArray(LPSTR szCmd, int *_argc, char **_argv)
+static void buildCommandlineArray(LPSTR szCmd, int *_argc, char ***_argv)
 {
     int argc = 0;
     char **argv = NULL;
