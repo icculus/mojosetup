@@ -555,6 +555,15 @@ char *xstrdup(const char *str)
 } // xstrdup
 
 
+// We have to supply this function under certain build types.
+#if MOJOSETUP_INTERNAL_BZLIB && BZ_NO_STDIO
+void bz_internal_error(int errcode)
+{
+    fatal(_("bzlib triggered an internal error: %d", errcode));
+} // bz_internal_error
+#endif
+
+
 // This is called from main()/WinMain()/whatever.
 int MojoSetup_main(int argc, char **argv)
 {
