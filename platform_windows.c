@@ -1477,10 +1477,12 @@ void MojoPlatform_log(const char *str)
 {
     if (pOutputDebugStringW != NULL) // in case this gets called before init...
     {
+        static const WCHAR endl[3] = { '\r', '\n', '\0' };
         WCHAR *wstr;
         UTF8_TO_UNICODE_STACK_MACRO(wstr, str);
         STUBBED("OutputDebugString() is probably not best here");
         pOutputDebugStringW(wstr);
+        pOutputDebugStringW(endl);
         smallFree(wstr);
     } // if
 } // MojoPlatform_log
