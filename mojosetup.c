@@ -488,7 +488,7 @@ int panic(const char *err)
         if (domsgbox)
             GGui->msgbox(_("PANIC"), err);
 
-        if (GGui->deinit != NULL)
+        if ((GGui != NULL) && (GGui->deinit != NULL))
             GGui->deinit();
 
         if (!domsgbox)
