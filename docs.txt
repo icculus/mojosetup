@@ -864,17 +864,21 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     and "YY" is the country code: "en_US" for American English, fr_CA for
     French Canadian, etc.
 
+    If MojoSetup can't determine the user's locale, this string is "???".
+
 
   MojoSetup.info.platform
 
     This is a string (not a function!) of the current platform. This is
-    currently one of "macosx", "unix", "windows", or "beos".
+    currently one of "macosx", "unix", "windows", or "beos", or one of several
+    others, depending on your build and target platform.
 
 
   MojoSetup.info.arch
 
     This is a string (not a function!) of the current platform's CPU type.
-    This is currently one of "x86", "x86-64", "powerpc", or "powerpc64".
+    This is currently one of "x86", "x86-64", "powerpc", "powerpc64",
+    or one of several others, depending on your build and target platform.
 
     Please note that this is the arch of the installer binary...you can run
     a 32-bit binary on an amd64 chip, in which case it will report "x86"!
@@ -888,7 +892,12 @@ Your config file is a Lua script, and as such, has access to all of Lua's
 
     Please note that this is the OS target of the installer binary...you can
     run a Linux binary on FreeBSD through the binary compatibility layer,
-    in which case it will report "linux"!
+    in which case it will still report "linux"!
+
+    On Windows, this is currently either "win9x" or "winnt" to differentiate
+    Windows 95/98/ME from NT/XP/Vista/etc, since their version numbers can
+    overlap. Installers should not rely on there never being a third string
+    some day in the distant future, though.
 
 
   MojoSetup.info.osversion
@@ -902,11 +911,33 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     gives you the kernel version, which is usually not helpful, but could be
     on, say, BeOS.
 
+    On Windows, it'll be the Major.Minor.Build version for the OS. This is the
+    same information that the win32 OSVERSIONINFO structure supplies:
+
+      http://msdn2.microsoft.com/en-us/library/ms724834.aspx
+
+    So "5.1.2600" might mean "Windows XP, service pack 1" ... relying on the
+    build number can be very dangerous if you don't know what you're doing,
+    but the major/minor values appear to be reliable to differentiate various
+    flavors of Windows (and MojoSetup.info.ostype can differentiate between
+    the Win95-based and WinNT-based versions).
+
+    On any platform, it would be wise to not rely too heavily on this data:
+    it's frequently better to check for the specific thing you want to know
+    about ("Is DirectX 9 installed?") rather than ask a general question ("Is
+    this Windows XP?"). This prevents problems when unexpected values arise in
+    situations you never expected to handle (for example, if you ran the
+    Windows installer under Wine, it could report that its Windows XP, but
+    there's no DirectX 9 support). Knowing what you really want to know is
+    half the battle.
+
 
   MojoSetup.info.ui
 
     This is a string (not a function!) of the UI plugin that MojoSetup chose.
-    system. This is currently one of "stdio", "macosx", or "gtkplus2".
+    system. This is currently one of "stdio", "ncurses", "macosx", "gtkplus2",
+    or one of several others, depending on your build and target platform.
+    It's best to not rely on this being within a specific set of values.
     
 
   MojoSetup.info.buildver
