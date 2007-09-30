@@ -348,12 +348,14 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
     char *fullpath = NULL;
     char *dent = NULL;  // "dent" == "directory entry"
     MojoArchiveDirInstance *inst = (MojoArchiveDirInstance *) ar->opaque;
-    const char *basepath = inst->dirs->basepath;
+    const char *basepath;
 
     MojoArchive_resetEntry(&ar->prevEnum);
 
     if (inst->dirs == NULL)
         return NULL;
+
+    basepath = inst->dirs->basepath;
 
     // if readdir fails, it's end of dir (!!! FIXME: what about i/o failures?)
     dent = MojoPlatform_readdir(inst->dirs->dir);
