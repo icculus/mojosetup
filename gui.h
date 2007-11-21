@@ -59,12 +59,12 @@ struct MojoGuiSetupOptions
 #define MOJOGUI_ENTRY_POINT_STR DEFINE_TO_STR(MOJOGUI_ENTRY_POINT)
 
 // Increment this value when MojoGui's structure changes.
-#define MOJOGUI_INTERFACE_REVISION 1
+#define MOJOGUI_INTERFACE_REVISION 2
 
 typedef struct MojoGui MojoGui;
 struct MojoGui
 {
-    uint8 (*priority)(void);
+    uint8 (*priority)(boolean istty);
     const char* (*name)(void);
     boolean (*init)(void);
     void (*deinit)(void);
@@ -104,7 +104,7 @@ __EXPORT__ const MojoGui *MOJOGUI_ENTRY_POINT(int revision,
  */
 #define MOJOGUI_PLUGIN(module) \
 static const MojoSetupEntryPoints *entry = NULL; \
-static uint8 MojoGui_##module##_priority(void); \
+static uint8 MojoGui_##module##_priority(boolean istty); \
 static const char* MojoGui_##module##_name(void) { return #module; } \
 static boolean MojoGui_##module##_init(void); \
 static void MojoGui_##module##_deinit(void); \

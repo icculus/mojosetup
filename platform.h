@@ -90,6 +90,9 @@ boolean MojoPlatform_isdir(const char *dir);
 //  otherwise (including if (fname) doesn't exist). Don't follow symlinks.
 boolean MojoPlatform_issymlink(const char *fname);
 
+// Returns true if stdin and stdout are connected to a tty.
+boolean MojoPlatform_istty(void);
+
 // Returns true if (fname) is a regular file in the physical filesystem, false
 //  otherwise (including if (fname) doesn't exist). Don't follow symlinks.
 boolean MojoPlatform_isfile(const char *fname);
@@ -221,6 +224,10 @@ void MojoPlatform_dlclose(void *lib);
 #else
 void MojoPlatform_switchBin(const uint8 *img, size_t len);
 #endif
+
+// Try to spawn a terminal, and relaunch MojoSetup within it.
+//  Does not return on success (process replaces itself).
+void MojoPlatform_spawnTerminal(void);
 
 // Put the calling process to sleep for at least (ticks) milliseconds.
 //  This is meant to yield the CPU while spinning in a loop that is polling

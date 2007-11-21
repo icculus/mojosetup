@@ -560,9 +560,11 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
 } // upkeepBox
 
 
-static uint8 MojoGui_ncurses_priority(void)
+static uint8 MojoGui_ncurses_priority(boolean istty)
 {
-    if (getenv("DISPLAY") != NULL)
+    if (!istty)
+        return MOJOGUI_PRIORITY_NEVER_TRY;  // need a terminal for this!
+    else if (getenv("DISPLAY") != NULL)
         return MOJOGUI_PRIORITY_TRY_LAST;  // let graphical stuff go first.
     return MOJOGUI_PRIORITY_TRY_NORMAL;
 } // MojoGui_ncurses_priority
@@ -570,18 +572,6 @@ static uint8 MojoGui_ncurses_priority(void)
 
 static boolean MojoGui_ncurses_init(void)
 {
-    const char *badtty = NULL;
-    if (!isatty(0))
-        badtty = "stdin";
-    else if (!isatty(1))
-        badtty = "stdout";
-
-    if (badtty != NULL)
-    {
-        entry->logInfo("ncurses: %s is not a tty, use another UI.", badtty);
-        return false;  // stdin or stdout redirected, or maybe no xterm...
-    } // if
-
     if (initscr() == NULL)
     {
         entry->logInfo("ncurses: initscr() failed, use another UI.");

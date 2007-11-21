@@ -627,6 +627,20 @@ static boolean findApiSymbols(void)
 
 // ok, now the actual platform layer implementation...
 
+boolean MojoPlatform_istty(void)
+{
+    // !!! FIXME: this will prevent the stdio plugin from working over
+    // !!! FIXME:  ssh, etc. Check if we're really in a console somehow...
+    return false;  // never a terminal on Windows, always a GUI app.
+} // MojoPlatform_istty
+
+
+void MojoPlatform_spawnTerminal(void)
+{
+    // unsupported.
+} // MojoPlatform_spawnTerminal
+
+
 char *MojoPlatform_currentWorkingDir(void)
 {
     char *retval = NULL;

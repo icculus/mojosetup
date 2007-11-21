@@ -58,6 +58,20 @@ void beos_usleep(unsigned long ticks);
 
 static struct timeval startup_time;
 
+boolean MojoPlatform_istty(void)
+{
+    static boolean already_checked = false;  // this never changes in a run.
+    static boolean retval = false;
+    if (!already_checked)
+    {
+        retval = isatty(0) && isatty(1) ? true : false;
+        already_checked = true;
+    } // if
+
+    return retval;
+} // MojoPlatform_istty
+
+
 char *MojoPlatform_currentWorkingDir(void)
 {
     char *retval = NULL;
@@ -931,6 +945,76 @@ void MojoPlatform_switchBin(const uint8 *img, size_t len)
     // couldn't replace current process.
 } // MojoPlatform_switchBin
 #endif
+
+
+void MojoPlatform_spawnTerminal(void)
+{
+#if PLATFORM_BEOS
+    #error write me.
+    // "/boot/apps/Terminal"
+#elif PLATFORM_MACOSX
+    #error write me.
+    // "/Applications/Utilities/Terminal.app"
+#else
+
+    // urgh
+    static const char *terms[] = {
+        "gnome-terminal", "konsole", "kvt", "xterm", "rxvt",
+        "dtterm", "eterm", "Eterm", "aterm"
+    };
+
+    const char *tryfirst = NULL;
+    const int max_added_args = 5;
+    const unsigned int argc = GArgc + max_added_args;
+    const char **argv = NULL;
+    int i = 0;
+    int startarg = 0;
+
+    if (getenv("DISPLAY") == NULL)
+        return;  // don't bother if we don't have X.
+
+    else if (getenv("GNOME_DESKTOP_SESSION_ID") != NULL)  // this is gnome?
+        tryfirst = "gnome-terminal";
+
+    else if (getenv("KDE_FULL_SESSION") != NULL)  // this KDE >= 3.2?
+        tryfirst = "konsole";
+
+    argv = xmalloc((argc + 1) * sizeof(char *));
+
+    for (i = -1; i < ((int) STATICARRAYLEN(terms)); i++)
+    {
+        int is_gnome_term = false;
+        int argi = 0;
+        const char *trythis = (i == -1) ? tryfirst : terms[i];
+        if (trythis == NULL)
+            continue;
+
+        // !!! FIXME: hack. I'm sure other terminal emulators have needs, too.
+        is_gnome_term = (strcmp(trythis, "gnome-terminal") == 0);
+
+        argv[argi++] = trythis;
+        argv[argi++] = is_gnome_term ? "--title" : "-title";
+        argv[argi++] = "MojoSetup";
+        argv[argi++] = is_gnome_term ? "-x" : "-e";
+        argv[argi++] = GArgv[0];
+        argv[argi++] = "-notermspawn=1";
+        assert(argi-1 <= max_added_args);
+
+        for (startarg = argi-1; argi <= argc; argi++)  // include ending NULL.
+        {
+            argv[argi] = GArgv[argi - startarg];
+            if (argv[argi] == NULL)
+                break;
+        } // for
+
+        execvp(trythis, (char * const *) argv);
+    } // for
+
+    // Still here? We failed. Mankind is wiped out in the Robot Wars.
+
+    free(argv);
+#endif
+} // MojoPlatform_spawnTerminal
 
 
 static void signal_catcher(int sig)

@@ -110,6 +110,20 @@ static void trySwitchBinaries(void)
 #endif
 
 
+static void trySpawnTerminal(void)
+{
+    if (cmdlinestr("notermspawn", "MOJOSETUP_NOTERMSPAWN", NULL) != NULL)
+        return;  // we already spawned or the user is preventing it.
+
+    if (MojoPlatform_istty())  // maybe we can spawn a terminal for stdio?
+        return;  // We're a terminal already, no need to spawn one.
+
+    logInfo("No usable GUI found. Trying to spawn a terminal...");
+    MojoPlatform_spawnTerminal();  // no return on success.
+    logError("...Terminal spawning failed.");
+} // trySpawnTerminal
+
+
 static boolean initEverything(void)
 {
     MojoLog_initLogging();
@@ -128,10 +142,15 @@ static boolean initEverything(void)
     trySwitchBinaries();  // may not return.
 
     if (!MojoGui_initGuiPlugin())
+    {
+        trySpawnTerminal();  // may not return.
         panic("Initial GUI setup failed. Cannot continue.");
+    } // if
 
     else if (!MojoLua_initLua())
+    {
         panic("Initial Lua setup failed. Cannot continue.");
+    } // else if
 
     crashedmsg = xstrdup(_("The installer has crashed due to a bug."));
     termedmsg = xstrdup(_("The installer has been stopped by the system."));

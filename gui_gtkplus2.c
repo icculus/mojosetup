@@ -187,7 +187,7 @@ static void signal_browse_clicked(GtkButton *_button, gpointer data)
 }
 
 
-static uint8 MojoGui_gtkplus2_priority(void)
+static uint8 MojoGui_gtkplus2_priority(boolean istty)
 {
     // gnome-session exports this environment variable since 2002.
     if (getenv("GNOME_DESKTOP_SESSION_ID") != NULL)

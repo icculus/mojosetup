@@ -74,8 +74,16 @@ static int readstr(const char *prompt, char *buf, int len,
 } // print_prompt
 
 
-static uint8 MojoGui_stdio_priority(void)
+static uint8 MojoGui_stdio_priority(boolean istty)
 {
+    // if not a tty and no other GUI plugins worked out, let the base
+    //  application try to spawn a terminal and try again. If it can't do so,
+    //  it will panic() and thus end the process, so we don't end up blocking
+    //  on some prompt the user can't see.
+
+    if (!istty)
+        return MOJOGUI_PRIORITY_NEVER_TRY;
+
     return MOJOGUI_PRIORITY_TRY_ABSOLUTELY_LAST;  // always a last resort.
 } // MojoGui_stdio_priority
 
@@ -83,7 +91,7 @@ static uint8 MojoGui_stdio_priority(void)
 static boolean MojoGui_stdio_init(void)
 {
     percentTicks = 0;
-    return true;   // always succeeds.
+    return true;  // always succeeds.
 } // MojoGui_stdio_init
 
 

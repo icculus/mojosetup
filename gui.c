@@ -46,7 +46,7 @@ static MojoGuiPluginPriority calcGuiPriority(const MojoGui *gui)
 {
     MojoGuiPluginPriority retval;
 
-    retval = gui->priority();
+    retval = gui->priority(MojoPlatform_istty());
 
     // If the plugin isn't saying "don't try me at all" then see if the
     //  user explicitly wants this one.

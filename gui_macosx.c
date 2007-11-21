@@ -25,7 +25,7 @@ CREATE_MOJOGUI_ENTRY_POINT(macosx)
 
 // (A lot of this is stolen from MojoPatch: http://icculus.org/mojopatch/ ...)
 
-static uint8 MojoGui_macosx_priority(void)
+static uint8 MojoGui_macosx_priority(boolean istty)
 {
     // obviously this is the thing you want on Mac OS X.
     return MOJOGUI_PRIORITY_TRY_FIRST;

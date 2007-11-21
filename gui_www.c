@@ -130,7 +130,7 @@ static SOCKET listenSocket = INVALID_SOCKET;
 static SOCKET clientSocket = INVALID_SOCKET;
 
 
-static uint8 MojoGui_www_priority(void)
+static uint8 MojoGui_www_priority(boolean istty)
 {
     return MOJOGUI_PRIORITY_TRY_LAST;
 } // MojoGui_www_priority
