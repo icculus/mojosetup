@@ -192,6 +192,15 @@ const char *translate(const char *str);
 //   profile("Something I did", start);
 uint32 profile(const char *what, uint32 start_time);
 
+// This tries to decode a graphic file in memory into an RGBA framebuffer,
+//  first with platform-specific facilities, if any, and then any built-in
+//  decoders, if that fails.
+// (data) points to the compressed data, (size) is the number of bytes
+//  of compressed data. (*w) and (*h) will contain the images dimensions on
+//  return.
+// Returns NULL on failure (unsupported, etc) and a pointer to the
+//  uncompressed data on success. Caller must free() the returned pointer!
+uint8 *decodeImage(const uint8 *data, uint32 size, uint32 *w, uint32 *h);
 
 // See if a given flag was on the command line
 //

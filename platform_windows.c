@@ -641,6 +641,13 @@ void MojoPlatform_spawnTerminal(void)
 } // MojoPlatform_spawnTerminal
 
 
+uint8 *MojoPlatform_decodeImage(const uint8 *data, uint32 size,
+                                uint32 *w, uint32 *h)
+{
+    return NULL;  // !!! FIXME: try IPicture?
+} // MojoPlatform_decodeImage
+
+
 char *MojoPlatform_currentWorkingDir(void)
 {
     char *retval = NULL;

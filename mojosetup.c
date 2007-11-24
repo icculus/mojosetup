@@ -583,6 +583,34 @@ void bz_internal_error(int errcode)
 #endif
 
 
+#if SUPPORT_STBIMAGE
+unsigned char *stbi_load_from_memory(unsigned char *buffer, int len, int *x,
+                                     int *y, int *comp, int req_comp);
+#endif
+
+uint8 *decodeImage(const uint8 *data, uint32 size, uint32 *w, uint32 *h)
+{
+    uint8 *retval = MojoPlatform_decodeImage(data, size, w, h);
+
+    #if SUPPORT_STBIMAGE
+    if (retval == NULL)  // try our built-in routines.
+    {
+        const int siz = (int) size;
+        unsigned char *buf = (unsigned char *) data;
+        int x = 0, y = 0, comp = 0;
+        retval = (uint8 *) stbi_load_from_memory(buf, siz, &x, &y, &comp, 4);
+        *w = (uint32) x;
+        *h = (uint32) y;
+    } // if
+    #endif
+
+    if (retval == NULL)
+        *w = *h = 0;
+
+    return retval;
+} // decodeImage
+
+
 // This is called from main()/WinMain()/whatever.
 int MojoSetup_main(int argc, char **argv)
 {

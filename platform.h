@@ -239,6 +239,20 @@ void MojoPlatform_sleep(uint32 ticks);
 //  characters. You should supply if needed.
 void MojoPlatform_log(const char *str);
 
+// This tries to decode a graphic file in memory into an RGBA framebuffer.
+//  Most platforms return NULL here. No one should call this; use decodeImage()
+//  instead, which will try included platform-independent code if this fails.
+// This function is just here to allow a platform with the appropriate
+//  functionality to work without compiling in stb_image.c, or supply more
+//  formats over the built-in code.
+// (data) points to the compressed data, (size) is the number of bytes
+//  of compressed data. (*w) and (*h) will contain the images dimensions on
+//  return.
+// Returns NULL on failure (unsupported, etc) and a pointer to the
+//  uncompressed data on success. Caller must free() the returned pointer!
+uint8 *MojoPlatform_decodeImage(const uint8 *data, uint32 size,
+                                uint32 *w, uint32 *h);
+
 // Get the current locale, in the format "xx_YY" where "xx" is the language
 //  (en, fr, de...) and "_YY" is the country. (_US, _CA, etc). The country
 //  can be omitted. Don't include encoding, it's always UTF-8 at this time.

@@ -1017,6 +1017,14 @@ void MojoPlatform_spawnTerminal(void)
 } // MojoPlatform_spawnTerminal
 
 
+uint8 *MojoPlatform_decodeImage(const uint8 *data, uint32 size,
+                                uint32 *w, uint32 *h)
+{
+    // !!! FIXME: try Quartz APIs on Mac OS X?
+    return NULL; // no platform-specific APIs. Just use the built-in ones.
+} // MojoPlatform_decodeImage
+
+
 static void signal_catcher(int sig)
 {
     static boolean first_shot = true;
