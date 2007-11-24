@@ -947,11 +947,51 @@ static int luahook_movefile(lua_State *L)
 } // luahook_movefile
 
 
+static void prepareSplash(MojoGuiSplash *splash, const char *fname)
+{
+    MojoInput *io = NULL;
+    int64 len = 0;
+
+    memset(splash, '\0', sizeof (*splash));
+
+    if (fname == NULL)
+        return;
+
+    io = MojoInput_newFromArchivePath(GBaseArchive, fname);
+    if (io == NULL)
+        return;
+
+    len = io->length(io);
+    if ((len > 0) && (len < 0xFFFFFFFF))
+    {
+        const uint32 size = (uint32) len;
+        uint8 *data = (uint8 *) xmalloc(size);
+        if (io->read(io, data, size) == len)
+        {
+            splash->rgba = decodeImage(data, size, &splash->w, &splash->h);
+            if (splash->rgba != NULL)
+                splash->position = MOJOGUI_SPLASH_TOP;  // !!! FIXME: others?
+        } // if
+        free(data);
+    } // if
+
+    io->close(io);
+} // prepareSplash
+
+
 static int luahook_gui_start(lua_State *L)
 {
     const char *title = luaL_checkstring(L, 1);
-    const char *splash = lua_tostring(L, 2);
-    return retvalBoolean(L, GGui->start(title, splash));
+    const char *splashfname = lua_tostring(L, 2);
+    boolean rc = false;
+    MojoGuiSplash splash;
+
+    prepareSplash(&splash, splashfname);
+    rc = GGui->start(title, &splash);
+    if (splash.rgba != NULL)
+        free((void *) splash.rgba);
+
+    return retvalBoolean(L, rc);
 } // luahook_gui_start
 
 

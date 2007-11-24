@@ -459,7 +459,8 @@ GtkWidget *create_gtkwindow(const char *title)
 } // create_gtkwindow
 
 
-static boolean MojoGui_gtkplus2_start(const char *title, const char *splash)
+static boolean MojoGui_gtkplus2_start(const char *title,
+                                      const MojoGuiSplash *splash)
 {
     gtkwindow = create_gtkwindow(title);
     return (gtkwindow != NULL);

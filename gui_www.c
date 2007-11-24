@@ -793,7 +793,8 @@ static MojoGuiYNAN MojoGui_www_promptynan(const char *title, const char *text,
 } // MojoGui_www_promptynan
 
 
-static boolean MojoGui_www_start(const char *title, const char *splash)
+static boolean MojoGui_www_start(const char *title,
+                                 const MojoGuiSplash *splash)
 {
     return true;
 } // MojoGui_www_start

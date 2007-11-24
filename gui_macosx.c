@@ -146,7 +146,8 @@ static MojoGuiYNAN MojoGui_macosx_promptynan(const char *title,
 } // MojoGui_macosx_promptynan
 
 
-static boolean MojoGui_macosx_start(const char *title, const char *splash)
+static boolean MojoGui_macosx_start(const char *title,
+                                    const MojoGuiSplash *splash)
 {
     return true;  // !!! FIXME
 } // MojoGui_macosx_start

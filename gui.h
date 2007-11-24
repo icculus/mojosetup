@@ -55,11 +55,31 @@ struct MojoGuiSetupOptions
 };
 
 
+typedef enum
+{
+    MOJOGUI_SPLASH_NONE,
+    MOJOGUI_SPLASH_TOP,
+    MOJOGUI_SPLASH_LEFT,
+    MOJOGUI_SPLASH_RIGHT,
+    MOJOGUI_SPLASH_BOTTOM,
+    MOJOGUI_SPLASH_BACKGROUND,
+} MojoGuiSplashPos;
+
+typedef struct MojoGuiSplash MojoGuiSplash;
+struct MojoGuiSplash
+{
+    const uint8 *rgba;  // framebuffer.
+    uint32 w;  // width in pixels.
+    uint32 h;  // height in pixels.
+    MojoGuiSplashPos position; // where to put the splash.
+};
+
+
 #define MOJOGUI_ENTRY_POINT MojoSetup_Gui_GetInterface
 #define MOJOGUI_ENTRY_POINT_STR DEFINE_TO_STR(MOJOGUI_ENTRY_POINT)
 
 // Increment this value when MojoGui's structure changes.
-#define MOJOGUI_INTERFACE_REVISION 2
+#define MOJOGUI_INTERFACE_REVISION 3
 
 typedef struct MojoGui MojoGui;
 struct MojoGui
@@ -71,7 +91,7 @@ struct MojoGui
     void (*msgbox)(const char *title, const char *text);
     boolean (*promptyn)(const char *title, const char *text, boolean def);
     MojoGuiYNAN (*promptynan)(const char *title, const char *text, boolean def);
-    boolean (*start)(const char *title, const char *splash);
+    boolean (*start)(const char *title, const MojoGuiSplash *splash);
     void (*stop)(void);
     int (*readme)(const char *name, const uint8 *data, size_t len,
                   boolean can_back, boolean can_fwd);
@@ -113,7 +133,8 @@ static boolean MojoGui_##module##_promptyn(const char *t1, const char *t2, \
                                            boolean d); \
 static MojoGuiYNAN MojoGui_##module##_promptynan(const char *t1, \
                                                  const char *t2, boolean d); \
-static boolean MojoGui_##module##_start(const char *t, const char *s); \
+static boolean MojoGui_##module##_start(const char *t, \
+                                        const MojoGuiSplash *splash); \
 static void MojoGui_##module##_stop(void); \
 static int MojoGui_##module##_readme(const char *name, const uint8 *data, \
                                      size_t len, boolean can_back, \

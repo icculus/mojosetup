@@ -699,7 +699,8 @@ static MojoGuiYNAN MojoGui_ncurses_promptynan(const char *title,
 } // MojoGui_ncurses_promptynan
 
 
-static boolean MojoGui_ncurses_start(const char *_title, const char *splash)
+static boolean MojoGui_ncurses_start(const char *_title,
+                                     const MojoGuiSplash *splash)
 {
     free(title);
     title = entry->xstrdup(_title);
