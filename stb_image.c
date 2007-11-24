@@ -70,22 +70,22 @@
 #  define STBI_NO_WRITE 1
 #  define STBI_NO_STDIO 1
 #  define STBI_NO_FAILURE_STRINGS 1
-#  if !MOJOSETUP_SUPPORT_HDR
+#  if !SUPPORT_HDR
 #    define STBI_NO_HDR 1
 #  endif
-#  if !MOJOSETUP_SUPPORT_TGA
+#  if !SUPPORT_TGA
 #    define STBI_NO_TGA 1
 #  endif
-#  if !MOJOSETUP_SUPPORT_JPG
+#  if !SUPPORT_JPG
 #    define STBI_NO_JPEG 1
 #  endif
-#  if !MOJOSETUP_SUPPORT_BMP
+#  if !SUPPORT_BMP
 #    define STBI_NO_BMP 1
 #  endif
-#  if !MOJOSETUP_SUPPORT_PSD
+#  if !SUPPORT_PSD
 #    define STBI_NO_PSD 1
 #  endif
-#  if !MOJOSETUP_SUPPORT_PNG
+#  if !SUPPORT_PNG
 #    define STBI_NO_PNG 1
 #    define STBI_NO_ZLIB 1
 #  endif
