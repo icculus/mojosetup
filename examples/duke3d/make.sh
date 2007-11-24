@@ -34,6 +34,7 @@ mkdir image
 mkdir image/guis
 mkdir image/scripts
 mkdir image/data
+mkdir image/meta
 
 # Build MojoSetup binaries from scratch.
 cd ../..
@@ -49,6 +50,9 @@ cmake \
     -DMOJOSETUP_LUALIB_OS=FALSE \
     -DMOJOSETUP_LUALIB_PACKAGE=FALSE \
     -DMOJOSETUP_LUA_PARSER=$TRUEIFDEBUG \
+    -DMOJOSETUP_IMAGE_BMP=TRUE \
+    -DMOJOSETUP_IMAGE_JPG=FALSE \
+    -DMOJOSETUP_IMAGE_PNG=FALSE \
     -DMOJOSETUP_URL_FTP=FALSE \
     .
 make -j5
@@ -80,6 +84,7 @@ rm -f examples/duke3d/image/scripts/config.luac
 # Fill in the rest of the Base Archive...
 cd examples/duke3d
 cp data/* image/data/
+cp meta/* image/meta/
 
 # Make a .zip archive of the Base Archive dirs and nuke the originals...
 cd image

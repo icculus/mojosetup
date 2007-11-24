@@ -5,7 +5,7 @@ Setup.Package
     id = "duke3d",
     description = "Duke Nukem 3D",
     version = "1.5",
-    splash = "splash.jpg",
+    splash = "splash.bmp",
     superuser = false,
     recommended_destinations =
     {
