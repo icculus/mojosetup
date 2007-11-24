@@ -657,6 +657,11 @@ void   stbi_ldr_to_hdr_scale(float scale) { l2h_scale = scale; }
 static uint32 img_x, img_y;
 static int img_n, img_out_n;
 
+#if __MOJOSETUP__  // moved here from elsewhere for #ifdef safety.
+static uint8 *idata, *expanded, *out;
+static unsigned long  code_buffer; // jpeg entropy-coded buffer
+#endif
+
 enum
 {
    SCAN_load=0,
@@ -975,11 +980,13 @@ static struct
    uint8 *data;
 } img_comp[4];
 
+#if !__MOJOSETUP__  // moved elsewhere for #ifdef safety.
 static unsigned long  code_buffer; // jpeg entropy-coded buffer
+#endif
 static int            code_bits;   // number of valid bits
 static unsigned char  marker;      // marker seen while filling entropy buffer
 static int            nomore;      // flag if we saw a marker so must stop
- 
+
 static void grow_buffer_unsafe(void)
 {
    do {
@@ -2260,7 +2267,9 @@ static int check_png_header(void)
    return 1;
 }
 
+#if !__MOJOSETUP__  // moved elsewhere for #ifdef safety.
 static uint8 *idata, *expanded, *out;
+#endif
 
 enum {
    F_none=0, F_sub=1, F_up=2, F_avg=3, F_paeth=4,
@@ -3496,9 +3505,14 @@ int stbi_hdr_test_file(FILE *f)
 static char *hdr_gettoken(char *buffer)
 {
    int len=0;
+
+#if __MOJOSETUP__  // compiler complained about unused variable.
+   char c = get8();
+#else
 	char *s = buffer, c = '\0';
 
    c = get8();
+#endif
 
 	while (!at_eof() && c != '\n') {
 		buffer[len++] = c;
@@ -3788,6 +3802,10 @@ void stb_image_stop_compiler_whining(void)
     (void) get32le;
     (void) getn;
     (void) convert_format;
+    (void) idata;
+    (void) expanded;
+    (void) out;
+    (void) code_buffer;
 }
 #endif
 
