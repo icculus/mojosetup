@@ -53,6 +53,7 @@ static GtkWidget *progressbar = NULL;
 static GtkWidget *progresslabel = NULL;
 static GtkWidget *finallabel = NULL;
 static GtkWidget *browse = NULL;
+static GtkWidget *splash = NULL;
 
 static volatile enum
 {
@@ -324,8 +325,48 @@ static GtkWidget *create_button(GtkWidget *box, const char *iconname,
 } // create_button
 
 
-GtkWidget *create_gtkwindow(const char *title)
+static void free_splash(guchar *pixels, gpointer data)
 {
+    free(pixels);
+} // free_splash
+
+
+static GtkWidget *build_splash(const MojoGuiSplash *splash)
+{
+    GtkWidget *retval = NULL;
+    GdkPixbuf *pixbuf = NULL;
+    guchar *rgba = NULL;
+    const uint32 splashlen = splash->w * splash->h * 4;
+
+    if (splash->position == MOJOGUI_SPLASH_NONE)
+        return NULL;
+
+    if ((splash->rgba == NULL) || (splashlen == 0))
+        return NULL;
+
+    rgba = (guchar *) entry->xmalloc(splashlen);
+    memcpy(rgba, splash->rgba, splashlen);
+    pixbuf = gdk_pixbuf_new_from_data(rgba, GDK_COLORSPACE_RGB, TRUE, 8,
+                                      splash->w, splash->h, splash->w * 4,
+                                      free_splash, NULL);
+    if (pixbuf == NULL)
+        free(rgba);
+    else
+    {
+        retval = gtk_image_new_from_pixbuf(pixbuf);
+        g_object_unref(pixbuf);  // retval adds a ref to pixbuf, so lose our's.
+        if (retval != NULL)
+            gtk_widget_show(retval);
+    } // else
+
+    return retval;
+} // build_splash
+
+
+static GtkWidget *create_gtkwindow(const char *title,
+                                   const MojoGuiSplash *_splash)
+{
+    GtkWidget *splashbox = NULL;
     GtkWidget *window;
     GtkWidget *widget;
     GtkWidget *box;
@@ -342,9 +383,41 @@ GtkWidget *create_gtkwindow(const char *title)
     if (icon)
         gtk_window_set_icon(GTK_WINDOW(window), icon);
 
+    assert(splash == NULL);
+    splash = build_splash(_splash);
+    if (splash != NULL)
+    {
+        // !!! FIXME: MOJOGUI_SPLASH_BACKGROUND?
+        const MojoGuiSplashPos pos = _splash->position;
+        if ((pos == MOJOGUI_SPLASH_LEFT) || (pos == MOJOGUI_SPLASH_RIGHT))
+        {
+            splashbox = gtk_hbox_new(FALSE, 6);
+            gtk_widget_show(splashbox);
+            gtk_container_add(GTK_CONTAINER(window), splashbox);
+            if (pos == MOJOGUI_SPLASH_LEFT)
+                gtk_box_pack_start(GTK_BOX(splashbox), splash, FALSE, FALSE, 6);
+            else
+                gtk_box_pack_end(GTK_BOX(splashbox), splash, FALSE, FALSE, 6);
+        } // if
+
+        else if ((pos == MOJOGUI_SPLASH_TOP) || (pos == MOJOGUI_SPLASH_BOTTOM))
+        {
+            splashbox = gtk_vbox_new(FALSE, 6);
+            gtk_widget_show(splashbox);
+            gtk_container_add(GTK_CONTAINER(window), splashbox);
+            if (pos == MOJOGUI_SPLASH_TOP)
+                gtk_box_pack_start(GTK_BOX(splashbox), splash, FALSE, FALSE, 6);
+            else
+                gtk_box_pack_end(GTK_BOX(splashbox), splash, FALSE, FALSE, 6);
+        } // else if
+    } // if
+
+    if (splashbox == NULL)  // no splash, use the window for the top container.
+        splashbox = window;
+
     box = gtk_vbox_new(FALSE, 6);
     gtk_widget_show(box);
-    gtk_container_add(GTK_CONTAINER(window), box);
+    gtk_container_add(GTK_CONTAINER(splashbox), box);
 
     pagetitle = gtk_label_new("");
     gtk_widget_show(pagetitle);
@@ -462,7 +535,7 @@ GtkWidget *create_gtkwindow(const char *title)
 static boolean MojoGui_gtkplus2_start(const char *title,
                                       const MojoGuiSplash *splash)
 {
-    gtkwindow = create_gtkwindow(title);
+    gtkwindow = create_gtkwindow(title, splash);
     return (gtkwindow != NULL);
 } // MojoGui_gtkplus2_start
 
@@ -485,6 +558,7 @@ static void MojoGui_gtkplus2_stop(void)
     back = NULL;
     next = NULL;
     finish = NULL;
+    splash = NULL;
 } // MojoGui_gtkplus2_stop
 
 
