@@ -988,7 +988,7 @@ local function do_install(install)
 
 
     -- Now make all this happen.
-    if not MojoSetup.gui.start(install.description, install.splash) then
+    if not MojoSetup.gui.start(install.description, 'meta/' .. install.splash) then
         MojoSetup.fatal(_("GUI failed to start"))
     end
 
