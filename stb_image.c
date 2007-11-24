@@ -1,3 +1,10 @@
+// (Changes to this code are wrapped in __MOJOSETUP__ sections.  --ryan.)
+// (Changes to JUST THIS FILE are also public domain. The rest of MojoSetup
+//  falls under different licensing terms. --ryan.)
+#if !__MOJOSETUP__
+#error This file is probably miscompiled.
+#endif
+
 /* stbi-1.08 - public domain JPEG/PNG reader - http://nothings.org/stb_image.c
                       when you control the images you're loading
 
@@ -53,6 +60,36 @@
              on 'test' only check type, not whether we support this variant
 */
 
+#if __MOJOSETUP__
+#  include "universal.h"  // catches xmalloc() defines, etc.
+#  undef malloc
+#  define malloc(x) xmalloc(x)
+#  undef realloc
+#  define realloc(x, y) xrealloc(x, y)
+
+#  define STBI_NO_WRITE 1
+#  define STBI_NO_STDIO 1
+#  define STBI_NO_FAILURE_STRINGS 1
+#  if !MOJOSETUP_SUPPORT_HDR
+#    define STBI_NO_HDR 1
+#  endif
+#  if !MOJOSETUP_SUPPORT_TGA
+#    define STBI_NO_TGA 1
+#  endif
+#  if !MOJOSETUP_SUPPORT_JPG
+#    define STBI_NO_JPEG 1
+#  endif
+#  if !MOJOSETUP_SUPPORT_BMP
+#    define STBI_NO_BMP 1
+#  endif
+#  if !MOJOSETUP_SUPPORT_PSD
+#    define STBI_NO_PSD 1
+#  endif
+#  if !MOJOSETUP_SUPPORT_PNG
+#    define STBI_NO_PNG 1
+#    define STBI_NO_ZLIB 1
+#  endif
+#endif
 
 ////   begin header file  ////////////////////////////////////////////////////
 //
@@ -336,12 +373,14 @@ extern int stbi_register_loader(stbi_loader *loader);
 #endif
 
 // implementation:
+#if !__MOJOSETUP__  // (we define these in universal.h ...)
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef   signed short  int16;
 typedef unsigned int   uint32;
 typedef   signed int    int32;
 typedef unsigned int   uint;
+#endif
 
 // should produce compiler error if size is wrong
 typedef unsigned char validate_uint32[sizeof(uint32)==4];
@@ -362,11 +401,13 @@ char *stbi_failure_reason(void)
    return failure_reason;
 }
 
+#if __MOJOSETUP__ && !defined(STBI_NO_FAILURE_STRINGS)
 static int e(char *str)
 {
    failure_reason = str;
    return 0;
 }
+#endif // __MOJOSETUP__
 
 #ifdef STBI_NO_FAILURE_STRINGS
    #define e(x,y)  0
@@ -425,26 +466,44 @@ unsigned char *stbi_load(char *filename, int *x, int *y, int *comp, int req_comp
 unsigned char *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
 {
    int i;
+
+   #ifndef STBI_NO_JPEG  // __MOJOSETUP__
    if (stbi_jpeg_test_file(f))
       return stbi_jpeg_load_from_file(f,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
+   #ifndef STBI_NO_PNG  // __MOJOSETUP__
    if (stbi_png_test_file(f))
       return stbi_png_load_from_file(f,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
+   #ifndef STBI_NO_BMP  // __MOJOSETUP__
    if (stbi_bmp_test_file(f))
       return stbi_bmp_load_from_file(f,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
+   #ifndef STBI_NO_PSD  // __MOJOSETUP__
    if (stbi_psd_test_file(f))
       return stbi_psd_load_from_file(f,x,y,comp,req_comp);
+   #endif // __MOJOSETUP__
+
    #ifndef STBI_NO_HDR
    if (stbi_hdr_test_file(f)) {
       float *hdr = stbi_hdr_load_from_file(f, x,y,comp,req_comp);
       return hdr_to_ldr(hdr, *x, *y, req_comp ? req_comp : *comp);
    }
    #endif
+
    for (i=0; i < max_loaders; ++i)
       if (loaders[i]->test_file(f))
          return loaders[i]->load_from_file(f,x,y,comp,req_comp);
+
+   #ifndef STBI_NO_TGA  // __MOJOSETUP__
    // test tga last because it's a crappy test!
    if (stbi_tga_test_file(f))
       return stbi_tga_load_from_file(f,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
    return epuc("unknown image type", "Image not of any known type, or corrupt");
 }
 #endif
@@ -452,26 +511,44 @@ unsigned char *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req_c
 unsigned char *stbi_load_from_memory(stbi_uc *buffer, int len, int *x, int *y, int *comp, int req_comp)
 {
    int i;
+
+   #ifndef STBI_NO_JPEG  // __MOJOSETUP__
    if (stbi_jpeg_test_memory(buffer,len))
       return stbi_jpeg_load_from_memory(buffer,len,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
+   #ifndef STBI_NO_PNG  // __MOJOSETUP__
    if (stbi_png_test_memory(buffer,len))
       return stbi_png_load_from_memory(buffer,len,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
+   #ifndef STBI_NO_BMP  // __MOJOSETUP__
    if (stbi_bmp_test_memory(buffer,len))
       return stbi_bmp_load_from_memory(buffer,len,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
+   #ifndef STBI_NO_PSD  // __MOJOSETUP__
    if (stbi_psd_test_memory(buffer,len))
       return stbi_psd_load_from_memory(buffer,len,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
    #ifndef STBI_NO_HDR
    if (stbi_hdr_test_memory(buffer, len)) {
       float *hdr = stbi_hdr_load_from_memory(buffer, len,x,y,comp,req_comp);
       return hdr_to_ldr(hdr, *x, *y, req_comp ? req_comp : *comp);
    }
    #endif
+
    for (i=0; i < max_loaders; ++i)
       if (loaders[i]->test_memory(buffer,len))
          return loaders[i]->load_from_memory(buffer,len,x,y,comp,req_comp);
+
+   #ifndef STBI_NO_TGA  // __MOJOSETUP__
    // test tga last because it's a crappy test!
    if (stbi_tga_test_memory(buffer,len))
       return stbi_tga_load_from_memory(buffer,len,x,y,comp,req_comp);
+   #endif  // __MOJOSETUP__
+
    return epuc("unknown image type", "Image not of any known type, or corrupt");
 }
 
@@ -788,6 +865,9 @@ static stbi_uc *hdr_to_ldr(float   *data, int x, int y, int comp)
    return output;
 }
 #endif
+
+
+#ifndef STBI_NO_JPEG  // __MOJOSETUP__
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1709,10 +1789,16 @@ int stbi_jpeg_test_file(FILE *f)
 }
 #endif
 
+#endif  // __MOJOSETUP__
+
 int stbi_jpeg_test_memory(unsigned char *buffer, int len)
 {
+#ifndef STBI_NO_JPEG  // __MOJOSETUP__
    start_mem(buffer,len);
    return decode_jpeg_header(SCAN_type);
+#else
+   return 0;
+#endif  // __MOJOSETUP__
 }
 
 // @TODO:
@@ -1721,6 +1807,9 @@ extern int      stbi_jpeg_info            (char *filename,           int *x, int
 extern int      stbi_jpeg_info_from_file  (FILE *f,                  int *x, int *y, int *comp);
 #endif
 extern int      stbi_jpeg_info_from_memory(stbi_uc *buffer, int len, int *x, int *y, int *comp);
+
+
+#ifndef STBI_NO_ZLIB  // __MOJOSETUP__
 
 // public domain zlib decode    v0.2  Sean Barrett 2006-11-18
 //    simple implementation
@@ -2130,6 +2219,11 @@ int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, char *ibuffer, int
       return -1;
 }
 
+#endif  // __MOJOSETUP__
+
+
+#ifndef STBI_NO_PNG  // __MOJOSETUP__
+
 // public domain "baseline" PNG decoder   v0.10  Sean Barrett 2006-11-18
 //    simple implementation
 //      - only 8-bit samples
@@ -2522,10 +2616,16 @@ int stbi_png_test_file(FILE *f)
 }
 #endif
 
+#endif  // __MOJOSETUP__
+
 int stbi_png_test_memory(unsigned char *buffer, int len)
 {
+#ifndef STBI_NO_PNG  // __MOJOSETUP__
    start_mem(buffer, len);
    return parse_png_file(SCAN_type,STBI_default);
+#else
+   return 0;
+#endif  // __MOJOSETUP__
 }
 
 // TODO: load header from png
@@ -2534,6 +2634,9 @@ extern int      stbi_png_info             (char *filename,           int *x, int
 extern int      stbi_png_info_from_file   (FILE *f,                  int *x, int *y, int *comp);
 #endif
 extern int      stbi_png_info_from_memory (stbi_uc *buffer, int len, int *x, int *y, int *comp);
+
+
+#ifndef STBI_NO_BMP  // __MOJOSETUP__
 
 // Microsoft/Windows BMP image
 
@@ -2562,11 +2665,21 @@ int      stbi_bmp_test_file        (FILE *f)
 }
 #endif
 
+#endif  // __MOJOSETUP__
+
+
 int      stbi_bmp_test_memory      (stbi_uc *buffer, int len)
 {
+#ifndef STBI_NO_BMP  // __MOJOSETUP__
    start_mem(buffer, len);
    return bmp_test();
+#else
+   return 0;
+#endif  // __MOJOSETUP__
 }
+
+
+#ifndef STBI_NO_BMP  // __MOJOSETUP__
 
 // returns 0..31 for the highest set bit
 static int high_bit(unsigned int z)
@@ -2825,6 +2938,12 @@ stbi_uc *stbi_bmp_load_from_memory (stbi_uc *buffer, int len, int *x, int *y, in
    return bmp_load(x,y,comp,req_comp);
 }
 
+#endif  // __MOJOSETUP__
+
+
+
+#ifndef STBI_NO_TGA  // __MOJOSETUP__
+
 // Targa Truevision - TGA
 // by Jonathan Dummer
 
@@ -2859,11 +2978,20 @@ int      stbi_tga_test_file        (FILE *f)
 }
 #endif
 
+#endif  // __MOJOSETUP__
+
+
 int      stbi_tga_test_memory      (stbi_uc *buffer, int len)
 {
+#ifndef STBI_NO_TGA  // __MOJOSETUP__
    start_mem(buffer, len);
    return tga_test();
+#else
+   return 0;
+#endif  // __MOJOSETUP__
 }
+
+#ifndef STBI_NO_TGA  // __MOJOSETUP__
 
 static stbi_uc *tga_load(int *x, int *y, int *comp, int req_comp)
 {
@@ -3107,6 +3235,10 @@ stbi_uc *stbi_tga_load_from_memory (stbi_uc *buffer, int len, int *x, int *y, in
    return tga_load(x,y,comp,req_comp);
 }
 
+#endif  // __MOJOSETUP__
+
+
+#ifndef STBI_NO_PSD  // __MOJOSETUP__
 
 // *************************************************************************************************
 // Photoshop PSD loader -- PD by Thatcher Ulrich, integration by Nicholas Schulz, tweaked by STB
@@ -3128,11 +3260,21 @@ int stbi_psd_test_file(FILE *f)
 }
 #endif
 
+#endif  // __MOJOSETUP__
+
+
 int stbi_psd_test_memory(stbi_uc *buffer, int len)
 {
+#ifndef STBI_NO_PSD  // __MOJOSETUP__
    start_mem(buffer, len);
    return psd_test();
+#else
+   return 0;
+#endif  // __MOJOSETUP__
 }
+
+
+#ifndef STBI_NO_PSD  // __MOJOSETUP__
 
 static stbi_uc *psd_load(int *x, int *y, int *comp, int req_comp)
 {
@@ -3315,6 +3457,8 @@ stbi_uc *stbi_psd_load_from_memory (stbi_uc *buffer, int len, int *x, int *y, in
    start_mem(buffer, len);
    return psd_load(x,y,comp,req_comp);
 }
+
+#endif  // __MOJOSETUP__
 
 
 // *************************************************************************************************
@@ -3627,3 +3771,23 @@ int stbi_write_tga(char *filename, int x, int y, int comp, void *data)
 //    TIFF: no, stripwise-interleaved... i think
 
 #endif // STBI_NO_WRITE
+
+#if __MOJOSETUP__
+void stb_image_stop_compiler_whining(void)
+{
+    // a lot of these aren't used if you #ifdef out all graphic formats,
+    //  which you might do if, say, you are shipping a stdio-only installer.
+    // Just put references to them here so the compiler doesn't think they
+    //  are unused statics.
+    (void) img_n;
+    (void) start_mem;
+    (void) at_eof;
+    (void) get8u;
+    (void) skip;
+    (void) get32;
+    (void) get32le;
+    (void) getn;
+    (void) convert_format;
+}
+#endif
+
