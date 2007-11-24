@@ -659,7 +659,7 @@ static int img_n, img_out_n;
 
 #if __MOJOSETUP__  // moved here from elsewhere for #ifdef safety.
 static uint8 *idata, *expanded, *out;
-static unsigned long  code_buffer; // jpeg entropy-coded buffer
+static uint32 code_buffer; // jpeg entropy-coded buffer
 #endif
 
 enum
