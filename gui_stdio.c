@@ -41,6 +41,10 @@ static int read_stdin(char *buf, int len)
 static int readstr(const char *prompt, char *buf, int len,
                    boolean back, boolean fwd)
 {
+    // !!! FIXME: if read_stdin() returns -1, we return 0, which makes it
+    // !!! FIXME:  indistinguishable from "user hit enter" ... maybe we should
+    // !!! FIXME:  abort in read_stdin() if i/o fails?
+
     int retval = 0;
     const char *backstr = NULL;
 
@@ -65,13 +69,13 @@ static int readstr(const char *prompt, char *buf, int len,
 
     if ((retval = read_stdin(buf, len)) >= 0)
     {
-        if ((back) && (strcmp(buf, backstr) == 0))
+        if ((back) && (strcmp(buf, backstr) == 0))  // !!! FIXME: utf8casecmp?
             retval = -1;
     } // if
 
     free((void *) backstr);
     return retval;
-} // print_prompt
+} // readstr
 
 
 static uint8 MojoGui_stdio_priority(boolean istty)
@@ -119,25 +123,37 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
     boolean retval = false;
     if (!feof(stdin))
     {
+        const char *fmt = ((defval) ? "%s\n[Y/n]: " : "%s\n[y/N]: ");
+        const char *localized_fmt = entry->xstrdup(entry->_(fmt));
         const char *localized_no = entry->xstrdup(entry->_("N"));
         const char *localized_yes = entry->xstrdup(entry->_("Y"));
         boolean getout = false;
         char buf[128];
+
         while (!getout)
         {
-            // !!! FIXME:
-            // We currently ignore defval and make you type out your choice.
-            printf(entry->_("%s\n[y/n]: "), text);
+            int rc = 0;
+
+            getout = true;  // we may reset this later.
+            printf(localized_fmt, text);
             fflush(stdout);
-            if (read_stdin(buf, sizeof (buf)) < 0)
-                getout = true;
+            rc = read_stdin(buf, sizeof (buf));
+
+            if (rc < 0)
+                retval = false;
+            else if (rc == 0)
+                retval = defval;
             else if (strcasecmp(buf, localized_no) == 0)
-                getout = true;
+                retval = false;
             else if (strcasecmp(buf, localized_yes) == 0)
-                retval = getout = true;
+                retval = true;
+            else
+                getout = false;  // try again.
         } // while
-        free((void *) localized_no);
+
         free((void *) localized_yes);
+        free((void *) localized_no);
+        free((void *) localized_fmt);
     } // if
 
     return retval;
@@ -150,42 +166,44 @@ static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt,
     MojoGuiYNAN retval = MOJOGUI_NO;
     if (!feof(stdin))
     {
+        const char *localized_fmt = entry->_("%s\n[y/n/Always/Never]: ");
         const char *localized_no = entry->xstrdup(entry->_("N"));
         const char *localized_yes = entry->xstrdup(entry->_("Y"));
         const char *localized_always = entry->xstrdup(entry->_("Always"));
         const char *localized_never = entry->xstrdup(entry->_("Never"));
         boolean getout = false;
         char buf[128];
+
         while (!getout)
         {
-            // !!! FIXME:
-            // We currently ignore defval and make you type out your choice.
-            printf(entry->_("%s\n[y/n/Always/Never]: "), txt);
+            int rc = 0;
+
+            getout = true;  // we may reset this later.
+            printf(localized_fmt, txt);
             fflush(stdout);
-            if (read_stdin(buf, sizeof (buf)) < 0)
-                getout = true;
+            rc = read_stdin(buf, sizeof (buf));
+
+            if (rc < 0)
+                retval = MOJOGUI_NO;
+            else if (rc == 0)
+                retval = (defval) ? MOJOGUI_YES : MOJOGUI_NO;
             else if (strcasecmp(buf, localized_no) == 0)
-                getout = true;
+                retval = MOJOGUI_NO;
             else if (strcasecmp(buf, localized_yes) == 0)
-            {
                 retval = MOJOGUI_YES;
-                getout = true;
-            } // else if
             else if (strcasecmp(buf, localized_always) == 0)
-            {
                 retval = MOJOGUI_ALWAYS;
-                getout = true;
-            } // else if
             else if (strcasecmp(buf, localized_never) == 0)
-            {
                 retval = MOJOGUI_NEVER;
-                getout = true;
-            } // else if
+            else
+                getout = false;  // try again.
         } // while
-        free((void *) localized_no);
-        free((void *) localized_yes);
-        free((void *) localized_always);
+
         free((void *) localized_never);
+        free((void *) localized_always);
+        free((void *) localized_yes);
+        free((void *) localized_no);
+        free((void *) localized_fmt);
     } // if
 
     return retval;
@@ -206,26 +224,174 @@ static void MojoGui_stdio_stop(void)
 } // MojoGui_stdio_stop
 
 
-static int MojoGui_stdio_readme(const char *name, const uint8 *data,
-                                    size_t datalen, boolean can_back,
-                                    boolean can_fwd)
+// !!! FIXME: cut and pasted in gui_ncurses.c, too...fix bugs in both copies!
+// !!! FIXME:  (or move this somewhere else...)
+// !!! FIXME: this is not really Unicode friendly...
+static char **splitText(const char *_text, int *_count, int *_w)
 {
-    boolean getout = false;
-    int retval = -1;
-    int len = 0;
-    char buf[128];
+    char *ptr = entry->xstrdup(_text);
+    char *text = ptr;
+    int i;
+    int scrw = 80;
+    char **retval = NULL;
+    int count = 0;
+    int w = 0;
 
-    while (!getout)
+    *_count = *_w = 0;
+    while (*text)
     {
-        printf("%s\n%s\n", name, (const char *) data);
-        if ((len = readstr(NULL, buf, sizeof (buf), can_back, true)) < 0)
-            getout = true;
-        else if (len == 0)
+        int pos = 0;
+        int furthest = 0;
+
+        for (i = 0; (text[i]) && (i < (scrw-4)); i++)
         {
-            getout = true;
-            retval = 1;
-        } // else if
+            const int ch = text[i];
+            if ((ch == '\r') || (ch == '\n'))
+            {
+                count++;
+                retval = (char **) entry->xrealloc(retval,
+                                                   count * sizeof (char *));
+                text[i] = '\0';
+                retval[count-1] = entry->xstrdup(text);
+                text += i;
+                *text = ch;
+                if ((ch == '\r') && (text[1] == '\n'))
+                    text++;
+                text++;
+
+                if (i > w)
+                    w = i;
+                i = -1;  // will be zero on next iteration...
+            } // if
+            else if (isspace(ch))
+            {
+                furthest = i;
+            } // else if
+        } // for
+
+        // line overflow or end of stream...
+        pos = (text[i]) ? furthest : i;
+        if ((text[i]) && (furthest == 0))  // uhoh, no split at all...hack it.
+        {
+            // !!! FIXME: might be chopping in the middle of a UTF-8 seq.
+            pos = strlen(text);
+            if (pos > scrw-4)
+                pos = scrw-4;
+        } // if
+
+        if (pos > 0)
+        {
+            char ch = text[pos];
+            count++;
+            retval = (char **) entry->xrealloc(retval, count * sizeof (char*));
+            text[pos] = '\0';
+            retval[count-1] = entry->xstrdup(text);
+            text += pos;
+            *text = ch;
+            if (pos > w)
+                w = pos;
+        } // if
     } // while
+
+    free(ptr);
+    *_count = count;
+    *_w = w;
+    return retval;
+} // splitText
+
+
+static void dumb_pager(const char *name, const char *data, size_t datalen)
+{
+    const int MAX_PAGE_LINES = 21;
+    char buf[256];
+    const char *_fmt = entry->_("(%d-%d of %d lines, see more?)"); // !!! FIXME: localization
+    char *fmt = entry->xstrdup(_fmt);
+    int i = 0;
+    int w = 0;
+    int linecount = 0;
+    boolean getout = false;
+    char **lines = splitText(data, &linecount, &w);
+
+    assert(linecount >= 0);
+
+    printf("%s\n", name);
+
+    if (lines == NULL)  // failed to parse?!
+        printf("%s\n", data);  // just dump it all. Oh well.
+    else
+    {
+        int printed = 0;
+        do
+        {
+            for (i = 0; (i < MAX_PAGE_LINES) && (printed < linecount); i++)
+                printf("%s\n", lines[printed++]);
+
+            if (printed >= linecount)
+                getout = true;
+            else
+            {
+                printf("\n");
+                snprintf(buf, sizeof (buf), fmt,
+                         (printed-i)+1, printed, linecount);
+                getout = !MojoGui_stdio_promptyn("", buf, true);
+                printf("\n");
+            } // else
+        } while (!getout);
+    } // while
+
+    for (i = 0; i < linecount; i++)
+        free(lines[i]);
+    free(lines);
+    free(fmt);
+} // dumb_pager
+
+
+static int MojoGui_stdio_readme(const char *name, const uint8 *_data,
+                                size_t datalen, boolean can_back,
+                                boolean can_fwd)
+{
+    const char *data = (const char *) _data;
+    char buf[256];
+    int retval = -1;
+    boolean failed = true;
+
+    #if PLATFORM_UNIX
+    const size_t namelen = strlen(name);
+    const char *programs[] = { getenv("PAGER"), "more", "less -M", "less" };
+    int i = 0;
+
+    // flush streams, so output doesn't mingle with the popen()'d process.
+    fflush(stdout);
+    fflush(stderr);
+
+    for (i = 0; i < STATICARRAYLEN(programs); i++)
+    {
+        const char *cmd = programs[i];
+        if (cmd != NULL)
+        {
+            FILE *io = popen(cmd, "w");
+            if (io != NULL)
+            {
+                failed = false;
+                if (!failed) failed = (fwrite("\n", 1, 1, io) != 1);
+                if (!failed) failed = (fwrite(name, namelen, 1, io) != 1);
+                if (!failed) failed = (fwrite("\n", 1, 1, io) != 1);
+                if (!failed) failed = (fwrite(data, datalen, 1, io) != 1);
+                if (!failed) failed = (fwrite("\n", 1, 1, io) != 1);
+                failed |= (pclose(io) != 0);  // call whether we failed or not.
+                if (!failed)
+                    break;  // it worked, we're done!
+            } // if
+        } // if
+    } // for
+    #endif // PLATFORM_UNIX
+
+    if (failed)  // We're not Unix, or none of the pagers worked?
+        dumb_pager(name, data, datalen);
+
+    // Put up the "hit enter to continue (or 'back' to go back)" prompt.
+    if (readstr(NULL, buf, sizeof (buf), can_back, true) >= 0)
+        retval = 1;
 
     return retval;
 } // MojoGui_stdio_readme

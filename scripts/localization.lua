@@ -45,8 +45,12 @@ MojoSetup.localization = {
     ["NOTICE: %s\n[hit enter]"] = {
     };
 
-    -- stdio GUI plugin says this for yes/no prompts (printf format string).
-    ["%s\n[y/n]"] = {
+    -- stdio GUI plugin says this for yes/no prompts that default to yes (printf format string).
+    ["%s\n[Y/n]: "] = {
+    };
+
+    -- stdio GUI plugin says this for yes/no prompts that default to no (printf format string).
+    ["%s\n[y/N]: "] = {
     };
 
     -- stdio GUI plugin says this for yes/no/always/never prompts (printf format string).
@@ -59,6 +63,10 @@ MojoSetup.localization = {
 
     -- This is utf8casecmp()'d for "no" answers in stdio GUI's promptyn().
     ["N"] = {
+    };
+
+    -- This is shown when using stdio GUI's built-in README pager (printf format).
+    ["(Viewing %d-%d of %d lines, see more?)"] = {
     };
 
     -- This is utf8casecmp()'d for "always" answers in stdio GUI's promptyn().
