@@ -988,7 +988,13 @@ local function do_install(install)
 
 
     -- Now make all this happen.
-    if not MojoSetup.gui.start(install.description, 'meta/' .. install.splash) then
+
+    local splashfname = install.splash
+    if splashfname ~= nil then
+        splashfname = 'meta/' .. splashfname
+    end
+
+    if not MojoSetup.gui.start(install.description, splashfname) then
         MojoSetup.fatal(_("GUI failed to start"))
     end
 
