@@ -86,6 +86,8 @@ static char *title = NULL;
 static MojoBox *progressBox = NULL;
 
 
+// !!! FIXME: cut and pasted in gui_stdio.c, too...fix bugs in both copies!
+// !!! FIXME:  (or move this somewhere else...)
 // !!! FIXME: this is not really Unicode friendly...
 static char **splitText(char *text, int *_count, int *_w)
 {
