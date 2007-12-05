@@ -355,7 +355,8 @@ static int MojoGui_stdio_readme(const char *name, const uint8 *_data,
     int retval = -1;
     boolean failed = true;
 
-    #if PLATFORM_UNIX
+    // !!! FIXME: popen() isn't reliable.
+    #if 0  //PLATFORM_UNIX
     const size_t namelen = strlen(name);
     const char *programs[] = { getenv("PAGER"), "more", "less -M", "less" };
     int i = 0;
