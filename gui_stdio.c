@@ -390,8 +390,9 @@ static int MojoGui_stdio_readme(const char *name, const uint8 *_data,
     if (failed)  // We're not Unix, or none of the pagers worked?
         dumb_pager(name, data, datalen);
 
-    // Put up the "hit enter to continue (or 'back' to go back)" prompt.
-    if (readstr(NULL, buf, sizeof (buf), can_back, true) >= 0)
+    // Put up the "hit enter to continue (or 'back' to go back)" prompt,
+    //  but only if there's an choice to be made here.
+    if ((!can_back) || (readstr(NULL, buf, sizeof (buf), can_back, true) >= 0))
         retval = 1;
 
     return retval;
