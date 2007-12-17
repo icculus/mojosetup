@@ -4,6 +4,14 @@
 #  example, but invest effort in what it's trying to do, and what it produces.
 #  (make sure you don't build in features you don't need, etc).
 
+if [ ! -d data/Binaries ]; then
+    echo "We don't see data/Binaries ..."
+    echo " Either you're in the wrong directory, or you didn't copy the"
+    echo " install data into here (it's unreasonably big to store it in"
+    echo " Subversion for no good reason)."
+    exit 1
+fi
+
 # Stop if anything produces an error.
 set -e
 
