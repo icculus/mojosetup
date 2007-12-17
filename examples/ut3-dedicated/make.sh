@@ -30,6 +30,8 @@ fi
 
 # this is a little nasty, but it works!
 TOTALINSTALL=`du -sb data |perl -w -pi -e 's/\A(\d+)\s+data\Z/$1/;'`
+TOTALINSTALLSVN=`du -sb data/.svn |perl -w -pi -e 's/\A(\d+)\s+data\/\.svn\Z/$1/;'`
+let TOTALINSTALL=$TOTALINSTALL-$TOTALINSTALLSVN
 perl -w -pi -e "s/\A\s*(local TOTAL_INSTALL_SIZE)\s*\=\s*\d+\s*;\s*\Z/\$1 = $TOTALINSTALL;\n/;" scripts/config.lua
 
 # Clean up previous run, build fresh dirs for Base Archive.
