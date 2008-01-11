@@ -125,6 +125,8 @@ void MojoSetup_terminated(void);
 void warn(const char *fmt, ...) ISPRINTF(1,2);
 
 // Malloc replacements that blow up on allocation failure.
+// Please note that xmalloc() will zero the newly-allocated memory buffer,
+//  like calloc() would, but xrealloc() makes no such promise!
 void *xmalloc(size_t bytes);
 void *xrealloc(void *ptr, size_t bytes);
 char *xstrdup(const char *str);
