@@ -1115,6 +1115,11 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
         lua_getfield(L, -1, "description");
         newopt->description = xstrdup(lua_tostring(L, -1));
         lua_pop(L, 1);
+    
+        lua_getfield(L, -1, "tooltip");
+        if (!lua_isnil(L, -1))
+            newopt->tooltip = xstrdup(lua_tostring(L, -1));
+        lua_pop(L, 1);
 
         if (!is_option_group)
         {
@@ -1134,6 +1139,7 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
         if ((is_option_group) && (!newopt->child))  // skip empty groups.
         {
             free((void *) newopt->description);
+            free((void *) newopt->tooltip);
             free(newopt);
             newopt = NULL;
         } // if
@@ -1249,6 +1255,7 @@ static void done_gui_options(lua_State *L, GuiOptions *opts)
         } // if
 
         free((void *) opts->description);
+        free((void *) opts->tooltip);
         free(opts);
     } // if
 } // done_gui_options

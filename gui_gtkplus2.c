@@ -611,6 +611,7 @@ static void build_options(MojoGuiSetupOptions *opts, GtkWidget *box,
     if (opts != NULL)
     {
         GtkWidget *widget;
+
         if (opts->is_group_parent)
         {
             MojoGuiSetupOptions *kids = opts->child;
@@ -661,6 +662,13 @@ static void build_options(MojoGuiSetupOptions *opts, GtkWidget *box,
             gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
             gtk_signal_connect(GTK_OBJECT(widget), "toggled",
                                GTK_SIGNAL_FUNC(signal_option_toggled), opts);
+
+            if (opts->tooltip != NULL)
+            {
+                GtkTooltips *tip = gtk_tooltips_new();
+                gtk_tooltips_set_tip(tip, widget, opts->tooltip, NULL);
+            } // if
+
             if (opts->child != NULL)
             {
                 build_options(opts->child, new_option_level(box),

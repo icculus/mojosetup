@@ -431,6 +431,7 @@ function Setup.Option(tab)
         { "disabled", false, mustBeBool },
         { "bytes", nil, mustExist, mustBeNumber },
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
+        { "tooltip", nil, mustBeString, cantBeEmpty },
     })
 end
 

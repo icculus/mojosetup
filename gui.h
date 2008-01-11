@@ -45,6 +45,7 @@ typedef struct MojoGuiSetupOptions MojoGuiSetupOptions;
 struct MojoGuiSetupOptions
 {
     const char *description;
+    const char *tooltip;
     boolean value;
     boolean is_group_parent;
     uint64 size;
