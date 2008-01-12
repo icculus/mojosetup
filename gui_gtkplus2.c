@@ -704,7 +704,6 @@ static int MojoGui_gtkplus2_options(MojoGuiSetupOptions *opts,
                                     boolean can_back, boolean can_fwd)
 {
     int retval;
-    GtkWidget *widget;
     GtkWidget *box;
     GtkWidget *page;  // this is a vbox.
 
@@ -712,12 +711,6 @@ static int MojoGui_gtkplus2_options(MojoGuiSetupOptions *opts,
     box = gtk_vbox_new(FALSE, 0);
     gtk_widget_show(box);
     gtk_box_pack_start(GTK_BOX(page), box, FALSE, FALSE, 0);
-
-    widget = gtk_label_new("!!! FIXME: this GUI stage is a placeholder");
-    gtk_widget_show(widget);
-    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
-    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
-    gtk_label_set_line_wrap(GTK_LABEL(widget), TRUE);
 
     build_options(opts, box, TRUE);
 
