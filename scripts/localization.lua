@@ -260,9 +260,6 @@ MojoSetup.localization = {
     ["N_ever"] = {
     };
 
-    ["Never"] = {
-    };
-
     ["Next"] = {
     };
 
