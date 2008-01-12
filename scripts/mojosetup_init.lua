@@ -440,6 +440,7 @@ function Setup.OptionGroup(tab)
     {
         { "disabled", nil, mustBeBool },
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
+        { "tooltip", nil, mustBeString, cantBeEmpty },
     })
 end
 

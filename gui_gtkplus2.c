@@ -605,12 +605,27 @@ static GtkWidget *new_option_level(GtkWidget *box)
 } // new_option_level
 
 
+// use this to generate a tooltip only as needed.
+static GtkTooltips *get_tip(GtkTooltips **_tip)
+{
+    if (*_tip == NULL)
+    {
+        GtkTooltips *tip = gtk_tooltips_new();
+        gtk_tooltips_enable(tip);
+        *_tip = tip;
+    } // if
+
+    return *_tip;
+} // get_tip
+
+
 static void build_options(MojoGuiSetupOptions *opts, GtkWidget *box,
                           gboolean sensitive)
 {
     if (opts != NULL)
     {
-        GtkWidget *widget;
+        GtkTooltips *tip = NULL;
+        GtkWidget *widget = NULL;
 
         if (opts->is_group_parent)
         {
@@ -627,6 +642,9 @@ static void build_options(MojoGuiSetupOptions *opts, GtkWidget *box,
             gtk_container_add(GTK_CONTAINER(alignment), widget);
             gtk_box_pack_start(GTK_BOX(box), alignment, FALSE, TRUE, 0);
 
+            if (opts->tooltip != NULL)
+                gtk_tooltips_set_tip(get_tip(&tip), widget, opts->tooltip, 0);
+
             widget = NULL;
             childbox = new_option_level(box);
             while (kids)
@@ -642,6 +660,10 @@ static void build_options(MojoGuiSetupOptions *opts, GtkWidget *box,
                 gtk_box_pack_start(GTK_BOX(childbox), widget, FALSE, TRUE, 0);
                 gtk_signal_connect(GTK_OBJECT(widget), "toggled",
                                  GTK_SIGNAL_FUNC(signal_option_toggled), kids);
+
+                if (kids->tooltip != NULL)
+                    gtk_tooltips_set_tip(get_tip(&tip),widget,kids->tooltip,0);
+
                 if (kids->child != NULL)
                 {
                     build_options(kids->child, new_option_level(childbox),
@@ -664,10 +686,7 @@ static void build_options(MojoGuiSetupOptions *opts, GtkWidget *box,
                                GTK_SIGNAL_FUNC(signal_option_toggled), opts);
 
             if (opts->tooltip != NULL)
-            {
-                GtkTooltips *tip = gtk_tooltips_new();
-                gtk_tooltips_set_tip(tip, widget, opts->tooltip, NULL);
-            } // if
+                gtk_tooltips_set_tip(get_tip(&tip), widget, opts->tooltip, 0);
 
             if (opts->child != NULL)
             {

@@ -50,6 +50,9 @@ Setup.Package
     {
         description = _("Installation type"),
 
+        -- This is a kind of useless tooltip; I'm just using it for testing.
+        tooltip = _("Pick your installation type"),
+
         Setup.Option
         {
             value = true,
@@ -57,6 +60,7 @@ Setup.Package
             disabled = false,
             bytes = 31102768,
             description = _("Install Shareware version"),
+            tooltip = _("This does not need a retail copy of the game. It's free!"),
 
             Setup.File
             {
@@ -83,6 +87,7 @@ Setup.Package
             disabled = false,
             bytes = 64525364,
             description = _("Install full game from Atomic Edition disc"),
+            tooltip = _("Pick this if you have a retail game disc from 3DRealms."),
 
             Setup.File
             {
