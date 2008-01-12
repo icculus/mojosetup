@@ -17,6 +17,17 @@
 -- You should leave the existing strings here. They aren't hurting anything,
 --  and most are used by MojoSetup itself. Add your own, though.
 --
+-- Whenever you see a %x sequence, that is replaced with a string at runtime.
+--  So if you see, ["Hello, %0, my name is %1."], then this might become
+--  "Hello, Alice, my name is Bob." at runtime. If your culture would find
+--  introducing yourself second to be rude, you might translate this to:
+--  "My name is %1, hello %0." If you need a literal '%' char, write "%%":
+--  "Operation is %0%% complete" might give "Operation is 3% complete."
+--  All strings, from your locale or otherwise, are checked for formatter
+--  correctness at startup. This is to prevent the installer working fine
+--  in all reasonable tests, then finding out that one guy in Ghana has a
+--  crashing installer because his localization forgot to add a %1 somewhere.
+--
 -- The table you create here goes away shortly after creation, as the relevant
 --  parts of it get moved somewhere else. You should call MojoSetup.translate()
 --  to get the proper translation for a given string.
@@ -42,19 +53,19 @@ MojoSetup.localization = {
     };
 
     -- stdio GUI plugin says this for msgboxes (printf format string).
-    ["NOTICE: %s\n[hit enter]"] = {
+    ["NOTICE: %1\n[hit enter]"] = {
     };
 
     -- stdio GUI plugin says this for yes/no prompts that default to yes (printf format string).
-    ["%s\n[Y/n]: "] = {
+    ["%1\n[Y/n]: "] = {
     };
 
     -- stdio GUI plugin says this for yes/no prompts that default to no (printf format string).
-    ["%s\n[y/N]: "] = {
+    ["%1\n[y/N]: "] = {
     };
 
     -- stdio GUI plugin says this for yes/no/always/never prompts (printf format string).
-    ["%s\n[y/n/Always/Never]: "] = {
+    ["%1\n[y/n/Always/Never]: "] = {
     };
 
     -- This is utf8casecmp()'d for "yes" answers in stdio GUI's promptyn().
@@ -66,7 +77,7 @@ MojoSetup.localization = {
     };
 
     -- This is shown when using stdio GUI's built-in README pager (printf format).
-    ["(Viewing %d-%d of %d lines, see more?)"] = {
+    ["(Viewing %1-%2 of %3 lines, see more?)"] = {
     };
 
     -- This is utf8casecmp()'d for "always" answers in stdio GUI's promptyn().
@@ -95,10 +106,10 @@ MojoSetup.localization = {
     ["Choose number to change."] = {
     };
 
-    ["Type '%s' to go back."] = {
+    ["Type '%1' to go back."] = {
     };
 
-    -- This is the string used for the '%s' in the above string.
+    -- This is the string used for the '%1' in the above string.
     ["back"] = {
     };
 
@@ -142,10 +153,10 @@ MojoSetup.localization = {
     ["You must accept the license before you may install"] = {
     };
 
-    ["failed to load file '%s'"] = {
+    ["failed to load file '%1'"] = {
     };
 
-    ["Please insert '%s'"] = {
+    ["Please insert '%1'"] = {
     };
 
     ["(I want to specify a path.)"] = {
@@ -160,6 +171,9 @@ MojoSetup.localization = {
     };
 
     ["Setup program is shutting down. You can close this browser now."] = {
+    };
+
+    ["No networking support in this build."] = {
     };
 };
 

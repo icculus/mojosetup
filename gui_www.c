@@ -52,18 +52,19 @@ CREATE_MOJOGUI_ENTRY_POINT(www)
         int rc = WSAStartup(MAKEWORD(1, 1), &data);
         if (rc != 0)
         {
-            entry->logError("www: WSAStartup() failed: %s", sockStrErrVal(rc));
+            entry->logError("www: WSAStartup() failed: %0", sockStrErrVal(rc));
             return false;
         } // if
 
-        entry->logInfo("www: WinSock initialized (want %d.%d, got %d.%d).",
-                         (int) (LOBYTE(data.wVersion)),
-                         (int) (HIBYTE(data.wVersion)),
-                         (int) (LOBYTE(data.wHighVersion)),
-                         (int) (HIBYTE(data.wHighVersion)));
-        entry->logInfo("www: WinSock description: %s", data.szDescription);
-        entry->logInfo("www: WinSock system status: %s", data.szSystemStatus);
-        entry->logInfo("www: WinSock max sockets: %s", (int) data.iMaxSockets);
+        entry->logInfo("www: WinSock initialized (want %0.%1, got %2.%3).",
+                        entry->numstr((int) (LOBYTE(data.wVersion))),
+                        entry->numstr((int) (HIBYTE(data.wVersion))),
+                        entry->numstr((int) (LOBYTE(data.wHighVersion))),
+                        entry->numstr((int) (HIBYTE(data.wHighVersion))));
+        entry->logInfo("www: WinSock description: %0", data.szDescription);
+        entry->logInfo("www: WinSock system status: %0", data.szSystemStatus);
+        entry->logInfo("www: WinSock max sockets: %0",
+                        entry->numstr((int) data.iMaxSockets));
 
         return true;
     } // initSocketSupport
@@ -158,7 +159,7 @@ static void addWebRequest(const char *key, const char *val)
         req->value = entry->xstrdup(val);
         req->next = webRequest;
         webRequest = req;
-        entry->logDebug("www: request element '%s' = '%s'", key, val);
+        entry->logDebug("www: request element '%0' = '%1'", key, val);
     } // if
 } // addWebRequest
 
@@ -308,7 +309,7 @@ static void sendStringAndDrop(SOCKET *_s, const char *str)
             const int err = sockErrno();
             if (!intrError(err))
             {
-                entry->logError("www: send() failed: %s", sockStrErrVal(err));
+                entry->logError("www: send() failed: %0", sockStrErrVal(err));
                 break;
             } // if
         } // else
@@ -456,7 +457,7 @@ static WebRequest *servePage(boolean blocking)
             assert(!blocking);
         else
         {
-            entry->logError("www: accept() failed: %s", sockStrErrVal(err));
+            entry->logError("www: accept() failed: %0", sockStrErrVal(err));
             closesocket(listenSocket);  // make all future i/o fail too.
             listenSocket = INVALID_SOCKET;
         } // else
@@ -474,7 +475,7 @@ static WebRequest *servePage(boolean blocking)
             const int err = sockErrno();
             if (!intrError(err))  // just try again on interrupt.
             {
-                entry->logError("www: recv() failed: %s", sockStrErrVal(err));
+                entry->logError("www: recv() failed: %0", sockStrErrVal(err));
                 FREE_AND_NULL(reqstr);
                 closesocket(s);
                 s = INVALID_SOCKET;
@@ -519,7 +520,7 @@ static WebRequest *servePage(boolean blocking)
             memmove(reqstr, ptr, len+1);
         } // else
 
-        entry->logDebug("www: request '%s'", get);
+        entry->logDebug("www: request '%0'", get);
 
         // okay, now (get) and (reqptr) are separate strings.
         // These parse*() functions update (webRequest).
@@ -554,7 +555,7 @@ static SOCKET create_listen_socket(short portnum)
 
     s = socket(PF_INET, SOCK_STREAM, protocol);
     if (s == INVALID_SOCKET)
-        entry->logInfo("www: socket() failed ('%s')", sockStrError());
+        entry->logInfo("www: socket() failed ('%0')", sockStrError());
     else
     {
         boolean success = false;
@@ -572,12 +573,13 @@ static SOCKET create_listen_socket(short portnum)
         #endif
 
         if (bind(s, (struct sockaddr *) &addr, sizeof (addr)) == SOCKET_ERROR)
-            entry->logError("www: bind() failed ('%s')", sockStrError());
+            entry->logError("www: bind() failed ('%0')", sockStrError());
         else if (listen(s, 5) == SOCKET_ERROR)
-            entry->logError("www: listen() failed ('%s')", sockStrError());
+            entry->logError("www: listen() failed ('%0')", sockStrError());
         else
         {
-            entry->logInfo("www: socket created on port %d", (int) portnum);
+            entry->logInfo("www: socket created on port %0",
+                           entry->numstr(portnum));
             success = true;
         } // else
 
@@ -987,10 +989,12 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
             htmlescape(entry->_("OK")),
     };
 
-    // !!! FIXME: better text.
     char *title = entry->xstrdup(entry->_("Media change"));
-    // !!! FIXME: better text.
-    strAdd(&text, &len, &alloc, entry->_("Please insert '%s'"), medianame);
+    char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
+    char *msg = entry->format(fmt, medianame);
+    strAdd(&text, &len, &alloc, msg);
+    free(msg);
+    free(fmt);
 
     htmltext = htmlescape(text);
     free(text);

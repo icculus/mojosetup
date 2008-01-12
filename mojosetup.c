@@ -33,6 +33,8 @@ MojoSetupEntryPoints GEntryPoints =
     logError,
     logInfo,
     logDebug,
+    format,
+    numstr,
     MojoPlatform_ticks,
 };
 
@@ -74,7 +76,7 @@ static void trySwitchBinary(MojoArchive *ar)
         io->close(io);
         if (br == imglen)
         {
-            logInfo("Switching binary with '%s'...", ar->prevEnum.filename);
+            logInfo("Switching binary with '%0'...", ar->prevEnum.filename);
             MojoPlatform_switchBin(img, imglen);  // no return on success.
             logError("...Switch binary failed.");
         } // if
@@ -329,6 +331,104 @@ boolean wildcardMatch(const char *str, const char *pattern)
 } // wildcardMatch
 
 
+const char *numstr(int val)
+{
+    static int pos = 0;
+    char *ptr = ((char *) scratchbuf_128k) + (pos * 128);
+    snprintf(ptr, 128, "%d", val);
+    pos = (pos + 1) % 1000;
+    return ptr;
+} // numstr
+
+
+static char *format_internal(const char *fmt, va_list ap)
+{
+    // This is kinda nasty. String manipulation in C always is.
+    char *retval = NULL;
+    const char *strs[10];  // 0 through 9.
+    const char *ptr = NULL;
+    char *wptr = NULL;
+    size_t len = 0;
+    int maxfmtid = -2;
+    int i;
+
+    // figure out what this format string contains...
+    for (ptr = fmt; *ptr; ptr++)
+    {
+        if (*ptr == '%')
+        {
+            const char ch = *(++ptr);
+            if (ch == '%')  // a literal '%'
+                maxfmtid = (maxfmtid == -2) ? -1 : maxfmtid;
+            else if ((ch >= '0') && (ch <= '9'))
+                maxfmtid = ((maxfmtid > (ch - '0')) ? maxfmtid : (ch - '0'));
+            else
+                fatal(_("BUG: Invalid format() string"));
+        } // if
+    } // while
+
+    if (maxfmtid == -2)  // no formatters present at all.
+        return xstrdup(fmt);  // just copy it, we're done.
+
+    for (i = 0; i <= maxfmtid; i++)  // referenced varargs --> linear array.
+    {
+        strs[i] = va_arg(ap, const char *);
+        if (strs[i] == NULL)
+            strs[i] = "(null)";  // just to match sprintf() behaviour...
+    } // for
+
+    // allocate the string we'll need in one shot, so we don't have to resize.
+    for (ptr = fmt; *ptr; ptr++)
+    {
+        if (*ptr != '%')
+            len++;
+        else
+        {
+            const char ch = *(++ptr);
+            if (ch == '%')  // a literal '%'
+                len++;  // just want '%' char.
+            else //if ((ch >= '0') && (ch <= '9'))
+                len += strlen(strs[ch - '0']);
+        } // else
+    } // while
+
+    // Now write the formatted string...
+    wptr = retval = (char *) xmalloc(len+1);
+    for (ptr = fmt; *ptr; ptr++)
+    {
+        const char strch = *ptr;
+        if (strch != '%')
+            *(wptr++) = strch;
+        else
+        {
+            const char ch = *(++ptr);
+            if (ch == '%')  // a literal '%'
+                *(wptr++) = '%';
+            else //if ((ch >= '0') && (ch <= '9'))
+            {
+                const char *str = strs[ch - '0'];
+                strcpy(wptr, str);
+                wptr += strlen(str);
+            } // else
+        } // else
+    } // while
+    *wptr = '\0';
+
+    return retval;
+} // format_internal
+
+
+char *format(const char *fmt, ...)
+{
+    char *retval = NULL;
+    va_list ap;
+    va_start(ap, fmt);
+    retval = format_internal(fmt, ap);
+    va_end(ap);
+    return retval;
+} // format
+
+
 #if ((defined _NDEBUG) || (defined NDEBUG))
 #define DEFLOGLEV "info"
 #else
@@ -380,21 +480,22 @@ static inline void addLog(MojoSetupLogLevel level, char levelchar,
 {
     if (level <= MojoLog_logLevel)
     {
-        char buf[1024];
+        char *str = format_internal(fmt, ap);
         //int len = vsnprintf(buf + 2, sizeof (buf) - 2, fmt, ap) + 2;
         //buf[0] = levelchar;
         //buf[1] = ' ';
-        int len = vsnprintf(buf, sizeof (buf), fmt, ap);
-        while ( (--len >= 0) && ((buf[len] == '\n') || (buf[len] == '\r')) ) {}
-        buf[len+1] = '\0';  // delete trailing newline crap.
-        MojoPlatform_log(buf);
+        int len = strlen(str);
+        while ( (--len >= 0) && ((str[len] == '\n') || (str[len] == '\r')) ) {}
+        str[len+1] = '\0';  // delete trailing newline crap.
+        MojoPlatform_log(str);
         if (logFile != NULL)
         {
             const char *endl = MOJOPLATFORM_ENDLINE;
-            MojoPlatform_write(logFile, buf, strlen(buf));
+            MojoPlatform_write(logFile, str, strlen(str));
             MojoPlatform_write(logFile, endl, strlen(endl));
             MojoPlatform_flush(logFile);
         } // if
+        free(str);
     } // if
 } // addLog
 
@@ -439,9 +540,7 @@ uint32 profile(const char *what, uint32 start_time)
 {
     uint32 retval = MojoPlatform_ticks() - start_time;
     if (what != NULL)
-    {
-        logDebug("%s took %lu ms.", what, (unsigned long) retval);
-    } // if
+        logDebug("%0 took %1 ms.", what, numstr((int) retval));
     return retval;
 } // profile_start
 
@@ -458,24 +557,13 @@ int fatal(const char *fmt, ...)
     // may not want to show a message, since we displayed one elsewhere, etc.
     if (fmt != NULL)
     {
+        char *buf = NULL;
         va_list ap;
-        int rc = 0;
-        int len = 128;
-        char *buf = xmalloc(len);
-
         va_start(ap, fmt);
-        rc = vsnprintf(buf, len, fmt, ap);
+        buf = format_internal(fmt, ap);
         va_end(ap);
-        if (rc >= len)
-        {
-            len = rc;
-            buf = xrealloc(buf, len);
-            va_start(ap, fmt);
-            vsnprintf(buf, len, fmt, ap);
-            va_end(ap);
-        } // if
 
-        logError("FATAL: %s", buf);
+        logError("FATAL: %0", buf);
 
         if (GGui != NULL)
             GGui->msgbox(_("Fatal error"), buf);
@@ -502,7 +590,7 @@ int panic(const char *err)
     panic_runs++;
     if (panic_runs == 1)
     {
-        logError("PANIC: %s", err);
+        logError("PANIC: %0", err);
         panic(err);
     } // if
 
@@ -583,7 +671,7 @@ char *xstrdup(const char *str)
 #if MOJOSETUP_INTERNAL_BZLIB && BZ_NO_STDIO
 void bz_internal_error(int errcode)
 {
-    fatal(_("bzlib triggered an internal error: %d"), errcode);
+    fatal(_("bzlib triggered an internal error: %0"), numstr(numbuf));
 } // bz_internal_error
 #endif
 

@@ -781,14 +781,15 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
     gint rc = 0;
     // !!! FIXME: Use stock GTK icon for "media"?
     // !!! FIXME: better text.
-    const char *title = entry->_("Media change");
+    const char *title = entry->xstrdup(entry->_("Media change"));
     // !!! FIXME: better text.
-    const char *fmt = entry->_("Please insert '%s'");
-    size_t len = strlen(fmt) + strlen(medianame) + 1;
-    char *text = (char *) entry->xmalloc(len);
-    snprintf(text, len, fmt, medianame);
+    const char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
+    const char *text = entry->format(fmt, medianame);
     rc = do_msgbox(title, text, GTK_MESSAGE_WARNING,
                    GTK_BUTTONS_OK_CANCEL, GTK_RESPONSE_OK, NULL);
+    free((void *) text);
+    free((void *) fmt);
+    free((void *) title);
     return (rc == GTK_RESPONSE_OK);
 } // MojoGui_gtkplus2_insertmedia
 

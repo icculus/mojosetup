@@ -1031,7 +1031,7 @@ static void signal_catcher(int sig)
     if (first_shot)
     {
         first_shot = false;
-        logError("Caught signal #%d", sig);
+        logError("Caught signal #%0", numstr(sig));
     } // if
 } // signal_catcher
 

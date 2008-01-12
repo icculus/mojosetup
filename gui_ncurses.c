@@ -1285,25 +1285,22 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
 
 static boolean MojoGui_ncurses_insertmedia(const char *medianame)
 {
-    char *fmt = entry->xstrdup(entry->_("Please insert '%s'"));
-    const size_t len = strlen(fmt) + strlen(medianame) + 1;
-    char *text = (char *) entry->xmalloc(len);
+    char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
+    char *text = entry->format(fmt, medianame);
     char *localized_ok = entry->xstrdup(entry->_("Ok"));
     char *localized_cancel = entry->xstrdup(entry->_("Cancel"));
     char *buttons[] = { localized_ok, localized_cancel };
     MojoBox *mojobox = NULL;
     int rc = 0;
 
-    snprintf(text, len, fmt, medianame);
-    free(fmt);
-
     mojobox = makeBox(entry->_("Media change"), text, buttons, 2, false, true);
     while ((rc = upkeepBox(&mojobox, wgetch(mojobox->mainwin))) == -1) {}
 
     freeBox(mojobox, true);
-    free(text);
     free(localized_cancel);
     free(localized_ok);
+    free(text);
+    free(fmt);
     return (rc == 0);
 } // MojoGui_ncurses_insertmedia
 

@@ -96,6 +96,23 @@ extern const char *GBuildVer;
 // Static, non-stack memory for scratch work...not thread safe!
 extern uint8 scratchbuf_128k[128 * 1024];
 
+// Format a string, sort of (but not exactly!) like sprintf().
+//  The only formatters accepted are %0 through %9 (and %%), which do not
+//  have to appear in order in the string, but match the varargs passed to the
+//  function. Only strings are accepted for varargs. This function allocates
+//  memory as necessary, so you need to free() the result, but don't need to
+//  preallocate a buffer and be concerned about overflowing it.
+// This does not use scratchbuf_128k.
+char *format(const char *fmt, ...);
+
+// Convert an int to a string. This uses incremental pieces of
+//  scratchbuf_128k for a buffer to store the results, and
+//  will overwrite itself after some number of calls when the memory
+//  is all used, but note that other things use scratchbuf_128k too,
+//  so this is only good for printf() things:
+// fmtfunc("mission took %0 seconds, %1 points", numstr(secs), numstr(pts));
+const char *numstr(int val);
+
 // Call this for fatal errors that require immediate app termination.
 //  Does not clean up, or translate the error string. Try to avoid this.
 //  These are for crucial lowlevel issues that preclude any meaningful
@@ -112,7 +129,9 @@ int panic(const char *err);
 // If there's no GUI or Lua isn't initialized, this calls panic(). That's bad.
 // Doesn't return, but if it did, you can assume it returns zero, so you can
 //  do:  'return fatal("missing config file");' or whatnot.
-int fatal(const char *fmt, ...) ISPRINTF(1,2);
+// THIS DOES NOT USE PRINTF-STYLE FORMAT CODES. Please see the comments for
+//  format() for details.
+int fatal(const char *fmt, ...);
 
 // The platform layer should set up signal/exception handlers before calling
 //  MojoSetup_main(), that will call these functions. "crashed" for bug
@@ -120,9 +139,6 @@ int fatal(const char *fmt, ...) ISPRINTF(1,2);
 //  destroy the process (SIGKILL, SIGINT, etc). These functions do not return.
 void MojoSetup_crashed(void);
 void MojoSetup_terminated(void);
-
-// Call this to pop up a warning dialog box and block until user hits OK.
-void warn(const char *fmt, ...) ISPRINTF(1,2);
 
 // Malloc replacements that blow up on allocation failure.
 // Please note that xmalloc() will zero the newly-allocated memory buffer,
@@ -253,10 +269,14 @@ typedef enum
 extern MojoSetupLogLevel MojoLog_logLevel;
 void MojoLog_initLogging(void);
 void MojoLog_deinitLogging(void);
-void logWarning(const char *fmt, ...) ISPRINTF(1,2);
-void logError(const char *fmt, ...) ISPRINTF(1,2);
-void logInfo(const char *fmt, ...) ISPRINTF(1,2);
-void logDebug(const char *fmt, ...) ISPRINTF(1,2);
+
+// Logging facilities.
+// THESE DO NOT USE PRINTF-STYLE FORMAT CODES. Please see the comments for
+//  format() for details.
+void logWarning(const char *fmt, ...);
+void logError(const char *fmt, ...);
+void logInfo(const char *fmt, ...);
+void logDebug(const char *fmt, ...);
 
 
 // Checksums.
@@ -320,10 +340,12 @@ typedef struct MojoSetupEntryPoints
     char *(*xstrdup)(const char *str);
     char *(*xstrncpy)(char *dst, const char *src, size_t len);
     const char *(*translate)(const char *str);
-    void (*logWarning)(const char *fmt, ...) ISPRINTF(1,2);
-    void (*logError)(const char *fmt, ...) ISPRINTF(1,2);
-    void (*logInfo)(const char *fmt, ...) ISPRINTF(1,2);
-    void (*logDebug)(const char *fmt, ...) ISPRINTF(1,2);
+    void (*logWarning)(const char *fmt, ...);
+    void (*logError)(const char *fmt, ...);
+    void (*logInfo)(const char *fmt, ...);
+    void (*logDebug)(const char *fmt, ...);
+    char *(*format)(const char *fmt, ...);
+    const char *(*numstr)(int val);
     uint32 (*ticks)(void);
 } MojoSetupEntryPoints;
 extern MojoSetupEntryPoints GEntryPoints;
@@ -339,6 +361,9 @@ extern MojoSetupEntryPoints GEntryPoints;
 #endif
 #endif  // DOXYGEN_SHOULD_IGNORE_THIS
 
+#define DEFINE_TO_STR2(x) #x
+#define DEFINE_TO_STR(x) DEFINE_TO_STR2(x)
+
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
 #define STUBBED(x) \
 do { \
@@ -346,16 +371,13 @@ do { \
     if (!seen_this) \
     { \
         seen_this = true; \
-        logDebug("STUBBED: %s at %s (%s:%d)\n", x, __FUNCTION__, \
-                __FILE__, __LINE__); \
+        logDebug("STUBBED: %0 at %1 (%2:%3)\n", x, __FUNCTION__, \
+                __FILE__, DEFINE_TO_STR(__LINE__)); \
     } \
 } while (false)
 #endif
 
 #define STATICARRAYLEN(x) ( (sizeof ((x))) / (sizeof ((x)[0])) )
-
-#define DEFINE_TO_STR2(x) #x
-#define DEFINE_TO_STR(x) DEFINE_TO_STR2(x)
 
 #ifdef __cplusplus
 }

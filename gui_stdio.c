@@ -46,16 +46,18 @@ static int readstr(const char *prompt, char *buf, int len,
     // !!! FIXME:  abort in read_stdin() if i/o fails?
 
     int retval = 0;
-    const char *backstr = NULL;
+    char *backstr = (back) ? entry->xstrdup(entry->_("back")) : NULL;
 
     if (prompt != NULL)
         printf("%s\n", prompt);
 
     if (back)
     {
-        backstr = entry->xstrdup(entry->_("back"));
-        printf(entry->_("Type '%s' to go back."), backstr);
-        printf("\n");
+        char *fmt = entry->xstrdup(entry->_("Type '%0' to go back."));
+        char *msg = entry->format(fmt, backstr);
+        printf("%s\n", msg);
+        free(msg);
+        free(fmt);
     } // if
 
     if (fwd)
@@ -73,7 +75,7 @@ static int readstr(const char *prompt, char *buf, int len,
             retval = -1;
     } // if
 
-    free((void *) backstr);
+    free(backstr);
     return retval;
 } // readstr
 
@@ -111,7 +113,11 @@ static void MojoGui_stdio_deinit(void)
 static void MojoGui_stdio_msgbox(const char *title, const char *text)
 {
     char buf[128];
-    printf(entry->_("NOTICE: %s\n[hit enter]"), text);
+    char *fmt = entry->xstrdup(entry->_("NOTICE: %0\n[hit enter]"));
+    char *msg = entry->format(fmt, text);
+    printf("%s\n", msg);
+    free(msg);
+    free(fmt);
     fflush(stdout);
     read_stdin(buf, sizeof (buf));
 } // MojoGui_stdio_msgbox
@@ -123,10 +129,11 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
     boolean retval = false;
     if (!feof(stdin))
     {
-        const char *fmt = ((defval) ? "%s\n[Y/n]: " : "%s\n[y/N]: ");
-        const char *localized_fmt = entry->xstrdup(entry->_(fmt));
-        const char *localized_no = entry->xstrdup(entry->_("N"));
-        const char *localized_yes = entry->xstrdup(entry->_("Y"));
+        const char *_fmt = ((defval) ? "%1\n[Y/n]: " : "%1\n[y/N]: ");
+        char *fmt = entry->xstrdup(entry->_(_fmt));
+        char *msg = entry->format(fmt, text);
+        char *localized_no = entry->xstrdup(entry->_("N"));
+        char *localized_yes = entry->xstrdup(entry->_("Y"));
         boolean getout = false;
         char buf[128];
 
@@ -135,7 +142,7 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
             int rc = 0;
 
             getout = true;  // we may reset this later.
-            printf(localized_fmt, text);
+            printf("%s\n", msg);
             fflush(stdout);
             rc = read_stdin(buf, sizeof (buf));
 
@@ -151,9 +158,10 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
                 getout = false;  // try again.
         } // while
 
-        free((void *) localized_yes);
-        free((void *) localized_no);
-        free((void *) localized_fmt);
+        free(localized_yes);
+        free(localized_no);
+        free(msg);
+        free(fmt);
     } // if
 
     return retval;
@@ -166,11 +174,12 @@ static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt,
     MojoGuiYNAN retval = MOJOGUI_NO;
     if (!feof(stdin))
     {
-        const char *localized_fmt = entry->_("%s\n[y/n/Always/Never]: ");
-        const char *localized_no = entry->xstrdup(entry->_("N"));
-        const char *localized_yes = entry->xstrdup(entry->_("Y"));
-        const char *localized_always = entry->xstrdup(entry->_("Always"));
-        const char *localized_never = entry->xstrdup(entry->_("Never"));
+        char *fmt = entry->xstrdup(_("%0\n[y/n/Always/Never]: "));
+        char *msg = entry->format(fmt, txt);
+        char *localized_no = entry->xstrdup(entry->_("N"));
+        char *localized_yes = entry->xstrdup(entry->_("Y"));
+        char *localized_always = entry->xstrdup(entry->_("Always"));
+        char *localized_never = entry->xstrdup(entry->_("Never"));
         boolean getout = false;
         char buf[128];
 
@@ -179,7 +188,7 @@ static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt,
             int rc = 0;
 
             getout = true;  // we may reset this later.
-            printf(localized_fmt, txt);
+            printf("%s\n", msg);
             fflush(stdout);
             rc = read_stdin(buf, sizeof (buf));
 
@@ -199,11 +208,12 @@ static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt,
                 getout = false;  // try again.
         } // while
 
-        free((void *) localized_never);
-        free((void *) localized_always);
-        free((void *) localized_yes);
-        free((void *) localized_no);
-        free((void *) localized_fmt);
+        free(localized_never);
+        free(localized_always);
+        free(localized_yes);
+        free(localized_no);
+        free(msg);
+        free(fmt);
     } // if
 
     return retval;
@@ -303,9 +313,7 @@ static char **splitText(const char *_text, int *_count, int *_w)
 static void dumb_pager(const char *name, const char *data, size_t datalen)
 {
     const int MAX_PAGE_LINES = 21;
-    char buf[256];
-    const char *_fmt = entry->_("(%d-%d of %d lines, see more?)"); // !!! FIXME: localization
-    char *fmt = entry->xstrdup(_fmt);
+    char *fmt = entry->xstrdup(entry->_("(%0-%1 of %2 lines, see more?)"));
     int i = 0;
     int w = 0;
     int linecount = 0;
@@ -330,10 +338,13 @@ static void dumb_pager(const char *name, const char *data, size_t datalen)
                 getout = true;
             else
             {
+                char *msg = NULL;
                 printf("\n");
-                snprintf(buf, sizeof (buf), fmt,
-                         (printed-i)+1, printed, linecount);
-                getout = !MojoGui_stdio_promptyn("", buf, true);
+                msg = entry->format(fmt, entry->numstr((printed-i)+1),
+                                    entry->numstr(printed),
+                                    entry->numstr(linecount));
+                getout = !MojoGui_stdio_promptyn("", msg, true);
+                free(msg);
                 printf("\n");
             } // else
         } while (!getout);
@@ -575,8 +586,11 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
 static boolean MojoGui_stdio_insertmedia(const char *medianame)
 {
     char buf[32];
-    printf(entry->_("Please insert '%s'"), medianame);
-    printf("\n");
+    char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
+    char *msg = entry->format(fmt, medianame);
+    printf("%s\n", msg);
+    free(msg);
+    free(fmt);
     return (readstr(NULL, buf, sizeof (buf), false, true) >= 0);
 } // MojoGui_stdio_insertmedia
 
@@ -601,12 +615,20 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
     // limit update spam... will only write every one second, tops.
     if (percentTicks <= now)
     {
+        char *fmt = NULL;
+        char *msg = NULL;
         percentTicks = now + 1000;
         // !!! FIXME: localization.
         if (percent < 0)
-            printf(entry->_("%s\n"), item);
+            printf("%s\n", item);
         else
-            printf(entry->_("%s (total progress: %d%%)\n"), item, percent);
+        {
+            fmt = entry->xstrdup(entry->_("%0 (total progress: %1%%)\n"));
+            msg = entry->format(fmt, item, entry->numstr(percent));
+            printf("%s\n", msg);
+            free(msg);
+            free(fmt);
+        } // else
     } // if
 
     return true;

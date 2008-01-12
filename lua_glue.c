@@ -215,7 +215,7 @@ static int luahook_stackwalk(lua_State *L)
     int i = 0;
 
     if (errstr != NULL)
-        logDebug("%s\n", errstr);
+        logDebug("%0", errstr);
 
     logDebug("Lua stack backtrace:");
 
@@ -233,7 +233,7 @@ static int luahook_stackwalk(lua_State *L)
         if (!lua_getinfo(L, "nSl", &ldbg))
         {
             snprintfcat(&ptr, &len, "???\n");
-            logDebug((const char *) scratchbuf_128k);
+            logDebug("%0", (const char *) scratchbuf_128k);
             continue;
         } // if
 
@@ -252,7 +252,7 @@ static int luahook_stackwalk(lua_State *L)
                 snprintfcat(&ptr, &len, "unidentifiable function");
         } // if
 
-        logDebug((const char *) scratchbuf_128k);
+        logDebug("%0", (const char *) scratchbuf_128k);
         ptr = (char *) scratchbuf_128k;
         len = sizeof (scratchbuf_128k);
 
@@ -271,7 +271,7 @@ static int luahook_stackwalk(lua_State *L)
             if (ldbg.currentline != -1)
                 snprintfcat(&ptr, &len, ":%d", ldbg.currentline);
         } // else
-        logDebug((const char *) scratchbuf_128k);
+        logDebug("%0", (const char *) scratchbuf_128k);
     } // for
 
     return retvalString(L, errstr ? errstr : "");
@@ -446,12 +446,13 @@ void MojoLua_collectGarbage(void)
     int post = 0;
 
     pre = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
-    logDebug("Collecting garbage (currently using %d bytes).", pre);
+    logDebug("Collecting garbage (currently using %0 bytes).", numstr(pre));
     ticks = MojoPlatform_ticks();
     lua_gc (L, LUA_GCCOLLECT, 0);
     profile("Garbage collection", ticks);
     post = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
-    logDebug("Now using %d bytes (%d bytes savings).\n", post, pre - post);
+    logDebug("Now using %0 bytes (%1 bytes savings).",
+             numstr(post), numstr(pre - post));
 } // MojoLua_collectGarbage
 
 
@@ -499,6 +500,37 @@ const char *translate(const char *str)
 } // translate
 
 
+// Lua interface to format().
+static int luahook_format(lua_State *L)
+{
+    const int argc = lua_gettop(L);
+    const char *fmt = luaL_checkstring(L, 1);
+    char *formatted = NULL;
+    char *s[10];
+    int i;
+
+    assert(argc <= 11);  // fmt, plus %0 through %9.
+
+    for (i = 0; i < STATICARRAYLEN(s); i++)
+    {
+        const char *str = NULL;
+        if ((i+2) <= argc)
+            str = lua_tostring(L, i+2);
+        s[i] = (str == NULL) ? NULL : xstrdup(str);
+    } // for
+
+    // I think this is legal (but probably not moral) C code.
+    formatted = format(fmt,s[0],s[1],s[2],s[3],s[4],s[5],s[6],s[7],s[8],s[9]);
+
+    for (i = 0; i < STATICARRAYLEN(s); i++)
+        free(s[i]);
+
+    lua_pushstring(L, formatted);
+    free(formatted);
+    return 1;
+} // luahook_format
+
+
 // Use this instead of Lua's error() function if you don't have a
 //  programatic error, so you don't get stack callback stuff:
 // MojoSetup.fatal("You need the base game to install this expansion pack.")
@@ -507,7 +539,9 @@ const char *translate(const char *str)
 static int luahook_fatal(lua_State *L)
 {
     const char *errstr = lua_tostring(L, 1);
-    return fatal(errstr);  // doesn't actually return.
+    if (errstr == NULL)
+        return fatal(NULL);  // doesn't actually return.
+    return fatal("%0", errstr);  // doesn't actually return.
 } // luahook_fatal
 
 
@@ -589,28 +623,28 @@ static int luahook_promptynan(lua_State *L)
 
 static int luahook_logwarning(lua_State *L)
 {
-    logWarning(luaL_checkstring(L, 1));
+    logWarning("%0", luaL_checkstring(L, 1));
     return 0;
 } // luahook_logwarning
 
 
 static int luahook_logerror(lua_State *L)
 {
-    logError(luaL_checkstring(L, 1));
+    logError("%0", luaL_checkstring(L, 1));
     return 0;
 } // luahook_logerror
 
 
 static int luahook_loginfo(lua_State *L)
 {
-    logInfo(luaL_checkstring(L, 1));
+    logInfo("%0", luaL_checkstring(L, 1));
     return 0;
 } // luahook_loginfo
 
 
 static int luahook_logdebug(lua_State *L)
 {
-    logDebug(luaL_checkstring(L, 1));
+    logDebug("%0", luaL_checkstring(L, 1));
     return 0;
 } // luahook_logdebug
 
@@ -729,7 +763,7 @@ static int luahook_writefile(lua_State *L)
             const char *permstr = luaL_checkstring(L, 3);
             perms = MojoPlatform_makePermissions(permstr, &valid);
             if (!valid)
-                fatal(_("BUG: '%s' is not a valid permission string"), permstr);
+                fatal(_("BUG: '%0' is not a valid permission string"), permstr);
         } // if
         rc = MojoInput_toPhysicalFile(in, path, perms, &sums,
                                           writeCallback, L);
@@ -912,7 +946,7 @@ static int luahook_platform_mkdir(lua_State *L)
         const char *permstr = luaL_checkstring(L, 2);
         perms = MojoPlatform_makePermissions(permstr, &valid);
         if (!valid)
-            fatal(_("BUG: '%s' is not a valid permission string"), permstr);
+            fatal(_("BUG: '%0' is not a valid permission string"), permstr);
     } // if
     return retvalBoolean(L, MojoPlatform_mkdir(dir, perms));
 } // luahook_platform_mkdir
@@ -1041,7 +1075,7 @@ static int luahook_gui_readme(lua_State *L)
     const boolean can_go_fwd = canGoForward(thisstage, maxstage);
 
     if (data == NULL)
-        fatal(_("failed to load file '%s'"), fname);
+        fatal(_("failed to load file '%0'"), fname);
 
     lua_pushnumber(L, GGui->readme(name, data, len, can_go_back, can_go_fwd));
     free((void *) data);
@@ -1088,7 +1122,7 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
         if (required)
         {
             lua_getfield(L, -2, "description");
-            logWarning("Option '%s' is both required and disabled!",
+            logWarning("Option '%0' is both required and disabled!",
                         lua_tostring(L, -1));
             lua_pop(L, 1);
         } // if
@@ -1166,7 +1200,7 @@ static inline GuiOptions *cleanup_gui_option_list(GuiOptions *opts,
         // !!! FIXME: schema should check?
         if ((is_group) && (opts->is_group_parent))
         {
-            fatal("OptionGroup '%s' inside OptionGroup '%s'.",
+            fatal("OptionGroup '%0' inside OptionGroup '%1'.",
                   opts->description, parent->description);
         } // if
 
@@ -1174,7 +1208,7 @@ static inline GuiOptions *cleanup_gui_option_list(GuiOptions *opts,
         {
             if (seen_enabled)
             {
-                logWarning("Options '%s' and '%s' are both enabled in group '%s'.",
+                logWarning("Options '%0' and '%1' are both enabled in group '%2'.",
                             seen_enabled->description, opts->description,
                             parent->description);
                 seen_enabled->value = false;
@@ -1191,7 +1225,7 @@ static inline GuiOptions *cleanup_gui_option_list(GuiOptions *opts,
 
     if ((prev) && (is_group) && (!seen_enabled))
     {
-        logWarning("Option group '%s' has no enabled items, choosing first ('%s').",
+        logWarning("Option group '%0' has no enabled items, choosing first ('%1').",
                     parent->description, prev->description);
         prev->value = true;
     } // if
@@ -1460,6 +1494,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_runfile, "runfile");
         set_cfunc(luaState, luahook_translate, "translate");
         set_cfunc(luaState, luahook_ticks, "ticks");
+        set_cfunc(luaState, luahook_format, "format");
         set_cfunc(luaState, luahook_fatal, "fatal");
         set_cfunc(luaState, luahook_msgbox, "msgbox");
         set_cfunc(luaState, luahook_promptyn, "promptyn");
