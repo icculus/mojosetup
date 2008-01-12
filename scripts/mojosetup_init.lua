@@ -89,6 +89,39 @@ end
 -- This table gets filled by the config file. Just create an empty one for now.
 MojoSetup.installs = {}
 
+
+local function sanity_check_localization_entry(str, translations)
+    local maxval = -1;
+
+    for val in string.gmatch(str, "%%.") do
+        val = string.sub(val, 2)
+        if string.match(val, "^[^%%0-9]$") ~= nil then
+            MojoSetup.fatal("BUG: localization key ['" .. str .. "'] has invalid escape sequence.")
+        end
+        if val ~= "%" then
+            local num = tonumber(val)
+            if num > maxval then
+                maxval = num
+            end
+        end
+    end
+
+    for k,v in pairs(translations) do
+        for val in string.gmatch(v, "%%.") do
+            val = string.sub(val, 2)
+            if string.match(val, "^[^%%0-9]$") ~= nil then
+                MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has invalid escape sequence.")
+            end
+            if val ~= "%" then
+                if tonumber(val) > maxval then
+                    MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has escape sequence > max for translation.")
+                end
+            end
+        end
+    end
+end
+
+
 -- Build the translations table from the localizations table supplied in
 --  localizations.lua...
 if type(MojoSetup.localization) ~= "table" then
@@ -102,6 +135,7 @@ if MojoSetup.localization ~= nil then
     MojoSetup.translations = {}
     for k,v in pairs(MojoSetup.localization) do
         if type(v) == "table" then
+            sanity_check_localization_entry(k, v)
             if v[locale] ~= nil then
                 MojoSetup.translations[k] = v[locale]
                 at_least_one = true
