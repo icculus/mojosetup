@@ -521,7 +521,7 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_widget_show(finallabel);
     gtk_box_pack_start(GTK_BOX(widget), finallabel, FALSE, TRUE, 0);
     gtk_label_set_justify(GTK_LABEL(finallabel), GTK_JUSTIFY_LEFT);
-    gtk_label_set_line_wrap(GTK_LABEL(finallabel), FALSE);
+    gtk_label_set_line_wrap(GTK_LABEL(finallabel), TRUE);
 
     gtk_signal_connect(GTK_OBJECT(window), "delete-event",
                        GTK_SIGNAL_FUNC(signal_delete), NULL);

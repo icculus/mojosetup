@@ -449,38 +449,43 @@ uint32 profile(const char *what, uint32 start_time)
 int fatal(const char *fmt, ...)
 {
     static boolean in_fatal = false;
-    int len = 128;
-    char *buf = NULL;
-    int rc = 0;
-    va_list ap;
 
     if (in_fatal)
         return panic("BUG: fatal() called more than once!");
 
     in_fatal = true;
 
-    buf = xmalloc(len);
-    va_start(ap, fmt);
-    rc = vsnprintf(buf, len, fmt, ap);
-    va_end(ap);
-    if (rc >= len)
+    // may not want to show a message, since we displayed one elsewhere, etc.
+    if (fmt != NULL)
     {
-        len = rc;
-        buf = xrealloc(buf, len);
+        va_list ap;
+        int rc = 0;
+        int len = 128;
+        char *buf = xmalloc(len);
+
         va_start(ap, fmt);
-        vsnprintf(buf, len, fmt, ap);
+        rc = vsnprintf(buf, len, fmt, ap);
         va_end(ap);
+        if (rc >= len)
+        {
+            len = rc;
+            buf = xrealloc(buf, len);
+            va_start(ap, fmt);
+            vsnprintf(buf, len, fmt, ap);
+            va_end(ap);
+        } // if
+
+        logError("FATAL: %s", buf);
+
+        if (GGui != NULL)
+            GGui->msgbox(_("Fatal error"), buf);
+
+        free(buf);
     } // if
 
-    logError("FATAL: %s", buf);
+    // Shouldn't call fatal() before app is initialized!
     if ( (GGui == NULL) || (!MojoLua_initialized()) )
-    {
-        logError("fatal() called before app is initialized! Panicking...");
-        panic(buf);   // Shouldn't call fatal() before app is initialized!
-    } // if
-
-    GGui->msgbox(_("Fatal error"), buf);
-    free(buf);
+        panic("fatal() called before app is initialized! Panicking...");
 
     MojoLua_callProcedure("revertinstall");
 

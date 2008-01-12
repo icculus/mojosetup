@@ -507,8 +507,6 @@ const char *translate(const char *str)
 static int luahook_fatal(lua_State *L)
 {
     const char *errstr = lua_tostring(L, 1);
-    if (errstr == NULL)
-        errstr = _("Unknown error");
     return fatal(errstr);  // doesn't actually return.
 } // luahook_fatal
 

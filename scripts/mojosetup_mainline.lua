@@ -92,7 +92,7 @@ end
 function MojoSetup.revertinstall()
     -- !!! FIXME: language.
     if MojoSetup.gui_started then
-        MojoSetup.gui.final(_("There were errors. We will now put things back how we found them and exit."));
+        MojoSetup.gui.final(_("Incomplete installation. We will revert any changes we made."));
     end
 
     MojoSetup.loginfo("Cleaning up half-finished installation...");
@@ -257,7 +257,7 @@ local function install_file(dest, archive, file, perms, option)
         -- !!! FIXME: formatting!
         if not keepgoing then
             MojoSetup.logerror("User cancelled install during file write.")
-            MojoSetup.fatal(_("User cancelled installation."))
+            MojoSetup.fatal()
         else
             MojoSetup.logerror("Failed to create file '" .. dest .. "'")
             MojoSetup.fatal(_("File creation failed!"))
@@ -1027,7 +1027,7 @@ local function do_install(install)
                 i = i - 1
             end
         elseif rc == 0 then
-            MojoSetup.fatal(_("User cancelled installation."))
+            MojoSetup.fatal()
         else
             MojoSetup.fatal(_("BUG: stage returned wrong value."))
         end
