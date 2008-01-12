@@ -29,7 +29,7 @@ MojoSetup.loginfo("osversion: " .. MojoSetup.info.osversion)
 MojoSetup.loginfo("ui: " .. MojoSetup.info.ui)
 MojoSetup.loginfo("loglevel: " .. MojoSetup.info.loglevel)
 
-MojoSetup.loginfo("command line:");
+MojoSetup.loginfo("command line:")
 for i,v in ipairs(MojoSetup.info.argv) do
     MojoSetup.loginfo("  " .. i .. ": " .. v)
 end
@@ -96,7 +96,7 @@ if type(MojoSetup.localization) ~= "table" then
 end
 
 if MojoSetup.localization ~= nil then
-    local at_least_one = false;
+    local at_least_one = false
     local locale = MojoSetup.info.locale
     local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
     MojoSetup.translations = {}
@@ -146,15 +146,15 @@ local function mustBeSomething(fnname, elem, val, elemtype)
 end
 
 local function mustBeString(fnname, elem, val)
-    mustBeSomething(fnname, elem, val, "string");
+    mustBeSomething(fnname, elem, val, "string")
 end
 
 local function mustBeBool(fnname, elem, val)
-    mustBeSomething(fnname, elem, val, "boolean");
+    mustBeSomething(fnname, elem, val, "boolean")
 end
 
 local function mustBeNumber(fnname, elem, val)
-    mustBeSomething(fnname, elem, val, "number");
+    mustBeSomething(fnname, elem, val, "number")
 end
 
 local function mustBeFunction(fnname, elem, val)
@@ -218,7 +218,7 @@ end
 
 local function sanitize(fnname, tab, elems)
     mustBeTable(fnname, "", tab)
-    tab._type_ = string.lower(fnname) .. "s";   -- "Eula" becomes "eulas".
+    tab._type_ = string.lower(fnname) .. "s"   -- "Eula" becomes "eulas".
     for i,elem in ipairs(elems) do
         local child = elem[1]
         local defval = elem[2]
@@ -228,7 +228,7 @@ local function sanitize(fnname, tab, elems)
         end
         local j = 3
         while elem[j] do
-            elem[j](fnname, child, tab[child]);  -- will assert on problem.
+            elem[j](fnname, child, tab[child])  -- will assert on problem.
             j = j + 1
         end
     end
@@ -270,7 +270,7 @@ local function reform_schema_table(tab)
                 table.insert(tab[typestr], v)
             end
             -- can't just set tab[k] to nil here, since it screws up pairs()...
-            killlist[#killlist+1] = k;
+            killlist[#killlist+1] = k
         elseif vtype == "table" then
             tab[k] = reform_schema_table(v)
         end

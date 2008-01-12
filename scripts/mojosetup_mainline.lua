@@ -92,16 +92,16 @@ end
 function MojoSetup.revertinstall()
     -- !!! FIXME: language.
     if MojoSetup.gui_started then
-        MojoSetup.gui.final(_("Incomplete installation. We will revert any changes we made."));
+        MojoSetup.gui.final(_("Incomplete installation. We will revert any changes we made."))
     end
 
-    MojoSetup.loginfo("Cleaning up half-finished installation...");
+    MojoSetup.loginfo("Cleaning up half-finished installation...")
 
     -- !!! FIXME: callbacks here.
     delete_files(MojoSetup.downloads)
     delete_files(MojoSetup.installed_files)
     do_rollbacks()
-    delete_scratchdirs();
+    delete_scratchdirs()
 end
 
 
@@ -138,7 +138,7 @@ local function make_bps_string(bps, bw, total)
         minsleft = string.sub("00" .. (minsleft - (hoursleft * 60)), -2)
 
         if hoursleft < 10 then
-            hoursleft = "0" .. hoursleft;
+            hoursleft = "0" .. hoursleft
         else
             hoursleft = tostring(hoursleft)
         end
@@ -547,7 +547,7 @@ local function install_basepath(basepath, file, option)
             path = path .. "/" .. v
             if not MojoSetup.platform.exists(path) then
                 if knowngood == "" then  -- !!! FIXME: error message.
-                    MojoSetup.fatal(_("archive not found"))
+                    MojoSetup.fatal(_("Archive not found"))
                 end
                 local archive = create_basepath_archive(knowngood)
                 local arclist = { archive }

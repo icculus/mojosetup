@@ -47,7 +47,7 @@ function MojoSetup.Loki.manifest(install, update_url)
     f:write('<?xml version="1.0" encoding="UTF-8"?>\n')
     f:write('<product name="' .. install.id .. '" desc="' ..
             install.description .. '" xmlversion="1.6" root="'
-            .. MojoSetup.destination .. '" ' .. update_url .. '>\n');
+            .. MojoSetup.destination .. '" ' .. update_url .. '>\n')
     f:write('  <component name="Default" version="' .. install.version ..
             '" default="yes">\n')
 
