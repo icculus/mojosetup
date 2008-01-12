@@ -33,39 +33,44 @@
 --  to get the proper translation for a given string.
 
 MojoSetup.localization = {
-    -- zlib errors
+    -- zlib error message
     ["need dictionary"] = {
     };
 
+    -- zlib error message
     ["data error"] = {
     };
 
+    -- zlib error message
     ["memory error"] = {
     };
 
+    -- zlib error message
     ["buffer error"] = {
     };
 
+    -- zlib error message
     ["version error"] = {
     };
 
+    -- zlib error message
     ["unknown error"] = {
     };
 
-    -- stdio GUI plugin says this for msgboxes (printf format string).
-    ["NOTICE: %1\n[hit enter]"] = {
+    -- stdio GUI plugin says this for msgboxes.
+    ["NOTICE: %0\n[hit enter]"] = {
     };
 
-    -- stdio GUI plugin says this for yes/no prompts that default to yes (printf format string).
-    ["%1\n[Y/n]: "] = {
+    -- stdio GUI plugin says this for yes/no prompts that default to yes.
+    ["%0\n[Y/n]: "] = {
     };
 
-    -- stdio GUI plugin says this for yes/no prompts that default to no (printf format string).
-    ["%1\n[y/N]: "] = {
+    -- stdio GUI plugin says this for yes/no prompts that default to no.
+    ["%0\n[y/N]: "] = {
     };
 
-    -- stdio GUI plugin says this for yes/no/always/never prompts (printf format string).
-    ["%1\n[y/n/Always/Never]: "] = {
+    -- stdio GUI plugin says this for yes/no/always/never prompts.
+    ["%0\n[y/n/Always/Never]: "] = {
     };
 
     -- This is utf8casecmp()'d for "yes" answers in stdio GUI's promptyn().
@@ -77,7 +82,7 @@ MojoSetup.localization = {
     };
 
     -- This is shown when using stdio GUI's built-in README pager (printf format).
-    ["(Viewing %1-%2 of %3 lines, see more?)"] = {
+    ["(%0-%1 of %2 lines, see more?)"] = {
     };
 
     -- This is utf8casecmp()'d for "always" answers in stdio GUI's promptyn().
@@ -88,28 +93,10 @@ MojoSetup.localization = {
     ["Never"] = {
     };
 
-    ["Yes"] = {
+    ["Type '%0' to go back."] = {
     };
 
-    ["No"] = {
-    };
-
-    ["OK"] = {
-    };
-
-    ["Cancel"] = {
-    };
-
-    ["Press enter to continue."] = {
-    };
-
-    ["Choose number to change."] = {
-    };
-
-    ["Type '%1' to go back."] = {
-    };
-
-    -- This is the string used for the '%1' in the above string.
+    -- This is the string used for the '%0' in the above string.
     ["back"] = {
     };
 
@@ -117,63 +104,225 @@ MojoSetup.localization = {
     ["> "] = {
     };
 
-    ["Options"] = {
+    ["NOTICE: %0\n[hit enter]"] = {
     };
 
-    ["Destination"] = {
-    };
-
-    ["Choose install destination by number (hit enter for #1), or enter your own."] = {
-    };
-
-    ["Enter path where files will be installed."] = {
-    };
-
-    ["Nothing to do!"] = {
-    };
-
-    ["Unknown error"] = {
-    };
-
-    ["Internal error"] = {
-    };
-
-    ["PANIC"] = {
-    };
-
-    ["Fatal error"] = {
-    };
-
-    ["GUI failed to start"] = {
+    ["%0 (total progress: %1%%)\n"] = {
     };
 
     ["Accept this license?"] = {
     };
 
-    ["You must accept the license before you may install"] = {
+    -- This is a GTK+ button label. The '_' comes after the hotkey character.
+    ["_Always"] = {
     };
 
-    ["failed to load file '%1'"] = {
+    ["Archive not found."] = {
     };
 
-    ["Please insert '%1'"] = {
+    ["Are you sure you want to cancel installation?"] = {
+    };
+
+    ["Back"] = {
+    };
+
+    -- This is a GTK+ button label. The '_' comes after the hotkey character.
+    ["B_rowse..."] = {
+    };
+
+    -- "bytes per second"
+    ["B/s"] = {
+    };
+
+    ["BUG: '%0' is not a valid permission string"] = {
+    };
+
+    ["BUG: Invalid format() string"] = {
+    };
+
+    ["BUG: stage returned wrong type."] = {
+    };
+
+    ["BUG: stage returned wrong value."] = {
+    };
+
+    ["BUG: stepped back over start of stages"] = {
+    };
+
+    ["bzlib triggered an internal error: %0"] = {
+    };
+
+    ["Cancel"] = {
+    };
+
+    ["Cancel installation"] = {
+    };
+
+    ["cannot open archive."] = {
+    };
+
+    ["Can't enumerate archive"] = {
+    };
+
+    ["Choose install destination by number (hit enter for #1), or enter your own."] = {
+    };
+
+    ["Choose number to change."] = {
+    };
+
+    ["Config bug: duplicate media id"] = {
+    };
+
+    ["Config bug: no options"] = {
+    };
+
+    -- As in "two different files want to use the same name"
+    ["Conflict!"] = {
+    };
+
+    ["Couldn't backup file for rollback"] = {
+    };
+
+    ["Couldn't create manifest"] = {
+    };
+
+    ["Couldn't enumerate archive."] = {
+    };
+
+    ["Couldn't open archive."] = {
+    };
+
+    ["Couldn't restore some files. Your existing installation is likely damaged."] = {
+    };
+
+    ["Deletion failed!"] = {
+    };
+
+    ["Destination"] = {
+    };
+
+    ["Downloading"] = {
+    };
+
+    ["Enter path where files will be installed."] = {
+    };
+
+    ["failed to load file '%0'"] = {
+    };
+
+    ["Fatal error"] = {
+    };
+
+    ["File creation failed!"] = {
+    };
+
+    ["file download failed!"] = {
+    };
+
+    ["Finish"] = {
+    };
+
+    ["GUI failed to start"] = {
+    };
+
+    ["Incomplete installation. We will revert any changes we made."] = {
+    };
+
+    ["Installation location"] = {
+    };
+
+    ["Installation was successful."] = {
+    };
+
+    ["Installing"] = {
+    };
+
+    ["Install options:"] = {
     };
 
     ["(I want to specify a path.)"] = {
     };
 
-    -- as in "404 Not Found" in a web browser.
-    ["Not Found"] = {
+    -- "kilobytes per second"
+    ["KB/s"] = {
     };
 
-    -- title bar in browser page, used with next item for page's text.
-    ["Shutting down..."] = {
+    ["Media change"] = {
     };
 
-    ["Setup program is shutting down. You can close this browser now."] = {
+    ["mkdir failed"] = {
+    };
+
+    ["need dictionary"] = {
+    };
+
+    -- This is a GTK+ button label. The '_' comes after the hotkey character.
+    ["N_ever"] = {
+    };
+
+    ["Never"] = {
+    };
+
+    ["Next"] = {
+    };
+
+    ["No"] = {
     };
 
     ["No networking support in this build."] = {
+    };
+
+    ["Not Found"] = {
+    };
+
+    ["Nothing to do!"] = {
+    };
+
+    ["OK"] = {
+    };
+
+    ["Options"] = {
+    };
+
+    ["PANIC"] = {
+    };
+
+    ["Please insert '%0'"] = {
+    };
+
+    ["Press enter to continue."] = {
+    };
+
+    ["Serious problem"] = {
+    };
+
+    ["Shutting down..."] = {
+    };
+
+    -- printed instead of kilobytes per second when download isn't progressing.
+    ["(stalled)"] = {
+    };
+
+    ["symlink creation failed!"] = {
+    };
+
+    ["The installer has been stopped by the system."] = {
+    };
+
+    ["The installer has crashed due to a bug."] = {
+    };
+
+    -- This is a button label in the ncurses ui.
+    ["Toggle"] = {
+    };
+
+    ["Unknown file type in archive"] = {
+    };
+
+    ["Yes"] = {
+    };
+
+    ["You must accept the license before you may install"] = {
     };
 };
 
