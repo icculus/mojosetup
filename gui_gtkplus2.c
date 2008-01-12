@@ -39,6 +39,8 @@ typedef enum
     PAGE_FINAL
 } WizardPages;
 
+static WizardPages currentpage = PAGE_INTRO;
+static gboolean canfwd = TRUE;
 static GtkWidget *gtkwindow = NULL;
 static GtkWidget *pagetitle = NULL;
 static GtkWidget *notebook = NULL;
@@ -64,19 +66,22 @@ static volatile enum
 } click_value = CLICK_NONE;
 
 
-static void prepare_wizard(const char *name, gint page,
+static void prepare_wizard(const char *name, WizardPages page,
                            boolean can_back, boolean can_fwd)
 {
     char *markup = g_markup_printf_escaped(
                         "<span size='large' weight='bold'>%s</span>",
                         name);
 
+    currentpage = page;
+    canfwd = can_fwd;
+
     gtk_label_set_markup(GTK_LABEL(pagetitle), markup);
     g_free(markup);
 
     gtk_widget_set_sensitive(back, can_back);
     gtk_widget_set_sensitive(next, can_fwd);
-    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), page);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), (gint) page);
 
     assert(click_value == CLICK_NONE);
     assert(gtkwindow != NULL);
@@ -117,7 +122,7 @@ static int pump_events(void)
 } // pump_events
 
 
-static int run_wizard(const char *name, gint page,
+static int run_wizard(const char *name, WizardPages page,
                       boolean can_back, boolean can_fwd)
 {
     int retval = CLICK_NONE;
@@ -152,6 +157,7 @@ static void signal_clicked(GtkButton *_button, gpointer data)
     } // else
 } // signal_clicked
 
+
 static void signal_browse_clicked(GtkButton *_button, gpointer data)
 {
     GtkWidget *dialog = gtk_file_chooser_dialog_new (
@@ -185,7 +191,20 @@ static void signal_browse_clicked(GtkButton *_button, gpointer data)
     // !!! FIXME: Could warn when the target directory already contains files?
 
     gtk_widget_destroy(dialog);
-}
+} // signal_browse_clicked
+
+
+static void signal_dest_changed(GtkComboBox *combo, gpointer user_data)
+{
+    // Disable the forward button when the destination entry is blank.
+    if ((currentpage == PAGE_DESTINATION) && (canfwd))
+    {
+        gchar *str = gtk_combo_box_get_active_text(combo);
+        const gboolean filled_in = ((str != NULL) && (*str != '\0'));
+        g_free(str);
+        gtk_widget_set_sensitive(next, filled_in);
+    } // if
+} // signal_dest_changed
 
 
 static uint8 MojoGui_gtkplus2_priority(boolean istty)
@@ -373,6 +392,9 @@ static GtkWidget *create_gtkwindow(const char *title,
     GtkWidget *alignment;
     GtkWidget *hbox;
 
+    currentpage = PAGE_INTRO;
+    canfwd = TRUE;
+
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), title);
     gtk_container_set_border_width(GTK_CONTAINER(window), 8);
@@ -489,6 +511,8 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_label_set_line_wrap(GTK_LABEL(widget), FALSE);
     alignment = gtk_alignment_new(0.5, 0.5, 1, 0);
     destination = gtk_combo_box_entry_new_text();
+    gtk_signal_connect(GTK_OBJECT(destination), "changed",
+                       GTK_SIGNAL_FUNC(signal_dest_changed), NULL);
     gtk_container_add(GTK_CONTAINER(alignment), destination);
     gtk_box_pack_start(GTK_BOX(hbox), alignment, TRUE, TRUE, 0);
     browse = create_button(hbox, "gtk-open",
@@ -738,13 +762,12 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
                           can_back, can_fwd);
 
     str = gtk_combo_box_get_active_text(combo);
-    if ((str == NULL) || (*str == '\0'))
-        *command = 0;
-    else
-    {
-        retval = entry->xstrdup(str);
-        g_free(str);
-    } // else
+
+    // shouldn't ever be empty ("next" should be disabled in that case).
+    assert( (*command <= 0) || ((str != NULL) && (*str != '\0')) );
+
+    retval = entry->xstrdup(str);
+    g_free(str);
 
     for (i = recnum-1; i >= 0; i--)
         gtk_combo_box_remove_text(combo, i);
