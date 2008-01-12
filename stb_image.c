@@ -3022,8 +3022,12 @@ static stbi_uc *tga_load(int *x, int *y, int *comp, int req_comp)
 	unsigned char *tga_data;
 	unsigned char *tga_palette = NULL;
 	int i, j;
-	unsigned char raw_data[4];
-	unsigned char trans_data[4];
+#if __MOJOSETUP__  // gcc whining fixes.  --ryan.
+	//unsigned char raw_data[4];
+	//unsigned char trans_data[4];
+	unsigned char raw_data[4] = { 0, 0, 0, 0 };
+	unsigned char trans_data[4] = { 0, 0, 0, 0 };
+#endif
 	int RLE_count = 0;
 	int RLE_repeating = 0;
 	int read_next_pixel = 1;
