@@ -454,6 +454,13 @@ Here are the elements, and the attributes they can possess.
     checkbox.
 
 
+   tooltip (no default, mustBeString, cantBeEmpty)
+
+    This string will be used in mouseover "tooltips" in GUI environments for
+    this option's UI widget. There is no guarantee that they will be shown to
+    a user in any GUI target, so don't rely on them!
+
+
  Setup.OptionGroup:
 
   This element can be the parent or child of Setup.Option, or a child of
@@ -483,6 +490,13 @@ Here are the elements, and the attributes they can possess.
 
     This string will be shown to the end user, as a label with the GUI's
     radio button group.
+
+
+   tooltip (no default, mustBeString, cantBeEmpty)
+
+    This string will be used in mouseover "tooltips" in GUI environments for
+    this option's UI widget. There is no guarantee that they will be shown to
+    a user in any GUI target, so don't rely on them!
 
 
  Setup.File:
