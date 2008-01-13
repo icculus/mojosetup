@@ -281,6 +281,128 @@ MojoInput *MojoInput_newFromFile(const char *path)
 } // MojoInput_newFromFile
 
 
+
+// MojoInputs from blocks of memory.
+
+typedef struct
+{
+    void *ptr;  // original pointer from xmalloc()
+    uint32 *refcount;  // address in xmalloc()'d block for reference count.
+    const uint8 *data; // base of actual "file" data in xmalloc()'d block.
+    uint32 len;  // size, in bytes, of "file" data.
+    uint32 pos;  // current read position.
+} MojoInputMemInstance;
+
+static boolean MojoInput_memory_ready(MojoInput *io)
+{
+    return true;  // always ready!
+} // MojoInput_memory_ready
+
+static int64 MojoInput_memory_read(MojoInput *io, void *buf, uint32 bufsize)
+{
+    MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
+    const uint32 avail = inst->len - inst->pos;
+    if (bufsize > avail)
+        bufsize = avail;
+    memcpy(buf, inst->data + inst->pos, bufsize);
+    inst->pos += bufsize;
+    return bufsize;
+} // MojoInput_memory_read
+
+static boolean MojoInput_memory_seek(MojoInput *io, uint64 pos)
+{
+    MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
+    if (pos > (uint64) inst->len)
+        return false;
+    inst->pos = (uint32) pos;
+    return true;
+} // MojoInput_memory_seek
+
+static int64 MojoInput_memory_tell(MojoInput *io)
+{
+    MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
+    return (int64) inst->pos;
+} // MojoInput_memory_tell
+
+static int64 MojoInput_memory_length(MojoInput *io)
+{
+    MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
+    return (int64) inst->len;
+} // MojoInput_memory_length
+
+static MojoInput *MojoInput_memory_duplicate(MojoInput *io)
+{
+    MojoInputMemInstance *srcinst = (MojoInputMemInstance *) io->opaque;
+    MojoInput *retval = NULL;
+    MojoInputMemInstance *inst = NULL;
+
+    if (srcinst->refcount != NULL)
+    {
+        // we don't copy the data for each duplicate; we just bump a reference
+        //  counter. We free the data when all referencers are closed.
+        (*srcinst->refcount)++;  // !!! FIXME: not thread safe!
+    } // if
+
+    inst = (MojoInputMemInstance*) xmalloc(sizeof (MojoInputMemInstance));
+    memcpy(inst, srcinst, sizeof (MojoInputMemInstance));
+    inst->pos = 0;
+
+    retval = (MojoInput *) xmalloc(sizeof (MojoInput));
+    memcpy(retval, io, sizeof (MojoInput));
+    retval->opaque = inst;
+
+    return retval;
+} // MojoInput_memory_duplicate
+
+static void MojoInput_memory_close(MojoInput *io)
+{
+    MojoInputMemInstance *inst = (MojoInputMemInstance *) io->opaque;
+
+    if (inst->refcount != NULL)  // memory we have to free?
+    {
+        assert(*inst->refcount > 0);
+        if (--(*inst->refcount) == 0)  // !!! FIXME: not thread safe!
+            free(inst->ptr);
+    } // if
+
+    free(inst);
+    free(io);
+} // MojoInput_memory_close
+
+MojoInput *MojoInput_newFromMemory(const uint8 *ptr, uint32 len, int constant)
+{
+    MojoInput *io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    MojoInputMemInstance *inst = (MojoInputMemInstance*)
+                                    xmalloc(sizeof (MojoInputMemInstance));
+
+    if (constant)
+        inst->data = ptr;
+    else
+    {
+        inst->ptr = xmalloc(len + sizeof (uint32));
+        inst->refcount = (uint32 *) inst->ptr;
+        inst->data = ((const uint8 *) inst->ptr) + sizeof (uint32);
+        *inst->refcount = 1;
+        memcpy((void *) inst->data, ptr, len);
+    } // else
+
+    inst->len = len;
+
+    io->ready = MojoInput_memory_ready;
+    io->read = MojoInput_memory_read;
+    io->seek = MojoInput_memory_seek;
+    io->tell = MojoInput_memory_tell;
+    io->length = MojoInput_memory_length;
+    io->duplicate = MojoInput_memory_duplicate;
+    io->close = MojoInput_memory_close;
+    io->opaque = inst;
+
+    return io;
+} // MojoInput_newFromMemory
+
+
+
+
 // MojoArchives from directories on the OS filesystem.
 
 typedef struct DirStack

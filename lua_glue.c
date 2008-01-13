@@ -979,6 +979,38 @@ static int luahook_movefile(lua_State *L)
 } // luahook_movefile
 
 
+// !!! FIXME: this is a lot of duplication from luahook_writefile
+static int luahook_stringtofile(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    const char *path = luaL_checkstring(L, 2);
+    MojoInput *in = NULL;
+    size_t len = 0;
+    int retval = 0;
+    boolean rc = false;
+    uint16 perms = 0600;  // !!! FIXME
+    MojoChecksums sums;
+
+    str = lua_tolstring(L, 1, &len);
+    in = MojoInput_newFromMemory((const uint8 *) str, (uint32) len, 1);
+    assert(in != NULL);  // xmalloc() would fatal(), should not return NULL.
+    if (!lua_isnil(L, 3))
+    {
+        boolean valid = false;
+        const char *permstr = luaL_checkstring(L, 3);
+        perms = MojoPlatform_makePermissions(permstr, &valid);
+        if (!valid)
+            fatal(_("BUG: '%0' is not a valid permission string"), permstr);
+    } // if
+    rc = MojoInput_toPhysicalFile(in, path, perms, &sums, writeCallback, L);
+
+    retval += retvalBoolean(L, rc);
+    if (rc)
+        retval += retvalChecksums(L, &sums);
+    return retval;
+} // luahook_stringtofile
+
+
 static void prepareSplash(MojoGuiSplash *splash, const char *fname)
 {
     MojoInput *io = NULL;
@@ -1510,6 +1542,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_debugger, "debugger");
         set_cfunc(luaState, luahook_findmedia, "findmedia");
         set_cfunc(luaState, luahook_writefile, "writefile");
+        set_cfunc(luaState, luahook_stringtofile, "stringtofile");
         set_cfunc(luaState, luahook_download, "download");
         set_cfunc(luaState, luahook_movefile, "movefile");
         set_cfunc(luaState, luahook_wildcardmatch, "wildcardmatch");

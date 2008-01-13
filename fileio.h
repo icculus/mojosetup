@@ -44,7 +44,10 @@ struct MojoInput
     void *opaque;
 };
 
+// This copies the memory, so you may free (ptr) after this function returns.
+MojoInput *MojoInput_newFromMemory(const uint8 *ptr, uint32 len, int constant);
 MojoInput *MojoInput_newFromFile(const char *fname);
+
 
 typedef enum
 {
