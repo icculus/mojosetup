@@ -88,6 +88,26 @@ local function do_rollbacks()
 end
 
 
+-- get a linear array of filenames in the manifest.
+local function flatten_manifest()
+    local man = MojoSetup.manifest
+    local files = {}
+
+    if man ~= nil then
+        for key,items in pairs(man) do
+            for i,item in ipairs(items) do
+                local path = item.path
+                if path ~= nil then
+                    files[#files+1] = path
+                end
+            end
+        end
+    end
+
+    return files
+end
+
+
 -- This gets called by fatal()...must be a global function.
 function MojoSetup.revertinstall()
     -- !!! FIXME: language.
@@ -99,7 +119,7 @@ function MojoSetup.revertinstall()
 
     -- !!! FIXME: callbacks here.
     delete_files(MojoSetup.downloads)
-    delete_files(MojoSetup.installed_files)
+    delete_files(flatten_manifest())
     do_rollbacks()
     delete_scratchdirs()
 end
@@ -233,11 +253,11 @@ local function drill_for_archive(archive, path, arclist)
 end
 
 
-local function install_file(dest, archive, file, perms, option)
+local function install_file(dest, perms, writefn, desc, manifestkey)
     -- Upvalued so we don't look these up each time...
     local fname = string.gsub(dest, "^.*/", "", 1)  -- chop the dirs off...
     local ptype = _("Installing")  -- !!! FIXME: localization.
-    local component = option.description
+    local component = desc
     local keepgoing = true
     local callback = function(ticks, justwrote, bw, total)
         local percent = -1
@@ -251,8 +271,22 @@ local function install_file(dest, archive, file, perms, option)
         return keepgoing
     end
 
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
-    local written, sums = MojoSetup.writefile(archive, dest, perms, callback)
+    -- Add to manifest first, so we can delete it during rollback if i/o fails.
+    local manifestentry =
+    {
+        type = "file",
+        path = dest,
+        mode = perms,    -- !!! FIXME: perms may be nil...we need a MojoSetup.defaultPermsString()...
+    }
+    if manifestkey ~= nil then
+        if MojoSetup.manifest[manifestkey] == nil then
+            MojoSetup.manifest[manifestkey] = {}
+        end
+        local manifest = MojoSetup.manifest[manifestkey]
+        manifest[#manifest+1] = manifestentry
+    end
+
+    local written, sums = writefn(callback)
     if not written then
         -- !!! FIXME: formatting!
         if not keepgoing then
@@ -264,39 +298,42 @@ local function install_file(dest, archive, file, perms, option)
         end
     end
 
-    -- !!! FIXME: perms may be null...we need a MojoSetup.defaultPermsString()...
-
-    if option ~= nil then
-        if MojoSetup.manifest[option] == nil then
-            MojoSetup.manifest[option] = {}
-        end
-        local manifest = MojoSetup.manifest[option]
-        manifest[#manifest+1] =
-        {
-            type = "file",
-            path = dest,
-            checksums = sums,
-            mode = perms,
-        }
-    end
+    manifestentry.checksums = sums
 
     MojoSetup.loginfo("Created file '" .. dest .. "'")
 end
 
 
-local function install_symlink(dest, lndest, option)
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
+local function install_file_from_archive(dest, archive, perms, desc, manifestkey)
+    local fn = function(callback)
+        return MojoSetup.writefile(archive, dest, perms, callback)
+    end
+    return install_file(dest, perms, fn, desc, manifestkey)
+end
+
+
+local function install_file_from_string(dest, string, perms, desc, manifestkey)
+    local fn = function(callback)
+        return MojoSetup.stringtofile(string, dest, perms, callback)
+    end
+    return install_file(dest, perms, fn, desc, manifestkey)
+end
+
+
+-- !!! FIXME: we should probably pump the GUI queue here, in case there are
+-- !!! FIXME:  thousands of symlinks in a row or something.
+local function install_symlink(dest, lndest, manifestkey)
     if not MojoSetup.platform.symlink(dest, lndest) then
         -- !!! FIXME: formatting!
         MojoSetup.logerror("Failed to create symlink '" .. dest .. "'")
         MojoSetup.fatal(_("symlink creation failed!"))
     end
 
-    if option ~= nil then
-        if MojoSetup.manifest[option] == nil then
-            MojoSetup.manifest[option] = {}
+    if manifestkey ~= nil then
+        if MojoSetup.manifest[manifestkey] == nil then
+            MojoSetup.manifest[manifestkey] = {}
         end
-        local manifest = MojoSetup.manifest[option]
+        local manifest = MojoSetup.manifest[manifestkey]
         manifest[#manifest+1] =
         {
             type = "symlink",
@@ -309,19 +346,20 @@ local function install_symlink(dest, lndest, option)
 end
 
 
-local function install_directory(dest, perms, option)
-    MojoSetup.installed_files[#MojoSetup.installed_files+1] = dest
+-- !!! FIXME: we should probably pump the GUI queue here, in case there are
+-- !!! FIXME:  thousands of dirs in a row or something.
+local function install_directory(dest, perms, manifestkey)
     if not MojoSetup.platform.mkdir(dest, perms) then
         -- !!! FIXME: formatting
         MojoSetup.logerror("Failed to create dir '" .. dest .. "'")
         MojoSetup.fatal(_("mkdir failed"))
     end
 
-    if option ~= nil then
-        if MojoSetup.manifest[option] == nil then
-            MojoSetup.manifest[option] = {}
+    if manifestkey ~= nil then
+        if MojoSetup.manifest[manifestkey] == nil then
+            MojoSetup.manifest[manifestkey] = {}
         end
-        local manifest = MojoSetup.manifest[option]
+        local manifest = MojoSetup.manifest[manifestkey]
         manifest[#manifest+1] =
         {
             type = "dir",
@@ -334,7 +372,7 @@ local function install_directory(dest, perms, option)
 end
 
 
-local function install_parent_dirs(path, option)
+local function install_parent_dirs(path, manifestkey)
     -- Chop any '/' chars from the end of the string...
     path = string.gsub(path, "/+$", "")
 
@@ -344,7 +382,7 @@ local function install_parent_dirs(path, option)
         if item ~= "" then
             fullpath = fullpath .. "/" .. item
             if not MojoSetup.platform.exists(fullpath) then
-                install_directory(fullpath, nil, option)
+                install_directory(fullpath, nil, manifestkey)
             end
         end
     end
@@ -386,7 +424,6 @@ local function permit_write(dest, entinfo, file)
             if allowoverwrite then
                 local id = #MojoSetup.rollbacks + 1
                 local f = MojoSetup.rollbackdir .. "/" .. id
-                -- !!! FIXME: don't add (f) to the installed_files table...
                 install_parent_dirs(f, nil)
                 MojoSetup.rollbacks[id] = dest
                 if not MojoSetup.movefile(dest, f) then
@@ -400,7 +437,6 @@ local function permit_write(dest, entinfo, file)
 
     return allowoverwrite
 end
-
 
 local function install_archive_entry(archive, ent, file, option)
     local entdest = ent.filename
@@ -429,7 +465,8 @@ local function install_archive_entry(archive, ent, file, option)
         if permit_write(dest, ent, file) then
             install_parent_dirs(dest, option)
             if ent.type == "file" then
-                install_file(dest, archive, file, perms, option)
+                local desc = option.description
+                install_file_from_archive(dest, archive, perms, desc, option)
             elseif ent.type == "dir" then
                 install_directory(dest, perms, option)
             elseif ent.type == "symlink" then
@@ -569,6 +606,7 @@ local function set_destination(dest)
     -- !!! FIXME: ".mojosetup_tmp" dirname may clash with install...?
     MojoSetup.loginfo("Install dest: '" .. dest .. "'")
     MojoSetup.destination = dest
+    MojoSetup.manifestdir = MojoSetup.destination .. "/.mojosetup_manifest"
     MojoSetup.scratchdir = MojoSetup.destination .. "/.mojosetup_tmp"
     MojoSetup.rollbackdir = MojoSetup.scratchdir .. "/rollbacks"
     MojoSetup.downloaddir = MojoSetup.scratchdir .. "/downloads"
@@ -582,6 +620,191 @@ local function run_config_defined_hook(func, install)
             MojoSetup.fatal(errstr)
         end
     end
+end
+
+
+-- The XML manifest is compatible with the loki_setup manifest schema, since
+--  it has a reasonable set of data, and allows you to use loki_update or
+--  loki_patch with a MojoSetup installation. Please note that we never ever
+--  look at this data! You are responsible for updating the other files if
+--  you think it'll be important. The Unix MojoSetup uninstaller uses the
+--  plain text manifest, for example (but loki_uninstall can use the xml one,
+--  so if you want, you can just drop in MojoSetup to replace loki_setup and
+--  use the Loki tools for everything else.
+local function build_xml_manifest()
+    local install = MojoSetup.install
+    local updateurl = install.updateurl
+    if updateurl ~= nil then
+        updateurl = 'update_url="' .. updateurl .. '"'
+    else
+        updateurl = ''
+    end
+
+    local retval =
+        '<?xml version="1.0" encoding="UTF-8"?>\n' ..
+        '<product name="' .. MojoSetup.install.id .. '" desc="' ..
+        install.description .. '" xmlversion="1.6" root="' ..
+        MojoSetup.destination .. '" ' .. updateurl .. '>\n' ..
+        '\t<component name="Default" version="' .. install.version ..
+        '" default="yes">\n'
+
+    local destlen = string.len(MojoSetup.destination) + 2
+    for option,items in pairs(MojoSetup.manifest) do
+        local desc = option
+        if type(desc) == "table" then  -- "meta" etc, or an option table.
+            desc = option.description
+        end
+
+        retval = retval .. '\t\t<option name="' .. desc .. '">\n'
+        for i,item in ipairs(items) do
+            local type = item.type
+            if type == "dir" then
+                type = "directory"
+            end
+
+            -- !!! FIXME: files from archives aren't filling item.mode in
+            -- !!! FIXME:  because it figures out the perms from the archive's
+            -- !!! FIXME:  C struct in native code. Need to get that into Lua.
+            -- !!! FIXME: (and get the perms uint16/string conversion cleaned up)
+            local mode = item.mode
+            if mode == nil then
+                mode = "0644"   -- !!! FIXME
+            end
+
+            local path = item.path
+            if path ~= nil then
+                path = string.sub(path, destlen)  -- make it relative.
+            end
+
+            retval = retval .. '\t\t\t<' .. type
+
+            if type == "file" then
+                if item.checksums ~= nil then
+                    for k,v in pairs(item.checksums) do
+                        retval = retval .. ' ' .. k .. '="' .. v .. '"'
+                    end
+                end
+                retval = retval .. ' mode="' .. mode .. '"'
+            elseif type == "directory" then
+                retval = retval .. ' mode="' .. mode .. '"'
+            elseif type == "symlink" then
+                retval = retval .. ' dest="' .. item.linkdest .. '" mode="0777"'
+            end
+
+            retval = retval .. '>' .. path .. "</" .. type .. ">\n"
+        end
+        retval = retval .. '\t\t</option>\n'
+    end
+
+    retval = retval .. '\t</component>\n'
+    retval = retval .. '</product>\n\n'
+
+    return retval
+end
+
+
+local function build_lua_manifest()
+    local indentation = 0  -- upvalue for serialize()
+    local function serialize(obj)
+        local retval = ''
+
+        indentation = indentation + 1
+
+        local objtype = type(obj)
+        if objtype == "number" then
+            retval = tostring(obj)
+        elseif objtype == "string" then
+            retval = string.format("%q", obj)
+        elseif objtype == "table" then
+            retval = "{\n"
+            local tab = string.rep("\t", indentation)
+            for k,v in pairs(obj) do
+                local key = k
+                if type(key) == "number" then
+                    key = '[' .. key .. ']'
+                elseif not string.match(key, "^[_a-zA-Z][_a-zA-Z0-9]*$") then
+                    key = '[' .. string.format("%q", key) .. ']'
+                end
+                retval = retval .. tab .. key .. " = " .. serialize(v) .. ",\n"
+            end
+            retval = retval .. string.rep("\t", indentation-1) .. "}"
+        else
+            MojoSetup.fatal(_("BUG: Unhandled data type"))
+        end
+
+        indentation = indentation - 1
+        return retval
+    end
+
+    local man = {}
+    for option,items in pairs(MojoSetup.manifest) do
+        local desc = option
+        if type(desc) == "table" then  -- "meta" etc, or an option table.
+            desc = option.description
+        end
+        man[desc] = items;
+    end
+
+    local install = MojoSetup.install
+    return 'package = ' .. serialize {
+        id = install.id,
+        description = install.description,
+        root = MojoSetup.destination,
+        update_url = install.updateurl,
+        version = install.version,
+        manifest = man,
+    } .. "\n\n"
+end
+
+
+local function build_txt_manifest()
+    local retval = ''
+    local destlen = string.len(MojoSetup.destination) + 2
+    local files = flatten_manifest()
+    for i,item in ipairs(files) do
+        local path = item
+        if path ~= nil then
+            path = string.sub(path, destlen)  -- make it relative.
+            retval = retval .. path .. "\n"
+        end
+    end
+    return retval
+end
+
+
+local function install_manifests()
+    -- We write out a Lua script as a data definition language, a
+    --  loki_setup-compatible XML manifest, and a straight text file of
+    --  all the filenames. Take your pick.
+    local key = ".mojosetup_metadata."
+
+    -- We have to cheat and just plug these into the manifest directly, since
+    --  they won't show up until after we write them out, otherwise.
+    -- Obviously, we don't have checksums for them, either, as we haven't
+    --  assembled the data yet!
+    local perms = "0644"  -- !!! FIXME
+    local basefname = MojoSetup.manifestdir .. "/" .. MojoSetup.install.id
+    local lua_fname = basefname .. ".lua"
+    local xml_fname = basefname .. ".xml"
+    local txt_fname = basefname .. ".txt"
+    if MojoSetup.manifest[key] == nil then
+        MojoSetup.manifest[key] = {}
+    end
+    local manifest = MojoSetup.manifest[key]
+    manifest[#manifest+1] = { type = "file", path = lua_fname, mode = perms }
+    manifest[#manifest+1] = { type = "file", path = xml_fname, mode = perms }
+    manifest[#manifest+1] = { type = "file", path = txt_fname, mode = perms }
+
+    -- These are probably all duplicated effort, but just in case...
+    install_parent_dirs(lua_fname, key)
+    install_parent_dirs(xml_fname, key)
+    install_parent_dirs(txt_fname, key)
+
+    -- now build these things...
+    local desc = _("Metadata")
+    install_file_from_string(lua_fname, build_lua_manifest(), perms, desc, nil)
+    install_file_from_string(xml_fname, build_xml_manifest(), perms, desc, nil)
+    install_file_from_string(txt_fname, build_txt_manifest(), perms, desc, nil)
 end
 
 
@@ -864,7 +1087,6 @@ local function do_install(install)
             local id = 0
             for file,option in pairs(MojoSetup.files.downloads) do
                 local f = MojoSetup.downloaddir .. "/" .. id
-                -- !!! FIXME: don't add (f) to the installed_files table...
                 install_parent_dirs(f, nil)
                 id = id + 1
 
@@ -976,6 +1198,9 @@ local function do_install(install)
         end
 
         run_config_defined_hook(install.postinstall, install)
+
+        install_manifests()   -- write out manifest.
+
         return 1   -- go to next stage.
     end
 
@@ -1004,7 +1229,6 @@ local function do_install(install)
     MojoSetup.stages = stages
 
     MojoSetup.manifest = {}
-    MojoSetup.installed_files = {}
     MojoSetup.rollbacks = {}
     MojoSetup.downloads = {}
 
@@ -1033,15 +1257,12 @@ local function do_install(install)
         end
     end
 
-    -- !!! FIXME: write out manifest.
-
     -- Successful install, so delete conflicts we no longer need to rollback.
     delete_rollbacks()
     delete_files(MojoSetup.downloads)
     delete_scratchdirs()
 
     -- Don't let future errors delete files from successful installs...
-    MojoSetup.installed_files = nil
     MojoSetup.downloads = nil
     MojoSetup.rollbacks = nil
 
@@ -1052,6 +1273,7 @@ local function do_install(install)
     stages = nil
     MojoSetup.manifest = nil
     MojoSetup.destination = nil
+    MojoSetup.manifestdir = nil
     MojoSetup.scratchdir = nil
     MojoSetup.rollbackdir = nil
     MojoSetup.downloaddir = nil
