@@ -13,6 +13,18 @@ if [ "$1" = "--debug" ]; then
     DEBUG=1
 fi
 
+OSTYPE=`uname -s`
+if [ "$OSTYPE" = "Linux" ]; then
+    NCPU=`cat /proc/cpuinfo |grep vendor_id |wc -l`
+    let NCPU=$NCPU+1
+elif [ "$OSTYPE" = "Darwin" ]; then
+    NCPU=`sysctl -n hw.ncpu`
+else
+    NCPU=1
+fi
+
+echo "Will use make -j$NCPU. If this is wrong, check NCPU at top of script."
+
 # Show everything that we do here on stdout.
 set -x
 
@@ -55,7 +67,7 @@ cmake \
     -DMOJOSETUP_IMAGE_PNG=FALSE \
     -DMOJOSETUP_URL_FTP=FALSE \
     .
-make -j5
+make -j$NCPU
 
 # Strip the binaries and GUI plugins, put them somewhere useful.
 if [ "$DEBUG" != "1" ]; then
