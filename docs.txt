@@ -267,6 +267,12 @@ Here are the elements, and the attributes they can possess.
     Setup.Package table as a parameter.
 
 
+   updateurl (no default, mustBeUrl)
+
+    This is written to the manifest files for the aid of external tools, but
+    isn't currently used by MojoSetup itself.
+
+
    splash (no default, mustBeString, cantBeEmpty)
 
     (!!! FIXME) This attribute is for future expansion.
@@ -294,11 +300,6 @@ Here are the elements, and the attributes they can possess.
 
 
    binarypath (no default, mustBeString, cantBeEmpty)
-
-    (!!! FIXME) This attribute is for future expansion.
-
-
-   update_url (no default, mustBeString, mustBeUrl)
 
     (!!! FIXME) This attribute is for future expansion.
 
@@ -958,7 +959,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
   MojoSetup.info.ui
 
     This is a string (not a function!) of the UI plugin that MojoSetup chose.
-    system. This is currently one of "stdio", "ncurses", "macosx", "gtkplus2",
+    This is currently one of "stdio", "ncurses", "macosx", "gtkplus2", "www",
     or one of several others, depending on your build and target platform.
     It's best to not rely on this being within a specific set of values.
     
@@ -1035,7 +1036,11 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     a change to the filesystem. Each of these elements is an array of tables.
 
       for option,items in pairs(MojoSetup.manifest) do
-          print("Option: " .. option.description)
+          local desc = option
+          if type(desc) == "table" then  -- could be a string in some cases!
+              desc = desc.description
+          end
+          print("Option: " .. desc)
           for i,item in ipairs(items) do
               -- ... do stuff with "item" here ...
           end
@@ -1052,8 +1057,10 @@ Your config file is a Lua script, and as such, has access to all of Lua's
           -- Checksums may or may not exist in this table, depending on how
           --  MojoSetup was compiled. You can iterate to find out what's there:
           print("checksums:")
-          for k,v in pairs(item.checksums) do
-              print("  " .. k .. ": " .. v)   -- "crc32: 92FAB211E", etc.
+          if item.checksums ~= nil then
+              for k,v in pairs(item.checksums) do
+                  print("  " .. k .. ": " .. v)   -- "crc32: 92FAB211E", etc.
+              end
           end
       end
 
