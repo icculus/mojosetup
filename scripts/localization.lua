@@ -4,7 +4,8 @@
 --
 --  This file written by Ryan C. Gordon.
 
-
+-- Lines starting with "--" are comments in this file.
+--
 -- NOTE: If you care about Unicode or ASCII chars above 127, this file _MUST_
 --  be UTF-8 encoded! If you think you're using a certain high-ascii codepage,
 --  you're wrong!
@@ -14,8 +15,23 @@
 --  file more like a data description language and less like a turing-complete
 --  scripting language.
 --
--- You should leave the existing strings here. They aren't hurting anything,
---  and most are used by MojoSetup itself. Add your own, though.
+-- The format of an entry looks like this:
+--
+--  ["Hello"] = {
+--    es = "Hola",
+--    de = "Hallo",
+--    fr = "Bonjour",
+--  };
+--
+-- So you just fill in the translation of the English for your language code.
+--  Note that locales work, too:
+--
+--  ["Color"] = {
+--    en_GB = "Colour",
+--  };
+--
+-- Specific locales are favored, falling back to specific languages, eventually
+--  ending up on the untranslated version (which is technically en_US).
 --
 -- Whenever you see a %x sequence, that is replaced with a string at runtime.
 --  So if you see, ["Hello, %0, my name is %1."], then this might become
@@ -27,6 +43,9 @@
 --  correctness at startup. This is to prevent the installer working fine
 --  in all reasonable tests, then finding out that one guy in Ghana has a
 --  crashing installer because his localization forgot to add a %1 somewhere.
+--
+-- You should leave the existing strings here. They aren't hurting anything,
+--  and most are used by MojoSetup itself. Add your own, if needed, though.
 --
 -- The table you create here goes away shortly after creation, as the relevant
 --  parts of it get moved somewhere else. You should call MojoSetup.translate()
@@ -147,6 +166,9 @@ MojoSetup.localization = {
     };
 
     ["BUG: stepped back over start of stages"] = {
+    };
+
+    ["BUG: Unhandled data type"] = {
     };
 
     ["bzlib triggered an internal error: %0"] = {
@@ -320,6 +342,9 @@ MojoSetup.localization = {
     };
 
     ["You must accept the license before you may install"] = {
+    };
+
+    ["Metadata"] = {
     };
 };
 
