@@ -134,6 +134,9 @@ if MojoSetup.localization ~= nil then
     local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
     MojoSetup.translations = {}
     for k,v in pairs(MojoSetup.localization) do
+        if MojoSetup.translations[k] ~= nil then
+            MojoSetup.fatal("BUG: Duplicate localization key ['" .. k .. "']")
+        end
         if type(v) == "table" then
             sanity_check_localization_entry(k, v)
             if v[locale] ~= nil then
