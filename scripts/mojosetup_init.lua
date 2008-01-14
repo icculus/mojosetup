@@ -130,10 +130,21 @@ if type(MojoSetup.localization) ~= "table" then
     MojoSetup.localization = nil
 end
 
+-- Map some legacy language identifiers into updated equivalents.
+local lang_remap =
+{
+    no = "nb",  -- "Norwegian" split into "Bokmal" (nb) and "Nynorsk" (nn)
+}
+
 if MojoSetup.localization ~= nil then
     local at_least_one = false
     local locale = MojoSetup.info.locale
     local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
+
+    if lang_remap[lang] ~= nil then
+        lang = lang_remap[lang]
+    end
+
     MojoSetup.translations = {}
     for k,v in pairs(MojoSetup.localization) do
         if MojoSetup.translations[k] ~= nil then
