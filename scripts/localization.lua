@@ -276,6 +276,26 @@ MojoSetup.localization = {
     ["KB/s"] = {
     };
 
+    -- Download rate when we don't know the goal (can't report time left).
+    -- This is a number ($0) followed by the localized "KB/s" or "B/s" ($1).
+    ["$0 $1"] = {
+    };
+
+    -- Download rate when we know the goal (can report time left).
+    -- This is a number ($0) followed by the localized "KB/s" or "B/s" ($1),
+    --  then the hours ($2), minutes ($3), and seconds ($4) remaining
+    ["$0 $1, $2:$3:$4 remaining"] = {
+    };
+
+    -- download rate when download isn't progressing at all.
+    ["stalled"] = {
+    };
+
+    -- Download progress string: filename ($0), percent downloaded ($1),
+    --  download rate determined in one of the above strings ($2).
+    ["$0: $1%% ($2)"] = {
+    };
+
     ["Media change"] = {
     };
 
@@ -323,10 +343,6 @@ MojoSetup.localization = {
     };
 
     ["Shutting down..."] = {
-    };
-
-    -- printed instead of kilobytes per second when download isn't progressing.
-    ["(stalled)"] = {
     };
 
     ["Symlink creation failed!"] = {

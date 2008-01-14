@@ -139,44 +139,42 @@ local function calc_percent(current, total)
 end
 
 
-local function make_bps_string(bps, bw, total)
-    -- !!! FIXME: localization on all this.
-    local bpsstr = nil
+local function make_rate_string(rate, bw, total)
+    local retval = nil
 
-    if bps <= 0 then
-        bpsstr = _("(stalled)")
+    if rate <= 0 then
+        retval = _("stalled")
     else
-        local bytesleft = total - bw
-        local secsleft = MojoSetup.truncatenum(bytesleft / bps)
-        local minsleft = MojoSetup.truncatenum(secsleft / 60)
-        local hoursleft = MojoSetup.truncatenum(minsleft / 60)
-
-        secsleft = string.sub("00" .. (secsleft - (minsleft * 60)), -2)
-        minsleft = string.sub("00" .. (minsleft - (hoursleft * 60)), -2)
-
-        if hoursleft < 10 then
-            hoursleft = "0" .. hoursleft
-        else
-            hoursleft = tostring(hoursleft)
+        local ratetype = _("B/s")
+        if rate > 1024 then
+            rate = MojoSetup.truncatenum(rate / 1024)
+            ratetype = _("KB/s")
         end
 
-        local timeleft = hoursleft .. ":" .. minsleft .. ":" .. secsleft
-        if bps > 1024 then
-            local kps = MojoSetup.truncatenum(bps / 1024)
-            if total > 0 then
-                bpsstr = " (" .. kps .. _("Kb/s") .. ", " .. timeleft .. " remaining)"
+        if total > 0 then  -- can approximate time left if we know the goal.
+            local bytesleft = total - bw
+            local secsleft = MojoSetup.truncatenum(bytesleft / rate)
+            local minsleft = MojoSetup.truncatenum(secsleft / 60)
+            local hoursleft = MojoSetup.truncatenum(minsleft / 60)
+
+            secsleft = string.sub("00" .. (secsleft - (minsleft * 60)), -2)
+            minsleft = string.sub("00" .. (minsleft - (hoursleft * 60)), -2)
+
+            if hoursleft < 10 then
+                hoursleft = "0" .. hoursleft
             else
-                bpsstr = " (" .. kps .. _("Kb/s") .. ")"
+                hoursleft = tostring(hoursleft)
             end
+
+            retval = MojoSetup.format(_("$0 $1, $2:$3:$4 remaining"),
+                                      rate, ratetype,
+                                      hoursleft, minsleft, secsleft)
         else
-            if total > 0 then
-                bpsstr = " (" .. bps .. _("b/s") .. ", " .. timeleft .. " remaining)"
-            else
-                bpsstr = " (" .. bps .. _("b/s") .. ")"
-            end
+            retval = MojoSetup.format(_("$0 $1"), rate, ratetype)
         end
     end
-    return bpsstr
+
+    return retval
 end
 
 
@@ -1089,7 +1087,7 @@ local function do_install(install)
                 local component = option.description
                 local bps = 0
                 local bpsticks = 0
-                local bpsstr = ''
+                local ratestr = ''
                 local item = fname
                 local percent = -1
                 local callback = function(ticks, justwrote, bw, total)
@@ -1098,7 +1096,7 @@ local function do_install(install)
                         bpsticks = ticks + 1000
                     else
                         if ticks >= bpsticks then
-                            bpsstr = make_bps_string(bps, bw, total)
+                            ratestr = make_rate_string(bps, bw, total)
                             bpsticks = ticks + 1000
                             bps = 0
                         end
@@ -1107,7 +1105,10 @@ local function do_install(install)
                         percent = calc_percent(MojoSetup.downloaded,
                                                MojoSetup.totaldownload)
 
-                        item = fname .. ": " .. calc_percent(bw, total) .. "%" .. bpsstr -- !!! FIXME: localization
+                        item = MojoSetup.format(_("$0: $1%% ($2)"),
+                                                fname,
+                                                calc_percent(bw, total),
+                                                ratestr);
                     end
                     return MojoSetup.gui.progress(ptype, component, percent, item)
                 end
