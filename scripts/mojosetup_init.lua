@@ -19,6 +19,8 @@
 --  then this code executes to do the heavy lifting. All Lua state should be
 --  sane for the rest of the app once this script successfully completes.
 
+local _ = MojoSetup.translate
+
 MojoSetup.loginfo("MojoSetup Lua initialization at " .. MojoSetup.date())
 MojoSetup.loginfo("buildver: " .. MojoSetup.info.buildver)
 MojoSetup.loginfo("locale: " .. MojoSetup.info.locale)
@@ -159,26 +161,29 @@ if MojoSetup.localization ~= nil then
 end
 
 
-
 -- Our namespace for this API...this is filled in with the rest of this file.
 Setup = {}
 
 local function schema_assert(test, fnname, elem, errstr)
     if not test then
-        -- !!! FIXME: error()? localization?
-        error(fnname .. "::" .. elem .. " " .. errstr .. ".", 0)
+        local msg = MojoSetup.format(_("BUG: Config $0 $1."),
+                                     fnname .. "::" .. elem, errstr)
+        MojoSetup.fatal(msg)
     end
 end
 
 local function mustExist(fnname, elem, val)
-    schema_assert(val ~= nil, fnname, elem, "must be explicitly specified")
+    schema_assert(val ~= nil, fnname, elem, _("must be explicitly specified"))
 end
 
 local function mustBeSomething(fnname, elem, val, elemtype)
     -- Can be nil...please use mustExist if this is a problem!
     if val ~= nil then
-        schema_assert(type(val) == elemtype, fnname, elem,
-                        "must be a " .. elemtype)
+        if type(val) ~= elemtype then
+            local msg = MojoSetup.format(_("must be $0"),
+                                         MojoSetup.translate(elemtype))
+            schema_assert(false, fnname, elem, msg)
+        end
     end
 end
 
@@ -205,21 +210,20 @@ end
 local function cantBeEmpty(fnname, elem, val)
     -- Can be nil...please use mustExist if this is a problem!
     if val ~= nil then
-        schema_assert(val ~= "", fnname, elem, "can't be empty string")
+        schema_assert(val ~= "", fnname, elem, _("can't be empty string"))
     end
 end
 
 local function mustBeStringOrTableOfStrings(fnname, elem, val)
     -- Can be nil...please use mustExist if this is a problem!
     if val ~= nil then
+        local err = _("must be string or table of strings")
         if type(val) == "string" then
             val = { val }
         end
-        schema_assert(type(val) == "table", fnname, elem,
-                            "must be string or table of strings")
+        schema_assert(type(val) == "table", fnname, elem, err)
         for k,v in pairs(val) do
-            schema_assert(type(v) == "string", fnname, elem,
-                                "must be string or table of strings")
+            schema_assert(type(v) == "string", fnname, elem, err)
         end
     end
 end
@@ -229,7 +233,7 @@ local function mustBeStringOrNumber(fnname, elem, val)
     if val ~= nil then
         local t = type(val)
         schema_assert((t == "string") or (t == "number"), fnname, elem,
-                        "must be a string or number")
+                        _("must be a string or number"))
     end
 end
 
@@ -238,19 +242,19 @@ local function mustBeUrl(fnname, elem, val)
     cantBeEmpty(fnname, elem, val)
     if (val ~= nil) then
         local prot,host,path = MojoSetup.spliturl(val)
-        schema_assert(prot ~= nil, fnname, elem, "URL doesn't have protocol")
-        schema_assert(host ~= nil, fnname, elem, "URL doesn't have host")
-        schema_assert(path ~= nil, fnname, elem, "URL doesn't have path")
+        schema_assert(prot ~= nil,fnname,elem,_("URL doesn't have protocol"))
+        schema_assert(host ~= nil,fnname,elem,_("URL doesn't have host"))
+        schema_assert(path ~= nil,fnname,elem,_("URL doesn't have path"))
         prot = string.gsub(prot, "://$", "")
         local supported = MojoSetup.info.supportedurls[prot]
-        schema_assert(supported, fnname, elem, "URL protocol is unsupported")
+        schema_assert(supported,fnname,elem,_("URL protocol is unsupported"))
     end
 end
 
 local function mustBePerms(fnname, elem, val)
     mustBeString(fnname, elem, val)
     local valid = MojoSetup.isvalidperms(val)
-    schema_assert(valid, fnname, elem, "Permission string is invalid")
+    schema_assert(valid, fnname, elem, _("Permission string is invalid"))
 end
 
 local function sanitize(fnname, tab, elems)
@@ -270,6 +274,7 @@ local function sanitize(fnname, tab, elems)
         end
     end
 
+    local notvaliderr = _("is not a valid property")
     for k,v in pairs(tab) do
         local found = false
         if k == "_type_" then
@@ -285,7 +290,7 @@ local function sanitize(fnname, tab, elems)
                 end
             end
         end
-        schema_assert(found, fnname, k, "is not a valid property")
+        schema_assert(found, fnname, k, notvaliderr)
     end
 
     return tab

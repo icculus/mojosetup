@@ -11,7 +11,6 @@
 
 -- !!! FIXME: add a --dryrun option.
 
--- This is just for convenience.
 local _ = MojoSetup.translate
 
 local function do_delete(fname)

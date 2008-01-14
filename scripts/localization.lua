@@ -50,6 +50,9 @@
 -- The table you create here goes away shortly after creation, as the relevant
 --  parts of it get moved somewhere else. You should call MojoSetup.translate()
 --  to get the proper translation for a given string.
+--
+-- Questions about the intent of a specific string can go to Ryan C. Gordon
+--  (icculus@icculus.org).
 
 MojoSetup.localization = {
     -- zlib error message
@@ -174,6 +177,77 @@ MojoSetup.localization = {
 
     ["BUG: Unhandled data type"] = {
     };
+
+    -- Buggy config elements:
+    -- This is supposed to be a config element ($0) and something that's wrong
+    --  with it ($1), such as "BUG: Config Package::description not a string"
+    -- The grammar can be imperfect here; this is a developer error, not an
+    --  end-user error, so we haven't made this very flexible.
+    ["BUG: Config $0 $1."] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["must be explicitly specified"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["must be string or table of strings"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["must be a string or number"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["can't be empty string"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["URL doesn't have protocol"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["URL doesn't have host"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["URL doesn't have path"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["URL protocol is unsupported"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["Permission string is invalid"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    ["is not a valid property"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
+    --  $0 is a data type name (string, number, table, etc).
+    ["must be $0"] = {
+    };
+
+    -- Data types for "must be $0" above...
+    ["string"] = {
+    };
+
+    ["boolean"] = {
+    };
+
+    ["number"] = {
+    };
+
+    ["function"] = {
+    };
+
+    ["table"] = {
+    };
+
+
 
     ["bzlib triggered an internal error: %0"] = {
     };
