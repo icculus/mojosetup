@@ -447,6 +447,10 @@ boolean MojoPlatform_osType(char *buf, size_t len)
 boolean MojoPlatform_osVersion(char *buf, size_t len)
 {
 #if PLATFORM_MACOSX
+    // !!! FIXME: this is wrong...it doesn't with with 10.y.xx, where 'xx'
+    // !!! FIXME:  is more than one digit (it appears to clamp to 9 in these
+    // !!! FIXME:  cases inside Gestalt(), for obvious reasons).
+    // !!! FIXME: This is a legacy--and incorrect--way to get this information.
     long ver = 0x0000;
 	if (Gestalt(gestaltSystemVersion, &ver) == noErr)
     {
