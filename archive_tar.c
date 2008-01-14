@@ -483,7 +483,7 @@ static int64 MojoInput_tar_length(MojoInput *io)
 static MojoInput *MojoInput_tar_duplicate(MojoInput *io)
 {
     MojoInput *retval = NULL;
-    fatal("BUG: Can't duplicate tar inputs");  // !!! FIXME: why not?
+    fatal(_("BUG: Can't duplicate tar inputs"));  // !!! FIXME: why not?
 #if 0
     TARinput *input = (TARinput *) io->opaque;
     MojoInput *origio = (MojoInput *) io->opaque;

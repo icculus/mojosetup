@@ -393,7 +393,6 @@ local function permit_write(dest, entinfo, file)
                 -- !!! FIXME: option/package-wide overwrite?
                 allowoverwrite = file.allowoverwrite
                 if not allowoverwrite then
-                    -- !!! FIXME: language and formatting.
                     MojoSetup.loginfo("File '" .. dest .. "' already exists.")
                     local text = MojoSetup.format(_("File '$0' already exists! Replace?"), dest);
                     local ynan = MojoSetup.promptynan(_("Conflict!"), text, true)

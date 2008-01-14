@@ -178,6 +178,10 @@ MojoSetup.localization = {
     ["BUG: Unhandled data type"] = {
     };
 
+    -- "tar" is a proper name in this case.
+    ["BUG: Can't duplicate tar inputs"] = {
+    };
+
     -- Buggy config elements:
     -- This is supposed to be a config element ($0) and something that's wrong
     --  with it ($1), such as "BUG: Config Package::description not a string"
