@@ -166,15 +166,21 @@ static MojoInput* MojoInput_gzip_duplicate(MojoInput *io)
     return retval;
 } // MojoInput_gzip_duplicate
 
+static void free_gzip_input(MojoInput *io)
+{
+    GZIPinfo *info = (GZIPinfo *) io->opaque;
+    inflateEnd(&info->stream);
+    free(info->buffer);
+    free(info);
+    free(io);
+} // free_gzip_input
+
 static void MojoInput_gzip_close(MojoInput *io)
 {
     GZIPinfo *info = (GZIPinfo *) io->opaque;
     if (info->origio != NULL)
         info->origio->close(info->origio);
-    inflateEnd(&info->stream);
-    free(info->buffer);
-    free(info);
-    free(io);
+    free_gzip_input(io);
 } // MojoInput_gzip_close
 
 static MojoInput *make_gzip_input(MojoInput *origio)
@@ -374,15 +380,21 @@ static MojoInput* MojoInput_bzip2_duplicate(MojoInput *io)
     return retval;
 } // MojoInput_bzip2_duplicate
 
+static void free_bzip2_input(MojoInput *io)
+{
+    BZIP2info *info = (BZIP2info *) io->opaque;
+    BZ2_bzDecompressEnd(&info->stream);
+    free(info->buffer);
+    free(info);
+    free(io);
+} // free_bzip2_input
+
 static void MojoInput_bzip2_close(MojoInput *io)
 {
     BZIP2info *info = (BZIP2info *) io->opaque;
     if (info->origio != NULL)
         info->origio->close(info->origio);
-    BZ2_bzDecompressEnd(&info->stream);
-    free(info->buffer);
-    free(info);
-    free(io);
+    free_bzip2_input(io);
 } // MojoInput_bzip2_close
 
 static MojoInput *make_bzip2_input(MojoInput *origio)
@@ -471,7 +483,7 @@ static int64 MojoInput_tar_length(MojoInput *io)
 static MojoInput *MojoInput_tar_duplicate(MojoInput *io)
 {
     MojoInput *retval = NULL;
-    fatal("BUG: Can't duplicate tar inputs");
+    fatal("BUG: Can't duplicate tar inputs");  // !!! FIXME: why not?
 #if 0
     TARinput *input = (TARinput *) io->opaque;
     MojoInput *origio = (MojoInput *) io->opaque;
@@ -711,11 +723,14 @@ static void MojoArchive_tar_close(MojoArchive *ar)
 } // MojoArchive_tar_close
 
 
+static void free_wrapper_noop(MojoInput *io) {}
+
 MojoArchive *MojoArchive_createTAR(MojoInput *io)
 {
     MojoArchive *ar = NULL;
     uint8 sig[512];
     int64 br = io->read(io, sig, 4);
+    void (*free_wrapper)(MojoInput *io) = free_wrapper_noop;
 
     if ((!io->seek(io, 0)) || (br != 4))
         return NULL;
@@ -727,13 +742,19 @@ MojoArchive *MojoArchive_createTAR(MojoInput *io)
 
         #if SUPPORT_TAR_GZ   // gzip compressed?
         if ((sig[0] == 0x1F) && (sig[1] == 0x8B) && (sig[2] == 0x08))
+        {
+            free_wrapper = free_gzip_input;
             io = make_gzip_input(io);
+        } // if
         #endif
 
         // BZ2 compressed?
         #if SUPPORT_TAR_BZ2  // bzip2 compressed?
         if ((sig[0] == 0x42) && (sig[1] == 0x5A))
+        {
+            free_wrapper = free_bzip2_input;
             io = make_bzip2_input(io);
+        } // if
         #endif
     } // if
 
@@ -743,11 +764,17 @@ MojoArchive *MojoArchive_createTAR(MojoInput *io)
     //  these for years, so it's okay to ignore other ones, I guess.
     br = io->read(io, sig, sizeof (sig));  // potentially compressed.
     if ((!io->seek(io, 0)) || (br != sizeof (sig)))
-        return NULL;   // !!! FIXME: leaking MojoInput wrapper...
+    {
+        free_wrapper(io);
+        return NULL;
+    } // if
 
     if (!is_ustar(sig))
-        return NULL;   // !!! FIXME: leaking MojoInput wrapper...
-    
+    {
+        free_wrapper(io);
+        return NULL;
+    } // if
+
     // okay, it's a tarball, we're good to go.
 
     ar = (MojoArchive *) xmalloc(sizeof (MojoArchive));
