@@ -455,8 +455,9 @@ void MojoLog_initLogging(void)
     else  // Unknown string gets everything...that'll teach you.
         MojoLog_logLevel = MOJOSETUP_LOG_EVERYTHING;
 
-    // !!! FIXME: allow logging to stdout on Unix.
-    if (fname != NULL)
+    if ((fname != NULL) && (strcmp(fname, "-") == 0))
+        logFile = MojoPlatform_stdout();
+    else if (fname != NULL)
     {
         const uint32 flags = MOJOFILE_WRITE|MOJOFILE_CREATE|MOJOFILE_TRUNCATE;
         const uint16 mode = MojoPlatform_defaultFilePerms();

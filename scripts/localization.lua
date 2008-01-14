@@ -126,6 +126,10 @@ MojoSetup.localization = {
     ["NOTICE: %0\n[hit enter]"] = {
     };
 
+    -- That's meant to be the name of an item (%0) and the percent done (%1).
+    ["%0: %1%%"] = {
+    };
+
     ["%0 (total progress: %1%%)\n"] = {
     };
 
@@ -180,10 +184,10 @@ MojoSetup.localization = {
     ["Cancel installation"] = {
     };
 
-    ["cannot open archive."] = {
+    ["Can't enumerate archive"] = {
     };
 
-    ["Can't enumerate archive"] = {
+    ["Can't open archive."] = {
     };
 
     ["Choose install destination by number (hit enter for #1), or enter your own."] = {
@@ -238,7 +242,10 @@ MojoSetup.localization = {
     ["File creation failed!"] = {
     };
 
-    ["file download failed!"] = {
+    ["File download failed!"] = {
+    };
+
+    ["File '$0' already exists! Replace?"] = {
     };
 
     ["Finish"] = {
@@ -272,7 +279,7 @@ MojoSetup.localization = {
     ["Media change"] = {
     };
 
-    ["mkdir failed"] = {
+    ["Directory creation failed"] = {
     };
 
     ["need dictionary"] = {
@@ -322,7 +329,7 @@ MojoSetup.localization = {
     ["(stalled)"] = {
     };
 
-    ["symlink creation failed!"] = {
+    ["Symlink creation failed!"] = {
     };
 
     ["The installer has been stopped by the system."] = {

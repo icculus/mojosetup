@@ -1132,6 +1132,12 @@ boolean MojoPlatform_isfile(const char *dir)
 } // MojoPlatform_isfile
 
 
+void *MojoPlatform_stdout(void)
+{
+    return NULL;  // unsupported on Windows.
+} // MojoPlatform_stdout
+
+
 void *MojoPlatform_open(const char *fname, uint32 flags, uint16 mode)
 {
     HANDLE *retval = NULL;

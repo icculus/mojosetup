@@ -97,7 +97,6 @@ static int wait_event(void)
     gtk_main_iteration();
     if (click_value == CLICK_CANCEL)
     {
-        // !!! FIXME: language.
         char *title = entry->xstrdup(entry->_("Cancel installation"));
         char *text = entry->xstrdup(entry->_("Are you sure you want to cancel installation?"));
         if (!MojoGui_gtkplus2_promptyn(title, text, false))
@@ -280,7 +279,6 @@ static void MojoGui_gtkplus2_msgbox(const char *title, const char *text)
 static boolean MojoGui_gtkplus2_promptyn(const char *title, const char *text,
                                          boolean defval)
 {
-    // !!! FIXME: support defval.
     gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION,
                         GTK_BUTTONS_YES_NO,
                         defval ? GTK_RESPONSE_YES : GTK_RESPONSE_NO,
@@ -310,7 +308,6 @@ static MojoGuiYNAN MojoGui_gtkplus2_promptynan(const char *title,
                                                const char *text,
                                                boolean defval)
 {
-    // !!! FIXME: support defval.
     const gint rc = do_msgbox(title, text, GTK_MESSAGE_QUESTION,
                               GTK_BUTTONS_NONE,
                               defval ? GTK_RESPONSE_YES : GTK_RESPONSE_NO,

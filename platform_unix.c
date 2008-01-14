@@ -591,6 +591,14 @@ boolean MojoPlatform_isfile(const char *dir)
 } // MojoPlatform_isfile
 
 
+void *MojoPlatform_stdout(void)
+{
+    int *retval = (int *) xmalloc(sizeof (int));
+    *retval = 1;  // stdout.
+    return retval;
+} // MojoPlatform_stdout
+
+
 void *MojoPlatform_open(const char *fname, uint32 flags, uint16 mode)
 {
     void *retval = NULL;
@@ -678,7 +686,16 @@ boolean MojoPlatform_flush(void *fd)
 boolean MojoPlatform_close(void *fd)
 {
     boolean retval = false;
-    if (close(*((int *) fd)) == 0)
+    int handle = *((int *) fd);
+
+    // don't close stdin, stdout, or stderr.
+    if ((handle == 0) || (handle == 1) || (handle == 2))
+    {
+        free(fd);
+        return true;
+    } // if
+
+    if (close(handle) == 0)
         free(fd);
     return retval;
 } // MojoPlatform_close

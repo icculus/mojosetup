@@ -35,7 +35,6 @@ local function delete_files(filelist, callback, error_is_fatal)
         for i = max,1,-1 do
             local fname = filelist[i]
             if not do_delete(fname) and error_is_fatal then
-                -- !!! FIXME: formatting
                 MojoSetup.fatal(_("Deletion failed!"))
             end
 
@@ -77,7 +76,6 @@ local function do_rollbacks()
         local dest = MojoSetup.rollbacks[id]
         if not MojoSetup.movefile(src, dest) then
             -- we're already in fatal(), so we can only throw up a msgbox...
-            -- !!! FIXME: formatting
             MojoSetup.msgbox(_("Serious problem"),
                              _("Couldn't restore some files. Your existing installation is likely damaged."))
         end
@@ -110,7 +108,6 @@ end
 
 -- This gets called by fatal()...must be a global function.
 function MojoSetup.revertinstall()
-    -- !!! FIXME: language.
     if MojoSetup.gui_started then
         MojoSetup.gui.final(_("Incomplete installation. We will revert any changes we made."))
     end
@@ -219,7 +216,7 @@ end
 -- This code's a little nasty...
 local function drill_for_archive(archive, path, arclist)
     if not MojoSetup.archive.enumerate(archive) then
-        MojoSetup.fatal(_("Couldn't enumerate archive."))  -- !!! FIXME: error message
+        MojoSetup.fatal(_("Couldn't enumerate archive."))
     end
 
     local pathtab = split_path(path)
@@ -237,7 +234,7 @@ local function drill_for_archive(archive, path, arclist)
                 --  open it as an archive and keep drilling...
                 local arc = MojoSetup.archive.fromentry(archive)
                 if arc == nil then
-                    MojoSetup.fatal(_("Couldn't open archive."))  -- !!! FIXME: error message.
+                    MojoSetup.fatal(_("Couldn't open archive."))
                 end
                 arclist[#arclist+1] = arc
                 if pathtab[i] == nil then
@@ -249,14 +246,14 @@ local function drill_for_archive(archive, path, arclist)
         ent = MojoSetup.archive.enumnext(archive)
     end
 
-    MojoSetup.fatal(_("Archive not found."))  -- !!! FIXME: error message.
+    MojoSetup.fatal(_("Archive not found."))
 end
 
 
 local function install_file(dest, perms, writefn, desc, manifestkey)
     -- Upvalued so we don't look these up each time...
     local fname = string.gsub(dest, "^.*/", "", 1)  -- chop the dirs off...
-    local ptype = _("Installing")  -- !!! FIXME: localization.
+    local ptype = _("Installing")
     local component = desc
     local keepgoing = true
     local callback = function(ticks, justwrote, bw, total)
@@ -265,7 +262,7 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
         if total >= 0 then
             MojoSetup.written = MojoSetup.written + justwrote
             percent = calc_percent(MojoSetup.written, MojoSetup.totalwrite)
-            item = fname .. ": " .. calc_percent(bw, total) .. "%"  -- !!! FIXME: localization
+            item = MojoSetup.format(_("%0: %1%%"), fname, calc_percent(bw, total))
         end
         keepgoing = MojoSetup.gui.progress(ptype, component, percent, item)
         return keepgoing
@@ -288,7 +285,6 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
 
     local written, sums = writefn(callback)
     if not written then
-        -- !!! FIXME: formatting!
         if not keepgoing then
             MojoSetup.logerror("User cancelled install during file write.")
             MojoSetup.fatal()
@@ -324,9 +320,8 @@ end
 -- !!! FIXME:  thousands of symlinks in a row or something.
 local function install_symlink(dest, lndest, manifestkey)
     if not MojoSetup.platform.symlink(dest, lndest) then
-        -- !!! FIXME: formatting!
         MojoSetup.logerror("Failed to create symlink '" .. dest .. "'")
-        MojoSetup.fatal(_("symlink creation failed!"))
+        MojoSetup.fatal(_("Symlink creation failed!"))
     end
 
     if manifestkey ~= nil then
@@ -350,9 +345,8 @@ end
 -- !!! FIXME:  thousands of dirs in a row or something.
 local function install_directory(dest, perms, manifestkey)
     if not MojoSetup.platform.mkdir(dest, perms) then
-        -- !!! FIXME: formatting
         MojoSetup.logerror("Failed to create dir '" .. dest .. "'")
-        MojoSetup.fatal(_("mkdir failed"))
+        MojoSetup.fatal(_("Directory creation failed"))
     end
 
     if manifestkey ~= nil then
@@ -404,7 +398,8 @@ local function permit_write(dest, entinfo, file)
                 if not allowoverwrite then
                     -- !!! FIXME: language and formatting.
                     MojoSetup.loginfo("File '" .. dest .. "' already exists.")
-                    local ynan = MojoSetup.promptynan(_("Conflict!"), _("File already exists! Replace?"), true)
+                    local text = MojoSetup.format(_("File '$0' already exists! Replace?"), dest);
+                    local ynan = MojoSetup.promptynan(_("Conflict!"), text, true)
                     if ynan == "always" then
                         MojoSetup.forceoverwrite = true
                         allowoverwrite = true
@@ -427,7 +422,6 @@ local function permit_write(dest, entinfo, file)
                 install_parent_dirs(f, nil)
                 MojoSetup.rollbacks[id] = dest
                 if not MojoSetup.movefile(dest, f) then
-                    -- !!! FIXME: formatting
                     MojoSetup.fatal(_("Couldn't backup file for rollback"))
                 end
                 MojoSetup.loginfo("Moved rollback #" .. id .. ": '" .. dest .. "' -> '" .. f .. "'")
@@ -472,7 +466,6 @@ local function install_archive_entry(archive, ent, file, option)
             elseif ent.type == "symlink" then
                 install_symlink(dest, ent.linkdest, option)
             else  -- !!! FIXME: device nodes, etc...
-                -- !!! FIXME: formatting!
                 -- !!! FIXME: should this be fatal?
                 MojoSetup.fatal(_("Unknown file type in archive"))
             end
@@ -483,7 +476,6 @@ end
 
 local function install_archive(archive, file, option)
     if not MojoSetup.archive.enumerate(archive) then
-        -- !!! FIXME: need formatting function.
         MojoSetup.fatal(_("Can't enumerate archive"))
     end
 
@@ -562,8 +554,8 @@ local function install_basepath(basepath, file, option)
         local archive = MojoSetup.archive.fromdir(path)
         if archive == nil then
             archive = MojoSetup.archive.fromfile(path)
-            if archive == nil then  -- !!! FIXME: error message.
-                MojoSetup.fatal(_("cannot open archive."))
+            if archive == nil then
+                MojoSetup.fatal(_("Can't open archive."))
             end
         end
         return archive
@@ -583,7 +575,7 @@ local function install_basepath(basepath, file, option)
             local knowngood = path
             path = path .. "/" .. v
             if not MojoSetup.platform.exists(path) then
-                if knowngood == "" then  -- !!! FIXME: error message.
+                if knowngood == "" then
                     MojoSetup.fatal(_("Archive not found"))
                 end
                 local archive = create_basepath_archive(knowngood)
@@ -1093,7 +1085,7 @@ local function do_install(install)
                 -- Upvalued so we don't look these up each time...
                 local url = file.source
                 local fname = string.gsub(url, "^.*/", "", 1)  -- chop the dirs off...
-                local ptype = _("Downloading")  -- !!! FIXME: localization.
+                local ptype = _("Downloading")
                 local component = option.description
                 local bps = 0
                 local bpsticks = 0
@@ -1123,8 +1115,7 @@ local function do_install(install)
                 MojoSetup.loginfo("Download '" .. url .. "' to '" .. f .. "'")
                 local downloaded, sums = MojoSetup.download(url, f, callback)
                 if not downloaded then
-                    -- !!! FIXME: formatting!
-                    MojoSetup.fatal(_("file download failed!"))
+                    MojoSetup.fatal(_("File download failed!"))
                 end
                 MojoSetup.downloads[#MojoSetup.downloads+1] = f
             end
@@ -1206,7 +1197,6 @@ local function do_install(install)
 
     -- Next stage: show results gui
     stages[#stages+1] = function(thisstage, maxstage)
-        -- !!! FIXME: language.
         MojoSetup.gui.final(_("Installation was successful."))
         return 1  -- go forward.
     end

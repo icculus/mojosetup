@@ -988,7 +988,7 @@ static int luahook_stringtofile(lua_State *L)
     size_t len = 0;
     int retval = 0;
     boolean rc = false;
-    uint16 perms = 0600;  // !!! FIXME
+    uint16 perms = MojoPlatform_defaultFilePerms();
     MojoChecksums sums;
 
     str = lua_tolstring(L, 1, &len);
@@ -1365,27 +1365,30 @@ static int luahook_gui_destination(lua_State *L)
     size_t reccount = 0;
     char *rc = NULL;
     int command = 0;
+    size_t i = 0;
 
     if (lua_istable(L, 1))
     {
-        size_t i;
-
         reccount = lua_objlen(L, 1);
-        recommend = (char **) alloca(reccount * sizeof (char *));
+        recommend = (char **) xmalloc(reccount * sizeof (char *));
         for (i = 0; i < reccount; i++)
         {
-            const char *str = NULL;
             lua_pushinteger(L, i+1);
             lua_gettable(L, 1);
-            str = lua_tostring(L, -1);  // !!! FIXME: alloca in a loop...
-            recommend[i] = (char *) alloca(strlen(str) + 1);
-            strcpy(recommend[i], str);
+            recommend[i] = xstrdup(lua_tostring(L, -1));
             lua_pop(L, 1);
         } // for
     } // if
 
     rc = GGui->destination((const char **) recommend, reccount,
                             &command, can_go_back, can_go_fwd);
+
+    if (recommend != NULL)
+    {
+        for (i = 0; i < reccount; i++)
+            free(recommend[i]);
+        free(recommend);
+    } // if
 
     retvalNumber(L, command);
     retvalString(L, rc);  // may push nil.

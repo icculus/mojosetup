@@ -621,7 +621,6 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
         char *fmt = NULL;
         char *msg = NULL;
         percentTicks = now + 1000;
-        // !!! FIXME: localization.
         if (percent < 0)
             printf("%s\n", item);
         else

@@ -147,6 +147,12 @@ typedef enum
 //  handle with MojoPlatform_close() when done with it.
 void *MojoPlatform_open(const char *fname, uint32 flags, uint16 mode);
 
+// Return a handle that's compatible with MojoPlatform_open()'s return values
+//  that represents stdout. May return NULL for platforms that don't support
+//  this concept. You need to make sure that stdout itself doesn't really
+//  close in MojoPlatform_close(), at least for now.
+void *MojoPlatform_stdout(void);
+
 // Read (bytes) bytes from (fd) into (buf). This wraps the Unix read() syscall.
 //  Returns number of bytes read, -1 on error.
 int64 MojoPlatform_read(void *fd, void *buf, uint32 bytes);
