@@ -169,7 +169,7 @@ MojoSetup.localization = {
     --  reasonable for the user to manually type. The UIs use a different
     --  string for their button ("Back" vs "back" specifically).
     ["back"] = {
-        de = "zurück", -- FIXME Does this name a button? Which one???
+        de = "zurück",
         nb = "tilbake",
     };
 
@@ -246,7 +246,7 @@ MojoSetup.localization = {
     -- "media id" refers to Setup.Media.id in the config file. It's not meant
     --  to be a proper name, in this case.
     ["BUG: duplicate media id"] = {
-        de = "FEHLER: Doppelte Medien ID",
+        de = "FEHLER: Doppelte Medien-ID",
         nb = "FEIL: duplisert media-id",
     };
 
@@ -263,7 +263,7 @@ MojoSetup.localization = {
     --  might specify "0600" as a valid string, but "sdfksjdfk" wouldn't be
     --  and cause this error.
     ["BUG: '%0' is not a valid permission string"] = {
-        de = "FEHLER: '%0' ist keine zulässige Berechtigungs-Zeichenkette", -- FIXME Better word for "Berechtigungs-Zeichenkette" needed
+        de = "FEHLER: '%0' ist keine zulässiger Berechtigungs-String",
         nb = "FEIL: '%0' er ikke en gyldig rettighetsstreng",
     };
 
@@ -272,7 +272,7 @@ MojoSetup.localization = {
     --  error pops up to inform the programmer/translator.
     -- "format()" is a proper name in this case (program function name)
     ["BUG: Invalid format() string"] = {
-        de = "FEHLER: Unzulässige format() Zeichenkette",
+        de = "FEHLER: Unzulässiger format() String",
         nb = "FEIL: Ugyldig format()-streng",
     };
 
@@ -281,7 +281,7 @@ MojoSetup.localization = {
     --  stage. A programming bug may cause unexpected type of data to be
     --  reported, causing this error to pop up.
     ["BUG: stage returned wrong type"] = {
-        de = "FEHLER: Phase gab falschen Typ zurück", -- FIXME "stage"?
+        de = "FEHLER: Abschnitt gab falschen Typ zurück",
         nb = "FEIL: nivå returnerte feil type",
     };
 
@@ -290,7 +290,7 @@ MojoSetup.localization = {
     --  stage. A programming bug may cause unexpected information to be
     --  reported, causing this error to pop up.
     ["BUG: stage returned wrong value"] = {
-        de = "FEHLER: Phase gab falschen Wert zurück", -- FIXME "stage"?
+        de = "FEHLER: Abschnitt gab falschen Wert zurück",
         nb = "FEIL: nivå returnerte feil verdi",
     };
 
@@ -299,7 +299,7 @@ MojoSetup.localization = {
     --  that allows the user to click "Back" on the initial stage, this
     --  error pops up.
     ["BUG: stepped back over start of stages"] = {
-        de = "FEHLER: Über die Startphase hinaus zurückgegangen", -- FIXME "stage"?
+        de = "FEHLER: Über den Startabschnitt hinaus zurückgegangen",
         nb = "FEIL: Gikk tilbake forbi startnivå",
     };
 
@@ -380,7 +380,7 @@ MojoSetup.localization = {
     --  "Permission string" is text representing a file's permissions,
     --  such as "0644" on Unix.
     ["Permission string is invalid"] = {
-        de = "Berechtigungs-String ist ungültig", -- FIXME "Berechtigungs-Zeichenkette"... s.a.
+        de = "Berechtigungs-String ist ungültig",
         nb = "Rettighetsstreng er ugyldig",
     };
 
@@ -453,15 +453,15 @@ MojoSetup.localization = {
     -- This error is reported for i/o failures while listing files contained
     --  in a .zip (or whatever) file.
     ["Couldn't enumerate archive"] = {
-        de = "Konnte Archiv nicht auflisten.",
-        nb = "Kunne ikke enumerere arkiv.",
+        de = "Archiv kann nicht aufgelistet werden",
+        nb = "Kunne ikke enumerere arkiv",
     };
 
     -- This error is reported for i/o failures while opening a .zip
     --  (or whatever) file.
-    ["Couldn't open archive."] = {
-        de = "Konnte Archiv nicht öffnen",
-        nb = "Kunne ikke åpne arkiv.",
+    ["Couldn't open archive"] = {
+        de = "Archiv kann nicht geöffnet werden",
+        nb = "Kunne ikke åpne arkiv",
     };
 
     -- This is used by the stdio UI to choose a location to write files.
@@ -486,7 +486,7 @@ MojoSetup.localization = {
     -- As in "two different files want to use the same name." This is a title
     --  on a message box.
     ["Conflict!"] = {
-        de = "Namenskonflikt!", -- FIXME Translated as "Name conflict!"
+        de = "Konflikt!",
         nb = "Konflikt!",
     };
 
@@ -515,7 +515,7 @@ MojoSetup.localization = {
 
     -- Error message when deleting a file fails.
     ["Deletion failed!"] = {
-        de = "Löschung fehlgeschlagen!",
+        de = "Löschen fehlgeschlagen!",
         nb = "Kunne ikke slette!",
     };
 
@@ -579,7 +579,7 @@ MojoSetup.localization = {
     -- This is a button in the UI. It replaces "Next" when there are no more
     --  stages to move forward to.
     ["Finish"] = {
-        de = "Fertigstellen",
+        de = "Fertig",
         nb = "Ferdig",
     };
 
@@ -737,7 +737,7 @@ MojoSetup.localization = {
 
     -- Prompt shown to user when we need her to insert a new disc.
     ["Please insert '%0'"] = {
-        de = "Bitte fügen Sie '%0' ein",
+        de = "Bitte legen Sie '%0' ein",
         nb = "Sett inn '%0'",
     };
 
@@ -765,6 +765,7 @@ MojoSetup.localization = {
 
     -- The www UI uses this as page text when the program is terminating.
     ["You can close this browser now."] = {
+        de = "Sie können diesen Browser nun schließen.",
     };
 
     -- Error message shown to end-user when we can't write a symbolic link
@@ -815,7 +816,7 @@ MojoSetup.localization = {
     --  information, such as file manifests, uninstall support, etc.
     ["Metadata"] = {
         de = "Metadaten",
-        nb ="Metadata",
+        nb = "Metadata",
     };
 };
 

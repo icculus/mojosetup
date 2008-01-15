@@ -213,7 +213,7 @@ end
 -- This code's a little nasty...
 local function drill_for_archive(archive, path, arclist)
     if not MojoSetup.archive.enumerate(archive) then
-        MojoSetup.fatal(_("Couldn't enumerate archive."))
+        MojoSetup.fatal(_("Couldn't enumerate archive"))
     end
 
     local pathtab = split_path(path)
@@ -231,7 +231,7 @@ local function drill_for_archive(archive, path, arclist)
                 --  open it as an archive and keep drilling...
                 local arc = MojoSetup.archive.fromentry(archive)
                 if arc == nil then
-                    MojoSetup.fatal(_("Couldn't open archive."))
+                    MojoSetup.fatal(_("Couldn't open archive"))
                 end
                 arclist[#arclist+1] = arc
                 if pathtab[i] == nil then
