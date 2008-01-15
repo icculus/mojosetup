@@ -501,7 +501,7 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_widget_show(box);
 
     hbox = gtk_hbox_new (FALSE, 6);
-    widget = gtk_label_new("Folder:");
+    widget = gtk_label_new(entry->_("Folder:"));
     gtk_widget_show(widget);
     gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
     gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
@@ -754,7 +754,7 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
         gtk_combo_box_prepend_text(combo, recommends[i]);
     gtk_combo_box_set_active (combo, 0);
 
-    *command = run_wizard(entry->_("Installation location"), PAGE_DESTINATION,
+    *command = run_wizard(entry->_("Destination"), PAGE_DESTINATION,
                           can_back, can_fwd);
 
     str = gtk_combo_box_get_active_text(combo);

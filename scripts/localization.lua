@@ -519,6 +519,12 @@ MojoSetup.localization = {
         nb = "Kunne ikke slette!",
     };
 
+    -- This is a label displayed next to the text entry in the GTK+ UI where
+    --  the user specifies the installation destination (folder/directory) in
+    --  the filesystem.
+    ["Folder:"] = {
+    };
+
     -- This is a window title when user is selecting a path to install files.
     ["Destination"] = {
         de = "Ziel",
