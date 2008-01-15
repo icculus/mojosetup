@@ -692,7 +692,7 @@ void MojoArchive_deinitBaseArchive(void)
 #if !SUPPORT_URL_HTTP && !SUPPORT_URL_FTP
 MojoInput *MojoInput_fromURL(const char *url)
 {
-    logError(_("No networking support in this build."));
+    logError("No networking support in this build.");
     return NULL;
 } // MojoInput_fromURL
 #endif

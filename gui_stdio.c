@@ -485,8 +485,8 @@ static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
 static int MojoGui_stdio_options(MojoGuiSetupOptions *opts,
                                  boolean can_back, boolean can_fwd)
 {
+    const char *inst_opts_str = entry->xstrdup(entry->_("Options"));
     const char *prompt = entry->xstrdup(entry->_("Choose number to change."));
-    const char *inst_opts_str = entry->xstrdup(entry->_("Install options:"));
     int retval = -1;
     boolean getout = false;
     char buf[128];
@@ -591,6 +591,7 @@ static boolean MojoGui_stdio_insertmedia(const char *medianame)
     char buf[32];
     char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
     char *msg = entry->format(fmt, medianame);
+    printf("%s\n", entry->_("Media change"));
     printf("%s\n", msg);
     free(msg);
     free(fmt);
@@ -625,7 +626,7 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
             printf("%s\n", item);
         else
         {
-            fmt = entry->xstrdup(entry->_("%0 (total progress: %1%%)\n"));
+            fmt = entry->xstrdup(entry->_("%0 (total progress: %1%%)"));
             msg = entry->format(fmt, item, entry->numstr(percent));
             printf("%s\n", msg);
             free(msg);

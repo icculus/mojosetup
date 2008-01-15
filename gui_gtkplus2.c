@@ -160,7 +160,7 @@ static void signal_clicked(GtkButton *_button, gpointer data)
 static void signal_browse_clicked(GtkButton *_button, gpointer data)
 {
     GtkWidget *dialog = gtk_file_chooser_dialog_new (
-        entry->_("Installation location"),
+        entry->_("Destination"),
         NULL,
         GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
         GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -735,7 +735,6 @@ static int MojoGui_gtkplus2_options(MojoGuiSetupOptions *opts,
 
     build_options(opts, box, TRUE);
 
-    // !!! FIXME: better text.
     retval = run_wizard(entry->_("Options"), PAGE_OPTIONS, can_back, can_fwd);
     gtk_widget_destroy(box);
     return retval;

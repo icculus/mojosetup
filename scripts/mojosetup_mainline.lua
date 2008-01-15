@@ -165,11 +165,11 @@ local function make_rate_string(rate, bw, total)
                 hoursleft = tostring(hoursleft)
             end
 
-            retval = MojoSetup.format(_("$0 $1, $2:$3:$4 remaining"),
+            retval = MojoSetup.format(_("%0 %1, %2:%3:%4 remaining"),
                                       rate, ratetype,
                                       hoursleft, minsleft, secsleft)
         else
-            retval = MojoSetup.format(_("$0 $1"), rate, ratetype)
+            retval = MojoSetup.format(_("%0 %1"), rate, ratetype)
         end
     end
 
@@ -243,7 +243,7 @@ local function drill_for_archive(archive, path, arclist)
         ent = MojoSetup.archive.enumnext(archive)
     end
 
-    MojoSetup.fatal(_("Archive not found."))
+    MojoSetup.fatal(_("Archive not found"))
 end
 
 
@@ -394,7 +394,7 @@ local function permit_write(dest, entinfo, file)
                 allowoverwrite = file.allowoverwrite
                 if not allowoverwrite then
                     MojoSetup.loginfo("File '" .. dest .. "' already exists.")
-                    local text = MojoSetup.format(_("File '$0' already exists! Replace?"), dest);
+                    local text = MojoSetup.format(_("File '%0' already exists! Replace?"), dest);
                     local ynan = MojoSetup.promptynan(_("Conflict!"), text, true)
                     if ynan == "always" then
                         MojoSetup.forceoverwrite = true
@@ -472,7 +472,7 @@ end
 
 local function install_archive(archive, file, option)
     if not MojoSetup.archive.enumerate(archive) then
-        MojoSetup.fatal(_("Can't enumerate archive"))
+        MojoSetup.fatal(_("Couldn't enumerate archive"))
     end
 
     local isbase = (archive == MojoSetup.archive.base)
@@ -551,7 +551,7 @@ local function install_basepath(basepath, file, option)
         if archive == nil then
             archive = MojoSetup.archive.fromfile(path)
             if archive == nil then
-                MojoSetup.fatal(_("Can't open archive."))
+                MojoSetup.fatal(_("Couldn't open archive"))
             end
         end
         return archive
@@ -1103,7 +1103,7 @@ local function do_install(install)
                         percent = calc_percent(MojoSetup.downloaded,
                                                MojoSetup.totaldownload)
 
-                        item = MojoSetup.format(_("$0: $1%% ($2)"),
+                        item = MojoSetup.format(_("%0: %1%% (%2)"),
                                                 fname,
                                                 calc_percent(bw, total),
                                                 ratestr);
@@ -1228,7 +1228,7 @@ local function do_install(install)
 
         -- Too many times I forgot to return something.   :)
         if type(rc) ~= "number" then
-            MojoSetup.fatal(_("BUG: stage returned wrong type."))
+            MojoSetup.fatal(_("BUG: stage returned wrong type"))
         end
 
         if rc == 1 then
@@ -1242,7 +1242,7 @@ local function do_install(install)
         elseif rc == 0 then
             MojoSetup.fatal()
         else
-            MojoSetup.fatal(_("BUG: stage returned wrong value."))
+            MojoSetup.fatal(_("BUG: stage returned wrong value"))
         end
     end
 

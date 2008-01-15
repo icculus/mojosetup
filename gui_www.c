@@ -624,8 +624,7 @@ static void MojoGui_www_deinit(void)
 {
     // Catch any waiting browser connections...and tell them to buzz off!  :)
     char *donetitle = htmlescape(entry->_("Shutting down..."));
-    char *donetext = htmlescape(entry->_(
-          "Setup program is shutting down. You can close this browser now."));
+    char *donetext = htmlescape(entry->_("You can close this browser now."));
     size_t len = 0, alloc = 0;
     char *html = NULL;
 
@@ -862,6 +861,8 @@ static int MojoGui_www_readme(const char *name, const uint8 *data,
 static int MojoGui_www_options(MojoGuiSetupOptions *opts,
                                boolean can_back, boolean can_fwd)
 {
+    // !!! FIXME: write me.
+    STUBBED("www options");
     return 1;
 } // MojoGui_www_options
 

@@ -177,7 +177,7 @@ Setup = {}
 
 local function schema_assert(test, fnname, elem, errstr)
     if not test then
-        local msg = MojoSetup.format(_("BUG: Config $0 $1."),
+        local msg = MojoSetup.format(_("BUG: Config %0 %1"),
                                      fnname .. "::" .. elem, errstr)
         MojoSetup.fatal(msg)
     end
@@ -191,7 +191,7 @@ local function mustBeSomething(fnname, elem, val, elemtype)
     -- Can be nil...please use mustExist if this is a problem!
     if val ~= nil then
         if type(val) ~= elemtype then
-            local msg = MojoSetup.format(_("must be $0"),
+            local msg = MojoSetup.format(_("must be %0"),
                                          MojoSetup.translate(elemtype))
             schema_assert(false, fnname, elem, msg)
         end
