@@ -591,11 +591,11 @@ end
 
 
 local function set_destination(dest)
-    -- !!! FIXME: ".mojosetup_tmp" dirname may clash with install...?
     MojoSetup.loginfo("Install dest: '" .. dest .. "'")
     MojoSetup.destination = dest
-    MojoSetup.manifestdir = MojoSetup.destination .. "/.mojosetup_manifest"
-    MojoSetup.scratchdir = MojoSetup.destination .. "/.mojosetup_tmp"
+    MojoSetup.metadatadir = MojoSetup.destination .. "/.mojosetup"
+    MojoSetup.manifestdir = MojoSetup.metadatadir .. "/manifest"
+    MojoSetup.scratchdir = MojoSetup.metadatadir .. "/tmp"
     MojoSetup.rollbackdir = MojoSetup.scratchdir .. "/rollbacks"
     MojoSetup.downloaddir = MojoSetup.scratchdir .. "/downloads"
 end
@@ -1263,6 +1263,7 @@ local function do_install(install)
     MojoSetup.manifest = nil
     MojoSetup.destination = nil
     MojoSetup.manifestdir = nil
+    MojoSetup.metadatadir = nil
     MojoSetup.scratchdir = nil
     MojoSetup.rollbackdir = nil
     MojoSetup.downloaddir = nil
