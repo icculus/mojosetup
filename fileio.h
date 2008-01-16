@@ -104,7 +104,7 @@ void MojoArchive_deinitBaseArchive(void);
 typedef boolean (*MojoInput_FileCopyCallback)(uint32 ticks, int64 justwrote,
                                             int64 bw, int64 total, void *data);
 boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
-                                 MojoChecksums *checksums,
+                                 MojoChecksums *checksums, int64 maxbytes,
                                  MojoInput_FileCopyCallback cb, void *data);
 
 MojoInput *MojoInput_fromURL(const char *url);

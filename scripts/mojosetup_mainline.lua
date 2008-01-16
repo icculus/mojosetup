@@ -299,7 +299,7 @@ end
 
 local function install_file_from_archive(dest, archive, perms, desc, manifestkey)
     local fn = function(callback)
-        return MojoSetup.writefile(archive, dest, perms, callback)
+        return MojoSetup.writefile(archive, dest, perms, nil, callback)
     end
     return install_file(dest, perms, fn, desc, manifestkey)
 end

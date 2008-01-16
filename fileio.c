@@ -81,7 +81,7 @@ void MojoArchive_resetEntry(MojoArchiveEntry *info)
 // !!! FIXME: I'd rather not use a callback here, but I can't see a cleaner
 // !!! FIXME:  way right now...
 boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
-                                 MojoChecksums *checksums,
+                                 MojoChecksums *checksums, int64 maxbytes,
                                  MojoInput_FileCopyCallback cb, void *data)
 {
     boolean retval = false;
@@ -113,6 +113,8 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
     } // while
 
     flen = in->length(in);
+    if ((maxbytes >= 0) && (flen > maxbytes))
+        flen = maxbytes;
 
     MojoPlatform_unlink(fname);
     if (!iofailure)
@@ -127,6 +129,19 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
         while (!iofailure)
         {
             int64 br = 0;
+            int64 maxread = sizeof (scratchbuf_128k);
+
+            // see if we need to clamp to eof or maxbytes...
+            if (flen >= 0)
+            {
+                const int64 avail = flen - bw;
+                if (avail < maxread)
+                {
+                    maxread = avail;
+                    if (maxread == 0)
+                        break;  // nothing left to do, break out.
+                } // if
+            } // if
 
             // If there's a callback, then poll. Otherwise, just block on
             //  the reads from the MojoInput.
@@ -134,7 +149,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                 MojoPlatform_sleep(100);
             else
             {
-                br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
+                br = in->read(in, scratchbuf_128k, maxread);
                 if (br == 0)  // we're done!
                     break;
                 else if (br < 0)
@@ -160,6 +175,8 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
         } // while
 
         if (MojoPlatform_close(out) != 0)
+            iofailure = true;
+        else if (bw != flen)
             iofailure = true;
 
         if (iofailure)

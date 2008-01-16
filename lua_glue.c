@@ -755,6 +755,8 @@ static int luahook_writefile(lua_State *L)
     uint16 perms = archive->prevEnum.perms;
     MojoChecksums sums;
     MojoInput *in = archive->openCurrentEntry(archive);
+    int64 maxbytes = -1;
+
     if (in != NULL)
     {
         if (!lua_isnil(L, 3))
@@ -765,8 +767,12 @@ static int luahook_writefile(lua_State *L)
             if (!valid)
                 fatal(_("BUG: '%0' is not a valid permission string"), permstr);
         } // if
-        rc = MojoInput_toPhysicalFile(in, path, perms, &sums,
-                                          writeCallback, L);
+
+        if (!lua_isnil(L, 4))
+            maxbytes = luaL_checkinteger(L, 4);
+
+        rc = MojoInput_toPhysicalFile(in, path, perms, &sums, maxbytes,
+                                      writeCallback, L);
     } // if
 
     retval += retvalBoolean(L, rc);
@@ -798,7 +804,7 @@ static int luahook_download(lua_State *L)
     if (in != NULL)
     {
         // !!! FIXME: Unix-specific permissions thing here.
-        rc = MojoInput_toPhysicalFile(in, dst, 0644, &sums,
+        rc = MojoInput_toPhysicalFile(in, dst, 0644, &sums, -1,
                                           writeCallback, L);
     } // if
 
@@ -965,7 +971,7 @@ static int luahook_movefile(lua_State *L)
         {
             uint16 perms = 0;
             MojoPlatform_perms(src, &perms);
-            retval = MojoInput_toPhysicalFile(in, dst, perms, NULL, NULL, NULL);
+            retval = MojoInput_toPhysicalFile(in,dst,perms,NULL,-1,NULL,NULL);
             if (retval)
             {
                 retval = MojoPlatform_unlink(src);
@@ -1002,7 +1008,7 @@ static int luahook_stringtofile(lua_State *L)
         if (!valid)
             fatal(_("BUG: '%0' is not a valid permission string"), permstr);
     } // if
-    rc = MojoInput_toPhysicalFile(in, path, perms, &sums, writeCallback, L);
+    rc = MojoInput_toPhysicalFile(in, path, perms, &sums, -1, writeCallback, L);
 
     retval += retvalBoolean(L, rc);
     if (rc)
