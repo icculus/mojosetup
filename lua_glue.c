@@ -1493,6 +1493,7 @@ boolean MojoLua_initLua(void)
 {
     const char *envr = cmdlinestr("locale", "MOJOSETUP_LOCALE", NULL);
     char *homedir = NULL;
+    char *binarypath = NULL;
     char locale[16];
     char ostype[64];
     char osversion[64];
@@ -1525,6 +1526,7 @@ boolean MojoLua_initLua(void)
     registerLuaLibs(luaState);
 
     homedir = MojoPlatform_homedir();
+    binarypath = MojoPlatform_appBinaryPath();
 
     // !!! FIXME: I'd like to change the function name case for the lua hooks.
 
@@ -1571,6 +1573,8 @@ boolean MojoLua_initLua(void)
             set_string(luaState, GLuaLicense, "lualicense");
             set_string(luaState, logLevelString(), "loglevel");
             set_string(luaState, homedir, "homedir");
+            set_string(luaState, binarypath, "binarypath");
+            set_string(luaState, GBaseArchivePath, "basearchivepath");
             set_string_array(luaState, GArgc, GArgv, "argv");
             lua_newtable(luaState);
                 set_string(luaState, "base", "base");
@@ -1623,6 +1627,7 @@ boolean MojoLua_initLua(void)
         lua_setfield(luaState, -2, "archive");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
+    free(binarypath);
     free(homedir);
 
     // Set up localization table, if possible.
