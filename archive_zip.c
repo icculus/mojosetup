@@ -252,6 +252,7 @@ typedef struct
     #if __MOJOSETUP__
     void *io;  /* a MojoInput pointer */
     int32 enumIndex;  /* index of last entry enumerated. */
+    int64 offset;  /* byte offset from start of MojoInput where zip starts. */
     #endif
     PHYSFS_uint16 entryCount; /* Number of files in ZIP.                     */
     ZIPentry *entries;        /* info on all files in ZIP.                   */
@@ -1307,6 +1308,10 @@ static void *ZIP_openArchive(const char *name, int forWriting)
     if (!zip_parse_end_of_central_dir(in, info, &data_start, &cent_dir_ofs))
         goto zip_openarchive_failed;
 
+#if __MOJOSETUP__
+    info->offset = (int64) data_start;
+#endif
+
     if (!zip_load_entries(in, info, data_start, cent_dir_ofs))
         goto zip_openarchive_failed;
 
@@ -1823,6 +1828,7 @@ MojoArchive *MojoArchive_createZIP(MojoInput *io)
     ar->enumNext = MojoArchive_zip_enumNext;
     ar->openCurrentEntry = MojoArchive_zip_openCurrentEntry;
     ar->close = MojoArchive_zip_close;
+    ar->offsetOfStart = ((const ZIPinfo *) opaque)->offset;
     ar->opaque = opaque;
     ar->io = io;
     return ar;

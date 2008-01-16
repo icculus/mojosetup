@@ -598,6 +598,7 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
     ar->enumNext = MojoArchive_dir_enumNext;
     ar->openCurrentEntry = MojoArchive_dir_openCurrentEntry;
     ar->close = MojoArchive_dir_close;
+    ar->offsetOfStart = -1;  // doesn't mean anything here.
     ar->opaque = inst;
     return ar;
 } // MojoArchive_newFromDirectory

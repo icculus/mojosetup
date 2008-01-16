@@ -82,6 +82,7 @@ struct MojoArchive
     // private
     MojoInput *io;
     MojoArchiveEntry prevEnum;
+    int64 offsetOfStart;  // byte offset in MojoInput where archive starts.
     void *opaque;
 };
 
