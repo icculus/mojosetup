@@ -782,7 +782,10 @@ static uint8 compute_y(int r, int g, int b)
 
 static unsigned char *convert_format(unsigned char *data, int img_n, int req_comp)
 {
-   uint i,j;
+#if __MOJOSETUP__
+   //uint i,j;
+   uint32 i,j;
+#endif
    unsigned char *good;
 
    if (req_comp == img_n) return data;
