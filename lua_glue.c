@@ -803,9 +803,8 @@ static int luahook_download(lua_State *L)
     MojoInput *in = MojoInput_fromURL(url);
     if (in != NULL)
     {
-        // !!! FIXME: Unix-specific permissions thing here.
-        rc = MojoInput_toPhysicalFile(in, dst, 0644, &sums, -1,
-                                          writeCallback, L);
+        rc = MojoInput_toPhysicalFile(in, dst, MojoPlatform_defaultFilePerms(),
+                                      &sums, -1, writeCallback, L);
     } // if
 
     retval += retvalBoolean(L, rc);
