@@ -318,6 +318,12 @@ MojoSetup.localization = {
         nb = "FEIL: Kan ikke duplisere innfiler for tar",
     };
 
+    -- This is a generic error message when a programming bug produced a
+    --  result we weren't expecting (a negative number when we expected
+    --  positive, etc...)
+    ["BUG: Unexpected value"] = {
+    };
+
     -- Buggy config elements:
     -- This is supposed to be a config element (%0) and something that's wrong
     --  with it (%1), such as "BUG: Config Package::description not a string"

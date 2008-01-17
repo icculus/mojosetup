@@ -313,6 +313,14 @@ local function install_file_from_string(dest, string, perms, desc, manifestkey)
 end
 
 
+local function install_file_from_filesystem(dest, src, perms, desc, manifestkey, maxbytes)
+    local fn = function(callback)
+        return MojoSetup.copyfile(src, dest, perms, maxbytes, callback)
+    end
+    return install_file(dest, perms, fn, desc, manifestkey)
+end
+
+
 -- !!! FIXME: we should probably pump the GUI queue here, in case there are
 -- !!! FIXME:  thousands of symlinks in a row or something.
 local function install_symlink(dest, lndest, manifestkey)
@@ -394,7 +402,7 @@ local function permit_write(dest, entinfo, file)
                 allowoverwrite = file.allowoverwrite
                 if not allowoverwrite then
                     MojoSetup.loginfo("File '" .. dest .. "' already exists.")
-                    local text = MojoSetup.format(_("File '%0' already exists! Replace?"), dest);
+                    local text = MojoSetup.format(_("File '%0' already exists! Replace?"), dest)
                     local ynan = MojoSetup.promptynan(_("Conflict!"), text, true)
                     if ynan == "always" then
                         MojoSetup.forceoverwrite = true
@@ -428,6 +436,22 @@ local function permit_write(dest, entinfo, file)
     return allowoverwrite
 end
 
+
+local function install_archive_entity(dest, ent, archive, desc, manifestkey)
+    install_parent_dirs(dest, manifestkey)
+    if ent.type == "file" then
+        install_file_from_archive(dest, archive, perms, desc, manifestkey)
+    elseif ent.type == "dir" then
+        install_directory(dest, perms, manifestkey)
+    elseif ent.type == "symlink" then
+        install_symlink(dest, ent.linkdest, manifestkey)
+    else  -- !!! FIXME: device nodes, etc...
+        -- !!! FIXME: should this be fatal?
+        MojoSetup.fatal(_("Unknown file type in archive"))
+    end
+end
+
+
 local function install_archive_entry(archive, ent, file, option)
     local entdest = ent.filename
     if entdest == nil then return end   -- probably can't happen...
@@ -453,18 +477,8 @@ local function install_archive_entry(archive, ent, file, option)
     if dest ~= nil then  -- Only install if file wasn't filtered out
         dest = MojoSetup.destination .. "/" .. dest
         if permit_write(dest, ent, file) then
-            install_parent_dirs(dest, option)
-            if ent.type == "file" then
-                local desc = option.description
-                install_file_from_archive(dest, archive, perms, desc, option)
-            elseif ent.type == "dir" then
-                install_directory(dest, perms, option)
-            elseif ent.type == "symlink" then
-                install_symlink(dest, ent.linkdest, option)
-            else  -- !!! FIXME: device nodes, etc...
-                -- !!! FIXME: should this be fatal?
-                MojoSetup.fatal(_("Unknown file type in archive"))
-            end
+            local desc = option.description
+            install_archive_entity(dest, ent, archive, desc, option)
         end
     end
 end
@@ -594,6 +608,7 @@ local function set_destination(dest)
     MojoSetup.loginfo("Install dest: '" .. dest .. "'")
     MojoSetup.destination = dest
     MojoSetup.metadatadir = MojoSetup.destination .. "/.mojosetup"
+    MojoSetup.controldir = MojoSetup.metadatadir .. "/control"
     MojoSetup.manifestdir = MojoSetup.metadatadir .. "/manifest"
     MojoSetup.scratchdir = MojoSetup.metadatadir .. "/tmp"
     MojoSetup.rollbackdir = MojoSetup.scratchdir .. "/rollbacks"
@@ -730,7 +745,7 @@ local function build_lua_manifest()
         if type(desc) == "table" then  -- "meta" etc, or an option table.
             desc = option.description
         end
-        man[desc] = items;
+        man[desc] = items
     end
 
     local install = MojoSetup.install
@@ -760,11 +775,71 @@ local function build_txt_manifest()
 end
 
 
-local function install_manifests()
+local function install_control_app(desc, key)
+    local dst, src
+
+    -- We copy the installer binary itself, and any auxillary files it needs,
+    --  like this Lua script, to a metadata directory in the installation.
+    -- Unfortunately, the binary might be a self-extracting installer that
+    --  has gigabytes of now-unnecessary data appended to it, so we need to
+    --  decide if that's the case and, if so, extract just the program itself
+    --  from the start of the file.
+    local maxbytes = -1  -- copy whole thing by default.
+    local base = MojoSetup.archive.base
+
+    -- !!! FIXME: This needs an ".exe" appended on Windows.
+    dst = MojoSetup.controldir .. "/mojosetup"
+    src = MojoSetup.info.binarypath
+    if src == MojoSetup.info.basearchivepath then
+        local base = MojoSetup.archive.base
+        maxbytes = MojoSetup.archive.offsetofstart(base)
+        if maxbytes <= 0 then
+            MojoSetup.fatal(_("BUG: Unexpected value"))
+        end
+    end
+
+    local perms = "0755"  -- !!! FIXME
+    install_parent_dirs(dst, key);
+    install_file_from_filesystem(dst, src, perms, desc, key, maxbytes)
+
+    -- Okay, now we need all the support files.
+    if not MojoSetup.archive.enumerate(base) then
+        MojoSetup.fatal(_("Couldn't enumerate archive"))
+    end
+
+    local needdirs = { "scripts", "gui", "meta" }
+
+    local ent = MojoSetup.archive.enumnext(base)
+    while ent ~= nil do
+        -- Make sure this is in a directory we want to write out...
+        local should_write = false
+        if (ent.filename ~= nil) and (ent.filename ~= "") then
+            for i,dir in ipairs(needdirs) do
+                local clipdir = "^" .. dir .. "/"
+                if string.find(ent.filename, clipdir) ~= nil then
+                    should_write = true
+                    break
+                end
+            end
+        end
+
+        if should_write then
+            dst = MojoSetup.controldir .. "/" .. ent.filename
+            install_archive_entity(dst, ent, base, desc, key)
+        end
+
+        -- and check the next entry in the archive...
+        ent = MojoSetup.archive.enumnext(archive)
+    end
+
+    -- okay, we're written out.
+end
+
+
+local function install_manifests(desc, key)
     -- We write out a Lua script as a data definition language, a
     --  loki_setup-compatible XML manifest, and a straight text file of
     --  all the filenames. Take your pick.
-    local key = ".mojosetup_metadata."
 
     -- We have to cheat and just plug these into the manifest directly, since
     --  they won't show up until after we write them out, otherwise.
@@ -789,7 +864,6 @@ local function install_manifests()
     install_parent_dirs(txt_fname, key)
 
     -- now build these things...
-    local desc = _("Metadata")
     install_file_from_string(lua_fname, build_lua_manifest(), perms, desc, nil)
     install_file_from_string(xml_fname, build_xml_manifest(), perms, desc, nil)
     install_file_from_string(txt_fname, build_txt_manifest(), perms, desc, nil)
@@ -1106,7 +1180,7 @@ local function do_install(install)
                         item = MojoSetup.format(_("%0: %1%% (%2)"),
                                                 fname,
                                                 calc_percent(bw, total),
-                                                ratestr);
+                                                ratestr)
                     end
                     return MojoSetup.gui.progress(ptype, component, percent, item)
                 end
@@ -1187,9 +1261,14 @@ local function do_install(install)
             end
         end
 
+        local metadatakey = ".mojosetup_metadata."
+        local metadatadesc = _("Metadata")
+
+        install_control_app(metadatadesc, metadatakey)
+
         run_config_defined_hook(install.postinstall, install)
 
-        install_manifests()   -- write out manifest.
+        install_manifests(metadatadesc, metadatakey)   -- write out manifest.
 
         return 1   -- go to next stage.
     end
@@ -1264,6 +1343,7 @@ local function do_install(install)
     MojoSetup.destination = nil
     MojoSetup.manifestdir = nil
     MojoSetup.metadatadir = nil
+    MojoSetup.controldir = nil
     MojoSetup.scratchdir = nil
     MojoSetup.rollbackdir = nil
     MojoSetup.downloaddir = nil
