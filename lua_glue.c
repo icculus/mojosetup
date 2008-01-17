@@ -788,6 +788,14 @@ static int luahook_writefile(lua_State *L)
 } // luahook_writefile
 
 
+static int luahook_download(lua_State *L)
+{
+    const char *src = luaL_checkstring(L, 1);
+    MojoInput *in = MojoInput_fromURL(src);
+    return do_writefile(L, in, MojoPlatform_defaultFilePerms());
+} // luahook_download
+
+
 static int luahook_copyfile(lua_State *L)
 {
     const char *src = luaL_checkstring(L, 1);
@@ -817,27 +825,6 @@ static int luahook_isvalidperms(lua_State *L)
     MojoPlatform_makePermissions(permstr, &valid);
     return retvalBoolean(L, valid);
 } // luahook_isvalidperms
-
-
-static int luahook_download(lua_State *L)
-{
-    const char *url = luaL_checkstring(L, 1);
-    const char *dst = luaL_checkstring(L, 2);
-    int retval = 0;
-    boolean rc = false;
-    MojoChecksums sums;
-    MojoInput *in = MojoInput_fromURL(url);
-    if (in != NULL)
-    {
-        rc = MojoInput_toPhysicalFile(in, dst, MojoPlatform_defaultFilePerms(),
-                                      &sums, -1, writeCallback, L);
-    } // if
-
-    retval += retvalBoolean(L, rc);
-    if (rc)
-        retval += retvalChecksums(L, &sums);
-    return retval;
-} // luahook_download
 
 
 static int luahook_archive_fromdir(lua_State *L)
