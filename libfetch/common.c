@@ -1060,7 +1060,7 @@ static void MojoInput_blocking_close(MojoInput *io)
 
 
 
-MojoInput *MojoInput_fromURL(const char *url)
+MojoInput *MojoInput_newFromURL(const char *url)
 {
     MojoInput *retval = NULL;
     if (url != NULL)
@@ -1087,6 +1087,6 @@ MojoInput *MojoInput_fromURL(const char *url)
         } // if
     } // if
     return retval;
-} // MojoInput_fromURL
+} // MojoInput_newFromURL
 #endif
 

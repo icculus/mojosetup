@@ -708,11 +708,11 @@ void MojoArchive_deinitBaseArchive(void)
 
 // This stub is here if we didn't compile in libfetch...
 #if !SUPPORT_URL_HTTP && !SUPPORT_URL_FTP
-MojoInput *MojoInput_fromURL(const char *url)
+MojoInput *MojoInput_newFromURL(const char *url)
 {
     logError("No networking support in this build.");
     return NULL;
-} // MojoInput_fromURL
+} // MojoInput_newFromURL
 #endif
 
 // end of fileio.c ...

@@ -814,7 +814,7 @@ int MojoSetup_testNetworkCode(int argc, char **argv)
         int64 total_br = 0;
         int64 br = 0;
         printf("\n\nFetching '%s' ...\n", url);
-        MojoInput *io = MojoInput_fromURL(url);
+        MojoInput *io = MojoInput_newFromURL(url);
         if (io == NULL)
         {
             fprintf(stderr, "failed!\n");

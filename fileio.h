@@ -107,7 +107,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                                  MojoChecksums *checksums, int64 maxbytes,
                                  MojoInput_FileCopyCallback cb, void *data);
 
-MojoInput *MojoInput_fromURL(const char *url);
+MojoInput *MojoInput_newFromURL(const char *url);
 
 #ifdef __cplusplus
 }

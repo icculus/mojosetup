@@ -791,7 +791,7 @@ static int luahook_writefile(lua_State *L)
 static int luahook_download(lua_State *L)
 {
     const char *src = luaL_checkstring(L, 1);
-    MojoInput *in = MojoInput_fromURL(src);
+    MojoInput *in = MojoInput_newFromURL(src);
     return do_writefile(L, in, MojoPlatform_defaultFilePerms());
 } // luahook_download
 
