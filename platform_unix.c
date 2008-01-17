@@ -1053,6 +1053,7 @@ void MojoPlatform_spawnTerminal(void)
         "dtterm", "eterm", "Eterm", "aterm"
     };
 
+    char *binpath = MojoPlatform_appBinaryPath();
     const char *tryfirst = NULL;
     const int max_added_args = 5;
     const unsigned int argc = GArgc + max_added_args;
@@ -1086,7 +1087,7 @@ void MojoPlatform_spawnTerminal(void)
         argv[argi++] = is_gnome_term ? "--title" : "-title";
         argv[argi++] = "MojoSetup";
         argv[argi++] = is_gnome_term ? "-x" : "-e";
-        argv[argi++] = GArgv[0];
+        argv[argi++] = binpath;
         argv[argi++] = "-notermspawn=1";
         assert(argi-1 <= max_added_args);
 
@@ -1103,6 +1104,7 @@ void MojoPlatform_spawnTerminal(void)
     // Still here? We failed. Mankind is wiped out in the Robot Wars.
 
     free(argv);
+    free(binpath);
 #endif
 } // MojoPlatform_spawnTerminal
 
