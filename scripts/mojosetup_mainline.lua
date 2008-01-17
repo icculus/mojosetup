@@ -307,7 +307,7 @@ end
 
 local function install_file_from_string(dest, string, perms, desc, manifestkey)
     local fn = function(callback)
-        return MojoSetup.stringtofile(string, dest, perms, callback)
+        return MojoSetup.stringtofile(string, dest, perms, nil, callback)
     end
     return install_file(dest, perms, fn, desc, manifestkey)
 end
@@ -791,7 +791,6 @@ local function install_control_app(desc, key)
     dst = MojoSetup.controldir .. "/mojosetup"
     src = MojoSetup.info.binarypath
     if src == MojoSetup.info.basearchivepath then
-        local base = MojoSetup.archive.base
         maxbytes = MojoSetup.archive.offsetofstart(base)
         if maxbytes <= 0 then
             MojoSetup.fatal(_("BUG: Unexpected value"))
@@ -807,7 +806,7 @@ local function install_control_app(desc, key)
         MojoSetup.fatal(_("Couldn't enumerate archive"))
     end
 
-    local needdirs = { "scripts", "gui", "meta" }
+    local needdirs = { "scripts", "guis", "meta" }
 
     local ent = MojoSetup.archive.enumnext(base)
     while ent ~= nil do
@@ -829,7 +828,7 @@ local function install_control_app(desc, key)
         end
 
         -- and check the next entry in the archive...
-        ent = MojoSetup.archive.enumnext(archive)
+        ent = MojoSetup.archive.enumnext(base)
     end
 
     -- okay, we're written out.
@@ -1186,7 +1185,7 @@ local function do_install(install)
                 end
 
                 MojoSetup.loginfo("Download '" .. url .. "' to '" .. f .. "'")
-                local downloaded, sums = MojoSetup.download(url, f, callback)
+                local downloaded, sums = MojoSetup.download(url, f, nil, nil, callback)
                 if not downloaded then
                     MojoSetup.fatal(_("File download failed!"))
                 end
