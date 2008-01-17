@@ -746,15 +746,12 @@ static boolean writeCallback(uint32 ticks, int64 justwrote, int64 bw,
 
 
 // !!! FIXME: push this into Lua, make things fatal.
-static int luahook_writefile(lua_State *L)
+static int do_writefile(lua_State *L, MojoInput *in, uint16 perms)
 {
-    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
     const char *path = luaL_checkstring(L, 2);
     int retval = 0;
     boolean rc = false;
-    uint16 perms = archive->prevEnum.perms;
     MojoChecksums sums;
-    MojoInput *in = archive->openCurrentEntry(archive);
     int64 maxbytes = -1;
 
     if (in != NULL)
@@ -779,7 +776,36 @@ static int luahook_writefile(lua_State *L)
     if (rc)
         retval += retvalChecksums(L, &sums);
     return retval;
+} // do_writefile
+
+
+static int luahook_writefile(lua_State *L)
+{
+    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
+    uint16 perms = archive->prevEnum.perms;
+    MojoInput *in = archive->openCurrentEntry(archive);
+    return do_writefile(L, in, perms);
 } // luahook_writefile
+
+
+static int luahook_copyfile(lua_State *L)
+{
+    const char *src = luaL_checkstring(L, 1);
+    MojoInput *in = MojoInput_newFromFile(src);
+    return do_writefile(L, in, MojoPlatform_defaultFilePerms());
+} // luahook_copyfile
+
+
+static int luahook_stringtofile(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    MojoInput *in = NULL;
+    size_t len = 0;
+    str = lua_tolstring(L, 1, &len);
+    in = MojoInput_newFromMemory((const uint8 *) str, (uint32) len, 1);
+    assert(in != NULL);  // xmalloc() would fatal(), should not return NULL.
+    return do_writefile(L, in, MojoPlatform_defaultFilePerms());
+} // luahook_stringtofile
 
 
 static int luahook_isvalidperms(lua_State *L)
@@ -887,6 +913,13 @@ static int luahook_archive_close(lua_State *L)
 } // luahook_archive_close
 
 
+static int luahook_archive_offsetofstart(lua_State *L)
+{
+    MojoArchive *archive = (MojoArchive *) lua_touserdata(L, 1);
+    return retvalNumber(L, (lua_Number) archive->offsetOfStart);
+} // luahook_archive_offsetofstart
+
+
 static int luahook_platform_unlink(lua_State *L)
 {
     const char *path = luaL_checkstring(L, 1);
@@ -982,38 +1015,6 @@ static int luahook_movefile(lua_State *L)
 
     return retvalBoolean(L, retval);
 } // luahook_movefile
-
-
-// !!! FIXME: this is a lot of duplication from luahook_writefile
-static int luahook_stringtofile(lua_State *L)
-{
-    const char *str = luaL_checkstring(L, 1);
-    const char *path = luaL_checkstring(L, 2);
-    MojoInput *in = NULL;
-    size_t len = 0;
-    int retval = 0;
-    boolean rc = false;
-    uint16 perms = MojoPlatform_defaultFilePerms();
-    MojoChecksums sums;
-
-    str = lua_tolstring(L, 1, &len);
-    in = MojoInput_newFromMemory((const uint8 *) str, (uint32) len, 1);
-    assert(in != NULL);  // xmalloc() would fatal(), should not return NULL.
-    if (!lua_isnil(L, 3))
-    {
-        boolean valid = false;
-        const char *permstr = luaL_checkstring(L, 3);
-        perms = MojoPlatform_makePermissions(permstr, &valid);
-        if (!valid)
-            fatal(_("BUG: '%0' is not a valid permission string"), permstr);
-    } // if
-    rc = MojoInput_toPhysicalFile(in, path, perms, &sums, -1, writeCallback, L);
-
-    retval += retvalBoolean(L, rc);
-    if (rc)
-        retval += retvalChecksums(L, &sums);
-    return retval;
-} // luahook_stringtofile
 
 
 static void prepareSplash(MojoGuiSplash *splash, const char *fname)
@@ -1552,6 +1553,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_debugger, "debugger");
         set_cfunc(luaState, luahook_findmedia, "findmedia");
         set_cfunc(luaState, luahook_writefile, "writefile");
+        set_cfunc(luaState, luahook_copyfile, "copyfile");
         set_cfunc(luaState, luahook_stringtofile, "stringtofile");
         set_cfunc(luaState, luahook_download, "download");
         set_cfunc(luaState, luahook_movefile, "movefile");
@@ -1623,6 +1625,7 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_archive_enumerate, "enumerate");
             set_cfunc(luaState, luahook_archive_enumnext, "enumnext");
             set_cfunc(luaState, luahook_archive_close, "close");
+            set_cfunc(luaState, luahook_archive_offsetofstart, "offsetofstart");
             set_cptr(luaState, GBaseArchive, "base");
         lua_setfield(luaState, -2, "archive");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
