@@ -973,9 +973,78 @@ void MojoPlatform_spawnTerminal(void)
 #if PLATFORM_BEOS
     #error write me.
     // "/boot/apps/Terminal"
+
 #elif PLATFORM_MACOSX
-    #error write me.
-    // "/Applications/Utilities/Terminal.app"
+    // this is nasty...it'd be nice if Terminal.app just took command lines.
+    boolean failed = false;
+    FILE *io = NULL;
+    char *cmd = NULL;
+    char *ptr = NULL;
+    char *binpath = MojoPlatform_appBinaryPath();
+    size_t len = (strlen(binpath) * 5) + 3;
+    int i = 0;
+    for (i = 1; i < GArgc; i++)
+        len += (strlen(GArgv[i]) * 5) + 3;
+
+    ptr = cmd = (char *) xmalloc(len+1);
+    for (i = 0; i < GArgc; i++)
+    {
+        const char *str = (i == 0) ? binpath : GArgv[i];
+        if (i != 0)
+            *(ptr++) = ' ';
+        *(ptr++) = '\'';
+        while (*str)
+        {
+            const char ch = *(str++);
+            if (ch == '\'')
+            {
+                // have to escape for both AppleScript and /bin/sh.   :/
+                *(ptr++) = '\'';
+                *(ptr++) = '\\';
+                *(ptr++) = '\\';
+                *(ptr++) = '\'';
+                *(ptr++) = '\'';
+            } // if
+            else
+            {
+                *(ptr++) = ch;
+            } // else
+        } // while
+        *(ptr++) = '\'';
+    } // for
+
+    free(binpath);
+
+    *ptr = '\0';
+    ptr = format(
+        "ignoring application responses\n"
+        "tell application \"Terminal\" to do script \"clear ; echo %0 -notermspawn=1 ; exit\"\n"
+        "tell application \"Terminal\" to tell its front window to set its custom title to \"MojoSetup\"\n"
+        "tell application \"Terminal\" to tell its front window to set its title displays device name to false\n"
+        "tell application \"Terminal\" to tell its front window to set its title displays shell path to false\n"
+        "tell application \"Terminal\" to tell its front window to set its title displays window size to false\n"
+        "tell application \"Terminal\" to tell its front window to set its title displays file name to false\n"
+        "tell application \"Terminal\" to tell its front window to set its title displays custom title to true\n"
+        "tell application \"Terminal\" to activate\n"
+        "end ignoring\n", cmd);
+
+    free(cmd);
+
+    io = popen("osascript -", "w");
+    if (io == NULL)
+        failed = true;
+    else
+    {
+        failed |= (fwrite(ptr, strlen(ptr), 1, io) != 1);
+        failed |= (pclose(io) != 0);
+    } // else
+
+    free(ptr);
+
+    if (!failed)
+        exit(0);
+
+    // otherwise, returning at all says we failed.
 #else
 
     // urgh
