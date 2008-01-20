@@ -130,6 +130,21 @@ if type(MojoSetup.localization) ~= "table" then
     MojoSetup.localization = nil
 end
 
+-- Merge the applocalization table into localization.
+if type(MojoSetup.applocalization) == "table" then
+    for k,v in pairs(MojoSetup.applocalization) do
+        if MojoSetup.localization[k] == nil then
+            MojoSetup.localization[k] = v  -- just take the whole table as-is.
+        else
+            -- This can add or overwrite entries...
+            for lang,str in pairs(MojoSetup.applocalization) do
+                MojoSetup.localization[k][lang] = str
+            end
+        end
+    end
+end
+MojoSetup.applocalization = nil  -- done with this; garbage collect it.
+
 -- Map some legacy language identifiers into updated equivalents.
 local lang_remap =
 {

@@ -6,6 +6,10 @@
 
 -- Lines starting with "--" are comments in this file.
 --
+-- You should add your installer's strings to app_localization.lua, not this
+--  file. This file is for strings internal to MojoSetup, and we change it all
+--  the time. Your app can override any individual string in this file, though.
+--
 -- NOTE: If you care about Unicode or ASCII chars above 127, this file _MUST_
 --  be UTF-8 encoded! If you think you're using a certain high-ascii codepage,
 --  you're wrong!

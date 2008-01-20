@@ -1620,8 +1620,9 @@ boolean MojoLua_initLua(void)
     free(binarypath);
     free(homedir);
 
-    // Set up localization table, if possible.
+    // Set up localization tables, if possible.
     MojoLua_runFile("localization");
+    MojoLua_runFile("app_localization");
 
     // Transfer control to Lua to setup some APIs and state...
     if (!MojoLua_runFile("mojosetup_init"))
