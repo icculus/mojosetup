@@ -381,16 +381,10 @@ boolean MojoLua_runFile(const char *name)
     MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
     const MojoArchiveEntry *entinfo;
     boolean retval = false;
-    char clua[128];  // compiled filename.
-    char ulua[128];  // uncompiled filename.
+    char *clua = format("scripts/%0.luac", name);  // compiled filename.
+    char *ulua = format("scripts/%0.lua", name);   // uncompiled filename.
     int rc = 0;
     MojoInput *io = NULL;
-
-    if (snprintf(clua, sizeof(clua), "scripts/%s.luac", name) >= sizeof (clua))
-        return false;
-
-    if (snprintf(ulua, sizeof(ulua), "scripts/%s.lua", name) >= sizeof (ulua))
-        return false;
 
     if (ar->enumerate(ar))
     {
@@ -411,6 +405,9 @@ boolean MojoLua_runFile(const char *name)
                 io = ar->openCurrentEntry(ar);
         } // while
     } // if
+
+    free(ulua);
+    free(clua);
 
     if (io != NULL)
     {
