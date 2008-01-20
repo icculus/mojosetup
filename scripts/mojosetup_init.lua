@@ -21,25 +21,6 @@
 
 local _ = MojoSetup.translate
 
-MojoSetup.loginfo("MojoSetup Lua initialization at " .. MojoSetup.date())
-MojoSetup.loginfo("buildver: " .. MojoSetup.info.buildver)
-MojoSetup.loginfo("locale: " .. MojoSetup.info.locale)
-MojoSetup.loginfo("platform: " .. MojoSetup.info.platform)
-MojoSetup.loginfo("arch: " .. MojoSetup.info.arch)
-MojoSetup.loginfo("ostype: " .. MojoSetup.info.ostype)
-MojoSetup.loginfo("osversion: " .. MojoSetup.info.osversion)
-MojoSetup.loginfo("ui: " .. MojoSetup.info.ui)
-MojoSetup.loginfo("loglevel: " .. MojoSetup.info.loglevel)
-
-MojoSetup.loginfo("command line:")
-for i,v in ipairs(MojoSetup.info.argv) do
-    MojoSetup.loginfo("  " .. i .. ": " .. v)
-end
-
---MojoSetup.loginfo(MojoSetup.info.license)
---MojoSetup.loginfo(MojoSetup.info.lualicense)
-
-
 -- Returns three elements: protocol, host, path
 function MojoSetup.spliturl(url)
     return string.match(url, "^(.+://)(.-)/(.*)")
@@ -88,106 +69,8 @@ function MojoSetup.dumptable(tabname, tab, depth)
     end
 end
 
--- This table gets filled by the config file. Just create an empty one for now.
-MojoSetup.installs = {}
 
-
-local function sanity_check_localization_entry(str, translations)
-    local maxval = -1;
-
-    for val in string.gmatch(str, "%%.") do
-        val = string.sub(val, 2)
-        if string.match(val, "^[^%%0-9]$") ~= nil then
-            MojoSetup.fatal("BUG: localization key ['" .. str .. "'] has invalid escape sequence.")
-        end
-        if val ~= "%" then
-            local num = tonumber(val)
-            if num > maxval then
-                maxval = num
-            end
-        end
-    end
-
-    for k,v in pairs(translations) do
-        for val in string.gmatch(v, "%%.") do
-            val = string.sub(val, 2)
-            if string.match(val, "^[^%%0-9]$") ~= nil then
-                MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has invalid escape sequence.")
-            end
-            if val ~= "%" then
-                if tonumber(val) > maxval then
-                    MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has escape sequence > max for translation.")
-                end
-            end
-        end
-    end
-end
-
-
--- Build the translations table from the localizations table supplied in
---  localizations.lua...
-if type(MojoSetup.localization) ~= "table" then
-    MojoSetup.localization = nil
-end
-
--- Merge the applocalization table into localization.
-if type(MojoSetup.applocalization) == "table" then
-    for k,v in pairs(MojoSetup.applocalization) do
-        if MojoSetup.localization[k] == nil then
-            MojoSetup.localization[k] = v  -- just take the whole table as-is.
-        else
-            -- This can add or overwrite entries...
-            for lang,str in pairs(MojoSetup.applocalization) do
-                MojoSetup.localization[k][lang] = str
-            end
-        end
-    end
-end
-MojoSetup.applocalization = nil  -- done with this; garbage collect it.
-
--- Map some legacy language identifiers into updated equivalents.
-local lang_remap =
-{
-    no = "nb",  -- "Norwegian" split into "Bokmal" (nb) and "Nynorsk" (nn)
-}
-
-if MojoSetup.localization ~= nil then
-    local at_least_one = false
-    local locale = MojoSetup.info.locale
-    local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
-
-    if lang_remap[lang] ~= nil then
-        lang = lang_remap[lang]
-    end
-
-    MojoSetup.translations = {}
-    for k,v in pairs(MojoSetup.localization) do
-        if MojoSetup.translations[k] ~= nil then
-            MojoSetup.fatal("BUG: Duplicate localization key ['" .. k .. "']")
-        end
-        if type(v) == "table" then
-            sanity_check_localization_entry(k, v)
-            if v[locale] ~= nil then
-                MojoSetup.translations[k] = v[locale]
-                at_least_one = true
-            elseif v[lang] ~= nil then
-                MojoSetup.translations[k] = v[lang]
-                at_least_one = true
-            end
-        end
-    end
-
-    -- Delete the table if there's no actual useful translations for this run.
-    if (not at_least_one) then
-        MojoSetup.translations = nil
-    end
-
-    -- This is eligible for garbage collection now. We're done with it.
-    MojoSetup.localization = nil
-end
-
-
--- Our namespace for this API...this is filled in with the rest of this file.
+-- Our namespace for config API...
 Setup = {}
 
 local function schema_assert(test, fnname, elem, errstr)
@@ -377,6 +260,10 @@ function Setup.Package(tab)
         { "superuser", false, mustBeBool },
     })
 
+    if MojoSetup.installs == nil then
+        MojoSetup.installs = {}
+    end
+
     tab._type_ = nil
     tab = reform_schema_table(tab)
     table.insert(MojoSetup.installs, tab)
@@ -511,6 +398,133 @@ function Setup.OptionGroup(tab)
         { "tooltip", nil, mustBeString, cantBeEmpty },
     })
 end
+
+
+local function prepare_localization()
+    -- Map some legacy language identifiers into updated equivalents.
+    local lang_remap =
+    {
+        no = "nb",  -- "Norwegian" split into "Bokmal" (nb) and "Nynorsk" (nn)
+    }
+
+    local function sanity_check_localization_entry(str, translations)
+        local maxval = -1;
+
+        for val in string.gmatch(str, "%%.") do
+            val = string.sub(val, 2)
+            if string.match(val, "^[^%%0-9]$") ~= nil then
+                MojoSetup.fatal("BUG: localization key ['" .. str .. "'] has invalid escape sequence.")
+            end
+            if val ~= "%" then
+                local num = tonumber(val)
+                if num > maxval then
+                    maxval = num
+                end
+            end
+        end
+
+        for k,v in pairs(translations) do
+            for val in string.gmatch(v, "%%.") do
+                val = string.sub(val, 2)
+                if string.match(val, "^[^%%0-9]$") ~= nil then
+                    MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has invalid escape sequence.")
+                end
+                if val ~= "%" then
+                    if tonumber(val) > maxval then
+                        MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has escape sequence > max for translation.")
+                    end
+                end
+            end
+        end
+    end
+
+    -- Build the translations table from the localizations table supplied in
+    --  localizations.lua...
+    if type(MojoSetup.localization) ~= "table" then
+        MojoSetup.localization = nil
+    end
+
+    -- Merge the applocalization table into localization.
+    if type(MojoSetup.applocalization) == "table" then
+        if MojoSetup.localization == nil then
+            MojoSetup.localization = {}
+        end
+        for k,v in pairs(MojoSetup.applocalization) do
+            if MojoSetup.localization[k] == nil then
+                MojoSetup.localization[k] = v  -- just take the whole table as-is.
+            else
+                -- This can add or overwrite entries...
+                for lang,str in pairs(MojoSetup.applocalization) do
+                    MojoSetup.localization[k][lang] = str
+                end
+            end
+        end
+    end
+    MojoSetup.applocalization = nil  -- done with this; garbage collect it.
+
+    if MojoSetup.localization == nil then
+        local at_least_one = false
+        local locale = MojoSetup.info.locale
+        local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
+
+        if lang_remap[lang] ~= nil then
+            lang = lang_remap[lang]
+        end
+
+        MojoSetup.translations = {}
+        for k,v in pairs(MojoSetup.localization) do
+            if MojoSetup.translations[k] ~= nil then
+                MojoSetup.fatal("BUG: Duplicate localization key ['" .. k .. "']")
+            end
+            if type(v) == "table" then
+                sanity_check_localization_entry(k, v)
+                if v[locale] ~= nil then
+                    MojoSetup.translations[k] = v[locale]
+                    at_least_one = true
+                elseif v[lang] ~= nil then
+                    MojoSetup.translations[k] = v[lang]
+                    at_least_one = true
+                end
+            end
+        end
+
+        -- Delete the table if there's no actual useful translations for this run.
+        if (not at_least_one) then
+            MojoSetup.translations = nil
+        end
+
+        -- This is eligible for garbage collection now. We're done with it.
+        MojoSetup.localization = nil
+    end
+end
+
+
+-- Mainline...
+
+MojoSetup.loginfo("MojoSetup Lua initialization at " .. MojoSetup.date())
+MojoSetup.loginfo("buildver: " .. MojoSetup.info.buildver)
+MojoSetup.loginfo("locale: " .. MojoSetup.info.locale)
+MojoSetup.loginfo("platform: " .. MojoSetup.info.platform)
+MojoSetup.loginfo("arch: " .. MojoSetup.info.arch)
+MojoSetup.loginfo("ostype: " .. MojoSetup.info.ostype)
+MojoSetup.loginfo("osversion: " .. MojoSetup.info.osversion)
+MojoSetup.loginfo("ui: " .. MojoSetup.info.ui)
+MojoSetup.loginfo("loglevel: " .. MojoSetup.info.loglevel)
+
+MojoSetup.loginfo("command line:")
+for i,v in ipairs(MojoSetup.info.argv) do
+    MojoSetup.loginfo("  " .. i .. ": " .. v)
+end
+
+--MojoSetup.loginfo(MojoSetup.info.license)
+--MojoSetup.loginfo(MojoSetup.info.lualicense)
+
+-- These scripts are optional, but hopefully exist...
+MojoSetup.runFile("localization")
+MojoSetup.runFile("app_localization")
+prepare_localization()
+
+-- okay, we're initialized!
 
 -- end of mojosetup_init.lua ...
 

@@ -1357,26 +1357,43 @@ local function do_install(install)
     MojoSetup.totaldownload = 0
 end
 
+local function installer()
+    -- This builds the MojoSetup.installs table.
+    MojoSetup.runFile("config")
+
+    -- We don't need the "Setup" namespace anymore. Make it eligible
+    --  for garbage collection.
+    Setup = nil
+
+    -- This dumps the table built from the user's config script using logdebug,
+    --  so it only spits out crap if debug-level logging is enabled.
+    MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
+
+    local saw_an_installer = false
+    for installkey,install in pairs(MojoSetup.installs) do
+        if not install.disabled then
+            saw_an_installer = true
+            do_install(install)
+            MojoSetup.collectgarbage()  -- nuke all the tables we threw around...
+        end
+    end
+
+    if not saw_an_installer then
+        MojoSetup.fatal(_("Nothing to do!"))
+    end
+end
 
 
 -- Mainline.
 
-
--- This dumps the table built from the user's config script using logdebug,
---  so it only spits out crap if debug-level logging is enabled.
-MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
-
-local saw_an_installer = false
-for installkey,install in pairs(MojoSetup.installs) do
-    if not install.disabled then
-        saw_an_installer = true
-        do_install(install)
-        MojoSetup.collectgarbage()  -- nuke all the tables we threw around...
-    end
-end
-
-if not saw_an_installer then
-    MojoSetup.fatal(_("Nothing to do!"))
+if MojoSetup.cmdline("manifest") then
+    Setup = nil  -- don't need this after all.
+    MojoSetup.fatal("Not implemented yet.")
+elseif MojoSetup.cmdline("uninstall") then
+    Setup = nil  -- don't need this after all.
+    MojoSetup.fatal("Not implemented yet.")
+else
+    installer()
 end
 
 -- end of mojosetup_mainline.lua ...

@@ -1623,22 +1623,9 @@ boolean MojoLua_initLua(void)
     free(binarypath);
     free(homedir);
 
-    // Set up localization tables, if possible.
-    MojoLua_runFile("localization");
-    MojoLua_runFile("app_localization");
-
     // Transfer control to Lua to setup some APIs and state...
     if (!MojoLua_runFile("mojosetup_init"))
         return false;
-
-    // ...and run the installer-specific config file.
-    if (!MojoLua_runFile("config"))
-        return false;
-
-    // We don't need the "Setup" namespace anymore. Make it
-    //  eligible for garbage collection.
-    lua_pushnil(luaState);
-    lua_setglobal(luaState, "Setup");
 
     MojoLua_collectGarbage();  // get rid of old init crap we don't need.
 
