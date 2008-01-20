@@ -51,9 +51,6 @@
 -- Occasionally you might see a "\n" ... that's a newline character. "\t" is
 --  a tab character, and "\\" turns into a single "\" character.
 --
--- You should leave the existing strings here. They aren't hurting anything,
---  and most are used by MojoSetup itself. Add your own, if needed, though.
---
 -- The table you create here goes away shortly after creation, as the relevant
 --  parts of it get moved somewhere else. You should call MojoSetup.translate()
 --  to get the proper translation for a given string.
