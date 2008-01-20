@@ -93,6 +93,10 @@ done
 rm -f examples/duke3d/image/scripts/config.luac
 ./mojoluac $LUASTRIPOPT -o examples/duke3d/image/scripts/config.luac examples/duke3d/scripts/config.lua
 
+# Don't want the example app_localization...use our's instead.
+rm -f examples/duke3d/image/scripts/app_localization.luac
+./mojoluac $LUASTRIPOPT -o examples/duke3d/image/scripts/app_localization.luac examples/duke3d/scripts/app_localization.lua
+
 # Fill in the rest of the Base Archive...
 cd examples/duke3d
 cp data/* image/data/
