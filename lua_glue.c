@@ -376,13 +376,13 @@ boolean MojoLua_callProcedure(const char *funcname)
 } // MojoLua_callProcedure
 
 
-boolean MojoLua_runFile(const char *name)
+boolean MojoLua_runFileFromDir(const char *dir, const char *name)
 {
     MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
     const MojoArchiveEntry *entinfo;
     boolean retval = false;
-    char *clua = format("scripts/%0.luac", name);  // compiled filename.
-    char *ulua = format("scripts/%0.lua", name);   // uncompiled filename.
+    char *clua = format("%0/%1.luac", dir, name);  // compiled filename.
+    char *ulua = format("%0/%1.lua", dir, name);   // uncompiled filename.
     int rc = 0;
     MojoInput *io = NULL;
 
@@ -432,6 +432,12 @@ boolean MojoLua_runFile(const char *name)
     } // if
 
     return retval;
+} // MojoLua_runFileFromDir
+
+
+boolean MojoLua_runFile(const char *name)
+{
+    return MojoLua_runFileFromDir("scripts", name);
 } // MojoLua_runFile
 
 

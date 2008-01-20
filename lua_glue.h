@@ -27,13 +27,16 @@ void MojoLua_deinitLua(void);
 boolean MojoLua_initialized(void);
 
 // Run the code in a given Lua file. This is JUST the base filename.
-//  We will look for it in GBaseArchive in the scripts/ directory, both as
+//  We will look for it in GBaseArchive in the (dir) directory, both as
 //  fname.luac and fname.lua. This code chunk will accept no arguments, and
 //  return no results, but it can change the global state and alter tables,
 //  etc, so it can have lasting side effects.
 // Will return false if the file couldn't be loaded, or true if the chunk
 //  successfully ran. Will not return if there's a runtime error in the
 //  chunk, as it will call fatal() instead.
+boolean MojoLua_runFileFromDir(const char *dir, const char *name)
+
+// This is shorthand for MojoLua_runFileFromDir("scripts", fname);
 boolean MojoLua_runFile(const char *fname);
 
 // Call a function in Lua. This calls MojoSetup.funcname, if it exists and
