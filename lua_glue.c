@@ -1485,19 +1485,20 @@ boolean MojoLua_initLua(void)
     const char *envr = cmdlinestr("locale", "MOJOSETUP_LOCALE", NULL);
     char *homedir = NULL;
     char *binarypath = NULL;
-    char locale[16];
-    char ostype[64];
-    char osversion[64];
+    char *locale = NULL
+    char *ostype = NULL;
+    char *osversion = NULL;
 
     if (envr != NULL)
-        xstrncpy(locale, envr, sizeof (locale));
-    else if (!MojoPlatform_locale(locale, sizeof (locale)))
-        xstrncpy(locale, "???", sizeof (locale));
+        locale = xstrdup(envr);
+    else if ((locale = MojoPlatform_locale()) == NULL)
+        locale = xstrdup("???");
 
-    if (!MojoPlatform_osType(ostype, sizeof (ostype)))
-        xstrncpy(ostype, "???", sizeof (ostype));
-    if (!MojoPlatform_osVersion(osversion, sizeof (osversion)))
-        xstrncpy(osversion, "???", sizeof (osversion));
+    if ((ostype = MojoPlatform_osType()) == NULL)
+        ostype = xstrdup("???");
+
+    if ((osversion = MojoPlatform_osVersion()) == NULL)
+        osversion = xstrdup("???");
 
     assert(luaState == NULL);
 
@@ -1622,6 +1623,9 @@ boolean MojoLua_initLua(void)
 
     free(binarypath);
     free(homedir);
+    free(osversion);
+    free(ostype);
+    free(locale);
 
     // Transfer control to Lua to setup some APIs and state...
     if (!MojoLua_runFile("mojosetup_init"))

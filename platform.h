@@ -262,11 +262,18 @@ uint8 *MojoPlatform_decodeImage(const uint8 *data, uint32 size,
 // Get the current locale, in the format "xx_YY" where "xx" is the language
 //  (en, fr, de...) and "_YY" is the country. (_US, _CA, etc). The country
 //  can be omitted. Don't include encoding, it's always UTF-8 at this time.
-// Return true if locale is known, false otherwise.
-boolean MojoPlatform_locale(char *buf, size_t len);
+// Returns locale string, or NULL if it couldn't be determined.
+//  Caller must free() the returned pointer!
+char *MojoPlatform_locale(void);
 
-boolean MojoPlatform_osType(char *buf, size_t len);
-boolean MojoPlatform_osVersion(char *buf, size_t len);
+// !!! FIXME: document me.
+// Caller must free() the returned pointer!
+char *MojoPlatform_osType(void);
+
+// !!! FIXME: document me.
+// Caller must free() the returned pointer!
+char *MojoPlatform_osVersion(void);
+
 
 // Basic platform detection.
 #if PLATFORM_WINDOWS

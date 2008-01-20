@@ -367,23 +367,21 @@ char *MojoPlatform_homedir(void)
 
 
 // This implementation is a bit naive.
-boolean MojoPlatform_locale(char *buf, size_t len)
+char *MojoPlatform_locale(void)
 {
-    boolean retval = false;
+    char *retval = NULL;
     const char *envr = getenv("LANG");
     if (envr != NULL)
     {
-        char *ptr = NULL;
-        xstrncpy(buf, envr, len);
-        ptr = strchr(buf, '.');  // chop off encoding if explicitly listed.
+        retval = xstrdup(envr);
+        ptr = strchr(retval, '.');  // chop off encoding if explicitly listed.
         if (ptr != NULL)
             *ptr = '\0';
-        retval = true;
     } // if
 
     #if PLATFORM_MACOSX
     else if (CFLocaleCreateCanonicalLocaleIdentifierFromString == NULL)
-        retval = false; // !!! FIXME: 10.2 compatibility?
+        retval = NULL; // !!! FIXME: 10.2 compatibility?
 
     else if (CFLocaleCreateCanonicalLocaleIdentifierFromString != NULL)
     {
@@ -400,9 +398,11 @@ boolean MojoPlatform_locale(char *buf, size_t len)
                                                 kCFAllocatorDefault, primary);                if (locale != NULL)
                 if (locale != NULL)
                 {
-                    CFStringGetCString(locale, buf, len, kCFStringEncodingUTF8);
+                    const CFIndex len = (CFStringGetLength(locale) + 1) * 6;
+                    char *ptr = (char*) xmalloc(len);
+                    CFStringGetCString(locale, ptr, len, kCFStringEncodingUTF8);
                     CFRelease(locale);
-                    retval = true;
+                    retval = xrealloc(ptr, strlen(ptr) + 1);
                 } // if
             } // if
             CFRelease(languages);
@@ -414,37 +414,37 @@ boolean MojoPlatform_locale(char *buf, size_t len)
 } // MojoPlatform_locale
 
 
-boolean MojoPlatform_osType(char *buf, size_t len)
+char *MojoPlatform_osType(void)
 {
 #if PLATFORM_MACOSX
-    xstrncpy(buf, "macosx", len);
+    return xstrdup("macosx");
 #elif PLATFORM_BEOS
-    xstrncpy(buf, "beos", len);   // !!! FIXME: zeta? haiku?
+    return xstrdup("beos");   // !!! FIXME: zeta? haiku?
 #elif defined(linux) || defined(__linux) || defined(__linux__)
-    xstrncpy(buf, "linux", len);
+    return xstrdup("linux");
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
-    xstrncpy(buf, "freebsd", len);
+    return xstrdup("freebsd");
 #elif defined(__NetBSD__)
-    xstrncpy(buf, "netbsd", len);
+    return xstrdup("netbsd");
 #elif defined(__OpenBSD__)
-    xstrncpy(buf, "openbsd", len);
+    return xstrdup("openbsd");
 #elif defined(bsdi) || defined(__bsdi) || defined(__bsdi__)
-    xstrncpy(buf, "bsdi", len);
+    return xstrdup("bsdi");
 #elif defined(_AIX)
-    xstrncpy(buf, "aix", len);
+    return xstrdup("aix");
 #elif defined(hpux) || defined(__hpux) || defined(__hpux__)
-    xstrncpy(buf, "hpux", len);
+    return xstrdup("hpux");
 #elif defined(sgi) || defined(__sgi) || defined(__sgi__) || defined(_SGI_SOURCE)
-    xstrncpy(buf, "irix", len);
+    return xstrdup("irix");
 #else
 #   error Please define your platform.
 #endif
 
-    return true;
+    return NULL;
 } // MojoPlatform_ostype
 
 
-boolean MojoPlatform_osVersion(char *buf, size_t len)
+char *MojoPlatform_osVersion()
 {
 #if PLATFORM_MACOSX
     // !!! FIXME: this is wrong...it doesn't with with 10.y.xx, where 'xx'
@@ -454,10 +454,10 @@ boolean MojoPlatform_osVersion(char *buf, size_t len)
     long ver = 0x0000;
 	if (Gestalt(gestaltSystemVersion, &ver) == noErr)
     {
-        char str[16];
+        char *retval = (char *) xmalloc(16);
         snprintf(str, sizeof (str), "%X", (int) ver);
         snprintf(buf, len, "%c%c.%c.%c", str[0], str[1], str[2], str[3]);
-        return true;
+        return retval;
     } // if
 #else
     // This information may or may not actually MEAN anything. On BeOS, it's
@@ -465,13 +465,10 @@ boolean MojoPlatform_osVersion(char *buf, size_t len)
     //  version, which doesn't necessarily help.
     struct utsname un;
     if (uname(&un) == 0)
-    {
-        xstrncpy(buf, un.release, len);
-        return true;
-    } // if
+        return xstrdup(un.release);
 #endif
 
-    return false;
+    return NULL;
 } // MojoPlatform_osversion
 
 

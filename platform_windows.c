@@ -924,9 +924,8 @@ char *MojoPlatform_homedir(void)
 
 
 // This implementation is a bit naive.
-boolean MojoPlatform_locale(char *buf, size_t len)
+char *MojoPlatform_locale(void)
 {
-    boolean retval = false;
     char lang[16];
     char country[16];
 
@@ -940,33 +939,29 @@ boolean MojoPlatform_locale(char *buf, size_t len)
 
     // Win95 systems will fail, because they don't have LOCALE_SISO*NAME ...
     if ((langrc != 0) && (ctryrc != 0))
-    {
-        snprintf(buf, len, "%s_%s", lang, country);
-        retval = true;
-    } // if
+        return format("%0_%1", lang, country);
 
-    return retval;
+    return NULL;
 } // MojoPlatform_locale
 
 
-boolean MojoPlatform_osType(char *buf, size_t len)
+char *MojoPlatform_osType(void)
 {
     if (osIsWin9x)
-        xstrncpy(buf, "win9x", len);
+        return xstrdup("win9x");
     else
-        xstrncpy(buf, "winnt", len);
+        return xstrdup("winnt");
 
-    return true;
+    return NULL;
 } // MojoPlatform_ostype
 
 
-boolean MojoPlatform_osVersion(char *buf, size_t len)
+char *MojoPlatform_osVersion(void)
 {
-    snprintf(buf, len, "%u.%u.%u",
-             (unsigned int) osMajorVer,
-             (unsigned int) osMinorVer,
-             (unsigned int) osBuildVer);
-    return true;
+    return format("%0.%1.%2",
+                  numStr(osMajorVer),
+                  numStr(osMinorVer),
+                  numStr(osBuildVer));
 } // MojoPlatform_osversion
 
 
