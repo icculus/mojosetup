@@ -881,6 +881,26 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     dependencies just to write this string into the log.
 
 
+  MojoSetup.info.uid
+
+    This is a number (not a function!) that lists the user id of the person
+    running the installer. On Unix, this is what getuid() reports (and zero
+    would be the root user).
+
+
+  MojoSetup.info.euid
+
+    This is a number (not a function!) that lists the EFFECTIVE user id of the
+    person running the installer. On Unix, this is what geteuid() reports (and
+    zero would be the root user).
+
+
+  MojoSetup.info.gid
+
+    This is a number (not a function!) that lists the group id of the person
+    running the installer. On Unix, this is what getgid() reports.
+
+
   MojoSetup.info.locale
 
     This is a string (not a function!) of the current locale, in the format
