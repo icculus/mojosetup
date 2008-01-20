@@ -370,6 +370,7 @@ char *MojoPlatform_homedir(void)
 char *MojoPlatform_locale(void)
 {
     char *retval = NULL;
+    char *ptr = NULL;
     const char *envr = getenv("LANG");
     if (envr != NULL)
     {
@@ -399,7 +400,7 @@ char *MojoPlatform_locale(void)
                 if (locale != NULL)
                 {
                     const CFIndex len = (CFStringGetLength(locale) + 1) * 6;
-                    char *ptr = (char*) xmalloc(len);
+                    ptr = (char*) xmalloc(len);
                     CFStringGetCString(locale, ptr, len, kCFStringEncodingUTF8);
                     CFRelease(locale);
                     retval = xrealloc(ptr, strlen(ptr) + 1);
@@ -454,10 +455,12 @@ char *MojoPlatform_osVersion()
     long ver = 0x0000;
 	if (Gestalt(gestaltSystemVersion, &ver) == noErr)
     {
-        char *retval = (char *) xmalloc(16);
+        const size_t len = 8;
+        char *buf = (char *) xmalloc(len);
+        char str[16];
         snprintf(str, sizeof (str), "%X", (int) ver);
         snprintf(buf, len, "%c%c.%c.%c", str[0], str[1], str[2], str[3]);
-        return retval;
+        return buf;
     } // if
 #else
     // This information may or may not actually MEAN anything. On BeOS, it's
@@ -1112,6 +1115,24 @@ uint8 *MojoPlatform_decodeImage(const uint8 *data, uint32 size,
     // !!! FIXME: try Quartz APIs on Mac OS X?
     return NULL; // no platform-specific APIs. Just use the built-in ones.
 } // MojoPlatform_decodeImage
+
+
+uint64 MojoPlatform_getuid(void)
+{
+    return (uint64) getuid();
+} // MojoPlatform_getuid
+
+
+uint64 MojoPlatform_geteuid(void)
+{
+    return (uint64) geteuid();
+} // MojoPlatform_geteuid
+
+
+uint64 MojoPlatform_getgid(void)
+{
+    return (uint64) getgid();
+} // MojoPlatform_getgid
 
 
 static void signal_catcher(int sig)

@@ -274,6 +274,15 @@ char *MojoPlatform_osType(void);
 // Caller must free() the returned pointer!
 char *MojoPlatform_osVersion(void);
 
+// !!! FIXME: document me.
+uint64 MojoPlatform_getuid(void);
+
+// !!! FIXME: document me.
+uint64 MojoPlatform_geteuid(void);
+
+// !!! FIXME: document me.
+uint64 MojoPlatform_getgid(void);
+
 
 // Basic platform detection.
 #if PLATFORM_WINDOWS

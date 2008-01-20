@@ -34,7 +34,7 @@ boolean MojoLua_initialized(void);
 // Will return false if the file couldn't be loaded, or true if the chunk
 //  successfully ran. Will not return if there's a runtime error in the
 //  chunk, as it will call fatal() instead.
-boolean MojoLua_runFileFromDir(const char *dir, const char *name)
+boolean MojoLua_runFileFromDir(const char *dir, const char *name);
 
 // This is shorthand for MojoLua_runFileFromDir("scripts", fname);
 boolean MojoLua_runFile(const char *fname);

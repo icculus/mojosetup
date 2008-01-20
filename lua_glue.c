@@ -86,6 +86,15 @@ static inline void set_number(lua_State *L, lua_Number x, const char *sym)
     lua_setfield(L, -2, sym);
 } // set_string
 
+
+// Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
+static inline void set_integer(lua_State *L, lua_Integer x, const char *sym)
+{
+    lua_pushinteger(L, x);
+    lua_setfield(L, -2, sym);
+} // set_string
+
 // !!! FIXME: why is this a different naming convention?
 static inline void set_string_array(lua_State *L, int argc, const char **argv,
                                     const char *sym)
@@ -1483,42 +1492,24 @@ static int luahook_date(lua_State *L)
 boolean MojoLua_initLua(void)
 {
     const char *envr = cmdlinestr("locale", "MOJOSETUP_LOCALE", NULL);
-    char *homedir = NULL;
-    char *binarypath = NULL;
-    char *locale = NULL
-    char *ostype = NULL;
-    char *osversion = NULL;
+    char *homedir = MojoPlatform_homedir();
+    char *binarypath = MojoPlatform_appBinaryPath();
+    char *locale = (envr != NULL) ? xstrdup(envr) : MojoPlatform_locale();
+    char *ostype = MojoPlatform_osType();
+    char *osversion = MojoPlatform_osVersion();
+    lua_Integer uid = MojoPlatform_getuid();
+    lua_Integer euid = MojoPlatform_geteuid();
+    lua_Integer gid = MojoPlatform_getgid();
 
-    if (envr != NULL)
-        locale = xstrdup(envr);
-    else if ((locale = MojoPlatform_locale()) == NULL)
-        locale = xstrdup("???");
-
-    if ((ostype = MojoPlatform_osType()) == NULL)
-        ostype = xstrdup("???");
-
-    if ((osversion = MojoPlatform_osVersion()) == NULL)
-        osversion = xstrdup("???");
+    if (locale == NULL) locale = xstrdup("???");
+    if (ostype == NULL) ostype = xstrdup("???");
+    if (osversion == NULL) osversion = xstrdup("???");
 
     assert(luaState == NULL);
-
-    luaState = lua_newstate(MojoLua_alloc, NULL);
-    if (luaState == NULL)
-        return false;
-
+    luaState = lua_newstate(MojoLua_alloc, NULL);  // calls fatal() on failure.
     lua_atpanic(luaState, luahook_fatal);
-
-    if (!lua_checkstack(luaState, 20))  // Just in case.
-    {
-        lua_close(luaState);
-        luaState = NULL;
-        return false;
-    } // if
-
+    assert(lua_checkstack(luaState, 20));  // Just in case.
     registerLuaLibs(luaState);
-
-    homedir = MojoPlatform_homedir();
-    binarypath = MojoPlatform_appBinaryPath();
 
     // !!! FIXME: I'd like to change the function name case for the lua hooks.
 
@@ -1568,6 +1559,9 @@ boolean MojoLua_initLua(void)
             set_string(luaState, homedir, "homedir");
             set_string(luaState, binarypath, "binarypath");
             set_string(luaState, GBaseArchivePath, "basearchivepath");
+            set_integer(luaState, uid, "uid");
+            set_integer(luaState, euid, "euid");
+            set_integer(luaState, gid, "gid");
             set_string_array(luaState, GArgc, GArgv, "argv");
             lua_newtable(luaState);
                 set_string(luaState, "base", "base");
@@ -1621,11 +1615,11 @@ boolean MojoLua_initLua(void)
         lua_setfield(luaState, -2, "archive");
     lua_setglobal(luaState, MOJOSETUP_NAMESPACE);
 
-    free(binarypath);
-    free(homedir);
     free(osversion);
     free(ostype);
     free(locale);
+    free(binarypath);
+    free(homedir);
 
     // Transfer control to Lua to setup some APIs and state...
     if (!MojoLua_runFile("mojosetup_init"))

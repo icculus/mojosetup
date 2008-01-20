@@ -1586,6 +1586,25 @@ void MojoPlatform_dlclose(void *_lib)
 } // MojoPlatform_dlclose
 
 
+uint64 MojoPlatform_getuid(void)
+{
+    return 0;  // !!! FIXME
+} // MojoPlatform_getuid
+
+
+uint64 MojoPlatform_geteuid(void)
+{
+    return 0;  // !!! FIXME
+} // MojoPlatform_geteuid
+
+
+uint64 MojoPlatform_getgid(void)
+{
+    return 0;  // !!! FIXME
+} // MojoPlatform_getgid
+
+
+
 // Get OS info and save the important parts.
 //  Returns non-zero if successful, otherwise it returns zero on failure.
 static boolean getOSInfo(void)
