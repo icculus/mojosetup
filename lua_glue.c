@@ -566,6 +566,16 @@ static int luahook_runfile(lua_State *L)
 } // luahook_runfile
 
 
+// Lua interface to MojoLua_runFileFromDir(). This is needed instead of Lua's
+//  require(), since it can access scripts inside an archive.
+static int luahook_runfilefromdir(lua_State *L)
+{
+    const char *dir = luaL_checkstring(L, 1);
+    const char *fname = luaL_checkstring(L, 2);
+    return retvalBoolean(L, MojoLua_runFileFromDir(dir, fname));
+} // luahook_runfile
+
+
 // Lua interface to translate().
 static int luahook_translate(lua_State *L)
 {
@@ -837,6 +847,38 @@ static int luahook_isvalidperms(lua_State *L)
     MojoPlatform_makePermissions(permstr, &valid);
     return retvalBoolean(L, valid);
 } // luahook_isvalidperms
+
+
+static int do_checksum(lua_State *L, MojoInput *in)
+{
+    MojoChecksumContext ctx;
+    MojoChecksums sums;
+    int64 br = 0;
+
+    MojoChecksum_init(&ctx);
+
+    while (1)
+    {
+        br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
+        if (br <= 0)
+            break;
+        MojoChecksum_append(&ctx, scratchbuf_128k, (uint32) br);
+    } // while
+
+    MojoChecksum_finish(&ctx, &sums);
+
+    in->close(in);
+
+    return (br < 0) ? 0 : retvalChecksums(L, &sums);
+} // do_checksum
+
+
+static int luahook_checksum(lua_State *L)
+{
+    const char *fname = luaL_checkstring(L, 1);
+    MojoInput *in = MojoInput_newFromFile(fname);
+    return do_checksum(L, in);
+} // luahook_checksum
 
 
 static int luahook_archive_fromdir(lua_State *L)
@@ -1517,6 +1559,7 @@ boolean MojoLua_initLua(void)
     lua_newtable(luaState);
         // Set up initial C functions, etc we want to expose to Lua code...
         set_cfunc(luaState, luahook_runfile, "runfile");
+        set_cfunc(luaState, luahook_runfilefromdir, "runfilefromdir");
         set_cfunc(luaState, luahook_translate, "translate");
         set_cfunc(luaState, luahook_ticks, "ticks");
         set_cfunc(luaState, luahook_format, "format");
@@ -1543,6 +1586,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_truncatenum, "truncatenum");
         set_cfunc(luaState, luahook_date, "date");
         set_cfunc(luaState, luahook_isvalidperms, "isvalidperms");
+        set_cfunc(luaState, luahook_checksum, "checksum");
 
         // Set some information strings...
         lua_newtable(luaState);
