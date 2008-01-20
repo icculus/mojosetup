@@ -86,18 +86,12 @@ end
 
 
 -- get a linear array of filenames in the manifest.
-local function flatten_manifest()
-    local man = MojoSetup.manifest
+local function flatten_manifest(man)
     local files = {}
 
     if man ~= nil then
-        for key,items in pairs(man) do
-            for i,item in ipairs(items) do
-                local path = item.path
-                if path ~= nil then
-                    files[#files+1] = path
-                end
-            end
+        for fname,items in pairs(man) do
+            files[#files+1] = path
         end
     end
 
@@ -115,7 +109,7 @@ function MojoSetup.revertinstall()
 
     -- !!! FIXME: callbacks here.
     delete_files(MojoSetup.downloads)
-    delete_files(flatten_manifest())
+    delete_files(flatten_manifest(MojoSetup.manifest))
     do_rollbacks()
     delete_scratchdirs()
 end
@@ -268,16 +262,12 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
     -- Add to manifest first, so we can delete it during rollback if i/o fails.
     local manifestentry =
     {
+        option = manifestkey,
         type = "file",
-        path = dest,
         mode = perms,    -- !!! FIXME: perms may be nil...we need a MojoSetup.defaultPermsString()...
     }
     if manifestkey ~= nil then
-        if MojoSetup.manifest[manifestkey] == nil then
-            MojoSetup.manifest[manifestkey] = {}
-        end
-        local manifest = MojoSetup.manifest[manifestkey]
-        manifest[#manifest+1] = manifestentry
+        MojoSetup.manifest[dest] = manifestentry
     end
 
     local written, sums = writefn(callback)
@@ -330,12 +320,9 @@ local function install_symlink(dest, lndest, manifestkey)
     end
 
     if manifestkey ~= nil then
-        if MojoSetup.manifest[manifestkey] == nil then
-            MojoSetup.manifest[manifestkey] = {}
-        end
-        local manifest = MojoSetup.manifest[manifestkey]
-        manifest[#manifest+1] =
+        MojoSetup.manifest[dest] =
         {
+            option = manifestkey,
             type = "symlink",
             path = dest,
             linkdest = lndest,
@@ -355,13 +342,10 @@ local function install_directory(dest, perms, manifestkey)
     end
 
     if manifestkey ~= nil then
-        if MojoSetup.manifest[manifestkey] == nil then
-            MojoSetup.manifest[manifestkey] = {}
-        end
-        local manifest = MojoSetup.manifest[manifestkey]
-        manifest[#manifest+1] =
+        MojoSetup.manifest[dest] =
         {
-            type = "dir",
+            option = manifestkey,
+            type = "directory",
             path = dest,
             mode = perms,
         }
@@ -631,7 +615,7 @@ end
 --  loki_patch with a MojoSetup installation. Please note that we never ever
 --  look at this data! You are responsible for updating the other files if
 --  you think it'll be important. The Unix MojoSetup uninstaller uses the
---  plain text manifest, for example (but loki_uninstall can use the xml one,
+--  lua  manifest, for example (but loki_uninstall can use the xml one,
 --  so if you want, you can just drop in MojoSetup to replace loki_setup and
 --  use the Loki tools for everything else.
 local function build_xml_manifest()
@@ -652,18 +636,23 @@ local function build_xml_manifest()
         '" default="yes">\n'
 
     local destlen = string.len(MojoSetup.destination) + 2
-    for option,items in pairs(MojoSetup.manifest) do
-        local desc = option
-        if type(desc) == "table" then  -- "meta" etc, or an option table.
-            desc = option.description
-        end
 
+    -- Need to group these by options.
+    local grouped = {}
+    for fname,entity in pairs(MojoSetup.manifest) do
+        local key = entity.option
+        if grouped[key] == nil then
+            if grouped[key] = {}
+        end
+        entity.path = fname
+        local list = grouped[key]
+        list[#list+1] = entity
+    end
+
+    for desc,items in pairs(grouped) do
         retval = retval .. '\t\t<option name="' .. desc .. '">\n'
         for i,item in ipairs(items) do
             local type = item.type
-            if type == "dir" then
-                type = "directory"
-            end
 
             -- !!! FIXME: files from archives aren't filling item.mode in
             -- !!! FIXME:  because it figures out the perms from the archive's
@@ -675,6 +664,7 @@ local function build_xml_manifest()
             end
 
             local path = item.path
+            item.path = nil  -- we added this when grouping. Remove it now.
             if path ~= nil then
                 path = string.sub(path, destlen)  -- make it relative.
             end
@@ -739,23 +729,14 @@ local function build_lua_manifest()
         return retval
     end
 
-    local man = {}
-    for option,items in pairs(MojoSetup.manifest) do
-        local desc = option
-        if type(desc) == "table" then  -- "meta" etc, or an option table.
-            desc = option.description
-        end
-        man[desc] = items
-    end
-
     local install = MojoSetup.install
-    return 'package = ' .. serialize {
+    return 'MojoSetup.package = ' .. serialize {
         id = install.id,
         description = install.description,
         root = MojoSetup.destination,
         update_url = install.updateurl,
         version = install.version,
-        manifest = man,
+        manifest = MojoSetup.manifest,
     } .. "\n\n"
 end
 
@@ -763,13 +744,9 @@ end
 local function build_txt_manifest()
     local retval = ''
     local destlen = string.len(MojoSetup.destination) + 2
-    local files = flatten_manifest()
-    for i,item in ipairs(files) do
-        local path = item
-        if path ~= nil then
-            path = string.sub(path, destlen)  -- make it relative.
-            retval = retval .. path .. "\n"
-        end
+    for _path,item in pairs(MojoSetup.manifest) do
+        local path = string.sub(_path, destlen)  -- make it relative.
+        retval = retval .. path .. "\n"
     end
     return retval
 end
@@ -849,20 +826,12 @@ local function install_manifests(desc, key)
     local lua_fname = basefname .. ".lua"
     local xml_fname = basefname .. ".xml"
     local txt_fname = basefname .. ".txt"
-    if MojoSetup.manifest[key] == nil then
-        MojoSetup.manifest[key] = {}
-    end
-    local manifest = MojoSetup.manifest[key]
-    manifest[#manifest+1] = { type = "file", path = lua_fname, mode = perms }
-    manifest[#manifest+1] = { type = "file", path = xml_fname, mode = perms }
-    manifest[#manifest+1] = { type = "file", path = txt_fname, mode = perms }
-
-    -- These are probably all duplicated effort, but just in case...
-    install_parent_dirs(lua_fname, key)
-    install_parent_dirs(xml_fname, key)
-    install_parent_dirs(txt_fname, key)
+    MojoSetup.manifest[lua_fname] = { type = "file", mode = perms }
+    MojoSetup.manifest[xml_fname] = { type = "file", mode = perms }
+    MojoSetup.manifest[txt_fname] = { type = "file", mode = perms }
 
     -- now build these things...
+    install_parent_dirs(lua_fname, key)
     install_file_from_string(lua_fname, build_lua_manifest(), perms, desc, nil)
     install_file_from_string(xml_fname, build_xml_manifest(), perms, desc, nil)
     install_file_from_string(txt_fname, build_txt_manifest(), perms, desc, nil)
