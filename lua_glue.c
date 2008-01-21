@@ -703,6 +703,16 @@ static int luahook_wildcardmatch(lua_State *L)
 } // luahook_wildcardmatch
 
 
+// Do a regular C strcmp(), don't let the locale get in the way like it does
+//  in Lua's string comparison operators.
+static int luahook_strcmp(lua_State *L)
+{
+    const char *a = luaL_checkstring(L, 1);
+    const char *b = luaL_checkstring(L, 2);
+    return retvalNumber(L, strcmp(a, b));
+} // luahook_strcmp
+
+
 static int luahook_findmedia(lua_State *L)
 {
     // Let user specify overrides of directories to act as drives.
@@ -1587,6 +1597,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_date, "date");
         set_cfunc(luaState, luahook_isvalidperms, "isvalidperms");
         set_cfunc(luaState, luahook_checksum, "checksum");
+        set_cfunc(luaState, luahook_strcmp, "strcmp");
 
         // Set some information strings...
         lua_newtable(luaState);

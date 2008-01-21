@@ -49,6 +49,7 @@ mkdir image/data
 mkdir image/meta
 
 # Build MojoSetup binaries from scratch.
+# YOU ALWAYS NEED THE LUA PARSER IF YOU WANT UNINSTALL SUPPORT!
 cd ../..
 rm -rf `svn propget svn:ignore .`
 cmake \
@@ -61,7 +62,7 @@ cmake \
     -DMOJOSETUP_LUALIB_MATH=FALSE \
     -DMOJOSETUP_LUALIB_OS=FALSE \
     -DMOJOSETUP_LUALIB_PACKAGE=FALSE \
-    -DMOJOSETUP_LUA_PARSER=$TRUEIFDEBUG \
+    -DMOJOSETUP_LUA_PARSER=TRUE \
     -DMOJOSETUP_IMAGE_BMP=TRUE \
     -DMOJOSETUP_IMAGE_JPG=FALSE \
     -DMOJOSETUP_IMAGE_PNG=FALSE \

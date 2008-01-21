@@ -22,14 +22,14 @@ local function badcmdline()
 end
 
 
-local function manifest_rechecksum(man, fname, _key)
+local function manifest_resync(man, fname, _key)
     if fname == nil then return end
 
     local fullpath = fname
 
     local destlen = string.len(MojoSetup.destination)
     if string.sub(fname, 0, destlen) == MojoSetup.destination then
-        fname = string.sub(path, destlen+2)  -- make it relative.
+        fname = string.sub(fname, destlen+2)  -- make it relative.
     end
 
     if man[fname] == nil then
@@ -63,6 +63,14 @@ local function manifest_rechecksum(man, fname, _key)
     end
 end
 
+
+-- !!! FIXME: I need to go back from managing everything installed through
+-- !!! FIXME:  the manifest to a separate table of "things written to disk
+-- !!! FIXME:  on just this run" ... the existing manifest code can stay as-is,
+-- !!! FIXME:  rollbacks should be done exclusively from that other table.
+-- !!! FIXME: Right now we're relying on dumb stuff like sorting the filenames
+-- !!! FIXME:  to get a safe deletion order on revert, but we should just
+-- !!! FIXME:  keep a chronological array instead.
 
 local function manifest_add(man, fname, _key, ftype, mode, sums, lndest)
     if (fname ~= nil) and (_key ~= nil) then
@@ -176,14 +184,18 @@ end
 
 
 -- get a linear array of filenames in the manifest.
-local function flatten_manifest(man)
+local function flatten_manifest(man, postprocess)
     local files = {}
+    if postprocess == nil then
+        postprocess = function(x) return x end
+    end
     if man ~= nil then
         for fname,items in pairs(man) do
-            files[#files+1] = fname
+            files[#files+1] = postprocess(fname)
         end
     end
 
+    table.sort(files, function(a,b) return MojoSetup.strcmp(a,b) < 0 end)
     return files
 end
 
@@ -196,9 +208,16 @@ function MojoSetup.revertinstall()
 
     MojoSetup.loginfo("Cleaning up half-finished installation...")
 
+    local function processor(fname)
+        if fname == "" then
+            return MojoSetup.destination
+        end
+        return MojoSetup.destination .. "/" .. fname
+    end
+
     -- !!! FIXME: callbacks here.
     delete_files(MojoSetup.downloads)
-    delete_files(flatten_manifest(MojoSetup.manifest))
+    delete_files(flatten_manifest(MojoSetup.manifest, processor))
     do_rollbacks()
     delete_scratchdirs()
 end
@@ -415,6 +434,9 @@ end
 -- !!! FIXME: we should probably pump the GUI queue here, in case there are
 -- !!! FIXME:  thousands of dirs in a row or something.
 local function install_directory(dest, perms, manifestkey)
+    -- Chop any '/' chars from the end of the string...
+    dest = string.gsub(dest, "/+$", "")
+
     if not MojoSetup.platform.mkdir(dest, perms) then
         MojoSetup.logerror("Failed to create dir '" .. dest .. "'")
         MojoSetup.fatal(_("Directory creation failed"))
@@ -477,7 +499,7 @@ local function permit_write(dest, entinfo, file)
             if allowoverwrite then
                 local id = #MojoSetup.rollbacks + 1
                 local f = MojoSetup.rollbackdir .. "/" .. id
-                install_parent_dirs(f, nil)
+                install_parent_dirs(f, MojoSetup.metadatakey)
                 MojoSetup.rollbacks[id] = dest
                 if not MojoSetup.movefile(dest, f) then
                     MojoSetup.fatal(_("Couldn't backup file for rollback"))
@@ -664,10 +686,13 @@ end
 
 
 local function set_destination(dest)
+    -- Chop any '/' chars from the end of the string...
+    dest = string.gsub(dest, "/+$", "")
+
     MojoSetup.loginfo("Install dest: '" .. dest .. "'")
     MojoSetup.destination = dest
     MojoSetup.metadatadir = MojoSetup.destination .. "/.mojosetup"
-    MojoSetup.controldir = MojoSetup.metadatadir .. "/control"
+    MojoSetup.controldir = MojoSetup.metadatadir  -- .. "/control"
     MojoSetup.manifestdir = MojoSetup.metadatadir .. "/manifest"
     MojoSetup.scratchdir = MojoSetup.metadatadir .. "/tmp"
     MojoSetup.rollbackdir = MojoSetup.scratchdir .. "/rollbacks"
@@ -703,7 +728,7 @@ local function build_xml_manifest(package)
 
     local retval =
         '<?xml version="1.0" encoding="UTF-8"?>\n' ..
-        '<product name="' .. MojoSetup.install.id .. '" desc="' ..
+        '<product name="' .. package.id .. '" desc="' ..
         package.description .. '" xmlversion="1.6" root="' ..
         package.root .. '" ' .. updateurl .. '>\n' ..
         '\t<component name="Default" version="' .. package.version ..
@@ -808,7 +833,7 @@ end
 
 local function build_txt_manifest(package)
     local retval = ''
-    for path,item in pairs(package.manifest) do
+    for i,path in ipairs(flatten_manifest(package.manifest)) do
         retval = retval .. path .. "\n"
     end
     return retval
@@ -838,7 +863,7 @@ local function install_control_app(desc, key)
     end
 
     local perms = "0755"  -- !!! FIXME
-    install_parent_dirs(dst, key);
+    install_parent_dirs(dst, key)
     install_file_from_filesystem(dst, src, perms, desc, key, maxbytes)
 
     -- Okay, now we need all the support files.
@@ -953,6 +978,8 @@ local function do_install(install)
     local stages = {}
 
     -- First stage: Make sure installer can run. Always fails or steps forward.
+    -- !!! FIXME: you can step back onto this...need a way to run some stages
+    -- !!! FIXME:  only once...
     if install.precheck ~= nil then
         stages[#stages+1] = function ()
             run_config_defined_hook(install.precheck, install)
@@ -1104,6 +1131,11 @@ local function do_install(install)
     --  This is not a GUI stage, it just needs to run between them.
     --  This gets a little hairy.
     stages[#stages+1] = function(thisstage, maxstage)
+        -- Make sure we install the destination dir, so it's in the manifest.
+        if not MojoSetup.platform.exists(MojoSetup.destination) then
+            install_directory(MojoSetup.destination, nil, MojoSetup.metadatakey)
+        end
+
         local function process_file(option, file)
             -- !!! FIXME: what happens if a file shows up in multiple options?
             local src = file.source
@@ -1193,7 +1225,7 @@ local function do_install(install)
             local id = 0
             for file,option in pairs(MojoSetup.files.downloads) do
                 local f = MojoSetup.downloaddir .. "/" .. id
-                install_parent_dirs(f, nil)
+                install_parent_dirs(f, MojoSetup.metadatakey)
                 id = id + 1
 
                 -- Upvalued so we don't look these up each time...
@@ -1421,7 +1453,9 @@ end
 
 
 local function manifest_management()
-    local pkg = MojoSetup.info.argv[2]
+    MojoSetup.loginfo("Manifest management starting")
+
+    local pkg = MojoSetup.info.argv[3]
     if pkg == nil then
         badcmdline()
     end
@@ -1444,7 +1478,7 @@ local function manifest_management()
     --  someone could have moved the installation's folder elsewhere. We'll
     --  keep it up to date for loki_update or whatever to use, though.
 
-    local i = 2
+    local i = 4
     while MojoSetup.info.argv[i] ~= nil do
         local cmd = MojoSetup.info.argv[i]
         i = i + 1
@@ -1454,13 +1488,18 @@ local function manifest_management()
             i = i + 1
             local fname = MojoSetup.info.argv[i]
             i = i + 1
-            if (opt == nil) or (fname == nil) then
+            if (key == nil) or (fname == nil) then
                 badcmdline()
             end
 
             MojoSetup.loginfo("Add '" ..fname.. "', '" ..key.. "' to manifest")
-            manifest_add(package.manifest, fname, key, nil, nil, nil, nil)
-            manifest_resync(package.manifest, fname)
+            fname = MojoSetup.destination .. "/" .. fname
+            if not MojoSetup.platform.exists(fname) then
+                MojoSetup.fatal(MojoSetup.format(_("File %0 not found"), fname))
+            end
+
+            manifest_add(MojoSetup.package.manifest, fname, key, nil, nil, nil, nil)
+            manifest_resync(MojoSetup.package.manifest, fname, key)
 
         elseif cmd == "delete" then
             local fname = MojoSetup.info.argv[i]
@@ -1469,7 +1508,8 @@ local function manifest_management()
                 badcmdline()
             end
             MojoSetup.loginfo("Delete '" .. fname .. "' from manifest")
-            manifest_delete(package.manifest, fname)
+            fname = MojoSetup.destination .. "/" .. fname
+            manifest_delete(MojoSetup.package.manifest, fname)
 
         elseif cmd == "resync" then
             local fname = MojoSetup.info.argv[i]
@@ -1478,16 +1518,21 @@ local function manifest_management()
                 badcmdline()
             end
             MojoSetup.loginfo("Resync '" .. fname .. "' in manifest")
-            manifest_resync(package.manifest, fname)
+            fname = MojoSetup.destination .. "/" .. fname
+            if not MojoSetup.platform..exists(fname) then
+                MojoSetup.fatal(MojoSetup.format(_("File %0 not found"), fname))
+            end
+            manifest_resync(MojoSetup.package.manifest, fname)
 
         else
+            MojoSetup.logerror("Unknown command '" .. cmd .. "'")
             badcmdline()
         end
     end
 
     -- !!! FIXME: duplication with install_manifests()
     local perms = "0644"  -- !!! FIXME
-    local basefname = MojoSetup.manifestdir .. "/" .. MojoSetup.install.id
+    local basefname = MojoSetup.manifestdir .. "/" .. MojoSetup.package.id
     local lua_fname = basefname .. ".lua"
     local xml_fname = basefname .. ".xml"
     local txt_fname = basefname .. ".txt"
@@ -1507,7 +1552,7 @@ end
 
 local function uninstaller()
     MojoSetup.fatal("Not implemented yet.")
-    local pkg = MojoSetup.info.argv[2]
+    local pkg = MojoSetup.info.argv[3]
     if pkg == nil then
         badcmdline()
     end
@@ -1520,10 +1565,12 @@ end
 local purpose = nil
 
 -- Have to check argv instead of using cmdline(), for precision's sake.
-local argv1 = MojoSetup.info.argv[1]
-if argv1 == "manifest" then
+-- Remember that unlike main()'s argv in C, Lua starts arrays at 1,
+--  so argv[2] would be argv[1] in C. Fun.
+local argv2 = MojoSetup.info.argv[2]
+if argv2 == "manifest" then
     purpose = manifest_management
-elseif argv1 == "uninstall" then
+elseif argv2 == "uninstall" then
     purpose = uninstaller
 else
     purpose = installer

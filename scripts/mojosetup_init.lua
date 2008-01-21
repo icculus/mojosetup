@@ -238,6 +238,11 @@ end
 -- Actual schema elements are below...
 
 function Setup.Package(tab)
+    -- !!! FIXME: allow_uninstall
+    -- !!! FIXME: write_manifest
+    -- !!! FIXME: allow_uninstall must check write_manifest, write_manifest
+    -- !!! FIXME:  must check for Lua parser support...or something like that.
+
     tab = sanitize("Package", tab,
     {
         { "id", nil, mustExist, mustBeString, cantBeEmpty },

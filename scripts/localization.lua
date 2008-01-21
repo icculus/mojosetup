@@ -943,6 +943,11 @@ MojoSetup.localization = {
     --  file for some reason. '%0' is the manifest's package name.
     ["Couldn't load manifest file for '%0'"] = {
     };
+
+    -- This error is shown when the user prompted the app to read a filename
+    --  (%0) that doesn't exist.
+    ["File %0 not found"] = {
+    };
 };
 
 -- end of localization.lua ...
