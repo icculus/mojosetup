@@ -13,6 +13,95 @@
 
 local _ = MojoSetup.translate
 
+MojoSetup.metadatakey = ".mojosetup_metadata."
+MojoSetup.metadatadesc = _("Metadata")
+
+
+local function badcmdline()
+    MojoSetup.fatal(_("Invalid command line"))
+end
+
+
+local function manifest_rechecksum(man, fname, _key)
+    if fname == nil then return end
+
+    local fullpath = fname
+
+    local destlen = string.len(MojoSetup.destination)
+    if string.sub(fname, 0, destlen+1) == MojoSetup.destination then
+        fname = string.sub(path, destlen+2)  -- make it relative.
+    end
+
+    if man[fname] == nil then
+        logWarning("Tried to resync unknown file '" ..fname.. "' in manifest!")
+    else
+        local perms = "0644" -- !!! FIXME MojoSetup.platform.perms(fullpath)
+        local sums = nil
+        local lndest = nil
+        local ftype = nil
+
+        if MojoSetup.platform.issymlink(fullpath) then
+            ftype = "symlink"
+            -- !!! FIXME: linkdest?
+        elseif MojoSetup.platform.isdir(fullpath) then
+            ftype = "directory"
+        else  -- !!! FIXME: other types?
+            ftype = "file"
+            sums = MojoSetup.checksum(fullpath)
+        end
+
+        man[fname] =
+        {
+            key = _key,
+            type = ftype,
+            mode = perms,
+            checksums = sums,
+            linkdest = lndest
+        }
+
+        logWarning("Resync'd file '" ..fname.. "' in manifest")
+    end
+end
+
+
+local function manifest_add(man, fname, _key, ftype, mode, sums, lndest)
+    if (fname ~= nil) and (key ~= nil) then
+        local destlen = string.len(MojoSetup.destination)
+        if string.sub(fname, 0, destlen+1) == MojoSetup.destination then
+            fname = string.sub(path, destlen+2)  -- make it relative.
+        end
+
+        if man[fname] ~= nil then
+            logWarning("Overwriting file '" .. fname .. "' in manifest!")
+        end
+
+        man[fname] = {
+            key = _key,
+            type = ftype,
+            mode = perms,
+            checksums = sums,
+            linkdest = lndest
+        }
+    end
+end
+
+
+local function manifest_delete(man, fname)
+    if fname ~= nil then
+        local destlen = string.len(MojoSetup.destination)
+        if string.sub(fname, 0, destlen+1) == MojoSetup.destination then
+            fname = string.sub(path, destlen+2)  -- make it relative.
+        end
+
+        if man[fname] == nil then
+            logWarning("Deleting unknown file '" .. fname .. "' from manifest!")
+        else
+            man[fname] = nil
+        end
+    end
+end
+
+
 local function do_delete(fname)
     local retval = false
     if fname == nil then
@@ -27,6 +116,7 @@ local function do_delete(fname)
     end
     return retval
 end
+
 
 local function delete_files(filelist, callback, error_is_fatal)
     if filelist ~= nil then
@@ -88,7 +178,6 @@ end
 -- get a linear array of filenames in the manifest.
 local function flatten_manifest(man)
     local files = {}
-
     if man ~= nil then
         for fname,items in pairs(man) do
             files[#files+1] = path
@@ -259,16 +348,11 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
         return keepgoing
     end
 
+    -- !!! FIXME: maybe keep a separate list, so we can rollback installs
+    -- !!! FIXME:  that are building on previous installations?
     -- Add to manifest first, so we can delete it during rollback if i/o fails.
-    local manifestentry =
-    {
-        option = manifestkey,
-        type = "file",
-        mode = perms,    -- !!! FIXME: perms may be nil...we need a MojoSetup.defaultPermsString()...
-    }
-    if manifestkey ~= nil then
-        MojoSetup.manifest[dest] = manifestentry
-    end
+    -- !!! FIXME: perms may be nil...we need a MojoSetup.defaultPermsString()...
+    manifest_add(MojoSetup.manifest, dest, manifestkey, "file", perms, nil)
 
     local written, sums = writefn(callback)
     if not written then
@@ -281,7 +365,9 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
         end
     end
 
-    manifestentry.checksums = sums
+    -- Readd it to the manifest, now with a checksum!
+    manifest_delete(MojoSetup.manifest, dest)
+    manifest_add(MojoSetup.manifest, dest, manifestkey, "file", perms, sums)
 
     MojoSetup.loginfo("Created file '" .. dest .. "'")
 end
@@ -319,16 +405,7 @@ local function install_symlink(dest, lndest, manifestkey)
         MojoSetup.fatal(_("Symlink creation failed!"))
     end
 
-    if manifestkey ~= nil then
-        MojoSetup.manifest[dest] =
-        {
-            option = manifestkey,
-            type = "symlink",
-            path = dest,
-            linkdest = lndest,
-        }
-    end
-
+    manifest_add(MojoSetup.manifest, dest, manifestkey, "symlink", nil, nil, lndest)
     MojoSetup.loginfo("Created symlink '" .. dest .. "' -> '" .. lndest .. "'")
 end
 
@@ -341,16 +418,7 @@ local function install_directory(dest, perms, manifestkey)
         MojoSetup.fatal(_("Directory creation failed"))
     end
 
-    if manifestkey ~= nil then
-        MojoSetup.manifest[dest] =
-        {
-            option = manifestkey,
-            type = "directory",
-            path = dest,
-            mode = perms,
-        }
-    end
-
+    manifest_add(MojoSetup.manifest, dest, manifestkey, "directory", perms, nil, nil)
     MojoSetup.loginfo("Created directory '" .. dest .. "'")
 end
 
@@ -413,6 +481,11 @@ local function permit_write(dest, entinfo, file)
                     MojoSetup.fatal(_("Couldn't backup file for rollback"))
                 end
                 MojoSetup.loginfo("Moved rollback #" .. id .. ": '" .. dest .. "' -> '" .. f .. "'")
+
+                -- Make sure this isn't already in the manifest...
+                if MojoSetup.manifest[dest] ~= nil then
+                    manifest_delete(MojoSetup.manifest, dest)
+                end
             end
         end
     end
@@ -462,7 +535,7 @@ local function install_archive_entry(archive, ent, file, option)
         dest = MojoSetup.destination .. "/" .. dest
         if permit_write(dest, ent, file) then
             local desc = option.description
-            install_archive_entity(dest, ent, archive, desc, option)
+            install_archive_entity(dest, ent, archive, desc, desc)
         end
     end
 end
@@ -615,12 +688,11 @@ end
 --  loki_patch with a MojoSetup installation. Please note that we never ever
 --  look at this data! You are responsible for updating the other files if
 --  you think it'll be important. The Unix MojoSetup uninstaller uses the
---  lua  manifest, for example (but loki_uninstall can use the xml one,
+--  lua manifest, for example (but loki_uninstall can use the xml one,
 --  so if you want, you can just drop in MojoSetup to replace loki_setup and
 --  use the Loki tools for everything else.
-local function build_xml_manifest()
-    local install = MojoSetup.install
-    local updateurl = install.updateurl
+local function build_xml_manifest(package)
+    local updateurl = package.update_url
     if updateurl ~= nil then
         updateurl = 'update_url="' .. updateurl .. '"'
     else
@@ -630,19 +702,17 @@ local function build_xml_manifest()
     local retval =
         '<?xml version="1.0" encoding="UTF-8"?>\n' ..
         '<product name="' .. MojoSetup.install.id .. '" desc="' ..
-        install.description .. '" xmlversion="1.6" root="' ..
-        MojoSetup.destination .. '" ' .. updateurl .. '>\n' ..
+        package.description .. '" xmlversion="1.6" root="' ..
+        package.root .. '" ' .. updateurl .. '>\n' ..
         '\t<component name="Default" version="' .. install.version ..
         '" default="yes">\n'
 
-    local destlen = string.len(MojoSetup.destination) + 2
-
     -- Need to group these by options.
     local grouped = {}
-    for fname,entity in pairs(MojoSetup.manifest) do
+    for fname,entity in pairs(package.manifest) do
         local key = entity.option
         if grouped[key] == nil then
-            if grouped[key] = {}
+            grouped[key] = {}
         end
         entity.path = fname
         local list = grouped[key]
@@ -665,9 +735,6 @@ local function build_xml_manifest()
 
             local path = item.path
             item.path = nil  -- we added this when grouping. Remove it now.
-            if path ~= nil then
-                path = string.sub(path, destlen)  -- make it relative.
-            end
 
             retval = retval .. '\t\t\t<' .. type
 
@@ -696,13 +763,9 @@ local function build_xml_manifest()
 end
 
 
-local function build_lua_manifest()
-    local indentation = 0  -- upvalue for serialize()
-    local function serialize(obj)
+local function serialize(obj)
+    local function _serialize(obj, indent)
         local retval = ''
-
-        indentation = indentation + 1
-
         local objtype = type(obj)
         if objtype == "number" then
             retval = tostring(obj)
@@ -710,7 +773,7 @@ local function build_lua_manifest()
             retval = string.format("%q", obj)
         elseif objtype == "table" then
             retval = "{\n"
-            local tab = string.rep("\t", indentation)
+            local tab = string.rep("\t", indent)
             for k,v in pairs(obj) do
                 local key = k
                 if type(key) == "number" then
@@ -718,9 +781,10 @@ local function build_lua_manifest()
                 elseif not string.match(key, "^[_a-zA-Z][_a-zA-Z0-9]*$") then
                     key = '[' .. string.format("%q", key) .. ']'
                 end
-                retval = retval .. tab .. key .. " = " .. serialize(v) .. ",\n"
+                retval = retval .. tab .. key .. " = " ..
+                         _serialize(v, indent+1) .. ",\n"
             end
-            retval = retval .. string.rep("\t", indentation-1) .. "}"
+            retval = retval .. string.rep("\t", indent-1) .. "}"
         else
             MojoSetup.fatal(_("BUG: Unhandled data type"))
         end
@@ -729,23 +793,18 @@ local function build_lua_manifest()
         return retval
     end
 
-    local install = MojoSetup.install
-    return 'MojoSetup.package = ' .. serialize {
-        id = install.id,
-        description = install.description,
-        root = MojoSetup.destination,
-        update_url = install.updateurl,
-        version = install.version,
-        manifest = MojoSetup.manifest,
-    } .. "\n\n"
+    return _serialize(obj, 1)
 end
 
 
-local function build_txt_manifest()
+local function build_lua_manifest(package)
+    return 'MojoSetup.package = ' .. serialize(package) .. "\n\n"
+end
+
+
+local function build_txt_manifest(package)
     local retval = ''
-    local destlen = string.len(MojoSetup.destination) + 2
-    for _path,item in pairs(MojoSetup.manifest) do
-        local path = string.sub(_path, destlen)  -- make it relative.
+    for path,item in pairs(package.manifest) do
         retval = retval .. path .. "\n"
     end
     return retval
@@ -817,18 +876,31 @@ local function install_manifests(desc, key)
     --  loki_setup-compatible XML manifest, and a straight text file of
     --  all the filenames. Take your pick.
 
-    -- We have to cheat and just plug these into the manifest directly, since
-    --  they won't show up until after we write them out, otherwise.
-    -- Obviously, we don't have checksums for them, either, as we haven't
-    --  assembled the data yet!
     local perms = "0644"  -- !!! FIXME
     local basefname = MojoSetup.manifestdir .. "/" .. MojoSetup.install.id
     local lua_fname = basefname .. ".lua"
     local xml_fname = basefname .. ".xml"
     local txt_fname = basefname .. ".txt"
-    MojoSetup.manifest[lua_fname] = { type = "file", mode = perms }
-    MojoSetup.manifest[xml_fname] = { type = "file", mode = perms }
-    MojoSetup.manifest[txt_fname] = { type = "file", mode = perms }
+
+    -- We have to cheat and just plug these into the manifest directly, since
+    --  they won't show up until after we write them out, otherwise.
+    -- Obviously, we don't have checksums for them, either, as we haven't
+    --  assembled the data yet!
+
+    manifest_add(MojoSetup.manifest, lua_fname, key, "file", perms, nil, nil)
+    manifest_add(MojoSetup.manifest, xml_fname, key, "file", perms, nil, nil)
+    manifest_add(MojoSetup.manifest, txt_fname, key, "file", perms, nil, nil)
+
+    -- build the "package" table that we serialize, etc.
+    local package =
+    {
+        id = MojoSetup.install.id,
+        description = MojoSetup.install.description,
+        root = MojoSetup.destination,
+        update_url = MojoSetup.install.updateurl,
+        version = MojoSetup.install.version,
+        manifest = MojoSetup.manifest
+    }
 
     -- now build these things...
     install_parent_dirs(lua_fname, key)
@@ -1229,14 +1301,11 @@ local function do_install(install)
             end
         end
 
-        local metadatakey = ".mojosetup_metadata."
-        local metadatadesc = _("Metadata")
-
-        install_control_app(metadatadesc, metadatakey)
+        install_control_app(MojoSetup.metadatadesc, MojoSetup.metadatakey)
 
         run_config_defined_hook(install.postinstall, install)
 
-        install_manifests(metadatadesc, metadatakey)   -- write out manifest.
+        install_manifests(MojoSetup.metadatadesc, MojoSetup.metadatakey)   -- write out manifest.
 
         return 1   -- go to next stage.
     end
@@ -1287,7 +1356,7 @@ local function do_install(install)
                 i = i - 1
             end
         elseif rc == 0 then
-            MojoSetup.fatal()
+            MojoSetup.fatal()  -- user cancelled
         else
             MojoSetup.fatal(_("BUG: stage returned wrong value"))
         end
@@ -1326,14 +1395,8 @@ local function do_install(install)
     MojoSetup.totaldownload = 0
 end
 
+
 local function installer()
-    -- This builds the MojoSetup.installs table.
-    MojoSetup.runFile("config")
-
-    -- We don't need the "Setup" namespace anymore. Make it eligible
-    --  for garbage collection.
-    Setup = nil
-
     -- This dumps the table built from the user's config script using logdebug,
     --  so it only spits out crap if debug-level logging is enabled.
     MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
@@ -1353,17 +1416,123 @@ local function installer()
 end
 
 
--- Mainline.
+local function manifest_management()
+    local pkg = MojoSetup.info.argv[2]
+    if pkg == nil then
+        badcmdline()
+    end
 
-if MojoSetup.cmdline("manifest") then
-    Setup = nil  -- don't need this after all.
-    MojoSetup.fatal("Not implemented yet.")
-elseif MojoSetup.cmdline("uninstall") then
-    Setup = nil  -- don't need this after all.
-    MojoSetup.fatal("Not implemented yet.")
-else
-    installer()
+    MojoSetup.package = nil   -- just in case.
+
+    -- We need to be in the metadata directory of an install or this fails.
+    local base = string.gsub(MojoSetup.info.basearchivepath, "/[^/]*$", "", 1)
+    set_destination(base)  -- set up directories
+    if MojoSetup.metadatadir == MojoSetup.info.basearchivepath then
+        -- load the existing manifest first...
+        local ran = MojoSetup.runfilefromdir("manifest", pkg)
+        if (not ran) or (MojoSetup.package == nil) then
+            MojoSetup.fatal(MojoSetup.format(
+                               _("Couldn't load manifest file for '%0'"), pkg))
+        end
+    end
+
+    -- note that we discard the base directory specified in the manifest, as
+    --  someone could have moved the installation's folder elsewhere. We'll
+    --  keep it up to date for loki_update or whatever to use, though.
+
+    local i = 2
+    while MojoSetup.info.argv[i] ~= nil do
+        local cmd = MojoSetup.info.argv[i]
+        i = i + 1
+
+        if cmd == "add" then
+            local key = MojoSetup.info.argv[i]
+            i = i + 1
+            local fname = MojoSetup.info.argv[i]
+            i = i + 1
+            if (opt == nil) or (fname == nil) then
+                badcmdline()
+            end
+
+            MojoSetup.logInfo("Add '" ..fname.. "', '" ..key.. "' to manifest")
+            manifest_add(package.manifest, fname, key, nil, nil, nil, nil)
+            manifest_resync(package.manifest, fname)
+
+        elseif cmd == "delete" then
+            local fname = MojoSetup.info.argv[i]
+            i = i + 1
+            if fname == nil then
+                badcmdline()
+            end
+            MojoSetup.logInfo("Delete '" .. fname .. "' from manifest")
+            manifest_delete(package.manifest, fname)
+
+        elseif cmd == "resync" then
+            local fname = MojoSetup.info.argv[i]
+            i = i + 1
+            if fname == nil then
+                badcmdline()
+            end
+            MojoSetup.logInfo("Resync '" .. fname .. "' in manifest")
+            manifest_resync(package.manifest, fname)
+
+        else
+            badcmdline()
+        end
+    end
+
+    -- !!! FIXME: duplication with install_manifests()
+    local perms = "0644"  -- !!! FIXME
+    local basefname = MojoSetup.manifestdir .. "/" .. MojoSetup.install.id
+    local lua_fname = basefname .. ".lua"
+    local xml_fname = basefname .. ".xml"
+    local txt_fname = basefname .. ".txt"
+
+    MojoSetup.logInfo("rebuilding manifests...")
+
+    -- !!! FIXME: rollback!
+    delete_files({lua_fname, xml_fname, txt_fname}, nil, false)
+    MojoSetup.stringtofile(build_lua_manifest(), lua_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_xml_manifest(), xml_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_txt_manifest(), txt_fname, perms, nil, nil)
+
+    MojoSetup.logInfo("manifests rebuilt!")
+
+    MojoSetup.package = nil
 end
+
+local function uninstaller()
+    MojoSetup.fatal("Not implemented yet.")
+    local pkg = MojoSetup.info.argv[2]
+    if pkg == nil then
+        badcmdline()
+    end
+end
+
+
+
+-- Mainline...
+
+local purpose = nil
+
+-- Have to check argv instead of using cmdline(), for precision's sake.
+local argv1 = MojoSetup.info.argv[1]
+if argv1 == "manifest" then
+    purpose = manifest_management
+elseif argv1 == "uninstall" then
+    purpose = uninstaller
+else
+    purpose = installer
+    MojoSetup.runFile("config")  -- This builds the MojoSetup.installs table.
+end
+
+-- We don't need the "Setup" namespace anymore. Make it eligible
+--  for garbage collection.
+Setup = nil
+MojoSetup.collectgarbage()  -- and collect it, etc.
+
+-- Now do the real work...
+purpose()
 
 -- end of mojosetup_mainline.lua ...
 

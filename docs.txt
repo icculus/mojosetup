@@ -60,6 +60,7 @@ This is fairly easy. The installer eventually wants to see a directory
     data/
     scripts/
     guis/
+    meta/
 
 This is called the "Base Archive," even if it's a real directory tree in the
  physical filesystem and not in an actual archive, such as a .zip file.
@@ -71,6 +72,9 @@ This is called the "Base Archive," even if it's a real directory tree in the
 
 "guis" is where the installer looks for those shared libraries that got
  built in the first step. Copy them in here, if you built any.
+
+"meta" contains installer metadata: graphics for splash screens, etc. It's sort
+ of a catch-all for things that don't fit elsewhere.
 
 "scripts" is where Lua scripts go. You'll put your config file in here
  (config.lua), the translation table (localizations.lua), and whatever other

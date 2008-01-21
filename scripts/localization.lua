@@ -934,6 +934,15 @@ MojoSetup.localization = {
         nb = "Metadata",
         se = "Metadata",
     };
+
+    -- This error is shown if incorrect command line arguments are used.
+    ["Invalid command line"] = {
+    };
+
+    -- This error is shown when updating the manifest, if it can't load the
+    --  file for some reason. '%0' is the manifest's package name.
+    ["Couldn't load manifest file for '%0'"] = {
+    };
 };
 
 -- end of localization.lua ...
