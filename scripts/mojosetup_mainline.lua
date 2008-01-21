@@ -28,12 +28,12 @@ local function manifest_rechecksum(man, fname, _key)
     local fullpath = fname
 
     local destlen = string.len(MojoSetup.destination)
-    if string.sub(fname, 0, destlen+1) == MojoSetup.destination then
+    if string.sub(fname, 0, destlen) == MojoSetup.destination then
         fname = string.sub(path, destlen+2)  -- make it relative.
     end
 
     if man[fname] == nil then
-        logWarning("Tried to resync unknown file '" ..fname.. "' in manifest!")
+        MojoSetup.logwarning("Tried to resync unknown file '" ..fname.. "' in manifest!")
     else
         local perms = "0644" -- !!! FIXME MojoSetup.platform.perms(fullpath)
         local sums = nil
@@ -59,20 +59,20 @@ local function manifest_rechecksum(man, fname, _key)
             linkdest = lndest
         }
 
-        logWarning("Resync'd file '" ..fname.. "' in manifest")
+        MojoSetup.logwarning("Resync'd file '" ..fname.. "' in manifest")
     end
 end
 
 
 local function manifest_add(man, fname, _key, ftype, mode, sums, lndest)
-    if (fname ~= nil) and (key ~= nil) then
+    if (fname ~= nil) and (_key ~= nil) then
         local destlen = string.len(MojoSetup.destination)
-        if string.sub(fname, 0, destlen+1) == MojoSetup.destination then
-            fname = string.sub(path, destlen+2)  -- make it relative.
+        if string.sub(fname, 0, destlen) == MojoSetup.destination then
+            fname = string.sub(fname, destlen+2)  -- make it relative.
         end
 
         if man[fname] ~= nil then
-            logWarning("Overwriting file '" .. fname .. "' in manifest!")
+            MojoSetup.logwarning("Overwriting file '" .. fname .. "' in manifest!")
         end
 
         man[fname] = {
@@ -89,12 +89,12 @@ end
 local function manifest_delete(man, fname)
     if fname ~= nil then
         local destlen = string.len(MojoSetup.destination)
-        if string.sub(fname, 0, destlen+1) == MojoSetup.destination then
-            fname = string.sub(path, destlen+2)  -- make it relative.
+        if string.sub(fname, 0, destlen) == MojoSetup.destination then
+            fname = string.sub(fname, destlen+2)  -- make it relative.
         end
 
         if man[fname] == nil then
-            logWarning("Deleting unknown file '" .. fname .. "' from manifest!")
+            MojoSetup.logwarning("Deleting unknown file '" .. fname .. "' from manifest!")
         else
             man[fname] = nil
         end
@@ -180,7 +180,7 @@ local function flatten_manifest(man)
     local files = {}
     if man ~= nil then
         for fname,items in pairs(man) do
-            files[#files+1] = path
+            files[#files+1] = fname
         end
     end
 
@@ -352,7 +352,7 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
     -- !!! FIXME:  that are building on previous installations?
     -- Add to manifest first, so we can delete it during rollback if i/o fails.
     -- !!! FIXME: perms may be nil...we need a MojoSetup.defaultPermsString()...
-    manifest_add(MojoSetup.manifest, dest, manifestkey, "file", perms, nil)
+    manifest_add(MojoSetup.manifest, dest, manifestkey, "file", perms, nil, nil)
 
     local written, sums = writefn(callback)
     if not written then
@@ -366,8 +366,10 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
     end
 
     -- Readd it to the manifest, now with a checksum!
-    manifest_delete(MojoSetup.manifest, dest)
-    manifest_add(MojoSetup.manifest, dest, manifestkey, "file", perms, sums)
+    if manifestkey ~= nil then
+        manifest_delete(MojoSetup.manifest, dest)
+        manifest_add(MojoSetup.manifest, dest, manifestkey, "file", perms, sums, nil)
+    end
 
     MojoSetup.loginfo("Created file '" .. dest .. "'")
 end
@@ -704,13 +706,13 @@ local function build_xml_manifest(package)
         '<product name="' .. MojoSetup.install.id .. '" desc="' ..
         package.description .. '" xmlversion="1.6" root="' ..
         package.root .. '" ' .. updateurl .. '>\n' ..
-        '\t<component name="Default" version="' .. install.version ..
+        '\t<component name="Default" version="' .. package.version ..
         '" default="yes">\n'
 
     -- Need to group these by options.
     local grouped = {}
     for fname,entity in pairs(package.manifest) do
-        local key = entity.option
+        local key = entity.key
         if grouped[key] == nil then
             grouped[key] = {}
         end
@@ -767,7 +769,9 @@ local function serialize(obj)
     local function _serialize(obj, indent)
         local retval = ''
         local objtype = type(obj)
-        if objtype == "number" then
+        if objtype == "nil" then
+            retval = "nil"
+        elseif objtype == "number" then
             retval = tostring(obj)
         elseif objtype == "string" then
             retval = string.format("%q", obj)
@@ -786,10 +790,10 @@ local function serialize(obj)
             end
             retval = retval .. string.rep("\t", indent-1) .. "}"
         else
+            MojoSetup.logerror("unexpected object to serialize (" ..
+                                 objtype .. "): '" .. tostring(obj) .. "'")
             MojoSetup.fatal(_("BUG: Unhandled data type"))
         end
-
-        indentation = indentation - 1
         return retval
     end
 
@@ -904,9 +908,9 @@ local function install_manifests(desc, key)
 
     -- now build these things...
     install_parent_dirs(lua_fname, key)
-    install_file_from_string(lua_fname, build_lua_manifest(), perms, desc, nil)
-    install_file_from_string(xml_fname, build_xml_manifest(), perms, desc, nil)
-    install_file_from_string(txt_fname, build_txt_manifest(), perms, desc, nil)
+    install_file_from_string(lua_fname, build_lua_manifest(package), perms, desc, nil)
+    install_file_from_string(xml_fname, build_xml_manifest(package), perms, desc, nil)
+    install_file_from_string(txt_fname, build_txt_manifest(package), perms, desc, nil)
 end
 
 
@@ -1454,7 +1458,7 @@ local function manifest_management()
                 badcmdline()
             end
 
-            MojoSetup.logInfo("Add '" ..fname.. "', '" ..key.. "' to manifest")
+            MojoSetup.loginfo("Add '" ..fname.. "', '" ..key.. "' to manifest")
             manifest_add(package.manifest, fname, key, nil, nil, nil, nil)
             manifest_resync(package.manifest, fname)
 
@@ -1464,7 +1468,7 @@ local function manifest_management()
             if fname == nil then
                 badcmdline()
             end
-            MojoSetup.logInfo("Delete '" .. fname .. "' from manifest")
+            MojoSetup.loginfo("Delete '" .. fname .. "' from manifest")
             manifest_delete(package.manifest, fname)
 
         elseif cmd == "resync" then
@@ -1473,7 +1477,7 @@ local function manifest_management()
             if fname == nil then
                 badcmdline()
             end
-            MojoSetup.logInfo("Resync '" .. fname .. "' in manifest")
+            MojoSetup.loginfo("Resync '" .. fname .. "' in manifest")
             manifest_resync(package.manifest, fname)
 
         else
@@ -1488,15 +1492,15 @@ local function manifest_management()
     local xml_fname = basefname .. ".xml"
     local txt_fname = basefname .. ".txt"
 
-    MojoSetup.logInfo("rebuilding manifests...")
+    MojoSetup.loginfo("rebuilding manifests...")
 
     -- !!! FIXME: rollback!
     delete_files({lua_fname, xml_fname, txt_fname}, nil, false)
-    MojoSetup.stringtofile(build_lua_manifest(), lua_fname, perms, nil, nil)
-    MojoSetup.stringtofile(build_xml_manifest(), xml_fname, perms, nil, nil)
-    MojoSetup.stringtofile(build_txt_manifest(), txt_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_lua_manifest(MojoSetup.package), lua_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_xml_manifest(MojoSetup.package), xml_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_txt_manifest(MojoSetup.package), txt_fname, perms, nil, nil)
 
-    MojoSetup.logInfo("manifests rebuilt!")
+    MojoSetup.loginfo("manifests rebuilt!")
 
     MojoSetup.package = nil
 end
@@ -1523,7 +1527,7 @@ elseif argv1 == "uninstall" then
     purpose = uninstaller
 else
     purpose = installer
-    MojoSetup.runFile("config")  -- This builds the MojoSetup.installs table.
+    MojoSetup.runfile("config")  -- This builds the MojoSetup.installs table.
 end
 
 -- We don't need the "Setup" namespace anymore. Make it eligible

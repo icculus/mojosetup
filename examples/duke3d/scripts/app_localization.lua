@@ -9,7 +9,6 @@ MojoSetup.applocalization = {
 
     -- As you add GPL translations, change the filename here.
     ["gpl.txt"] = {
-        en = "gpl.txt",
     };
 
     -- Window title when showing game's README file.
@@ -51,7 +50,7 @@ MojoSetup.applocalization = {
 
     -- Tooltip text for "Install Shareware version".
     ["This does not need a retail copy of the game. It's free!"] = {
-    }
+    };
 
     -- One possible installation option that user can click.
     ["Install full game from Atomic Edition disc"] = {

@@ -520,8 +520,8 @@ end
 --MojoSetup.loginfo(MojoSetup.info.lualicense)
 
 -- These scripts are optional, but hopefully exist...
-MojoSetup.runFile("localization")
-MojoSetup.runFile("app_localization")
+MojoSetup.runfile("localization")
+MojoSetup.runfile("app_localization")
 prepare_localization()
 
 -- okay, we're initialized!
