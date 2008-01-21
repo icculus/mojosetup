@@ -1,5 +1,25 @@
 local _ = MojoSetup.translate
 
+local function arch()
+    -- We (currently) only support 32-bit OSes, but some platforms can use
+    --  these through compatibility layers.
+    if MojoSetup.info.arch == "x86-64" then
+        return "x86"
+    elseif MojoSetup.info.arch == "powerpc64" then
+        return "powerpc"
+    end
+    return MojoSetup.info.arch  -- good luck with everything else.
+end
+
+local function ostype()
+    -- We (currently) only support some OSes, but some platforms can use
+    --  these through compatibility layers.
+    if MojoSetup.info.ostype == "freebsd" then
+        return "linux"
+    end
+    return MojoSetup.info.ostype  -- good luck with everything else.
+end
+
 Setup.Package
 {
     id = "duke3d",
@@ -68,7 +88,7 @@ Setup.Package
             },
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_shareware_bins_" .. MojoSetup.info.ostype .. "_" .. MojoSetup.info.arch .. ".zip"
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_shareware_bins_" .. ostype() .. "_" .. arch() .. ".zip"
             },
             Setup.File
             {
@@ -96,7 +116,7 @@ Setup.Package
 
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_retail_bins_" .. MojoSetup.info.ostype .. "_" .. MojoSetup.info.arch .. ".zip"
+                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_retail_bins_" .. ostype() .. "_" .. arch() .. ".zip"
             },
 
             Setup.File
