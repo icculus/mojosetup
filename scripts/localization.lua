@@ -111,26 +111,26 @@ MojoSetup.localization = {
 
     -- stdio UI plugin says this for yes/no prompts that default to yes.
     -- "%0" is the question the user is being asked to respond to.
-    ["%0\n[Y/n]: "] = {
-        de = "%0\n[J/n]",
-        nb = "%0\n[J/n]: ",
-        se = "%0\n[J/n]: ",
+    ["%0 [Y/n]: "] = {
+        de = "%0 [J/n]",
+        nb = "%0 [J/n]: ",
+        se = "%0 [J/n]: ",
     };
 
     -- stdio UI plugin says this for yes/no prompts that default to no.
     -- "%0" is the question the user is being asked to respond to.
-    ["%0\n[y/N]: "] = {
-        de = "%0\n[j/N]",
-        nb = "%0\n[j/N]: ",
-        se = "%0\n[j/N]: ",
+    ["%0 [y/N]: "] = {
+        de = "%0 [j/N]",
+        nb = "%0 [j/N]: ",
+        se = "%0 [j/N]: ",
     };
 
     -- stdio UI plugin says this for yes/no/always/never prompts.
     -- "%0" is the question the user is being asked to respond to.
-    ["%0\n[y/n/Always/Never]: "] = {
-        de = "%0\n[j/n/Immer/Niemals]",
-        nb = "%0\n[j/n/Alltid/Aldri]: ",
-        se = "%0\n[j/n/Alltid/Aldrig]: ",
+    ["%0 [y/n/Always/Never]: "] = {
+        de = "%0 [j/n/Immer/Niemals]",
+        nb = "%0 [j/n/Alltid/Aldri]: ",
+        se = "%0 [j/n/Alltid/Aldrig]: ",
     };
 
     -- This is used for "yes" in stdio UI's yes/no prompts (case insensitive).

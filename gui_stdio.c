@@ -130,8 +130,8 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
     if (!feof(stdin))
     {
         const char *_fmt = ((defval) ?
-                                entry->_("%0\n[Y/n]: ") :
-                                entry->_("%0\n[y/N]: "));
+                                entry->_("%0 [Y/n]: ") :
+                                entry->_("%0 [y/N]: "));
 
         char *fmt = entry->xstrdup(_fmt);
         char *msg = entry->format(fmt, text);
@@ -145,7 +145,7 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
             int rc = 0;
 
             getout = true;  // we may reset this later.
-            printf("%s\n", msg);
+            printf("%s", msg);
             fflush(stdout);
             rc = read_stdin(buf, sizeof (buf));
 
