@@ -948,6 +948,25 @@ MojoSetup.localization = {
     --  (%0) that doesn't exist.
     ["File %0 not found"] = {
     };
+
+    -- This is a window title on the message box when asking if user is sure
+    --  they want to uninstall a package.
+    ["Uninstall"] = {
+    };
+
+    -- This is the text when asking the user if they want to uninstall
+    --  the package named '%0'.
+    ["Are you sure you want to uninstall '%0'?)"] = {
+    };
+
+    -- This is a window title, shown while the actual uninstall is in process
+    --  and a progress meter is being shown.
+    ["Uninstalling"] = {
+    };
+
+    -- This is shown to the user in a message box when uninstallation is done.
+    ["Uninstall complete"] = {
+    };
 };
 
 -- end of localization.lua ...

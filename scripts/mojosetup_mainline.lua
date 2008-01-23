@@ -22,15 +22,23 @@ local function badcmdline()
 end
 
 
+-- This currently counts on (base) ending with a single "/", and not having
+--  any strange distortions: "/blah/../blah/.//" would not match "/blah/x",
+--  although it _should_ if we parsed it out.
+local function make_relative(fname, base)
+    local baselen = string.len(base)
+    if string.sub(fname, 0, baselen) == base then
+        fname = string.sub(fname, baselen+2)  -- make it relative.
+    end
+    return fname
+end
+
+
 local function manifest_resync(man, fname, _key)
     if fname == nil then return end
 
     local fullpath = fname
-
-    local destlen = string.len(MojoSetup.destination)
-    if string.sub(fname, 0, destlen) == MojoSetup.destination then
-        fname = string.sub(fname, destlen+2)  -- make it relative.
-    end
+    fname = make_relative(fname, MojoSetup.destination)
 
     if man[fname] == nil then
         MojoSetup.logwarning("Tried to resync unknown file '" ..fname.. "' in manifest!")
@@ -115,11 +123,11 @@ local function do_delete(fname)
     if fname == nil then
         retval = true
     else
-        if MojoSetup.platform.exists(fname) then
-            if MojoSetup.platform.unlink(fname) then
-                MojoSetup.loginfo("Deleted '" .. fname .. "'")
-                retval = true
-            end
+        if not MojoSetup.platform.exists(fname) then
+            retval = true
+        elseif MojoSetup.platform.unlink(fname) then
+            MojoSetup.loginfo("Deleted '" .. fname .. "'")
+            retval = true
         end
     end
     return retval
@@ -136,7 +144,7 @@ local function delete_files(filelist, callback, error_is_fatal)
             end
 
             if callback ~= nil then
-                callback(i, max)
+                callback(fname, i, max)
             end
         end
     end
@@ -152,7 +160,7 @@ local function delete_rollbacks()
         fnames[id] = MojoSetup.rollbackdir .. "/" .. id
     end
     MojoSetup.rollbacks = {}   -- just in case this gets called again...
-    delete_files(fnames)
+    delete_files(fnames)  -- !!! FIXME: callback for gui queue pump?
 end
 
 local function delete_scratchdirs()
@@ -200,24 +208,29 @@ local function flatten_manifest(man, postprocess)
 end
 
 
+local function prepend_dest_dir(fname)
+    if fname == "" then
+        return MojoSetup.destination
+    end
+    return MojoSetup.destination .. "/" .. fname
+end
+
+
 -- This gets called by fatal()...must be a global function.
 function MojoSetup.revertinstall()
+    -- (The real revertinstall is set later. This is a stub for startup.)
+end
+
+local function real_revertinstall()
     if MojoSetup.gui_started then
         MojoSetup.gui.final(_("Incomplete installation. We will revert any changes we made."))
     end
 
     MojoSetup.loginfo("Cleaning up half-finished installation...")
 
-    local function processor(fname)
-        if fname == "" then
-            return MojoSetup.destination
-        end
-        return MojoSetup.destination .. "/" .. fname
-    end
-
     -- !!! FIXME: callbacks here.
     delete_files(MojoSetup.downloads)
-    delete_files(flatten_manifest(MojoSetup.manifest, processor))
+    delete_files(flatten_manifest(MojoSetup.manifest, prepend_dest_dir))
     do_rollbacks()
     delete_scratchdirs()
 end
@@ -928,7 +941,8 @@ local function install_manifests(desc, key)
         root = MojoSetup.destination,
         update_url = MojoSetup.install.updateurl,
         version = MojoSetup.install.version,
-        manifest = MojoSetup.manifest
+        manifest = MojoSetup.manifest,
+        splash = MojoSetup.install.splash
     }
 
     -- now build these things...
@@ -936,6 +950,25 @@ local function install_manifests(desc, key)
     install_file_from_string(lua_fname, build_lua_manifest(package), perms, desc, nil)
     install_file_from_string(xml_fname, build_xml_manifest(package), perms, desc, nil)
     install_file_from_string(txt_fname, build_txt_manifest(package), perms, desc, nil)
+end
+
+
+local function start_gui(desc, splashfname)
+    if splashfname ~= nil then
+        splashfname = 'meta/' .. splashfname
+    end
+
+    if not MojoSetup.gui.start(desc, splashfname) then
+        MojoSetup.fatal(_("GUI failed to start"))
+    end
+
+    MojoSetup.gui_started = true
+end
+
+
+local function stop_gui()
+    MojoSetup.gui.stop()
+    MojoSetup.gui_started = nil
 end
 
 
@@ -1352,19 +1385,8 @@ local function do_install(install)
         return 1  -- go forward.
     end
 
-
     -- Now make all this happen.
-
-    local splashfname = install.splash
-    if splashfname ~= nil then
-        splashfname = 'meta/' .. splashfname
-    end
-
-    if not MojoSetup.gui.start(install.description, splashfname) then
-        MojoSetup.fatal(_("GUI failed to start"))
-    end
-
-    MojoSetup.gui_started = true
+    start_gui(install.description, install.splash)
 
     -- Make the stages available elsewhere.
     MojoSetup.stages = stages
@@ -1407,8 +1429,7 @@ local function do_install(install)
     MojoSetup.downloads = nil
     MojoSetup.rollbacks = nil
 
-    MojoSetup.gui.stop()
-    MojoSetup.gui_started = nil
+    stop_gui()
 
     -- Done with these things. Make them eligible for garbage collection.
     stages = nil
@@ -1433,6 +1454,10 @@ end
 
 
 local function installer()
+    MojoSetup.loginfo("Installer starting")
+
+    MojoSetup.revertinstall = real_revertinstall   -- replace the stub.
+
     -- This dumps the table built from the user's config script using logdebug,
     --  so it only spits out crap if debug-level logging is enabled.
     MojoSetup.dumptable("MojoSetup.installs", MojoSetup.installs)
@@ -1452,10 +1477,8 @@ local function installer()
 end
 
 
-local function manifest_management()
-    MojoSetup.loginfo("Manifest management starting")
-
-    local pkg = MojoSetup.info.argv[3]
+local function load_manifest(pkg)
+    local package = nil
     if pkg == nil then
         badcmdline()
     end
@@ -1472,11 +1495,24 @@ local function manifest_management()
             MojoSetup.fatal(MojoSetup.format(
                                _("Couldn't load manifest file for '%0'"), pkg))
         end
+
+        -- Move this out of the global...
+        package = MojoSetup.package
+        MojoSetup.package = nil
     end
 
     -- note that we discard the base directory specified in the manifest, as
     --  someone could have moved the installation's folder elsewhere. We'll
     --  keep it up to date for loki_update or whatever to use, though.
+    package.destination = MojoSetup.destination
+
+    return package
+end
+
+
+local function manifest_management()
+    MojoSetup.loginfo("Manifest management starting")
+    local package = load_manifest(MojoSetup.info.argv[3])
 
     local i = 4
     while MojoSetup.info.argv[i] ~= nil do
@@ -1498,8 +1534,8 @@ local function manifest_management()
                 MojoSetup.fatal(MojoSetup.format(_("File %0 not found"), fname))
             end
 
-            manifest_add(MojoSetup.package.manifest, fname, key, nil, nil, nil, nil)
-            manifest_resync(MojoSetup.package.manifest, fname, key)
+            manifest_add(package.manifest, fname, key, nil, nil, nil, nil)
+            manifest_resync(package.manifest, fname, key)
 
         elseif cmd == "delete" then
             local fname = MojoSetup.info.argv[i]
@@ -1509,7 +1545,7 @@ local function manifest_management()
             end
             MojoSetup.loginfo("Delete '" .. fname .. "' from manifest")
             fname = MojoSetup.destination .. "/" .. fname
-            manifest_delete(MojoSetup.package.manifest, fname)
+            manifest_delete(package.manifest, fname)
 
         elseif cmd == "resync" then
             local fname = MojoSetup.info.argv[i]
@@ -1522,9 +1558,9 @@ local function manifest_management()
             if not MojoSetup.platform..exists(fname) then
                 MojoSetup.fatal(MojoSetup.format(_("File %0 not found"), fname))
             end
-            manifest_resync(MojoSetup.package.manifest, fname)
+            manifest_resync(package.manifest, fname)
 
-        else
+        elseif string.match(cmd, "^-") == nil then   -- skip "-option" strings
             MojoSetup.logerror("Unknown command '" .. cmd .. "'")
             badcmdline()
         end
@@ -1532,7 +1568,7 @@ local function manifest_management()
 
     -- !!! FIXME: duplication with install_manifests()
     local perms = "0644"  -- !!! FIXME
-    local basefname = MojoSetup.manifestdir .. "/" .. MojoSetup.package.id
+    local basefname = MojoSetup.manifestdir .. "/" .. package.id
     local lua_fname = basefname .. ".lua"
     local xml_fname = basefname .. ".xml"
     local txt_fname = basefname .. ".txt"
@@ -1541,21 +1577,49 @@ local function manifest_management()
 
     -- !!! FIXME: rollback!
     delete_files({lua_fname, xml_fname, txt_fname}, nil, false)
-    MojoSetup.stringtofile(build_lua_manifest(MojoSetup.package), lua_fname, perms, nil, nil)
-    MojoSetup.stringtofile(build_xml_manifest(MojoSetup.package), xml_fname, perms, nil, nil)
-    MojoSetup.stringtofile(build_txt_manifest(MojoSetup.package), txt_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_lua_manifest(package), lua_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_xml_manifest(package), xml_fname, perms, nil, nil)
+    MojoSetup.stringtofile(build_txt_manifest(package), txt_fname, perms, nil, nil)
 
     MojoSetup.loginfo("manifests rebuilt!")
-
-    MojoSetup.package = nil
 end
 
+
 local function uninstaller()
-    MojoSetup.fatal("Not implemented yet.")
-    local pkg = MojoSetup.info.argv[3]
-    if pkg == nil then
-        badcmdline()
+    MojoSetup.loginfo("Uninstaller starting")
+    local package = load_manifest(MojoSetup.info.argv[3])
+
+    local title = _("Uninstall")
+    local question = _("Are you sure you want to uninstall '%0'?")
+    question = MojoSetup.format(question, package.description)
+    if MojoSetup.promptyn(title, question, false) then
+        start_gui(package.description, package.splash)
+
+        -- Upvalued so we don't look this up each time...
+        local ptype = _("Uninstalling")
+        local callback = function(fname, current, total)
+            fname = make_relative(fname, MojoSetup.destination)
+            local percent = calc_percent(current, total)
+            local component = package.manifest[fname].key
+            if component == nil then
+                component = ""
+            elseif component == MojoSetup.metadatakey then
+                component = MojoSetup.metadatadesc
+            end
+
+            local item = string.gsub(fname, "^.*/", "", 1)  -- chop off dirs...
+            MojoSetup.gui.progress(ptype, component, percent, item)
+            return true  -- !!! FIXME: need to disable cancel button in UI...
+        end
+
+        local filelist = flatten_manifest(package.manifest, prepend_dest_dir)
+        delete_files(filelist, callback, true)
+
+        MojoSetup.msgbox(title, _("Uninstall complete"))
+        stop_gui()
     end
+
+    -- !!! FIXME: postuninstall hook?
 end
 
 
