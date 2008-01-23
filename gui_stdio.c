@@ -130,10 +130,10 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
     if (!feof(stdin))
     {
         const char *_fmt = ((defval) ?
-                                entry->_("%1\n[Y/n]: ") :
-                                entry->_("%1\n[y/N]: "));
+                                entry->_("%0\n[Y/n]: ") :
+                                entry->_("%0\n[y/N]: "));
 
-        char *fmt = entry->xstrdup(entry->_(_fmt));
+        char *fmt = entry->xstrdup(_fmt);
         char *msg = entry->format(fmt, text);
         char *localized_no = entry->xstrdup(entry->_("N"));
         char *localized_yes = entry->xstrdup(entry->_("Y"));
