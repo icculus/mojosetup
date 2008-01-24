@@ -84,7 +84,7 @@ static inline void set_number(lua_State *L, lua_Number x, const char *sym)
 {
     lua_pushnumber(L, x);
     lua_setfield(L, -2, sym);
-} // set_string
+} // set_number
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
@@ -93,7 +93,17 @@ static inline void set_integer(lua_State *L, lua_Integer x, const char *sym)
 {
     lua_pushinteger(L, x);
     lua_setfield(L, -2, sym);
-} // set_string
+} // set_integer
+
+
+// Sets t[sym]=f, where t is on the top of the Lua stack.
+// !!! FIXME: why is this a different naming convention?
+static inline void set_boolean(lua_State *L, boolean x, const char *sym)
+{
+    lua_pushboolean(L, x);
+    lua_setfield(L, -2, sym);
+} // set_boolean
+
 
 // !!! FIXME: why is this a different naming convention?
 static inline void set_string_array(lua_State *L, int argc, const char **argv,
@@ -1555,6 +1565,12 @@ boolean MojoLua_initLua(void)
     lua_Integer euid = MojoPlatform_geteuid();
     lua_Integer gid = MojoPlatform_getgid();
 
+    #if DISABLE_LUA_PARSER
+    const boolean luaparser = false;
+    #else
+    const boolean luaparser = true;
+    #endif
+
     if (locale == NULL) locale = xstrdup("???");
     if (ostype == NULL) ostype = xstrdup("???");
     if (osversion == NULL) osversion = xstrdup("???");
@@ -1616,6 +1632,7 @@ boolean MojoLua_initLua(void)
             set_string(luaState, homedir, "homedir");
             set_string(luaState, binarypath, "binarypath");
             set_string(luaState, GBaseArchivePath, "basearchivepath");
+            set_boolean(luaState, luaparser, "luaparser");
             set_integer(luaState, uid, "uid");
             set_integer(luaState, euid, "euid");
             set_integer(luaState, gid, "gid");

@@ -1023,6 +1023,11 @@ local function do_install(install)
         MojoSetup.fatal(_("BUG: support_uninstall requires write_manifest"))
     end
 
+    -- Manifest support requires the Lua parser.
+    if (install.write_manifest) and (not MojoSetup.info.luaparser) then
+        MojoSetup.fatal(_("BUG: write_manifest requires Lua parser support"))
+    end
+
     -- This is to save us the trouble of a loop every time we have to
     --  find media by id...
     MojoSetup.media = {}

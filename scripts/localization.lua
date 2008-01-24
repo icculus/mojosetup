@@ -294,6 +294,13 @@ MojoSetup.localization = {
     ["BUG: support_uninstall requires write_manifest"] = {
     };
 
+    -- This is shown if the config file wants us to add a manifest to the
+    --  files we write to disk, but didn't enable Lua parser support in the
+    --  binary (this is done through CMake when compiling the C code). This is
+    --  a bug the developer must fix before shipping her installer.
+    ["BUG: write_manifest requires Lua parser support"] = {
+    };
+
     -- This is a file's permissions. Programmers give these as strings, and
     --  if one isn't valid, the program will report this. So, on Unix, they
     --  might specify "0600" as a valid string, but "sdfksjdfk" wouldn't be

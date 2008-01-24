@@ -233,6 +233,9 @@ SET(STBIMAGE_SRCS
 #  it, but even that's not an unclimbable obstacle.
 # In reality, you probably want to keep the parser, though, unless you REALLY
 #  must save every single byte in the download.
+# YOU NEED THE PARSER IF YOU WANT MANIFESTS WRITTEN OUT.
+# YOU NEED THE PARSER IF YOU WANT THE UNINSTALLER TO WORK.
+# DON'T DISABLE THIS NOW IF YOU DON'T ABSOLUTELY HAVE TO.
 # BINARY SIZE += 19
 OPTION(MOJOSETUP_LUA_PARSER "Bigger binary but scripts don't need to be compiled." TRUE)
 IF(MOJOSETUP_LUA_PARSER)
