@@ -986,7 +986,7 @@ local function do_install(install)
     -- !!! FIXME:  when a user happens to pick an option no one tested...
 
     if install.options ~= nil and install.optiongroups ~= nil then
-        MojoSetup.fatal(_("Config bug: no options"))
+        MojoSetup.fatal(_("BUG: no options"))
     end
 
     -- This is to save us the trouble of a loop every time we have to
@@ -995,7 +995,7 @@ local function do_install(install)
     if install.medias ~= nil then
         for k,v in pairs(install.medias) do
             if MojoSetup.media[v.id] ~= nil then
-                MojoSetup.fatal(_("Config bug: duplicate media id"))
+                MojoSetup.fatal(_("BUG: duplicate media id"))
             end
             MojoSetup.media[v.id] = v
         end
