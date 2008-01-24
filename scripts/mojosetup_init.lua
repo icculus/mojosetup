@@ -263,6 +263,8 @@ function Setup.Package(tab)
         { "binarypath", nil, mustBeString, cantBeEmpty },
         { "updateurl", nil, mustBeString, mustBeUrl },
         { "superuser", false, mustBeBool },
+        { "write_manifest", true, mustBeBool },
+        { "support_uninstall", true, mustBeBool },
     })
 
     if MojoSetup.installs == nil then

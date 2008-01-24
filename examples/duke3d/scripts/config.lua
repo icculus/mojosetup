@@ -27,6 +27,8 @@ Setup.Package
     version = "1.5",
     splash = "splash.bmp",
     superuser = false,
+    write_manifest = true,
+    support_uninstall = true,
     recommended_destinations =
     {
         MojoSetup.info.homedir,
@@ -88,15 +90,15 @@ Setup.Package
             },
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_shareware_bins_" .. ostype() .. "_" .. arch() .. ".zip"
+                source = "http://centralserver/mojosetup/examples/duke3d/data/duke3d_shareware_bins_" .. ostype() .. "_" .. arch() .. ".zip"
             },
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_shareware_data.zip"
+                source = "http://centralserver/mojosetup/examples/duke3d/data/duke3d_shareware_data.zip"
             },
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_unified_content.zip"
+                source = "http://centralserver/mojosetup/examples/duke3d/data/duke3d_unified_content.zip"
             },
         },
 
@@ -116,17 +118,17 @@ Setup.Package
 
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_retail_bins_" .. ostype() .. "_" .. arch() .. ".zip"
+                source = "http://centralserver/mojosetup/examples/duke3d/data/duke3d_retail_bins_" .. ostype() .. "_" .. arch() .. ".zip"
             },
 
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_unified_content.zip"
+                source = "http://centralserver/mojosetup/examples/duke3d/data/duke3d_unified_content.zip"
             },
 
             Setup.File
             {
-                source = "http://icculus.org/mojosetup/examples/duke3d/data/duke3d_retail_demos.zip"
+                source = "http://centralserver/mojosetup/examples/duke3d/data/duke3d_retail_demos.zip"
             },
 
             Setup.File

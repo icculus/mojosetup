@@ -6,6 +6,8 @@ Setup.Package
     id = "ut3-dedicated",
     description = "Unreal Tournament 3 Dedicated Server",
     version = "3487",
+    write_manifest = false,     -- don't want to update...
+    support_uninstall = false,  -- ...or uninstall. This is just a fancy unzip.
 
     recommended_destinations =
     {

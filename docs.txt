@@ -313,6 +313,42 @@ Here are the elements, and the attributes they can possess.
     (!!! FIXME) This attribute is for future expansion.
 
 
+   write_manifest (default true, mustBeBool)
+
+    If true, MojoSetup will create a hidden metadata directory in the
+    destination folder with lists of all files installed and some other
+    pertinent facts about the installed package. This allows other tools to
+    operate on the installation later, such as a software updater program or
+    an uninstaller. MojoSetup will also install tools in the metadata
+    directory to aid in manifest management and uninstallation.
+
+    Unless your package is a well-defined, static installation, you probably
+    want this. It adds a couple hundred kilobytes to the final install in the
+    filesystem (but not your download package), and puts an extra directory
+    in there (Usually called ".mojosetup", and hidden from the end-user).
+
+
+   support_uninstall (default true, mustBeBool)
+
+    If true, MojoSetup will include a means for the end-user to uninstall
+    this package. On Unix, this takes the form of a shell script in the
+    destination folder, on Windows, this hooks your package into the
+    "Add/Remove Programs" control panel.
+
+    If you enable support_uninstall, you must enable write_manifest, or the
+    installer will refuse to run to alert you to the problem immediately.
+
+    Please note that if you haven't anything outside the destination folder
+    to clean up, uninstall is merely a user-friendly formality; MojoSetup
+    doesn't implicitly write anything to the system outside this folder, so
+    the user can just drag it to the trash in the basic usage scenario. Indeed,
+    on Mac OS X, this is Apple's recommended "uninstall" procedure. On Windows,
+    hooking into Add/Remove Programs is probably desirable in all cases.
+
+    Enabling this option adds very little overhead to the normal install, once
+    you swallow the cost from write_manifest.
+
+
  Setup.Eula:
 
   This element can be a child of Setup.Package or Setup.Option. It can be

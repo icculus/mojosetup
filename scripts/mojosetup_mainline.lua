@@ -15,6 +15,13 @@ local _ = MojoSetup.translate
 
 MojoSetup.metadatakey = ".mojosetup_metadata."
 MojoSetup.metadatadesc = _("Metadata")
+MojoSetup.metadatadirname = ".mojosetup"
+
+if MojoSetup.info.platform == "windows" then
+    MojoSetup.controlappname = "mojosetup.exe"
+else
+    MojoSetup.controlappname = "mojosetup"
+end
 
 
 local function badcmdline()
@@ -376,7 +383,7 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
             percent = calc_percent(MojoSetup.written, MojoSetup.totalwrite)
             item = MojoSetup.format(_("%0: %1%%"), fname, calc_percent(bw, total))
         end
-        keepgoing = MojoSetup.gui.progress(ptype, component, percent, item)
+        keepgoing = MojoSetup.gui.progress(ptype, component, percent, item, true)
         return keepgoing
     end
 
@@ -704,7 +711,7 @@ local function set_destination(dest)
 
     MojoSetup.loginfo("Install dest: '" .. dest .. "'")
     MojoSetup.destination = dest
-    MojoSetup.metadatadir = MojoSetup.destination .. "/.mojosetup"
+    MojoSetup.metadatadir = MojoSetup.destination .. "/" .. MojoSetup.metadatadirname
     MojoSetup.controldir = MojoSetup.metadatadir  -- .. "/control"
     MojoSetup.manifestdir = MojoSetup.metadatadir .. "/manifest"
     MojoSetup.scratchdir = MojoSetup.metadatadir .. "/tmp"
@@ -865,8 +872,7 @@ local function install_control_app(desc, key)
     local maxbytes = -1  -- copy whole thing by default.
     local base = MojoSetup.archive.base
 
-    -- !!! FIXME: This needs an ".exe" appended on Windows.
-    dst = MojoSetup.controldir .. "/mojosetup"
+    dst = MojoSetup.controldir .. "/" .. MojoSetup.controlappname
     src = MojoSetup.info.binarypath
     if src == MojoSetup.info.basearchivepath then
         maxbytes = MojoSetup.archive.offsetofstart(base)
@@ -910,6 +916,29 @@ local function install_control_app(desc, key)
     end
 
     -- okay, we're written out.
+end
+
+
+local function install_unix_uninstaller(desc, key)
+    -- Write a script out that calls the uninstaller.
+    local fname = MojoSetup.destination .. "/" ..
+                  "uninstall-" .. MojoSetup.install.id .. ".sh"
+
+    -- Man, I hate escaping shell strings...
+    local bin = "\"`dirname $0`\"'/" .. MojoSetup.metadatadirname .. "/" ..
+                MojoSetup.controlappname .. "'"
+    string.gsub(bin, "'", "'\\''")  -- Escape single quotes for shell.
+
+    local id = MojoSetup.install.id
+    string.gsub(id, "'", "'\\''")
+
+    local script =
+        "#!/bin/sh\n" ..
+        "exec " .. bin .. " uninstall '" .. id .. "' $*\n" ..
+        "exit 1\n\n"
+
+    install_parent_dirs(fname, key)
+    install_file_from_string(fname, script, "0755", desc, key)
 end
 
 
@@ -987,6 +1016,11 @@ local function do_install(install)
 
     if install.options ~= nil and install.optiongroups ~= nil then
         MojoSetup.fatal(_("BUG: no options"))
+    end
+
+    -- The uninstaller support needs a manifest to know what to do. Force it on.
+    if (install.support_uninstall) and (not install.write_manifest) then
+        MojoSetup.fatal(_("BUG: support_uninstall requires write_manifest"))
     end
 
     -- This is to save us the trouble of a loop every time we have to
@@ -1291,7 +1325,7 @@ local function do_install(install)
                                                 calc_percent(bw, total),
                                                 ratestr)
                     end
-                    return MojoSetup.gui.progress(ptype, component, percent, item)
+                    return MojoSetup.gui.progress(ptype, component, percent, item, true)
                 end
 
                 MojoSetup.loginfo("Download '" .. url .. "' to '" .. f .. "'")
@@ -1370,11 +1404,20 @@ local function do_install(install)
             end
         end
 
-        install_control_app(MojoSetup.metadatadesc, MojoSetup.metadatakey)
-
         run_config_defined_hook(install.postinstall, install)
 
-        install_manifests(MojoSetup.metadatadesc, MojoSetup.metadatakey)   -- write out manifest.
+        if install.support_uninstall then
+            if MojoSetup.info.platform == "windows" then
+                MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
+            else  -- Unix, Mac OS X, BeOS...
+                install_unix_uninstaller(MojoSetup.metadatadesc, MojoSetup.metadatakey)
+            end
+        end
+
+        if install.write_manifest then
+            install_control_app(MojoSetup.metadatadesc, MojoSetup.metadatakey)
+            install_manifests(MojoSetup.metadatadesc, MojoSetup.metadatakey)
+        end
 
         return 1   -- go to next stage.
     end
@@ -1590,9 +1633,17 @@ local function uninstaller()
     local package = load_manifest(MojoSetup.info.argv[3])
 
     local title = _("Uninstall")
-    local question = _("Are you sure you want to uninstall '%0'?")
-    question = MojoSetup.format(question, package.description)
-    if MojoSetup.promptyn(title, question, false) then
+
+    local uninstall_permitted = false
+    if MojoSetup.cmdline("force") then
+        uninstall_permitted = true
+    else
+        local question = _("Are you sure you want to uninstall '%0'?")
+        question = MojoSetup.format(question, package.description)
+        uninstall_permitted = MojoSetup.promptyn(title, question, false)
+    end
+
+    if uninstall_permitted then
         start_gui(package.description, package.splash)
 
         -- Upvalued so we don't look this up each time...
@@ -1608,14 +1659,13 @@ local function uninstaller()
             end
 
             local item = string.gsub(fname, "^.*/", "", 1)  -- chop off dirs...
-            MojoSetup.gui.progress(ptype, component, percent, item)
+            MojoSetup.gui.progress(ptype, component, percent, item, false)
             return true  -- !!! FIXME: need to disable cancel button in UI...
         end
 
         local filelist = flatten_manifest(package.manifest, prepend_dest_dir)
         delete_files(filelist, callback, true)
-
-        MojoSetup.msgbox(title, _("Uninstall complete"))
+        MojoSetup.gui.final(_("Uninstall complete"))
         stop_gui()
     end
 

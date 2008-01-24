@@ -287,6 +287,13 @@ MojoSetup.localization = {
         se = "FEL: inget option",
     };
 
+    -- This is shown if the config file wants us to add an installer to the
+    --  files we write to disk, but didn't enable the manifest support the
+    --  installer needs. This is a bug the developer must fix before shipping
+    --  her installer.
+    ["BUG: support_uninstall requires write_manifest"] = {
+    };
+
     -- This is a file's permissions. Programmers give these as strings, and
     --  if one isn't valid, the program will report this. So, on Unix, they
     --  might specify "0600" as a valid string, but "sdfksjdfk" wouldn't be

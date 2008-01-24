@@ -43,6 +43,8 @@ Setup.Package
     destination = "/usr/local/bin",
     recommended_destinations = { "/opt/games", "/usr/local/games" },
     updateurl = "http://localhost/updates/",
+    write_manifest = true,
+    support_uninstall = true,
 
     -- Things named Setup.Something are internal functions we supply.
     --  Generally these return the table you pass to them, but they
