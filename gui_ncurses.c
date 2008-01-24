@@ -1471,7 +1471,9 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
 
 static void MojoGui_ncurses_final(const char *msg)
 {
-    MojoGui_ncurses_msgbox(entry->_("Finish"), msg);
+    char *title = entry->xstrdup(entry->_("Finish"));
+    MojoGui_ncurses_msgbox(title, msg);
+    free(title);
 } // MojoGui_ncurses_final
 
 // end of gui_ncurses.c ...
