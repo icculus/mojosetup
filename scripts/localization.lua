@@ -292,6 +292,7 @@ MojoSetup.localization = {
     --  installer needs. This is a bug the developer must fix before shipping
     --  her installer.
     ["BUG: support_uninstall requires write_manifest"] = {
+        nb = "FEIL: support_uninstall krever write_manifest",
     };
 
     -- This is shown if the config file wants us to add a manifest to the
@@ -299,6 +300,7 @@ MojoSetup.localization = {
     --  binary (this is done through CMake when compiling the C code). This is
     --  a bug the developer must fix before shipping her installer.
     ["BUG: write_manifest requires Lua parser support"] = {
+        nb = "FEIL: write_manifest krever støtte for Lua-parser",
     };
 
     -- This is a file's permissions. Programmers give these as strings, and
@@ -389,7 +391,7 @@ MojoSetup.localization = {
     -- This is an error string for a buggy config element. See notes above.
     ["must be explicitly specified"] = {
         de = "muss explizit angegeben werden",
-        nb = "må gis eksplisitt",
+        nb = "må spesifiseres eksplisitt",
         se = "måste vara explicit specifierad",
     };
 
@@ -438,7 +440,7 @@ MojoSetup.localization = {
     -- This is an error string for a buggy config element. See notes above.
     ["URL protocol is unsupported"] = {
         de = "URL Protokoll wird nicht unterstützt",
-        nb = "URL-protokoll er ikke støttet",
+        nb = "URL-protokollen er ikke støttet",
         se = "URL protokollet har inget stöd",
     };
 
@@ -447,7 +449,7 @@ MojoSetup.localization = {
     --  such as "0644" on Unix.
     ["Permission string is invalid"] = {
         de = "Berechtigungs-String ist ungültig",
-        nb = "Rettighetsstreng er ugyldig",
+        nb = "Rettighetsstrengen er ugyldig",
         se = "Rättighetssträngen är ogiltig",
     };
 
@@ -531,7 +533,7 @@ MojoSetup.localization = {
     --  in a .zip (or whatever) file.
     ["Couldn't enumerate archive"] = {
         de = "Archiv kann nicht aufgelistet werden",
-        nb = "Kunne ikke enumerere arkiv",
+        nb = "Kunne ikke liste filer i arkivet",
         se = "Kunde inte lista filen",
     };
 
@@ -539,7 +541,7 @@ MojoSetup.localization = {
     --  (or whatever) file.
     ["Couldn't open archive"] = {
         de = "Archiv kann nicht geöffnet werden",
-        nb = "Kunne ikke åpne arkiv",
+        nb = "Kunne ikke åpne arkivet",
         se = "Kunde inte öppna filen",
     };
 
@@ -550,7 +552,7 @@ MojoSetup.localization = {
     --  user before the prompt.
     ["Choose install destination by number (hit enter for #1), or enter your own."] = {
         de = "Wählen Sie eine Nummer für das Installationsziel (drücken Sie Enter für #1), oder geben Sie ein eigenes an.",
-        nb = "Velg installasjonssti etter nummer (trykk enter for #1), eller skriv din egen.",
+        nb = "Velg installasjonssti etter nummer (trykk enter for #1), eller skriv inn din egen.",
         se = "Välg sökväg för installationen efter nummer (tryck enter för #1), eller skriv in din egen.",
     };
 
@@ -609,6 +611,7 @@ MojoSetup.localization = {
     --  the user specifies the installation destination (folder/directory) in
     --  the filesystem.
     ["Folder:"] = {
+        nb = "Katalog:",
         se = "Katalog:",
     };
 
@@ -724,7 +727,7 @@ MojoSetup.localization = {
     --  choose this to enter a filesystem path manually.
     ["(I want to specify a path.)"] = {
         de = "(Ich möchte einen Pfad angeben.)",
-        nb = "(Jeg vil skrive min egen sti.)",
+        nb = "(Jeg vil skrive inn min egen sti.)",
         se = "(Jag vill skriva in en egen sökväg.)",
     };
 
@@ -888,6 +891,7 @@ MojoSetup.localization = {
     -- The www UI uses this as page text when the program is terminating.
     ["You can close this browser now."] = {
         de = "Sie können diesen Browser nun schließen.",
+        nb = "Du kan lukke denne nettleseren nå.",
         se = "Du kan stänga denna browser nu.",
     };
 
@@ -895,7 +899,7 @@ MojoSetup.localization = {
     --  to the filesystem.
     ["Symlink creation failed!"] = {
         de = "Erzeugung einer Verknüpfung fehlgeschlagen!",
-        nb = "Kunne likke lage symbolsk lenke!",
+        nb = "Kunne ikke lage symbolsk lenke!",
         se = "Kunde inte skapa symbolisk länk!",
     };
 
@@ -951,35 +955,42 @@ MojoSetup.localization = {
 
     -- This error is shown if incorrect command line arguments are used.
     ["Invalid command line"] = {
+        nb = "Ugyldig kommandolinje",
     };
 
     -- This error is shown when updating the manifest, if it can't load the
     --  file for some reason. '%0' is the manifest's package name.
     ["Couldn't load manifest file for '%0'"] = {
+        nb = "Kunne ikke laste manifestfil for '%0'",
     };
 
     -- This error is shown when the user prompted the app to read a filename
     --  (%0) that doesn't exist.
     ["File %0 not found"] = {
+        nb = "Filen '%0' ble ikke funnet",
     };
 
     -- This is a window title on the message box when asking if user is sure
     --  they want to uninstall a package.
     ["Uninstall"] = {
+        nb = "Avinstallasjon",
     };
 
     -- This is the text when asking the user if they want to uninstall
     --  the package named '%0'.
     ["Are you sure you want to uninstall '%0'?)"] = {
+        nb = "Er du sikker på at du vil avinstallere '%0'?)",
     };
 
     -- This is a window title, shown while the actual uninstall is in process
     --  and a progress meter is being shown.
     ["Uninstalling"] = {
+        nb = "Avinstallerer",
     };
 
     -- This is shown to the user in a message box when uninstallation is done.
     ["Uninstall complete"] = {
+        nb = "Avinstallasjonen er ferdig",
     };
 
     -- This is written to the terminal in the ncurses UI when the window is
@@ -990,6 +1001,7 @@ MojoSetup.localization = {
     --  is a system problem outside the scope of the application, but they
     --  aren't required.
     ["[Make the window wider!]"] = {
+        nb = "[Gjør vinduet bredere!]",
     };
 
     -- This is written to the terminal in the ncurses UI when the window is
@@ -1000,6 +1012,7 @@ MojoSetup.localization = {
     --  is a system problem outside the scope of the application, but they
     --  aren't required.
     ["[Make the window taller!]"] = {
+        nb = "[Gjør vinduet høyere!]",
     };
 };
 
