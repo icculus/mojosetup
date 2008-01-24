@@ -234,6 +234,50 @@ static void drawBackground(WINDOW *win)
 } // drawBackground
 
 
+static void confirmTerminalSize(void)
+{
+    int scrw = 0;
+    int scrh = 0;
+    char *msg = NULL;
+    int len = 0;
+    int x = 0;
+    int y = 0;
+
+    while (1)   // loop until the window meets a minimum dimension requirement.
+    {
+        getmaxyx(stdscr, scrh, scrw);
+        scrh--; // -1 to save the title at the top of the screen...
+
+        if (scrw < 30)  // too thin
+            msg = entry->xstrdup(entry->_("[Make the window wider!]"));
+        else if (scrh < 10)  // too short
+            msg = entry->xstrdup(entry->_("[Make the window taller!]"));
+        else
+            break;  // we're good, get out.
+
+        len = strcells(msg);
+        y = scrh / 2;
+        x = ((scrw - len) / 2);
+
+        if (y < 0) y = 0;
+        if (x < 0) x = 0;
+
+        wclear(stdscr);
+        wmove(stdscr, y, x);
+        wrefresh(stdscr);
+        wmove(stdscr, y, x);
+        wattron(stdscr, COLOR_PAIR(MOJOCOLOR_BACKGROUND) | A_BOLD);
+        waddstr(stdscr, msg);
+        wattroff(stdscr, COLOR_PAIR(MOJOCOLOR_BACKGROUND) | A_BOLD);
+        nodelay(stdscr, 0);
+        wrefresh(stdscr);
+        free(msg);
+
+        while (wgetch(stdscr) != KEY_RESIZE) { /* no-op. */ }
+    } // while
+} // confirmTerminalSize
+
+
 static MojoBox *makeBox(const char *title, const char *text,
                         char **buttons, int bcount,
                         boolean ndelay, boolean hidecursor)
@@ -250,10 +294,10 @@ static MojoBox *makeBox(const char *title, const char *text,
     int texth = 0;
     int i;
 
+    confirmTerminalSize();  // blocks until window is large enough to continue.
+
     getmaxyx(stdscr, scrh, scrw);
     scrh--; // -1 to save the title at the top of the screen...
-    if ((scrw < 16) || (scrh < 16))
-        return NULL;
 
     retval = (MojoBox *) entry->xmalloc(sizeof (MojoBox));
     retval->hidecursor = hidecursor;
@@ -299,6 +343,13 @@ static MojoBox *makeBox(const char *title, const char *text,
 
     x = (scrw - w) / 2;
     y = ((scrh - h) / 2) + 1;
+
+    // can't have negative coordinates, so in case we survived the call to
+    //  confirmTerminalSize() but still need more, just draw as much as
+    //  possible from the top/left to fill the window.
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+
     win = retval->mainwin = newwin(h, w, y, x);
 	keypad(win, TRUE);
     nodelay(win, ndelay);

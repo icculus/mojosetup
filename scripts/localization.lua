@@ -967,6 +967,26 @@ MojoSetup.localization = {
     -- This is shown to the user in a message box when uninstallation is done.
     ["Uninstall complete"] = {
     };
+
+    -- This is written to the terminal in the ncurses UI when the window is
+    --  too thin to be usable; it's asking the user to resize the terminal
+    --  window horizontally. Since space may be extremely tight, try to be as
+    --  terse as possible (but we can wrap the text if possible, so don't be
+    --  cryptic). The '[' and ']' characters are just decoration to imply this
+    --  is a system problem outside the scope of the application, but they
+    --  aren't required.
+    ["[Make the window wider!]"] = {
+    };
+
+    -- This is written to the terminal in the ncurses UI when the window is
+    --  too short to be usable; it's asking the user to resize the terminal
+    --  window vertically. Since space may be extremely tight, try to be as
+    --  terse as possible (but we can wrap the text if possible, so don't be
+    --  cryptic). The '[' and ']' characters are just decoration to imply this
+    --  is a system problem outside the scope of the application, but they
+    --  aren't required.
+    ["[Make the window taller!]"] = {
+    };
 };
 
 -- end of localization.lua ...
