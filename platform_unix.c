@@ -1160,7 +1160,7 @@ static void termination_catcher(int sig)
 
 static void install_signals(void)
 {
-    static int crash_sigs[] = { SIGSEGV, SIGILL, SIGBUS, SIGFPE, SIGTRAP };
+    static int crash_sigs[] = { SIGSEGV,SIGILL,SIGBUS,SIGFPE,SIGTRAP,SIGABRT };
     static int term_sigs[] = { SIGQUIT, SIGINT, SIGTERM, SIGHUP };
     static int ignore_sigs[] = { SIGPIPE };
     int i;
