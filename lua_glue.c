@@ -1465,9 +1465,11 @@ static int luahook_gui_progress(lua_State *L)
 {
     const char *type = luaL_checkstring(L, 1);
     const char *component = luaL_checkstring(L, 2);
-    int percent = luaL_checkint(L, 3);
+    const int percent = luaL_checkint(L, 3);
     const char *item = luaL_checkstring(L, 4);
-    return retvalBoolean(L, GGui->progress(type, component, percent, item));
+    const boolean canstop = lua_toboolean(L, 5);
+    const boolean rc = GGui->progress(type, component, percent, item, canstop);
+    return retvalBoolean(L, rc);
 } // luahook_gui_progress
 
 

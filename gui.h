@@ -80,7 +80,7 @@ struct MojoGuiSplash
 #define MOJOGUI_ENTRY_POINT_STR DEFINE_TO_STR(MOJOGUI_ENTRY_POINT)
 
 // Increment this value when MojoGui's structure changes.
-#define MOJOGUI_INTERFACE_REVISION 3
+#define MOJOGUI_INTERFACE_REVISION 4
 
 typedef struct MojoGui MojoGui;
 struct MojoGui
@@ -102,7 +102,7 @@ struct MojoGui
                           int *command, boolean can_back, boolean can_fwd);
     boolean (*insertmedia)(const char *medianame);
     boolean (*progress)(const char *type, const char *component,
-                        int percent, const char *item);
+                        int percent, const char *item, boolean can_cancel);
     void (*final)(const char *msg);
 };
 
@@ -146,7 +146,8 @@ static char *MojoGui_##module##_destination(const char **r, int recnum, \
                             int *command, boolean can_back, boolean can_fwd); \
 static boolean MojoGui_##module##_insertmedia(const char *medianame); \
 static boolean MojoGui_##module##_progress(const char *typ, const char *comp, \
-                                           int percent, const char *item); \
+                                           int percent, const char *item, \
+                                           boolean can_cancel); \
 static void MojoGui_##module##_final(const char *msg); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \

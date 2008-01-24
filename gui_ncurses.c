@@ -81,6 +81,7 @@ typedef struct
 
 static char *lastProgressType = NULL;
 static char *lastComponent = NULL;
+static boolean lastCanCancel = false;
 static uint32 percentTicks = 0;
 static char *title = NULL;
 static MojoBox *progressBox = NULL;
@@ -486,7 +487,7 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
         case '\n':
         case KEY_ENTER:
         case ' ':
-            return mojobox->hoverover;
+            return (mojobox->buttoncount <= 0) ? -1 : mojobox->hoverover;
 
         case '\e':
             return mojobox->buttoncount-1;
@@ -1357,7 +1358,8 @@ static boolean MojoGui_ncurses_insertmedia(const char *medianame)
 
 
 static boolean MojoGui_ncurses_progress(const char *type, const char *component,
-                                        int percent, const char *item)
+                                        int percent, const char *item,
+                                        boolean can_cancel)
 {
     const uint32 now = entry->ticks();
     boolean rebuild = (progressBox == NULL);
@@ -1367,12 +1369,14 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
     if ( (lastComponent == NULL) ||
          (strcmp(lastComponent, component) != 0) ||
          (lastProgressType == NULL) ||
-         (strcmp(lastProgressType, type) != 0) )
+         (strcmp(lastProgressType, type) != 0) ||
+         (lastCanCancel != can_cancel) )
     {
         free(lastProgressType);
         free(lastComponent);
         lastProgressType = entry->xstrdup(type);
         lastComponent = entry->xstrdup(component);
+        lastCanCancel = can_cancel;
         rebuild = true;
     } // if
 
@@ -1380,8 +1384,10 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
     {
         int w, h;
         char *text = NULL;
-        char *localized_cancel = entry->xstrdup(entry->_("Cancel"));
+        char *localized_cancel =
+                    (can_cancel) ? entry->xstrdup(entry->_("Cancel")) : NULL;
         char *buttons[] = { localized_cancel };
+        const int buttoncount = (can_cancel) ? 1 : 0;
         char *spacebuf = NULL;
         getmaxyx(stdscr, h, w);
         w -= 10;
@@ -1396,7 +1402,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
         strcat(text, "\n\n ");
 
         freeBox(progressBox, false);
-        progressBox = makeBox(type, text, buttons, 1, true, true);
+        progressBox = makeBox(type, text, buttons, buttoncount, true, true);
         free(text);
         free(localized_cancel);
     } // if

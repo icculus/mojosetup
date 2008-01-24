@@ -600,7 +600,8 @@ static boolean MojoGui_stdio_insertmedia(const char *medianame)
 
 
 static boolean MojoGui_stdio_progress(const char *type, const char *component,
-                                      int percent, const char *item)
+                                      int percent, const char *item,
+                                      boolean can_cancel)
 {
     const uint32 now = entry->ticks();
 

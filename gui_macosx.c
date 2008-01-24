@@ -197,7 +197,8 @@ static boolean MojoGui_macosx_insertmedia(const char *medianame)
 
 
 static int MojoGui_macosx_progress(const char *type, const char *component,
-                                       int percent, const char *item)
+                                   int percent, const char *item,
+                                   boolean can_cancel)
 {
     // !!! FIXME: write me.
     STUBBED("macosx progress");

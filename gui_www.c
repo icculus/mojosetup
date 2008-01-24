@@ -1015,7 +1015,8 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
 
 
 static boolean MojoGui_www_progress(const char *type, const char *component,
-                                    int percent, const char *item)
+                                    int percent, const char *item,
+                                    boolean can_cancel)
 {
     return true;
 } // MojoGui_www_progress
