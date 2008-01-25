@@ -934,8 +934,7 @@ local function install_unix_uninstaller(desc, key)
 
     local script =
         "#!/bin/sh\n" ..
-        "exec " .. bin .. " uninstall '" .. id .. "' $*\n" ..
-        "exit 1\n\n"
+        "exec " .. bin .. " uninstall '" .. id .. "' $*\n\n"
 
     install_parent_dirs(fname, key)
     install_file_from_string(fname, script, "0755", desc, key)
