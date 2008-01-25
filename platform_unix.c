@@ -1002,40 +1002,6 @@ static char *shellEscape(const char *str)
 } // shellEscape
 
 
-static char **splitString(const char *str, const char sep)
-{
-    char **retval = NULL;
-    int count = 0;
-    const char *lastptr = NULL;
-    const char *ptr = NULL;
-    for (ptr = str; *ptr; ptr++)
-    {
-        if (*ptr == sep)
-            count++;
-    } // for
-
-    retval = (char **) xmalloc(sizeof (char *) * (count + 1));
-    for (lastptr = ptr = str; *ptr; ptr++)
-    {
-        if (*ptr == sep)
-        {
-            const size_t len = (size_t) (ptr - lastptr);
-            if (len > 0)
-            {
-                retval[count] = (char *) xmalloc(len + 1);
-                memcpy(retval[count], lastptr, len);
-                retval[count][len] = '\0';
-                count++;
-            } // if
-            lastptr = ptr + 1;
-        } // if
-    } // for
-
-    retval[count] = NULL;
-    return retval;
-} // splitString
-
-
 static const char *defaultBrowsers(void)
 {
     const boolean ttyonly = ( (GGui == NULL) ||
