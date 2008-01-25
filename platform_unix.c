@@ -1070,10 +1070,11 @@ static boolean unix_launchBrowser(const char *url)
     boolean retval = false;
     char *escapedurl = shellEscape(url);
     char *cmd = format("xdg-open %0 >/dev/null 2>&1", escapedurl);
-    int rc = system(cmd);
+
+    retval = (system(cmd) == 0);
     free(cmd);
 
-    if (rc != 0)
+    if (!retval)
     {
         // no xdg-open in the $PATH, or it failed. Try to do it ourselves...
         const UnixDesktopType desktop = getDesktopType();
