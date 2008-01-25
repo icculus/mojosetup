@@ -1066,7 +1066,7 @@ static char *shellEscape(const char *str)
 static boolean unix_launchBrowser(const char *url)
 {
     boolean retval = false;
-    char *path = findBinaryInPath("dfdfxdg-open");
+    char *path = findBinaryInPath("xdg-open");
 
     if (path != NULL)  // it's installed on the system; use that.
     {
