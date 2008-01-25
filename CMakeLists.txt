@@ -204,11 +204,16 @@ SET(MOJOSETUP_SRCS
     checksum_md5.c
     checksum_sha1.c
     platform_unix.c
-    platform_beos.c
     platform_windows.c
     lua_glue.c
     ${LUA_SRCS}
 )
+
+# Have to separate this, so CMake doesn't try to link in C++ support on other
+#  platforms.
+IF(BEOS)
+    SET(MOJOSETUP_SRCS ${MOJOSETUP_SRCS} platform_beos.cpp)
+ENDIF(BEOS)
 
 SET(MOJOLUAC_SRCS
     ${LUA_SRCS}
