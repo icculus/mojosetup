@@ -932,6 +932,216 @@ void MojoPlatform_dlclose(void *lib)
 } // MojoPlatform_dlclose
 
 
+#if !PLATFORM_MACOSX && !PLATFORM_BEOS
+typedef enum
+{
+    DESKTOP_MUST_CHECK,
+    DESKTOP_UNKNOWN,
+    DESKTOP_GNOME,
+    DESKTOP_KDE,
+    DESKTOP_XFCE4,
+} UnixDesktopType;
+
+
+static UnixDesktopType getDesktopType(void)
+{
+    static UnixDesktopType retval = DESKTOP_MUST_CHECK;
+    if (retval == DESKTOP_MUST_CHECK)
+    {
+        const char *envr = getenv("KDE_FULL_SESSION");
+        if ( (envr != NULL) && (strcmp(envr, "true") == 0) )
+            retval = DESKTOP_KDE;
+        else if (getenv("GNOME_DESKTOP_SESSION_ID") != NULL)
+            retval = DESKTOP_GNOME;
+        else if (system("xprop -root _DT_SAVE_MODE |"
+                       " grep ' = \"xfce4\"$' >/dev/null 2>&1") == 0)
+        {
+            retval = DESKTOP_XFCE4;  // this nasty compliments of xdg-open.
+        } // else if
+        else
+        {
+            retval = DESKTOP_UNKNOWN;
+        } // else
+    } // if
+
+    return retval;
+} // getDesktopType
+
+
+static char *shellEscape(const char *str)
+{
+    size_t len = 0;
+    char *retval = NULL;
+    const char *ptr = NULL;
+    char *dst = NULL;
+
+    for (ptr = str; *ptr; ptr++)
+        len += (*ptr == '\'') ? 4 : 1;
+
+    retval = (char *) xmalloc(len + 3);  // +2 single quotes and a null char.
+    dst = retval;
+    *(dst++) = '\'';
+
+    for (ptr = str; *ptr; ptr++)
+    {
+        const char ch = *ptr;
+        if (ch != '\'')
+            *(dst++) = ch;
+        else
+        {
+            *(dst++) = '\'';
+            *(dst++) = '\\';
+            *(dst++) = '\'';
+            *(dst++) = '\'';
+        } // else
+    } // for
+
+    *(dst++) = '\'';
+    *(dst++) = '\0';
+    return retval;
+} // shellEscape
+
+
+static char **splitString(const char *str, const char sep)
+{
+    char **retval = NULL;
+    int count = 0;
+    const char *lastptr = NULL;
+    const char *ptr = NULL;
+    for (ptr = str; *ptr; ptr++)
+    {
+        if (*ptr == sep)
+            count++;
+    } // for
+
+    retval = (char **) xmalloc(sizeof (char *) * (count + 1));
+    for (lastptr = ptr = str; *ptr; ptr++)
+    {
+        if (*ptr == sep)
+        {
+            const size_t len = (size_t) (ptr - lastptr);
+            if (len > 0)
+            {
+                retval[count] = (char *) xmalloc(len + 1);
+                memcpy(retval[count], lastptr, len);
+                retval[count][len] = '\0';
+                count++;
+            } // if
+            lastptr = ptr + 1;
+        } // if
+    } // for
+
+    retval[count] = NULL;
+    return retval;
+} // splitString
+
+
+static const char *defaultBrowsers(void)
+{
+    const boolean ttyonly = ( (GGui == NULL) ||
+                              (strcmp(GGui->name(), "stdio") == 0) ||
+                              (strcmp(GGui->name(), "ncurses") == 0) );
+
+    return ((ttyonly) ? "links:lynx" : "firefox:mozilla:netscape");
+} // defaultBrowsers
+
+
+static boolean launchGenericBrowser(const char *escapedurl)
+{
+    // See http://catb.org/~esr/BROWSER/ for details.
+    // !!! FIXME: this isn't actually entirely right...we're not parsing
+    // !!! FIXME:  out %s sequences or anything...the spec seems to think
+    // !!! FIXME:  we should either parse the commands into an execv() array
+    // !!! FIXME:  ourselves, duplicating the shell's parser exactly, or
+    // !!! FIXME:  just pass them unmolested to system(), and hope that
+    // !!! FIXME:  the url is escaped correctly since no one is declared to
+    // !!! FIXME:  be in charge of that.
+    // !!! FIXME: esr probably shouldn't have done the %s thing, and just
+    // !!! FIXME:  said "plug the url on as argv[1] and be done with it,
+    // !!! FIXME:  if they need fancy scripting, let them write a script file."
+    // !!! FIXME: Also, it doesn't talk about if you should block, or fork(),
+    // !!! FIXME:  but it looks like blocking is the only reasonable thing.
+    // !!! FIXME: ...soooo, that's what I'm doing here. Sorry, Eric.  :/
+    boolean retval = false;
+    const char *defenvr = defaultBrowsers();
+    const char *_envr = getenv("BROWSER");
+    char *envr = xstrdup(_envr ? _envr : defenvr);
+    char *ptr = envr;
+    char *prev = envr;
+    char *cmd = NULL;
+
+    while (1)
+    {
+        const char ch = *ptr;
+        const boolean lastone = (ch == '\0');
+        if ((ch == ':') || (lastone))
+        {
+            *ptr = '\0';
+            if (ptr != prev)
+            {
+                cmd = format("%0 %1", prev, escapedurl);
+                retval = (system(cmd) == 0);
+                free(cmd);
+                if (retval)
+                    break;
+            } // if
+            prev = ptr++;
+        } // if
+
+        if (lastone)
+            break;
+
+        ptr++;
+    } // for
+
+    free(envr);
+    return retval;
+} // launchGenericBrowser
+
+
+static boolean unix_launchBrowser(const char *url)
+{
+    boolean retval = false;
+    char *escapedurl = shellEscape(url);
+    char *cmd = format("xdg-utils %0", escapedurl);
+    int rc = system(cmd);
+    free(cmd);
+
+    if (rc != 0)
+    {
+        // no xdg-open in the $PATH, or it failed. Try to do it ourselves...
+        const UnixDesktopType desktop = getDesktopType();
+        if (desktop == DESKTOP_KDE)
+            cmd = format("kfmclient exec %0", escapedurl);
+        else if (desktop == DESKTOP_GNOME)
+            cmd = format("gnome-open %0", escapedurl);
+        else if (desktop == DESKTOP_XFCE4)
+            cmd = format("exo-open %0", escapedurl);
+        else // (desktop == DESKTOP_UNKNOWN) or we missed something here.
+        {
+            cmd = NULL;
+            retval = launchGenericBrowser(escapedurl);
+        } // else
+
+        if (cmd != NULL)
+        {
+            retval = (system(cmd) == 0);
+            free(cmd);
+
+            // !!! FIXME: apparently you can't trust the return value from
+            // !!! FIXME:  KDE <= 3.5.4, so for now we just always ignore
+            // !!! FIXME:  it and pretend it worked out.
+            if (desktop == DESKTOP_KDE)
+                retval = true;
+        } // if
+    } // if
+
+    free(escapedurl);
+    return retval;
+} // unix_launchBrowser
+#endif
+
+
 boolean MojoPlatform_launchBrowser(const char *url)
 {
 #if PLATFORM_MACOSX
@@ -944,7 +1154,7 @@ boolean MojoPlatform_launchBrowser(const char *url)
     extern int beos_launchBrowser(const char *url);
     return beos_launchBrowser(url) ? true : false;
 #else
-    return false;  // !!! FIXME: write me.
+    return unix_launchBrowser(url);
 #endif
 } // MojoPlatform_launchBrowser
 
