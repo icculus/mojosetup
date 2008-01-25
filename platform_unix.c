@@ -940,6 +940,9 @@ boolean MojoPlatform_launchBrowser(const char *url)
     const OSStatus err = LSOpenCFURLRef(cfurl, NULL);
     CFRelease(cfurl);
     return (err == noErr);
+#elif PLATFORM_BEOS
+    extern int beos_launchBrowser(const char *url);
+    return beos_launchBrowser(url) ? true : false;
 #else
     return false;  // !!! FIXME: write me.
 #endif
