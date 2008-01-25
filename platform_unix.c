@@ -26,6 +26,7 @@
 #include <syslog.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <wait.h>
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
@@ -55,6 +56,7 @@ void beos_usleep(unsigned long ticks);
 
 #include "platform.h"
 #include "gui.h"
+#include "fileio.h"
 
 static struct timeval startup_time;
 
@@ -933,39 +935,98 @@ void MojoPlatform_dlclose(void *lib)
 
 
 #if !PLATFORM_MACOSX && !PLATFORM_BEOS
-typedef enum
+static int runScriptString(const char *str, boolean devnull, const char **_argv)
 {
-    DESKTOP_MUST_CHECK,
-    DESKTOP_UNKNOWN,
-    DESKTOP_GNOME,
-    DESKTOP_KDE,
-    DESKTOP_XFCE4,
-} UnixDesktopType;
+    int retval = 127;
+    pid_t pid = 0;
+    int pipes[2];
 
+    if (pipe(pipes) == -1)
+        return retval;
 
-static UnixDesktopType getDesktopType(void)
-{
-    static UnixDesktopType retval = DESKTOP_MUST_CHECK;
-    if (retval == DESKTOP_MUST_CHECK)
+    pid = fork();
+    if (pid == -1)  // -1 == fork() failed.
     {
-        const char *envr = getenv("KDE_FULL_SESSION");
-        if ( (envr != NULL) && (strcmp(envr, "true") == 0) )
-            retval = DESKTOP_KDE;
-        else if (getenv("GNOME_DESKTOP_SESSION_ID") != NULL)
-            retval = DESKTOP_GNOME;
-        else if (system("xprop -root _DT_SAVE_MODE |"
-                       " grep ' = \"xfce4\"$' >/dev/null 2>&1") == 0)
-        {
-            retval = DESKTOP_XFCE4;  // this nasty compliments of xdg-open.
-        } // else if
-        else
-        {
-            retval = DESKTOP_UNKNOWN;
-        } // else
+        close(pipes[0]);
+        close(pipes[1]);
+        return retval;
     } // if
 
+    else if (pid == 0)  // we're the child process.
+    {
+        int argc = 0;
+        const char **argv = NULL;
+
+        close(pipes[1]);  // close the writing end.
+        dup2(pipes[0], 0);  // replace stdin.
+        if (devnull)
+        {
+            dup2(open("/dev/null", O_WRONLY), 1);  // replace stdout
+            dup2(open("/dev/null", O_WRONLY), 2);  // replace stderr
+        } // if
+
+        while (_argv[argc++] != NULL) { /* no-op */ }
+        argv = (const char **) xmalloc(sizeof (char *) * argc+3);
+        argv[0] = "/bin/sh";
+        argv[1] = "-s";
+        for (argc = 0; _argv[argc] != NULL; argc++)
+            argv[argc+2] = _argv[argc];
+        argv[argc+2] = NULL;
+
+        execv(argv[0], (char **) argv);
+        _exit(retval);  // uhoh, failed.
+    } // else if
+
+    else  // we're the parent (pid == child process id).
+    {
+        int status = 0;
+        size_t len = strlen(str);
+        boolean failed = false;
+        close(pipes[0]);  // close the reading end.
+        failed |= (write(pipes[1], str, len) != len);
+        failed |= (close(pipes[1]) == -1);
+
+        // !!! FIXME: we need a GGui->pump() or something here if we'll block.
+        if (waitpid(pid, &status, 0) != -1)
+        {
+            if (WIFEXITED(status))
+                retval = WEXITSTATUS(status);
+        } // if
+    } // else
+
     return retval;
-} // getDesktopType
+} // runScriptString
+
+
+static int runScript(const char *script, boolean devnull, const char **argv)
+{
+    int retval = 127;
+    char *str = NULL;
+    MojoInput *in = MojoInput_newFromArchivePath(GBaseArchive, script);
+    if (in != NULL)
+    {
+        int64 len = in->length(in);
+        if (len > 0)
+        {
+            str = (char *) xmalloc(len + 1);
+            if (in->read(in, str, len) == len)
+                str[len] = '\0';
+            else
+            {
+                free(str);
+                str = NULL;
+            } // else
+        } // if
+
+        in->close(in);
+    } // if
+
+    if (str != NULL)
+        retval = runScriptString(str, devnull, argv);
+
+    free(str);
+    return retval;
+} // runScript
 
 
 static char *shellEscape(const char *str)
@@ -1002,108 +1063,27 @@ static char *shellEscape(const char *str)
 } // shellEscape
 
 
-static const char *defaultBrowsers(void)
-{
-    const boolean ttyonly = ( (GGui == NULL) ||
-                              (strcmp(GGui->name(), "stdio") == 0) ||
-                              (strcmp(GGui->name(), "ncurses") == 0) );
-
-    return ((ttyonly) ? "links:lynx" : "firefox -raise:mozilla:netscape");
-} // defaultBrowsers
-
-
-static boolean launchGenericBrowser(const char *escapedurl)
-{
-    // See http://catb.org/~esr/BROWSER/ for details.
-    // !!! FIXME: this isn't actually entirely right...we're not parsing
-    // !!! FIXME:  out %s sequences or anything...the spec seems to think
-    // !!! FIXME:  we should either parse the commands into an execv() array
-    // !!! FIXME:  ourselves, duplicating the shell's parser exactly, or
-    // !!! FIXME:  just pass them unmolested to system(), and hope that
-    // !!! FIXME:  the url is escaped correctly since no one is declared to
-    // !!! FIXME:  be in charge of that.
-    // !!! FIXME: esr probably shouldn't have done the %s thing, and just
-    // !!! FIXME:  said "plug the url on as argv[1] and be done with it,
-    // !!! FIXME:  if they need fancy scripting, let them write a script file."
-    // !!! FIXME: Also, it doesn't talk about if you should block, or fork(),
-    // !!! FIXME:  but it looks like blocking is the only reasonable thing.
-    // !!! FIXME: ...soooo, that's what I'm doing here. Sorry, Eric.  :/
-    boolean retval = false;
-    const char *defenvr = defaultBrowsers();
-    const char *_envr = getenv("BROWSER");
-    char *envr = xstrdup(_envr ? _envr : defenvr);
-    char *ptr = envr;
-    char *prev = envr;
-    char *cmd = NULL;
-
-    while (1)
-    {
-        const char ch = *ptr;
-        const boolean lastone = (ch == '\0');
-        if ((ch == ':') || (lastone))
-        {
-            *ptr = '\0';
-            if (ptr != prev)
-            {
-                cmd = format("%0 %1", prev, escapedurl);
-                retval = (system(cmd) == 0);
-                free(cmd);
-                if (retval)
-                    break;
-            } // if
-            prev = ptr++;
-        } // if
-
-        if (lastone)
-            break;
-
-        ptr++;
-    } // for
-
-    free(envr);
-    return retval;
-} // launchGenericBrowser
-
-
 static boolean unix_launchBrowser(const char *url)
 {
     boolean retval = false;
-    char *escapedurl = shellEscape(url);
-    char *cmd = format("xdg-open %0 >/dev/null 2>&1", escapedurl);
+    char *path = findBinaryInPath("dfdfxdg-open");
 
-    retval = (system(cmd) == 0);
-    free(cmd);
-
-    if (!retval)
+    if (path != NULL)  // it's installed on the system; use that.
     {
-        // no xdg-open in the $PATH, or it failed. Try to do it ourselves...
-        const UnixDesktopType desktop = getDesktopType();
-        if (desktop == DESKTOP_KDE)
-            cmd = format("kfmclient exec %0 >/dev/null 2>&1", escapedurl);
-        else if (desktop == DESKTOP_GNOME)
-            cmd = format("gnome-open %0 >/dev/null 2>&1", escapedurl);
-        else if (desktop == DESKTOP_XFCE4)
-            cmd = format("exo-open %0 >/dev/null 2>&1", escapedurl);
-        else // (desktop == DESKTOP_UNKNOWN) or we missed something here.
-        {
-            cmd = NULL;
-            retval = launchGenericBrowser(escapedurl);
-        } // else
-
-        if (cmd != NULL)
-        {
-            retval = (system(cmd) == 0);
-            free(cmd);
-
-            // !!! FIXME: apparently you can't trust the return value from
-            // !!! FIXME:  KDE <= 3.5.4, so for now we just always ignore
-            // !!! FIXME:  it and pretend it worked out.
-            if (desktop == DESKTOP_KDE)
-                retval = true;
-        } // if
+        char *escapedurl = shellEscape(url);
+        char *cmd = format("xdg-open %0 >/dev/null 2>&1", escapedurl);
+        retval = (system(cmd) == 0);
+        free(cmd);
+        free(escapedurl);
+        free(path);
     } // if
 
-    free(escapedurl);
+    else  // try our fallback copy of xdg-utils in GBaseArchive?
+    {
+        const char *argv[] = { url, NULL };
+        retval = (runScript("meta/xdg-utils/xdg-open", true, argv) == 0);
+    } // if
+
     return retval;
 } // unix_launchBrowser
 #endif

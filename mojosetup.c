@@ -749,12 +749,18 @@ int MojoSetup_main(int argc, char **argv)
 int MojoSetup_testLaunchBrowserCode(int argc, char **argv)
 {
     int i;
+
+    if (!MojoArchive_initBaseArchive())  // Maybe need for xdg-open script.
+        panic("Initial setup failed. Cannot continue.");
+
     printf("Testing browser launching code...\n\n");
     for (i = 1; i < argc; i++)
     {
         const boolean rc = MojoPlatform_launchBrowser(argv[i]);
         printf("Launch '%s': %s\n", argv[i], rc ? "success" : "failure");
     } // for
+
+    MojoArchive_deinitBaseArchive();
     return 0;
 } // MojoSetup_testLaunchBrowserCode
 #endif

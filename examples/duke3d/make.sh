@@ -103,6 +103,12 @@ cd examples/duke3d
 cp data/* image/data/
 cp meta/* image/meta/
 
+# Need these scripts to do things like install menu items, etc, on Unix.
+if [ "$OSTYPE" = "Linux" ]; then
+    mkdir image/meta/xdg-utils
+    cp -av ../../meta/xdg-utils/* image/meta/xdg-utils/
+fi
+
 # Make a .zip archive of the Base Archive dirs and nuke the originals...
 cd image
 zip -9r ../pdata.zip *
