@@ -1008,7 +1008,7 @@ static const char *defaultBrowsers(void)
                               (strcmp(GGui->name(), "stdio") == 0) ||
                               (strcmp(GGui->name(), "ncurses") == 0) );
 
-    return ((ttyonly) ? "links:lynx" : "firefox:mozilla:netscape");
+    return ((ttyonly) ? "links:lynx" : "firefox -raise:mozilla:netscape");
 } // defaultBrowsers
 
 
@@ -1069,7 +1069,7 @@ static boolean unix_launchBrowser(const char *url)
 {
     boolean retval = false;
     char *escapedurl = shellEscape(url);
-    char *cmd = format("xdg-utils %0", escapedurl);
+    char *cmd = format("xdg-open %0 >/dev/null 2>&1", escapedurl);
     int rc = system(cmd);
     free(cmd);
 
@@ -1078,11 +1078,11 @@ static boolean unix_launchBrowser(const char *url)
         // no xdg-open in the $PATH, or it failed. Try to do it ourselves...
         const UnixDesktopType desktop = getDesktopType();
         if (desktop == DESKTOP_KDE)
-            cmd = format("kfmclient exec %0", escapedurl);
+            cmd = format("kfmclient exec %0 >/dev/null 2>&1", escapedurl);
         else if (desktop == DESKTOP_GNOME)
-            cmd = format("gnome-open %0", escapedurl);
+            cmd = format("gnome-open %0 >/dev/null 2>&1", escapedurl);
         else if (desktop == DESKTOP_XFCE4)
-            cmd = format("exo-open %0", escapedurl);
+            cmd = format("exo-open %0 >/dev/null 2>&1", escapedurl);
         else // (desktop == DESKTOP_UNKNOWN) or we missed something here.
         {
             cmd = NULL;
