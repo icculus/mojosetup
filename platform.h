@@ -225,6 +225,12 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len);
 void *MojoPlatform_dlsym(void *lib, const char *sym);
 void MojoPlatform_dlclose(void *lib);
 
+// Launch the user's preferred browser to view the URL (url).
+//  Returns true if the browser launched, false otherwise. We can't know
+//  if the URL actually loaded, just if the browser launched. The hope is that
+//  the browser will inform the user if there's a problem loading the URL.
+boolean MojoPlatform_launchBrowser(const char *url);
+
 #if !SUPPORT_MULTIARCH
 #define MojoPlatform_switchBin(img, len)
 #else

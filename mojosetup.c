@@ -14,6 +14,9 @@
 #include "lua_glue.h"
 #include "fileio.h"
 
+#define TEST_LAUNCH_BROWSER_CODE 0
+int MojoSetup_testLaunchBrowserCode(int argc, char **argv);
+
 #define TEST_ARCHIVE_CODE 0
 int MojoSetup_testArchiveCode(int argc, char **argv);
 
@@ -717,6 +720,10 @@ int MojoSetup_main(int argc, char **argv)
         return 0;
     } // if
 
+    #if TEST_LAUNCH_BROWSER_CODE
+    return MojoSetup_testLaunchBrowserCode(argc, argv);
+    #endif
+
     #if TEST_ARCHIVE_CODE
     return MojoSetup_testArchiveCode(argc, argv);
     #endif
@@ -738,6 +745,19 @@ int MojoSetup_main(int argc, char **argv)
 
 
 
+#if TEST_LAUNCH_BROWSER_CODE
+int MojoSetup_testLaunchBrowserCode(int argc, char **argv)
+{
+    int i;
+    printf("Testing browser launching code...\n\n");
+    for (i = 1; i < argc; i++)
+    {
+        const boolean rc = MojoPlatform_launchBrowser(argv[i]);
+        printf("Launch '%s': %s\n", argv[i], rc ? "success" : "failure");
+    } // for
+    return 0;
+} // MojoSetup_testLaunchBrowserCode
+#endif
 
 
 #if TEST_ARCHIVE_CODE

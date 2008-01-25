@@ -848,6 +848,19 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     Write debug info to the installation log, if logging settings permit.
 
 
+  MojoSetup.launchbrowser(url)
+
+    Launch a web browser to view the URL (url). This will try to launch a
+    new window/tab of the user's preferred handler for the url. Launching
+    "http://" URLs are probably always safe, other protocols, like "ftp://"
+    may or may not work, depending on what the platform offers.
+
+    Returns true if the browser launched, false otherwise. We can't know
+    if the URL actually loaded or rendered, just if the browser launched.
+    The hope is that the browser will inform the user if there's a problem
+    loading the URL.
+
+
   MojoSetup.msgbox(title, str)
 
     Show (str) to the user with a GUI message box, and wait until they click

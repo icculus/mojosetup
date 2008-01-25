@@ -596,9 +596,15 @@ static int luahook_translate(lua_State *L)
 
 static int luahook_ticks(lua_State *L)
 {
-    lua_pushnumber(L, MojoPlatform_ticks());
-    return 1;
+    return retvalNumber(L, MojoPlatform_ticks());
 } // luahook_ticks
+
+
+static int luahook_launchbrowser(lua_State *L)
+{
+    const char *url = luaL_checkstring(L, 1);
+    return retvalBoolean(L, MojoPlatform_launchBrowser(url));
+} // luahook_launchbrowser
 
 
 static int luahook_msgbox(lua_State *L)
@@ -1592,6 +1598,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_ticks, "ticks");
         set_cfunc(luaState, luahook_format, "format");
         set_cfunc(luaState, luahook_fatal, "fatal");
+        set_cfunc(luaState, luahook_launchbrowser, "launchbrowser");
         set_cfunc(luaState, luahook_msgbox, "msgbox");
         set_cfunc(luaState, luahook_promptyn, "promptyn");
         set_cfunc(luaState, luahook_promptynan, "promptynan");

@@ -635,6 +635,15 @@ boolean MojoPlatform_istty(void)
 } // MojoPlatform_istty
 
 
+boolean MojoPlatform_launchBrowser(const char *url)
+{
+    // msdn says:
+    // "Returns a value greater than 32 if successful, or an error value that
+    //  is less than or equal to 32 otherwise."
+    return (ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) > 32);
+} // MojoPlatform_launchBrowser
+
+
 void MojoPlatform_spawnTerminal(void)
 {
     // unsupported.

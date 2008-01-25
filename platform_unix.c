@@ -932,6 +932,20 @@ void MojoPlatform_dlclose(void *lib)
 } // MojoPlatform_dlclose
 
 
+boolean MojoPlatform_launchBrowser(const char *url)
+{
+#if PLATFORM_MACOSX
+    CFURLRef cfurl = CFURLCreateWithBytes(NULL, (const UInt8 *) url,
+                                    strlen(url), kCFStringEncodingUTF8, NULL);
+    const OSStatus err = LSOpenCFURLRef(cfurl, NULL);
+    CFRelease(cfurl);
+    return (err == noErr);
+#else
+    return false;  // !!! FIXME: write me.
+#endif
+} // MojoPlatform_launchBrowser
+
+
 #if SUPPORT_MULTIARCH
 void MojoPlatform_switchBin(const uint8 *img, size_t len)
 {
