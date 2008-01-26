@@ -1,5 +1,4 @@
 #!/bin/sh
-# (trimmed by ryan to reduce size.)
 #   Copyright 2006, Kevin Krammer <kevin.krammer@gmx.at>
 #   Copyright 2006, Jeremy White <jwhite@codeweavers.com>
 #
@@ -35,48 +34,21 @@ exit_success()
 
 exit_failure_syntax()
 {
-	if [ $# -gt 0 ]; then
-		echo "xdg-open: $@" >&2
-		echo "Try 'xdg-open --help' for more information." >&2
-	else
-		usage
-		echo "Use 'man xdg-open' or 'xdg-open --manual' for additional info."
-	fi
-
 	exit 1
 }
 
 exit_failure_operation_impossible()
 {
-	if [ $# -gt 0 ]; then
-		echo "xdg-open: $@" >&2
-	fi
-
 	exit 3
 }
 
 exit_failure_operation_failed()
 {
-	if [ $# -gt 0 ]; then
-		echo "xdg-open: $@" >&2
-	fi
-
 	exit 4
 }
 
 check_common_commands()
 {
-	while [ $# -gt 0 ] ; do
-		parm="$1"
-		shift
-
-		case "$parm" in
-			--version)
-			echo "xdg-open 1.0.1"
-			exit_success
-			;;
-		esac
-	done
 }
 
 check_common_commands "$@"
@@ -159,7 +131,7 @@ open_generic()
 		fi
 	done
 
-	exit_failure_operation_impossible "no method available for opening '$1'"
+	exit_failure_operation_impossible
 }
 
 [ x"$1" != x"" ] || exit_failure_syntax
@@ -171,12 +143,12 @@ while [ $# -gt 0 ] ; do
 
 	case "$parm" in
 	  -*)
-		exit_failure_syntax "unexpected option '$parm'"
+		exit_failure_syntax
 		;;
 
 	  *)
 		if [ -n "$url" ] ; then
-			exit_failure_syntax "unexpected argument '$parm'"
+			exit_failure_syntax
 		fi
 		url="$parm"
 		;;
@@ -184,7 +156,7 @@ while [ $# -gt 0 ] ; do
 done
 
 if [ -z "${url}" ] ; then
-	exit_failure_syntax "file or URL argument missing"
+	exit_failure_syntax
 fi
 
 detectDE
@@ -215,6 +187,6 @@ case "$DE" in
 	;;
 
 	*)
-	exit_failure_operation_impossible "no method available for opening '$url'"
+	exit_failure_operation_impossible
 	;;
 esac
