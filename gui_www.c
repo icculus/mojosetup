@@ -43,6 +43,7 @@ CREATE_MOJOGUI_ENTRY_POINT(www)
     static const char *sockStrErrVal(int val)
     {
         STUBBED("Windows strerror");
+        return "sockStrErrVal() is unimplemented.";
     } // sockStrErrVal
 
 

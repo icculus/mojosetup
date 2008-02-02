@@ -149,7 +149,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
                 MojoPlatform_sleep(100);
             else
             {
-                br = in->read(in, scratchbuf_128k, maxread);
+                br = in->read(in, scratchbuf_128k, (uint32) maxread);
                 if (br == 0)  // we're done!
                     break;
                 else if (br < 0)

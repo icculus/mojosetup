@@ -365,16 +365,17 @@ extern MojoSetupEntryPoints GEntryPoints;
 #define DEFINE_TO_STR(x) DEFINE_TO_STR2(x)
 
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
-#define STUBBED(x) \
+#define STUBBED2(prelog, x) \
 do { \
     static boolean seen_this = false; \
     if (!seen_this) \
     { \
         seen_this = true; \
-        logDebug("STUBBED: %0 at %1 (%2:%3)\n", x, __FUNCTION__, \
-                __FILE__, DEFINE_TO_STR(__LINE__)); \
+        prelog logDebug("STUBBED: %0 at %1 (%2:%3)\n", x, __FUNCTION__, \
+               __FILE__, DEFINE_TO_STR(__LINE__)); \
     } \
 } while (false)
+#define STUBBED(x) STUBBED2(,x)
 #endif
 
 #define STATICARRAYLEN(x) ( (sizeof ((x))) / (sizeof ((x)[0])) )

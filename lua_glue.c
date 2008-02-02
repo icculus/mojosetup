@@ -1567,9 +1567,9 @@ boolean MojoLua_initLua(void)
     char *locale = (envr != NULL) ? xstrdup(envr) : MojoPlatform_locale();
     char *ostype = MojoPlatform_osType();
     char *osversion = MojoPlatform_osVersion();
-    lua_Integer uid = MojoPlatform_getuid();
-    lua_Integer euid = MojoPlatform_geteuid();
-    lua_Integer gid = MojoPlatform_getgid();
+    lua_Integer uid = (lua_Integer) MojoPlatform_getuid();
+    lua_Integer euid = (lua_Integer) MojoPlatform_geteuid();
+    lua_Integer gid = (lua_Integer) MojoPlatform_getgid();
 
     #if DISABLE_LUA_PARSER
     const boolean luaparser = false;

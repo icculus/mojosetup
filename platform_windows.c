@@ -20,7 +20,9 @@
 #undef UNICODE
 #endif
 
+#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
+#include <shellapi.h>
 
 // is Win95/Win98/WinME?  (no Unicode, etc)
 static boolean osIsWin9x = false;
@@ -640,7 +642,7 @@ boolean MojoPlatform_launchBrowser(const char *url)
     // msdn says:
     // "Returns a value greater than 32 if successful, or an error value that
     //  is less than or equal to 32 otherwise."
-    return (ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) > 32);
+    return (((int) ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL)) > 32);
 } // MojoPlatform_launchBrowser
 
 
@@ -968,9 +970,9 @@ char *MojoPlatform_osType(void)
 char *MojoPlatform_osVersion(void)
 {
     return format("%0.%1.%2",
-                  numStr(osMajorVer),
-                  numStr(osMinorVer),
-                  numStr(osBuildVer));
+                  numstr(osMajorVer),
+                  numstr(osMinorVer),
+                  numstr(osBuildVer));
 } // MojoPlatform_osversion
 
 

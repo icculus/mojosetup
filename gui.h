@@ -115,6 +115,13 @@ const MojoGui *MojoGui_initGuiPlugin(void);
 void MojoGui_deinitGuiPlugin(void);
 #else
 
+// can't use normal STUBBED in gui plugins, since it references logDebug
+//  without entry-> ...
+#ifndef DOXYGEN_SHOULD_IGNORE_THIS
+#undef STUBBED
+#define STUBBED(x) STUBBED2(entry->,x)
+#endif
+
 __EXPORT__ const MojoGui *MOJOGUI_ENTRY_POINT(int revision,
                                               const MojoSetupEntryPoints *e);
 
