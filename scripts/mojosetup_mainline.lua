@@ -1029,7 +1029,7 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
                 "Type=Application\n" ..
                 "Name=" .. item.name .. "\n" ..
                 "GenericName=" .. item.genericname .. "\n" ..
-                "Comment=" .. item.comment .. "\n" ..
+                "Comment=" .. item.tooltip .. "\n" ..
                 "Icon=" .. icon .. "\n" ..
                 "Exec=" .. item.commandline .. "\n" ..
                 "Categories=" .. flatten_list(item.categories) .. "\n"
@@ -1114,6 +1114,7 @@ local function do_install(install)
 
     -- Desktop icons should probably require uninstall so we don't clutter
     --  the system with no option for reversal later.
+    -- !!! FIXME: will miss menu items that are Setup.Option children...
     if (install.desktopmenuitems ~= nil) and (not install.support_uninstall) then
         MojoSetup.fatal(_("BUG: Setup.DesktopMenuItem requires support_uninstall"))
     end
@@ -1347,6 +1348,15 @@ local function do_install(install)
             if option.files ~= nil then
                 for k,v in pairs(option.files) do
                     process_file(option, v)
+                end
+            end
+
+            if option.desktopmenuitems ~= nil then
+                for i,item in ipairs(option.desktopmenuitems) do
+                    if install.desktopmenuitems == nil then
+                        install.desktopmenuitems = {}
+                    end
+                    install.desktopmenuitems[#install.desktopmenuitems] = item
                 end
             end
         end

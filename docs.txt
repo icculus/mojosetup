@@ -706,6 +706,83 @@ Here are the elements, and the attributes they can possess.
     non-nil permission, the filter takes precedence.
 
 
+ Setup.DesktopMenuItem:
+
+  This element specifies a menu item that will be installed in the system
+  desktop menu: this might be the "Applications" dropdown in the Gnome panel,
+  or the "Start" bar on Windows, for example. This can be a child of
+  Setup.Option (in which case it is only considered for installation if the
+  option itself is too), or Setup.Package (in which case it is always
+  considered for installation). Some of this element's properties are ignored
+  on some operating systems, but they are still required both for
+  cross-platform safety and future expansion.
+
+  Setup.DesktopMenuItem attributes:
+
+   disabled (no default, mustBeBool)
+
+    If this is true, the menu item will be skipped by the installer. You
+    probably want this to be true, but you might need to programmatically shut
+    off specific menu items.
+
+
+   name (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is the proper name of the item to be installed ("Firefox").
+
+
+   genericname (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a generic name for the item to be installed ("Web Browser").
+
+
+   tooltip (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is used as a tooltip for the item by the OS when the user hovers
+    the mouse pointer over it.
+
+   builtin_icon (no default, mustBeBool)
+
+    If this is true, then "icon" refers to a platform-dependent standard
+    icon. Currently, this only makes sense on Unix systems that follow
+    the freedesktop.org standards. If this is false, then "icon" refers
+    to a file, relative to the installation's destination directory, which
+    the must be installed through a Setup.File. Most installers should set
+    this to false (the default) unless they know what they are doing.
+
+   icon (no default, mustExist, mustBeString, cantBeEmpty)
+
+    The icon to use with this menu item. Please see builtin_icon for info
+    on what this string means. The format of files that may be used as icons
+    varies from platform to platform; you may need to install a different
+    file programmatically, based on the value of MojoSetup.info.platform.
+
+   commandline (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is the command line that will be used to launch the application
+    when the end user clicks on the desktop menu item.
+
+   category (no default, mustExist, mustBeStringOrTableOfStrings)
+
+    This is a category (or array of categories) that the menu item applies
+    to. You can choose several, but one is usually less confusing. Valid
+    choices are currently: AudioVideo, Development, Education, Game, Graphics, Network,
+    Office, Settings, System, Utility.
+
+   mimetype (no default, mustBeStringOrTableOfStrings)
+
+    This is a MIME type (or array of MIME types) that the menu item can handle.
+    For example, if you are installing an image viewer, you might specify:
+    mimetype={"image/jpeg", "image/png"}; ... this is optional, you don't
+    have to specify any mimetypes at all.
+
+    !!! FIXME: there is currently no way for an installer to inform the system
+    !!! FIXME:  of associations between new file extensions and mimetypes.
+    !!! FIXME:  Things that collect mime info themselves, like web browsers
+    !!! FIXME:  and email clients, can use new apps this way, however.
+
+
+
 Add any localized strings:
 
 If you added strings to the installer or your config file that you want

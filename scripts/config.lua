@@ -96,7 +96,21 @@ Setup.Package
         bytes = megabytes(600),
         description = "Base Install",
 
-        -- File(s) to install.
+        -- Install a desktop menu item with the base install.
+        Setup.DesktopMenuItem
+        {
+            disabled = false,
+            name = "My Game",
+            genericname = "Shoot-em up",
+            tooltip = "A game of alien hunting.",
+            builtin_icon = false,
+            icon = "icon.png",  -- relative to the dest; you must install it!
+            commandline = "command-line",
+            categories = "Game",
+            mimetype = { 'application/x-mygame-map', 'application/x-mygame-url' },
+        },
+
+        -- File(s) to install with this option.
         Setup.File
         {
             -- source can be a directory, an archive, or a supported URL.
@@ -132,20 +146,7 @@ Setup.Package
             end
         },
 
-        Setup.DesktopMenuItem
-        {
-            disabled = false,
-            name = "My Game",
-            genericname = "Shoot-em up",
-            comment = "A game for shooting aliens.",
-            builtin_icon = false,
-            icon = "icon.png",  -- relative to the dest; you must install it!
-            commandline = "command-line",
-            categories = "Game",
-            mimetype = { 'application/x-mygame-map', 'application/x-mygame-url' },
-        },
-
-        -- Here's an option that has it's own EULA.
+        -- Here's a suboption that has it's own EULA.
         Setup.Option
         {
             value = true,

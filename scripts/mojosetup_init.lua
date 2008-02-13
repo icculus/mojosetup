@@ -413,7 +413,7 @@ function Setup.DesktopMenuItem(tab)
         { "disabled", nil, mustBeBool },
         { "name", nil, mustExist, mustBeString, cantBeEmpty },
         { "genericname", nil, mustExist, mustBeString, cantBeEmpty },
-        { "comment", nil, mustExist, mustBeString, cantBeEmpty },
+        { "tooltip", nil, mustExist, mustBeString, cantBeEmpty },
         { "builtin_icon", nil, mustBeBool },
         { "icon", nil, mustExist, mustBeString, cantBeEmpty },
         { "commandline", nil, mustExist, mustBeString, cantBeEmpty },
