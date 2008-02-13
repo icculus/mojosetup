@@ -182,6 +182,20 @@ Here are the elements, and the attributes they can possess.
 
   Setup.Package attributes:
 
+   vendor (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a unique identifier for your organization. This should be in the
+    format "companyname.dom" ... the hope is that your primary website is
+    a unique identifier for your company. If your website is www.icculus.org,
+    you'd enter your vendor setting as "icculus.org" ... just the hostname and
+    top-level domain. This is used largely by the OS to maintain packages
+    (Mac OS X application bundles, vendor IDs for Unix desktop menus, etc).
+    This is, in theory, never shown to the user, so you don't need this to
+    actually exist as a website with meaningful content, so long as you can
+    reasonably assure that the string is unique and follows the "host.dom"
+    format.
+
+
    id (no default, mustExist, mustBeString, cantBeEmpty)
 
     This is a unique identifier for your package. Currently it is used as

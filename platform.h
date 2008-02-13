@@ -231,6 +231,20 @@ void MojoPlatform_dlclose(void *lib);
 //  the browser will inform the user if there's a problem loading the URL.
 boolean MojoPlatform_launchBrowser(const char *url);
 
+// Add a menu item to the Application menu or Start bar or whatever.
+//  (data) is 100% platform dependent right now, and this interface will
+//  likely change as we come to understand various systems' needs better.
+//  On Unix, it expects this to be a path to a FreeDesktop .desktop file.
+// Returns (true) on success and (false) on failure.
+boolean MojoPlatform_installDesktopMenuItem(const char *data);
+
+// Remove a menu item from the Application menu or Start bar or whatever.
+//  (data) is 100% platform dependent right now, and this interface will
+//  likely change as we come to understand various systems' needs better.
+//  On Unix, it expects this to be a path to a FreeDesktop .desktop file.
+// Returns (true) on success and (false) on failure.
+boolean MojoPlatform_uninstallDesktopMenuItem(const char *data);
+
 #if !SUPPORT_MULTIARCH
 #define MojoPlatform_switchBin(img, len)
 #else

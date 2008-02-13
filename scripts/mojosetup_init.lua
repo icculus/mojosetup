@@ -245,6 +245,7 @@ function Setup.Package(tab)
 
     tab = sanitize("Package", tab,
     {
+        { "vendor", nil, mustExist, mustBeString, cantBeEmpty },
         { "id", nil, mustExist, mustBeString, cantBeEmpty },
         { "disabled", nil, mustBeBool },
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
@@ -406,6 +407,20 @@ function Setup.OptionGroup(tab)
     })
 end
 
+function Setup.DesktopMenuItem(tab)
+    return sanitize("DesktopMenuItem", tab,
+    {
+        { "disabled", nil, mustBeBool },
+        { "name", nil, mustExist, mustBeString, cantBeEmpty },
+        { "genericname", nil, mustExist, mustBeString, cantBeEmpty },
+        { "comment", nil, mustExist, mustBeString, cantBeEmpty },
+        { "builtin_icon", nil, mustBeBool },
+        { "icon", nil, mustExist, mustBeString, cantBeEmpty },
+        { "commandline", nil, mustExist, mustBeString, cantBeEmpty },
+        { "category", nil, mustExist, mustBeStringOrTableOfStrings },
+        { "mimetype", nil, mustBeStringOrTableOfStrings },
+    })
+end
 
 local function prepare_localization()
     -- Map some legacy language identifiers into updated equivalents.

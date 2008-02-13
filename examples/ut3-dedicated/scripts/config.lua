@@ -3,6 +3,7 @@ local _ = MojoSetup.translate
 
 Setup.Package
 {
+    vendor = "epicgames.com",
     id = "ut3-dedicated",
     description = "Unreal Tournament 3 Dedicated Server",
     version = "3487",

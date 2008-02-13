@@ -303,6 +303,13 @@ MojoSetup.localization = {
         nb = "FEIL: write_manifest krever støtte for Lua-parser",
     };
 
+    -- This is shown if the config file wants us to add desktop menu items
+    --  but uninstaller support isn't enabled. This is considered bad taste
+    --  to add system menu items without a way to remove them. This is
+    --  a bug the developer must fix before shipping her installer.
+    ["BUG: Setup.DesktopMenuItem requires support_uninstall"] = {
+    };
+
     -- This is a file's permissions. Programmers give these as strings, and
     --  if one isn't valid, the program will report this. So, on Unix, they
     --  might specify "0600" as a valid string, but "sdfksjdfk" wouldn't be
@@ -1013,6 +1020,18 @@ MojoSetup.localization = {
     --  aren't required.
     ["[Make the window taller!]"] = {
         nb = "[Gjør vinduet høyere!]",
+    };
+
+    -- This is written out if we failed to add an item to the desktop
+    --  application menu (or "Start" bar on Windows, or maybe the Dock on
+    --  Mac OS X, etc).
+    ["Failed to install desktop menu item"] = {
+    };
+
+    -- This is written out if we failed to remove an item from the desktop
+    --  application menu (or "Start" bar on Windows, or maybe the Dock on
+    --  Mac OS X, etc).
+    ["Failed to uninstall desktop menu item"] = {
     };
 };
 

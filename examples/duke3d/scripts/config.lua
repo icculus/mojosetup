@@ -22,6 +22,7 @@ end
 
 Setup.Package
 {
+    vendor = "icculus.org",
     id = "duke3d",
     description = "Duke Nukem 3D",
     version = "1.5",

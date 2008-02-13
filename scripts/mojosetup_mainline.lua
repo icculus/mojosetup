@@ -125,6 +125,24 @@ local function manifest_delete(man, fname)
 end
 
 
+local function flatten_list(list)
+    local retval = list
+    if type(list) == "table" then
+        retval = ''
+        local first = true
+        for i,v in ipairs(list) do
+            if first then
+                retval = v
+                first = false
+            else
+                retval = retval .. ';' .. v
+            end
+        end
+    end
+    return retval
+end
+
+
 local function do_delete(fname)
     local retval = false
     if fname == nil then
@@ -226,20 +244,6 @@ end
 -- This gets called by fatal()...must be a global function.
 function MojoSetup.revertinstall()
     -- (The real revertinstall is set later. This is a stub for startup.)
-end
-
-local function real_revertinstall()
-    if MojoSetup.gui_started then
-        MojoSetup.gui.final(_("Incomplete installation. We will revert any changes we made."))
-    end
-
-    MojoSetup.loginfo("Cleaning up half-finished installation...")
-
-    -- !!! FIXME: callbacks here.
-    delete_files(MojoSetup.downloads)
-    delete_files(flatten_manifest(MojoSetup.manifest, prepend_dest_dir))
-    do_rollbacks()
-    delete_scratchdirs()
 end
 
 
@@ -605,7 +609,7 @@ local function install_archive(archive, file, option)
         if #wildcards > 1 then
             single_match = false
         else
-            for k,v in ipairs(wildcards) do
+            for i,v in ipairs(wildcards) do
                 if string.find(v, "[*?]") ~= nil then
                     single_match = false
                     break  -- no reason to keep iterating...
@@ -632,7 +636,7 @@ local function install_archive(archive, file, option)
             if wildcards == nil then
                 should_install = true
             else
-                for k,v in ipairs(wildcards) do
+                for i,v in ipairs(wildcards) do
                     if MojoSetup.wildcardmatch(ent.filename, v) then
                         should_install = true
                         break  -- no reason to keep iterating...
@@ -927,10 +931,10 @@ local function install_unix_uninstaller(desc, key)
     -- Man, I hate escaping shell strings...
     local bin = "\"`dirname $0`\"'/" .. MojoSetup.metadatadirname .. "/" ..
                 MojoSetup.controlappname .. "'"
-    string.gsub(bin, "'", "'\\''")  -- Escape single quotes for shell.
+    string.gsub(bin, "'", "'\\''")  -- !!! FIXME: no-op!-- Escape single quotes for shell.
 
     local id = MojoSetup.install.id
-    string.gsub(id, "'", "'\\''")
+    string.gsub(id, "'", "'\\''")  -- !!! FIXME: no-op!
 
     local script =
         "#!/bin/sh\n" ..
@@ -965,12 +969,14 @@ local function install_manifests(desc, key)
     local package =
     {
         id = MojoSetup.install.id,
+        vendor = MojoSetup.install.vendor,
         description = MojoSetup.install.description,
         root = MojoSetup.destination,
         update_url = MojoSetup.install.updateurl,
         version = MojoSetup.install.version,
         manifest = MojoSetup.manifest,
-        splash = MojoSetup.install.splash
+        splash = MojoSetup.install.splash,
+        desktopmenuitems = MojoSetup.install.desktopmenuitems
     }
 
     -- now build these things...
@@ -978,6 +984,90 @@ local function install_manifests(desc, key)
     install_file_from_string(lua_fname, build_lua_manifest(package), perms, desc, nil)
     install_file_from_string(xml_fname, build_xml_manifest(package), perms, desc, nil)
     install_file_from_string(txt_fname, build_txt_manifest(package), perms, desc, nil)
+end
+
+
+local function freedesktop_menuitem_filename(pkg, idx)  -- only for Unix.
+    local vendor = string.gsub(pkg.vendor, "%..*$", "", 1)  -- chop off TLD.
+    local fname = vendor .. "-" .. pkg.id .. idx .. ".desktop"
+    return MojoSetup.metadatadir .. "/" .. fname
+end
+
+
+local function uninstall_desktop_menu_items(pkg)
+    -- !!! FIXME: GUI progress?
+    if pkg.desktopmenuitems ~= nil then
+        for i,v in ipairs(pkg.desktopmenuitems) do
+            if MojoSetup.info.platform == "windows" then
+                MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
+            elseif MojoSetup.info.platform == "macosx" then
+                MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
+            elseif MojoSetup.info.platform == "beos" then
+                MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
+            else  -- freedesktop, we hope.
+                local fname = freedesktop_menuitem_filename(pkg, idx)
+                if not MojoSetup.platform.uninstalldesktopmenuitem(fname) then
+                    MojoSetup.fatal(_("Failed to uninstall desktop menu item"))
+                end
+            end
+        end
+    end
+end
+
+
+local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
+    local icon
+    if item.builtin_icon then
+        icon = item.icon
+    else
+        icon = MojoSetup.destination .. "/" .. item.icon
+    end
+
+    local str = "[Desktop Entry]\n" ..
+                "Encoding=UTF-8\n" ..
+                "Value=1.0\n" ..
+                "Type=Application\n" ..
+                "Name=" .. item.name .. "\n" ..
+                "GenericName=" .. item.genericname .. "\n" ..
+                "Comment=" .. item.comment .. "\n" ..
+                "Icon=" .. icon .. "\n" ..
+                "Exec=" .. item.commandline .. "\n" ..
+                "Categories=" .. flatten_list(item.categories) .. "\n"
+
+    if item.mimetype ~= nil then
+        str = str .. "MimeType=" .. flatten_list(item.mimetype) .. "\n"
+    end
+
+    str = str .. "\n"
+
+    local dest = freedesktop_menuitem_filename(pkg, idx)
+    local perms = "0644"  -- !!! FIXME
+    local key = MojoSetup.metadatakey
+    local desc = MojoSetup.metadatadesc
+    install_file_from_string(dest, str, perms, desc, key)
+    if not MojoSetup.platform.installdesktopmenuitem(dest) then
+        MojoSetup.fatal(_("Failed to install desktop menu item"))
+    end
+end
+
+
+local function install_desktop_menu_items(pkg)
+    -- !!! FIXME: GUI progress?
+    if pkg.desktopmenuitems ~= nil then
+        for i,item in ipairs(pkg.desktopmenuitems) do
+            if not item.disabled then
+                if MojoSetup.info.platform == "windows" then
+                    MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
+                elseif MojoSetup.info.platform == "macosx" then
+                    MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
+                elseif MojoSetup.info.platform == "beos" then
+                    MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
+                else  -- freedesktop, we hope.
+                    install_freedesktop_menuitem(pkg, i, item)
+                end
+            end
+        end
+    end
 end
 
 
@@ -1020,6 +1110,12 @@ local function do_install(install)
     -- The uninstaller support needs a manifest to know what to do. Force it on.
     if (install.support_uninstall) and (not install.write_manifest) then
         MojoSetup.fatal(_("BUG: support_uninstall requires write_manifest"))
+    end
+
+    -- Desktop icons should probably require uninstall so we don't clutter
+    --  the system with no option for reversal later.
+    if (install.desktopmenuitems ~= nil) and (not install.support_uninstall) then
+        MojoSetup.fatal(_("BUG: Setup.DesktopMenuItem requires support_uninstall"))
     end
 
     -- Manifest support requires the Lua parser.
@@ -1408,7 +1504,7 @@ local function do_install(install)
             end
         end
 
-        run_config_defined_hook(install.postinstall, install)
+        install_desktop_menu_items(install)
 
         if install.support_uninstall then
             if MojoSetup.info.platform == "windows" then
@@ -1417,6 +1513,8 @@ local function do_install(install)
                 install_unix_uninstaller(MojoSetup.metadatadesc, MojoSetup.metadatakey)
             end
         end
+
+        run_config_defined_hook(install.postinstall, install)
 
         if install.write_manifest then
             install_control_app(MojoSetup.metadatadesc, MojoSetup.metadatakey)
@@ -1497,6 +1595,22 @@ local function do_install(install)
     MojoSetup.totalwrite = 0
     MojoSetup.downloaded = 0
     MojoSetup.totaldownload = 0
+end
+
+
+local function real_revertinstall()
+    if MojoSetup.gui_started then
+        MojoSetup.gui.final(_("Incomplete installation. We will revert any changes we made."))
+    end
+
+    MojoSetup.loginfo("Cleaning up half-finished installation...")
+
+    -- !!! FIXME: callbacks here.
+    uninstall_desktop_menu_items(MojoSetup.install)
+    delete_files(MojoSetup.downloads)
+    delete_files(flatten_manifest(MojoSetup.manifest, prepend_dest_dir))
+    do_rollbacks()
+    delete_scratchdirs()
 end
 
 
@@ -1650,7 +1764,9 @@ local function uninstaller()
     if uninstall_permitted then
         start_gui(package.description, package.splash)
 
-        -- Upvalued so we don't look this up each time...
+        uninstall_desktop_menu_items(package)
+
+        -- Upvalued in callback so we don't look this up each time...
         local ptype = _("Uninstalling")
         local callback = function(fname, current, total)
             fname = make_relative(fname, MojoSetup.destination)

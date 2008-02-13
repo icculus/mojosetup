@@ -35,6 +35,7 @@ end
 
 Setup.Package
 {
+    vendor = "com.mycompany",
     id = "mygame",
     description = "My Game",
     version = "1.0",
@@ -129,6 +130,19 @@ Setup.Package
                 if fn == "Single/x/dontinstall.map" then return nil end
                 return fn
             end
+        },
+
+        Setup.DesktopMenuItem
+        {
+            disabled = false,
+            name = "My Game",
+            genericname = "Shoot-em up",
+            comment = "A game for shooting aliens.",
+            builtin_icon = false,
+            icon = "icon.png",  -- relative to the dest; you must install it!
+            commandline = "command-line",
+            categories = "Game",
+            mimetype = { 'application/x-mygame-map', 'application/x-mygame-url' },
         },
 
         -- Here's an option that has it's own EULA.

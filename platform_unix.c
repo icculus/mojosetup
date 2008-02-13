@@ -26,7 +26,7 @@
 #include <syslog.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
@@ -1063,28 +1063,47 @@ static char *shellEscape(const char *str)
 } // shellEscape
 
 
-static boolean unix_launchBrowser(const char *url)
+static boolean unix_launchXdgUtil(const char *util, const char **argv)
 {
     boolean retval = false;
-    char *path = findBinaryInPath("xdg-open");
+    char *path = findBinaryInPath(util);
 
     if (path != NULL)  // it's installed on the system; use that.
     {
-        char *escapedurl = shellEscape(url);
-        char *cmd = format("xdg-open %0 >/dev/null 2>&1", escapedurl);
+        char *cmd = path;
+        char *tmp = NULL;
+        int i;
+        for (i = 0; argv[i]; i++)
+        {
+            char *escaped = shellEscape(argv[i]);
+            tmp = format("%0 %1", cmd, escaped);
+            free(escaped);
+            free(cmd);
+            cmd = tmp;
+        } // for
+
+        tmp = format("%0 >/dev/null 2>&1", cmd);
+        free(cmd);
+        cmd = tmp;
         retval = (system(cmd) == 0);
         free(cmd);
-        free(escapedurl);
-        free(path);
     } // if
 
     else  // try our fallback copy of xdg-utils in GBaseArchive?
     {
-        const char *argv[] = { url, NULL };
-        retval = (runScript("meta/xdg-utils/xdg-open", true, argv) == 0);
+        char *script = format("meta/xdg-utils/%0", util);
+        retval = (runScript(script, true, argv) == 0);
+        free(script);
     } // if
 
     return retval;
+} // unix_launchXdgUtil
+
+
+static boolean unix_launchBrowser(const char *url)
+{
+    const char *argv[] = { url, NULL };
+    return unix_launchXdgUtil("xdg-open", argv);
 } // unix_launchBrowser
 #endif
 
@@ -1104,6 +1123,32 @@ boolean MojoPlatform_launchBrowser(const char *url)
     return unix_launchBrowser(url);
 #endif
 } // MojoPlatform_launchBrowser
+
+
+boolean MojoPlatform_installDesktopMenuItem(const char *data)
+{
+#if PLATFORM_MACOSX || PLATFORM_BEOS
+    // !!! FIXME: write me.
+    STUBBED("desktop menu support");
+    return false;
+#else
+    const char *argv[] = { "install", data, NULL };
+    return unix_launchXdgUtil("xdg-desktop-menu", argv);
+#endif
+} // MojoPlatform_installDesktopMenuItem
+
+
+boolean MojoPlatform_uninstallDesktopMenuItem(const char *data)
+{
+#if PLATFORM_MACOSX || PLATFORM_BEOS
+    // !!! FIXME: write me.
+    STUBBED("desktop menu support");
+    return false;
+#else
+    const char *argv[] = { "uninstall", data, NULL };
+    return unix_launchXdgUtil("xdg-desktop-menu", argv);
+#endif
+} // MojoPlatform_uninstallDesktopMenuItem
 
 
 #if SUPPORT_MULTIARCH
