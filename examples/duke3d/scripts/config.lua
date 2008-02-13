@@ -69,6 +69,19 @@ Setup.Package
         uniquefile = "atominst/duke3d.grp"
     },
 
+    -- Install a desktop menu item with all install types.
+    Setup.DesktopMenuItem
+    {
+        disabled = false,
+        name = "Duke Nukem 3D",
+        genericname = "Duke Nukem 3D",
+        tooltip = "Always bet on Duke!",
+        builtin_icon = false,
+        icon = "duke3d.png",  -- relative to the dest; you must install it!
+        commandline = "/home/icculus/duke3d/duke3d",
+        category = "Game",
+    },
+
     Setup.OptionGroup
     {
         description = _("Installation type"),
@@ -87,7 +100,8 @@ Setup.Package
 
             Setup.File
             {
-                wildcards = "*.txt";  -- catch all the EULAs and READMEs.
+                -- catch all the EULAs and READMEs, and the desktop menu icon.
+                wildcards = { "*.txt", "duke3d.png" }
             },
             Setup.File
             {
@@ -114,7 +128,8 @@ Setup.Package
 
             Setup.File
             {
-                wildcards = "*.txt";  -- catch all the EULAs and READMEs.
+                -- catch all the EULAs and READMEs, and the desktop menu icon.
+                wildcards = { "*.txt", "duke3d.png" }
             },
 
             Setup.File

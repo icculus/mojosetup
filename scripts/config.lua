@@ -106,7 +106,7 @@ Setup.Package
             builtin_icon = false,
             icon = "icon.png",  -- relative to the dest; you must install it!
             commandline = "command-line",
-            categories = "Game",
+            category = "Game",
             mimetype = { 'application/x-mygame-map', 'application/x-mygame-url' },
         },
 

@@ -820,7 +820,7 @@ local function serialize(obj)
         local objtype = type(obj)
         if objtype == "nil" then
             retval = "nil"
-        elseif objtype == "number" then
+        elseif (objtype == "number") or (objtype == "boolean") then
             retval = tostring(obj)
         elseif objtype == "string" then
             retval = string.format("%q", obj)
@@ -988,8 +988,8 @@ end
 
 
 local function freedesktop_menuitem_filename(pkg, idx)  -- only for Unix.
-    local vendor = string.gsub(pkg.vendor, "%..*$", "", 1)  -- chop off TLD.
-    local fname = vendor .. "-" .. pkg.id .. idx .. ".desktop"
+    local vendor = string.gsub(pkg.vendor, "%.", "_")
+    local fname = vendor .. "-" .. pkg.id .. "_" .. idx .. ".desktop"
     return MojoSetup.metadatadir .. "/" .. fname
 end
 
@@ -1005,7 +1005,7 @@ local function uninstall_desktop_menu_items(pkg)
             elseif MojoSetup.info.platform == "beos" then
                 MojoSetup.fatal(_("Unimplemented"))  -- !!! FIXME: write me.
             else  -- freedesktop, we hope.
-                local fname = freedesktop_menuitem_filename(pkg, idx)
+                local fname = freedesktop_menuitem_filename(pkg, i)
                 if not MojoSetup.platform.uninstalldesktopmenuitem(fname) then
                     MojoSetup.fatal(_("Failed to uninstall desktop menu item"))
                 end
@@ -1032,7 +1032,7 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
                 "Comment=" .. item.tooltip .. "\n" ..
                 "Icon=" .. icon .. "\n" ..
                 "Exec=" .. item.commandline .. "\n" ..
-                "Categories=" .. flatten_list(item.categories) .. "\n"
+                "Categories=" .. flatten_list(item.category) .. "\n"
 
     if item.mimetype ~= nil then
         str = str .. "MimeType=" .. flatten_list(item.mimetype) .. "\n"
@@ -1044,6 +1044,10 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
     local perms = "0644"  -- !!! FIXME
     local key = MojoSetup.metadatakey
     local desc = MojoSetup.metadatadesc
+
+    --MojoSetup.logdebug("Install FreeDesktop file")
+    --MojoSetup.logdebug(dest)
+    --MojoSetup.logdebug(str)
     install_file_from_string(dest, str, perms, desc, key)
     if not MojoSetup.platform.installdesktopmenuitem(dest) then
         MojoSetup.fatal(_("Failed to install desktop menu item"))

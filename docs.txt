@@ -781,6 +781,8 @@ Here are the elements, and the attributes they can possess.
     !!! FIXME:  Things that collect mime info themselves, like web browsers
     !!! FIXME:  and email clients, can use new apps this way, however.
 
+    !!! FIXME: there is currently no way for an installer to add submenus.
+
 
 
 Add any localized strings:

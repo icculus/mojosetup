@@ -1070,7 +1070,7 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
 
     if (path != NULL)  // it's installed on the system; use that.
     {
-        char *cmd = path;
+        char *cmd = xstrdup(util);
         char *tmp = NULL;
         int i;
         for (i = 0; argv[i]; i++)
@@ -1082,7 +1082,7 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
             cmd = tmp;
         } // for
 
-        tmp = format("%0 >/dev/null 2>&1", cmd);
+        tmp = format("%0/%1 >/dev/null 2>&1", path, cmd);
         free(cmd);
         cmd = tmp;
         retval = (system(cmd) == 0);
