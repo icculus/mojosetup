@@ -1263,9 +1263,11 @@ local function do_install(install)
             local options = opts['options']
             if options ~= nil then
                 for k,v in pairs(options) do
-                    if v.value and v.eulas then
-                        for ek,ev in pairs(v.eulas) do
-                            option_eulas[#option_eulas+1] = ev
+                    if v.value then
+                        if v.eulas ~= nil then
+                            for ek,ev in pairs(v.eulas) do
+                                option_eulas[#option_eulas+1] = ev
+                            end
                         end
                         find_option_eulas(v)
                     end
