@@ -59,7 +59,7 @@ local function manifest_resync(man, fname, _key)
             ftype = "symlink"
             -- !!! FIXME: linkdest?
         elseif MojoSetup.platform.isdir(fullpath) then
-            ftype = "directory"
+            ftype = "dir"
         else  -- !!! FIXME: other types?
             ftype = "file"
             sums = MojoSetup.checksum(fullpath)
@@ -774,6 +774,9 @@ local function build_xml_manifest(package)
         retval = retval .. '\t\t<option name="' .. desc .. '">\n'
         for i,item in ipairs(items) do
             local type = item.type
+            if type == "dir" then
+                type = "directory"  -- loki_setup expects this string.
+            end
 
             -- !!! FIXME: files from archives aren't filling item.mode in
             -- !!! FIXME:  because it figures out the perms from the archive's
