@@ -78,7 +78,7 @@ Setup.Package
         tooltip = "Always bet on Duke!",
         builtin_icon = false,
         icon = "duke3d.png",  -- relative to the dest; you must install it!
-        commandline = "/home/icculus/duke3d/duke3d",
+        commandline = "%0/duke3d",
         category = "Game",
     },
 

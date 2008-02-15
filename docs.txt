@@ -760,7 +760,10 @@ Here are the elements, and the attributes they can possess.
    commandline (no default, mustExist, mustBeString, cantBeEmpty)
 
     This is the command line that will be used to launch the application
-    when the end user clicks on the desktop menu item.
+    when the end user clicks on the desktop menu item. The string "%0" is
+    replaced with the install destination, so if you need an absolute path
+    to mygame.exe, and the user is installing to /home/user/mygame, you should
+    specify "%0/mygame.exe" to get "/home/user/mygame/mygame.exe".
 
    category (no default, mustExist, mustBeStringOrTableOfStrings)
 

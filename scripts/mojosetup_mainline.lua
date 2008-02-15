@@ -1017,11 +1017,14 @@ end
 
 local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
     local icon
+    local dest = MojoSetup.destination
     if item.builtin_icon then
         icon = item.icon
     else
-        icon = MojoSetup.destination .. "/" .. item.icon
+        icon = dest .. "/" .. item.icon
     end
+
+    local cmdline = MojoSetup.format(item.commandline, dest)
 
     local str = "[Desktop Entry]\n" ..
                 "Encoding=UTF-8\n" ..
@@ -1031,7 +1034,7 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
                 "GenericName=" .. item.genericname .. "\n" ..
                 "Comment=" .. item.tooltip .. "\n" ..
                 "Icon=" .. icon .. "\n" ..
-                "Exec=" .. item.commandline .. "\n" ..
+                "Exec=" .. cmdline .. "\n" ..
                 "Categories=" .. flatten_list(item.category) .. "\n"
 
     if item.mimetype ~= nil then
@@ -1040,16 +1043,16 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
 
     str = str .. "\n"
 
-    local dest = freedesktop_menuitem_filename(pkg, idx)
+    local fname = freedesktop_menuitem_filename(pkg, idx)
     local perms = "0644"  -- !!! FIXME
     local key = MojoSetup.metadatakey
     local desc = MojoSetup.metadatadesc
 
     --MojoSetup.logdebug("Install FreeDesktop file")
-    --MojoSetup.logdebug(dest)
+    --MojoSetup.logdebug(fname)
     --MojoSetup.logdebug(str)
-    install_file_from_string(dest, str, perms, desc, key)
-    if not MojoSetup.platform.installdesktopmenuitem(dest) then
+    install_file_from_string(fname, str, perms, desc, key)
+    if not MojoSetup.platform.installdesktopmenuitem(fname) then
         MojoSetup.fatal(_("Failed to install desktop menu item"))
     end
 end
@@ -1101,6 +1104,7 @@ local function do_install(install)
     MojoSetup.downloaded = 0
     MojoSetup.totaldownload = 0
     MojoSetup.install = install
+    MojoSetup.installed_menu_items = false
 
     -- !!! FIXME: try to sanity check everything we can here
     -- !!! FIXME:  (unsupported URLs, bogus media IDs, etc.)
@@ -1518,7 +1522,10 @@ local function do_install(install)
             end
         end
 
-        install_desktop_menu_items(install)
+        if install.desktopmenuitems ~= nil then
+            install_desktop_menu_items(install)
+            MojoSetup.installed_menu_items = true
+        end
 
         if install.support_uninstall then
             if MojoSetup.info.platform == "windows" then
@@ -1602,6 +1609,7 @@ local function do_install(install)
     MojoSetup.downloaddir = nil
     MojoSetup.install = nil
     MojoSetup.forceoverwrite = nil
+    MojoSetup.installed_menu_items = nil
     MojoSetup.stages = nil
     MojoSetup.files = nil
     MojoSetup.media = nil
@@ -1620,7 +1628,10 @@ local function real_revertinstall()
     MojoSetup.loginfo("Cleaning up half-finished installation...")
 
     -- !!! FIXME: callbacks here.
-    uninstall_desktop_menu_items(MojoSetup.install)
+    if MojoSetup.installed_menu_items then
+        uninstall_desktop_menu_items(MojoSetup.install)
+    end
+
     delete_files(MojoSetup.downloads)
     delete_files(flatten_manifest(MojoSetup.manifest, prepend_dest_dir))
     do_rollbacks()
