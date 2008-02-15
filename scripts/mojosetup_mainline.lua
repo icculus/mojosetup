@@ -1054,6 +1054,7 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
     --MojoSetup.logdebug("Install FreeDesktop file")
     --MojoSetup.logdebug(fname)
     --MojoSetup.logdebug(str)
+    install_parent_dirs(fname, key)
     install_file_from_string(fname, str, perms, desc, key)
     if not MojoSetup.platform.installdesktopmenuitem(fname) then
         MojoSetup.fatal(_("Failed to install desktop menu item"))
