@@ -1170,7 +1170,7 @@ local function do_install(install)
     -- Next stage: accept all global EULAs. Rejection of any EULA is considered
     --  fatal. These are global EULAs for the install, per-option EULAs come
     --  later.
-    if install.eulas ~= nil then
+    if (install.eulas ~= nil) and (not MojoSetup.cmdline("i-agree-to-all-licenses")) then
         for k,eula in pairs(install.eulas) do
             local desc = eula.description
             local fname = "data/" .. eula.source
@@ -1189,7 +1189,7 @@ local function do_install(install)
     end
 
     -- Next stage: show any READMEs.
-    if install.readmes ~= nil then
+    if (install.readmes ~= nil) and (not MojoSetup.cmdline("noreadme")) then
         for k,readme in pairs(install.readmes) do
             local desc = readme.description
             -- !!! FIXME: pull from archive?
@@ -1205,8 +1205,11 @@ local function do_install(install)
     --  The config file can force a destination if it has a really good reason
     --  (system drivers that have to go in a specific place, for example),
     --  but really really shouldn't in 99% of the cases.
+    local destcmdline = MojoSetup.cmdlinestr("destination")
     if install.destination ~= nil then
         set_destination(install.destination)
+    elseif destcmdline ~= nil then
+        set_destination(destcmdline)
     else
         local recommend = nil
         local recommended_cfg = install.recommended_destinations
