@@ -191,7 +191,8 @@ end
 local function delete_scratchdirs()
     do_delete(MojoSetup.downloaddir)
     do_delete(MojoSetup.rollbackdir)
-    do_delete(MojoSetup.scratchdir)  -- must be last!
+    do_delete(MojoSetup.scratchdir)  -- must be after dirs it contains!
+    do_delete(MojoSetup.metadatadir)  -- must be last! (and is okay to fail.)
 end
 
 
