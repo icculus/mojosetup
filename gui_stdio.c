@@ -599,6 +599,13 @@ static boolean MojoGui_stdio_insertmedia(const char *medianame)
 } // MojoGui_stdio_insertmedia
 
 
+static void MojoGui_stdio_progressitem(void)
+{
+    // force new line of output on next call to MojoGui_stdio_progress()
+    percentTicks = 0;
+} // MojoGui_stdio_progressitem
+
+
 static boolean MojoGui_stdio_progress(const char *type, const char *component,
                                       int percent, const char *item,
                                       boolean can_cancel)
@@ -617,7 +624,9 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
         printf("%s\n%s\n", type, component);
     } // if
 
-    // limit update spam... will only write every one second, tops.
+    // limit update spam... will only write every one second, tops,
+    //  on any given filename, but it writes each filename at least once
+    //  so it doesn't look like we only installed a few things.
     if (percentTicks <= now)
     {
         char *fmt = NULL;

@@ -794,6 +794,12 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
 } // MojoGui_gtkplus2_insertmedia
 
 
+static void MojoGui_gtkplus2_progressitem(void)
+{
+    // no-op in this UI target.
+} // MojoGui_gtkplus2_progressitem
+
+
 static boolean MojoGui_gtkplus2_progress(const char *type, const char *component,
                                          int percent, const char *item,
                                          boolean can_cancel)

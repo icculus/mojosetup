@@ -1015,6 +1015,12 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
 } // MojoGui_www_insertmedia
 
 
+static void MojoGui_www_progressitem(void)
+{
+    // no-op in this UI target.
+} // MojoGui_www_progressitem
+
+
 static boolean MojoGui_www_progress(const char *type, const char *component,
                                     int percent, const char *item,
                                     boolean can_cancel)

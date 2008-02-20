@@ -1357,6 +1357,12 @@ static boolean MojoGui_ncurses_insertmedia(const char *medianame)
 } // MojoGui_ncurses_insertmedia
 
 
+static void MojoGui_ncurses_progressitem(void)
+{
+    // no-op in this UI target.
+} // MojoGui_ncurses_progressitem
+
+
 static boolean MojoGui_ncurses_progress(const char *type, const char *component,
                                         int percent, const char *item,
                                         boolean can_cancel)

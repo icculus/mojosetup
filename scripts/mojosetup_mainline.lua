@@ -397,6 +397,7 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
     -- !!! FIXME: perms may be nil...we need a MojoSetup.defaultPermsString()...
     manifest_add(MojoSetup.manifest, dest, manifestkey, "file", perms, nil, nil)
 
+    MojoSetup.gui.progressitem()
     local written, sums = writefn(callback)
     if not written then
         if not keepgoing then
@@ -1456,6 +1457,7 @@ local function do_install(install)
                 end
 
                 MojoSetup.loginfo("Download '" .. url .. "' to '" .. f .. "'")
+                MojoSetup.gui.progressitem()
                 local downloaded, sums = MojoSetup.download(url, f, nil, nil, callback)
                 if not downloaded then
                     MojoSetup.fatal(_("File download failed!"))
@@ -1813,6 +1815,7 @@ local function uninstaller()
             end
 
             local item = string.gsub(fname, "^.*/", "", 1)  -- chop off dirs...
+            MojoSetup.gui.progressitem()
             MojoSetup.gui.progress(ptype, component, percent, item, false)
             return true  -- !!! FIXME: need to disable cancel button in UI...
         end
