@@ -698,8 +698,8 @@ static int luahook_cmdlinestr(lua_State *L)
 {
     const int argc = lua_gettop(L);
     const char *arg = luaL_checkstring(L, 1);
-    const char *envr = (argc < 2) ? NULL : luaL_checkstring(L, 2);
-    const char *deflt = (argc < 3) ? NULL : luaL_checkstring(L, 3);
+    const char *envr = (argc < 2) ? NULL : lua_tostring(L, 2);  // may be nil
+    const char *deflt = (argc < 3) ? NULL : lua_tostring(L, 3);  // may be nil
     return retvalString(L, cmdlinestr(arg, envr, deflt));
 } // luahook_cmdlinestr
 
