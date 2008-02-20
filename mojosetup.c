@@ -260,6 +260,13 @@ const char *cmdlinestr(const char *arg, const char *envr, const char *deflt)
     const char **argv = GArgv;
     int i;
 
+    if (envr != NULL)
+    {
+        const char *val = getenv(envr);
+        if (val != NULL)
+            return val;
+    } // if
+
     if (arg == NULL)
         return deflt;
 
@@ -285,13 +292,6 @@ const char *cmdlinestr(const char *arg, const char *envr, const char *deflt)
         else if (*thisarg == '\0')  // --a b format.
             return ((argv[i+1] == NULL) ? deflt : argv[i+1]);
     } // for
-
-    if (envr != NULL)
-    {
-        const char *val = getenv(envr);
-        if (val != NULL)
-            return val;
-    } // if
 
     return deflt;
 } // cmdlinestr
