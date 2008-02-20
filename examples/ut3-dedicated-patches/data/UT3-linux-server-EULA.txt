@@ -1,0 +1,3014 @@
+END-USER LICENSE AGREEMENT AND IGN/GAMESPY PRIVACY POLICY
+
+PLEASE READ CAREFULLY.	BY USING OR INSTALLING THIS SOFTWARE, OR BY
+PLACING OR COPYING THIS SOFTWARE ON YOUR COMPUTER HARDWARE, COMPUTER
+RAM OR OTHER STORAGE MEDIUM, YOU ARE AGREEING TO BE BOUND BY THE TERMS
+OF THIS LICENSE AND THE TERMS OF THE IGN/GAMESPY PRIVACY POLICY.  IF
+YOU DO NOT AGREE TO THESE TERMS, PROMPTLY DISCONTINUE THE INSTALLATION
+PROCESS AND CEASE ALL USE OF THIS SOFTWARE.
+
+1. License.  The application, demonstration, system and other software
+and the related documentation and any files that are delivered to you
+by Midway Home Entertainment Inc. (if you install the Software in North
+America) or Midway Games Ltd. (if you install the game outside of North
+America) ("Midway"), its licensors, including Epic Games, Inc.
+("Epic"), or their designees to update, supplement, or modify the
+software program (the "Software") are licensed only for your use and
+gaming enjoyment, subject to terms and limitations in this License. 
+For purposes of this License and the grant of rights you receive, the
+term "Software" shall also include Server-Only Software as defined
+below in Section 2 except where otherwise noted.  The Software is
+licensed, not sold.  The license fee you paid gives you the right to
+use the Software.  Epic, Midway and their licensors reserve all other
+rights (we talk about this more in Section 5 below).  The Software
+contains third party programs, and the license terms with those
+programs apply to your use of them.  You will comply with all
+requirements imposed upon Epic by third party service providers and
+licensors, including, without limitation, Interactive Data
+Visualization, Inc.  If the Software is configured for loading onto a
+hard drive, you may only load one copy of the Software onto the hard
+drive of a single computer and only run the Software off that hard
+drive.	However, you may participate in a multiplayer configuration
+(such as in an Internet gaming room) with other players who also have
+valid licenses; in other words, your friends must license their own
+copies of the Software.  There is an editor incorporated into the
+Software which, if you use it, is subject to Section 11 below.	
+
+2. Server-Only Software.  "Server-Only Software" is not a full-fledged
+version of the game software program and is licensed for use only on a
+server computer, which is a multi-user computer that provides a service
+or resources over a network connection.  The Server-Only Software is
+licensed for use only under the terms of this License, and Epic
+reserves all rights not expressly granted to you.  The Server-Only
+Software is delivered to you over the Internet by Epic.  The
+Server-Only Software license does not include a license to the Game
+delivered by Midway.  You own the media on which the Server-Only
+Software is recorded, but Epic retains ownership of the Server-Only
+Software itself.  You may not rent, lease, lend, redistribute, or
+sublicense the Server-Only Software.  You may connect an unlimited
+number of client computers to each validly licensed copy of the
+Server-Only Software; provided, however, that the number of
+simultaneous user connections each has a valid Game Software license. 
+To the extent that the Server-Only Software contains third party
+software, Epic has no express or implied obligation to provide any
+technical or other support for such third party software.  The
+Server-Only Software is available for license at
+www.unrealtournament3.com or on a mirror site.	
+
+3. Commercial Exploitation. You may not use this game, or any Mods
+(we'll explain this term later on) created for this game or using the
+tools provided with this game, for any commercial purposes without the
+prior written consent of Epic including, but not limited to, the
+following rules. You may not, without prior written consent from Epic,
+operate the Software in any gaming contest where (a) the cash value of
+all winnings and prizes paid throughout the entire competition is equal
+to or greater than US$5,000.00 OR (b) the name of the event, or any
+individual contest therein, incorporates or approximates the name of a
+company, product or commercial service OR (c) any company has provided,
+whether donated or as sponsorship, prizes, products or services worth
+with a fair market value of over US$5,000.00 OR (d) you have indicated
+that Epic or Midway is a sponsor of such gaming contest. 
+
+4. Pay for Play and Server Hosting Services.  If you are the proprietor
+of an Internet café or LAN gaming center, you may operate the Software
+in a "pay for play" or "timeshare" environment provided that all
+computers used have validly licensed Software installed.  If you
+provide commercial server hosting services, you may use the dedicated
+server software to provide server hosting services for profit.
+
+5. Use Restrictions.  We want you to enjoy our products for years to
+come, and we want to be able to continue to make awesome games, so you
+need to be aware that there are some things you cannot do with the
+Software.  The Software contains copyrighted material, trade secrets
+and other proprietary material which belongs to Epic, Midway or to our
+licensors.  You agree that you are not a third party beneficiary of any
+agreements between Epic and our licensors, or Midway or its licensors,
+including, without limitation, Interactive Data Visualization, Inc. 
+You may not work around any technical limitations in the Software.  You
+may not decompile, modify, reverse engineer, publicly display, prepare
+derivative works based on the Software (except as permitted in Section
+11, below), disassemble or otherwise reproduce the Software.  Except as
+set forth herein, you may not rent, sell, lease, barter, sublicense or
+distribute the Software.  You may not delete the copyright notices or
+any other proprietary legends on the original copy of the Software. 
+You may not offer the Software on a pay-per-play basis or otherwise
+commercially exploit the Software or use the Software for any
+commercial purpose except as described in this agreement.  You may not
+publish the Software for others to copy, or electronically transmit the
+Software from one computer to another or over a network.  If you
+purchased the Software in North America, You agree and certify that
+neither the Software nor any other technical data received from Epic or
+Midway, nor the direct product thereof (whether a process or service or
+otherwise), will be directly or indirectly exported or transmitted
+outside the United States except as authorized and as permitted by the
+laws and regulations of the United States.  In particular, but without
+limitation, the Software may not be exported or re-exported (i) into
+(or to a national or resident of) any U.S. embargoed country or (ii) to
+anyone on the U.S. Treasury Department's list of Specially Designated
+Nationals or the U.S. Department of Commerce's Table of Denial Orders. 
+By using the Software, you represent and warrant that you are not
+located in, under control of, or a national or resident of any such
+country or on any such list.  If the Software has been rightfully
+obtained by you outside of the United States, you agree that you will
+not re-export or transmit, directly or indirectly, the Software nor any
+other technical data received from Epic or Midway, except as authorized
+by the laws and regulations of the United States and the laws and
+regulations of the jurisdiction in which you obtained the Software. 
+You agree that you will not export in any manner the Software without
+first obtaining all necessary approvals from the appropriate agencies
+in the United States and any other applicable countries.  If you
+purchased the Software outside of North America, You agree that you
+will not re-export or transmit, directly or indirectly, the Software
+nor any other technical data received from Epic or Midway, except as
+authorized by the laws and regulations of the jurisdiction in which you
+obtained the Software.	You agree that you will not export in any
+manner the Software without first obtaining all necessary approvals
+from the appropriate agencies.
+
+6. Cheating.  Nobody likes a cheater.  It's a disgraceful way to earn a
+win and really is an insult to those players who earn their wins in
+on-line games the old-fashioned way-WITH TALENT.  We're pretty hard on
+cheating in on-line games using the Software because it sullies the
+overall gaming experience and is JUST PLAIN LAME.  With that in mind,
+if you are caught cheating in an on-line game using the Software we
+will immediately and permanently ban your account.  At that point, this
+License is automatically terminated and you must immediately delete
+this software from your PC.  Failure to comply with this last bit
+(deleting the software) may bring on the wrath of the lawyers.	Trust
+us?you don't want that.
+
+7. Limited Trademark License.  If you provide commercial server hosting
+services or if you are the proprietor of an Internet café or LAN gaming
+center, and you operate the Software in a "pay for play" or "timeshare"
+environment in compliance with Section 4 above, you are licensed by
+Epic to use only the Unreal Tournament 3 logo and the Circle-U logo
+trademarks only in connection with your advertisement and promotion of
+the Software in association with your Internet café, LAN gaming center,
+or dedicated server business.  High-resolution versions of these logos
+are available for download at www.epicgames.com/ut3tmguidelines.html,
+and your use of these trademarks shall be in accordance with Epic's
+trademark usage guidelines provided therewith.	Nothing contained in
+this Agreement shall give you any interest or additional rights in such
+trademarks or in any other trademarks owned by Epic.  
+
+8. No Other License.  Epic and Midway retain ownership of all
+proprietary information and all patent, copyright, trade secret or
+other intellectual property rights owned by each of them.  No rights or
+licenses are granted by Epic or Midway under this License, expressly or
+by implication, with respect to any such proprietary information or
+patent, copyright, trade secret or other intellectual property rights
+owned or controlled by Epic or Midway, except as expressly provided in
+this License.
+
+9. Termination.	This License is effective until one of us terminates
+it.  You may terminate this License at any time by destroying the
+Software and related documentation.  In the unlikely event that you are
+naughty and fail to comply with any provision of this License, this
+License will terminate immediately without notice from Epic or Midway. 
+Upon termination, you must destroy the Software and related
+documentation.	Please don't wait for us to come after you; it would
+not be pleasant for either of us.  If we do have to come after you,
+we're going to expect you to pay us for our troubles, including the
+cost of our lawyers.
+
+10. Government End Users.   If you are acquiring the Software on behalf
+of any unit or agency of the United States Government, the following
+provisions apply.  The Government agrees the Software and documentation
+are provided with RESTRICTED RIGHTS.  Use, duplication, or disclosure
+by the Government is subject to restrictions as set forth in
+subparagraph (c)(1) of the Rights in Technical Data and Computer
+Software clause at DFARS 252.227-7013, subparagraphs (c)(1) and (2) of
+the Commercial Computer Software-Restricted Rights clause at 48 CFR
+52.227-19, subparagraphs (a) through (d) of the Commercial
+Computer-Restricted Rights clause at FAR 52.277-19, or in Clause
+18-52.227-896(d) of the NASA Supplement to the FAR, as applicable. 
+Manufacturer is Midway Home Entertainment Inc., 10636 Scripps Summit
+Court, Suite 100, San Diego, California.
+
+11. Disclaimer of Warranty on Software.	You expressly acknowledge and
+agree that use of the Software and the media on which it is recorded,
+if any, is at your sole risk.  For ninety (90) days from the date of
+your purchase of the Software, the media containing the Software, if
+any, shall be free from defects in material and workmanship.  Epic and
+Midway's sole liability, and your sole remedy, with respect to any such
+media that proves to be defective during such time period shall be to
+replace the defective media.  This Limited Warranty is void if failure
+of the Software has resulted from accident, abuse, misapplication,
+abnormal use or a virus.  Except explicitly as set forth herein, the
+Software, related documentation and the media, if any, are provided
+"AS IS" without any warranty of any kind.  Certain features of the
+Software are not supported; for more information, see the manual. 
+EPIC, MIDWAY and their LICENSORS (for the purposes of Section 8 and
+Section 9, Epic, Midway and their licensors, including GameSpy
+Industries Inc., shall be referred to as Epic and Midway) EXPRESSLY
+DISCLAIM ALL WARRANTIES, TERMS AND CONDITIONS, EXPRESS OR IMPLIED,
+WHETHER IMPLIED BY STATUTE, COMMON LAW, CUSTOM OR OTHERWISE) TO THE
+FULLEST EXTENT PERMITTED BY LAW, INCLUDING BY NOT LIMITED TO THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE.  EPIC AND MIDWAY DO NOT WARRANT THAT THE FUNCTIONS CONTAINED
+IN THE SOFTWARE WILL MEET YOUR REQUIREMENTS, THAT THE OPERATION OF THE
+SOFTWARE WILL BE UNINTERRUPTED OR ERROR-FREE, OR THAT DEFECTS IN THE
+SOFTWARE OR THE MEDIA WILL BE CORRECTED.  FURTHERMORE, EPIC AND MIDWAY
+DO NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE
+RESULTS OF THE USE OF THE SOFTWARE OR RELATED DOCUMENTATION OR IN TERMS
+OF THEIR CORRECTNESS, ACCURACY, RELIABILITY OR OTHERWISE.  NO ORAL OR
+WRITTEN INFORMATION OR ADVICE GIVEN BY EPIC OR MIDWAY OR ANY OF EPIC OR
+MIDWAY'S AUTHORIZED REPRESENTATIVES SHALL CREATE A WARRANTY OR IN ANY
+WAY INCREASE THE SCOPE OF THIS WARRANTY.  SOME JURISDICTIONS DO NOT
+ALLOW THE EXCLUSION OF IMPLIED WARRANTIES, SO SOME OR ALL OF THE ABOVE
+EXCLUSIONS MAY NOT APPLY TO YOU.
+
+12. Limitation of Liability.  UNDER NO CIRCUMSTANCES (INCLUDING, WITHOUT
+LIMITATION, NEGLIGENCE) SHALL EPIC OR MIDWAY OR ANY OF THEIR RESPECTIVE
+OFFICERS, EMPLOYEES, DIRECTORS, AGENTS, LICENSEES, SUBLICENSEE OR
+ASSIGNS BE LIABLE FOR ANY LOSS OF DATA, PROFITS (EVEN IF ARISING IN THE
+NORMAL CAUSE OF EVENTS) AND/OR ANY INCIDENTAL, SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES THAT RESULT FROM THE USE OR INABILITY TO USE THE
+SOFTWARE OR RELATED DOCUMENTATION, INCLUDING LOST DATA, EVEN IF EPIC OR
+MIDWAY HAS BEEN ADVISED OF THE POSSIBILITY OF THOSE DAMAGES.  THIS
+LIMITATION APPLIES TO ANYTHING RELATED TO THE SOFTWARE, SERVICES,
+CONTENT (INCLUDING CODE) ON THIRD PARTY INTERNET SITES, OR THIRD PARTY
+PROGRAMS.  THIS LIMITATION ALSO APPLIES TO CLAIMS FOR BREACH OF
+CONTRACT, BREACH OF WARRANTY, GUARANTEE OR CONDITION, STRICT LIABILITY,
+NEGLIGENCE, OR OTHER TORT TO THE EXTENT PERMITTED BY APPLICABLE LAW. 
+SOME JURISDICTIONS DO NOT ALLOW THE LIMITATION OR EXCLUSION OF
+LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES SO THE ABOVE
+LIMITATION OR EXCLUSION MAY NOT APPLY TO YOU.  In no event shall the
+total liability of Epic and/or Midway to you for all damages, losses,
+and causes of action (in each case whether in contract, tort or
+otherwise) exceed the amount paid by you for the Software.  Nothing in
+this License shall be deemed or construed as excluding or limiting
+Midway's and/or Epic's liability for personal injury or death arising
+from its negligence, fraudulent misrepresentation or any other
+liability which cannot be excluded or limited by law.
+
+13. Controlling Law and Severability.  If you purchased the Software in
+North America: This License shall be governed by and construed in
+accordance with the laws of the United States and the State of
+Illinois, as applied to agreements entered into and to be performed
+entirely within Illinois between Illinois residents.  If for any reason
+a court of competent jurisdiction finds any provision of this License,
+or a portion thereof, to be unenforceable, that provision of the
+License shall be enforced to the maximum extent permissible so as to
+affect the intent of the parties, and the remainder of this License
+shall continue in full force and effect.  You hereby agree to personal
+jurisdiction and exclusive venue in the state and federal courts
+located in Cook County, Illinois.  If you purchased the Software
+outside of North America:  This License shall be governed by and
+construed in accordance with English Law.  If for any reason a court of
+competent jurisdiction finds any provision of this License, or a
+portion thereof, to be unenforceable, that provision of the License
+shall be deemed replaced by such valid and enforceable provision whose
+contents are as close as permissible to those of the unenforceable
+provision so as to affect the intent of the parties, and the remainder
+of this License shall continue in full force and effect.  You hereby
+agree to the non-exclusive jurisdiction of the English Courts.
+
+14. Complete Agreement.	This License constitutes the entire agreement
+between the parties with respect to the use of the Software and the
+related documentation and supersedes all prior or contemporaneous
+understandings or agreements, written or oral, regarding such subject
+matter.  However, Epic and Midway reserve the right to modify the terms
+of this License from time to time and will post notice of material
+changes somewhere within www.midway.com. 
+
+15. The Use of Online Functionality by Children.  Children under the age
+of 18 are not permitted to participate in the online features of the
+game.
+
+16. Collection of Personal Data.  Personal data in the form of an e-mail
+address may be collected from you during the online registration
+process if you choose to participate in the online features of the
+Software (the "Personal Data").  IGN/GameSpy shall be responsible for
+all aspects of the collection and handling of all Personal Data and the
+use of such data shall be governed by the IGN/GameSpy privacy policy
+printed below.
+
+17. Rules of Online Behavior.
+ 
+(a)By accessing, participating on, or otherwise using the online
+features of the Software, you agree to the following:
+i.	You will not present any content through chat features or other
+features of the Software that:
+A.	Contains offensive, profane, harassing, defamatory,
+inappropriate, racist, threatening, infringing, obscene, or unlawful
+material;
+
+B.	Contains slanderous or libelous comments about other users,
+Epic or Midway employees, or other individuals;
+
+C.	Contains personal information about any individual;
+
+D.	Violates the privacy of any other individual or entity;
+
+E.	Contains business solicitation of any type, including
+advertising a product or service, offering a product or service for
+sale, or directing readers to a location for more information about a
+product or service;
+
+F.	Contains viruses, corrupted files, or any other similar
+software or programs that may adversely affect the operation of Epic's
+or Midway's system or a third party's computer;
+
+G.	Undermines the operation of a forum, chat room, or other
+feature; or
+
+H.	Infringes upon the rights of any third party.
+
+ii.	You understand and agree that Epic or Midway will remove
+postings that contain objectionable material, spam, or otherwise
+violates the foregoing terms.
+
+	  iii.	Use of distribution lists in electronic mail or other
+mass electronic mailings is subject to the approval of Epic and Midway.
+ Any unauthorized use of distribution lists is strictly prohibited, and
+may be discontinued at the sole discretion of Epic or Midway.
+
+	  iv.	By participating in Epic or Midway websites, you agree
+not to impersonate any person or entity or falsely represent your
+affiliation with any person or entity.
+
+	  v.	Message boards and other features provided by Epic or
+Midway may not be used for unauthorized electronic commerce. Use of any
+of our websites' features, including but not limited to message boards,
+for the sale of products or services (including participation in any
+affiliate program other than that operated by Epic or Midway) is
+prohibited.  If, in the sole discretion of Epic or Midway respectively,
+you are found to be using Epic or Midway websites for any inappropriate
+commercial purpose, Epic or Midway (as appropriate) reserves the right
+to take action to end such activity.
+
+	  vi.	Unless Epic and Midway let you know otherwise, you may
+not reproduce, duplicate, copy, sell, or otherwise transfer or
+commercially exploit any Epic or Midway website, or any part of it.
+
+(b)Your use of all of the online features of the Software is subject to
+these Rules of Online Behavior, any other terms applicable to the
+various features of our sites, and all applicable laws, rules, and
+regulations. Epic or Midway may terminate your account if we believe,
+using our sole discretion, that you have violated any of these Rules of
+Online Behavior, any other terms of this license, or any law.
+(c)Epic and Midway may also, in their sole discretion and at any time,
+discontinue the online functionality of the Software or any part
+thereof, with or without notice. You agree that you do not have any
+rights in any such services and that Epic and Midway will have no
+liability to you if any Epic or Midway site is discontinued or your
+ability to access it is terminated.
+(d)When utilizing any of the online features of the Software, such as
+posting on message boards, participating in chat rooms, or creating any
+other content, you will be deemed to have granted Epic and Midway a
+license for the perpetual, non-exclusive distribution of the
+information or materials worldwide in any form or forum without charge
+or liability.
+(e)You participate in all of the online features of the Software, such
+as message boards, chat rooms, and/or other features at your own risk. 
+If you are dissatisfied with any feature, operability, content, these
+Rules of Online Behavior, other agreements Epic or Midway imposes as a
+condition of usage, or any other component of the online content of the
+Software, your sole remedy is to discontinue use of the online content.
+(f)By participating in the online content of the Software, you
+acknowledge that you may come across material that you find offensive.
+Epic and Midway disclaim any responsibility for any such offensive
+material, and all content presented by third parties. Epic and Midway
+have no responsibility for such content and is merely providing access
+to such content as a service to you.
+(g)You acknowledge that Epic and Midway have the right to delete any
+messages, files, or any other content that you may have uploaded to any
+feature of the online content at their sole discretion, including
+content that is deemed by Midway, in its sole discretion, to violate
+the terms of this or any other binding agreement.
+(h)You agree to indemnify and hold Epic and Midway, its parents,
+subsidiaries, officers, employees, licensors and contractors harmless
+from any claims and expenses, including reasonable attorney's fees,
+related to your violation of this Agreement, including any abusive or
+unlawful behavior on the part of you or your dependents, or the
+infringement of any intellectual property or privacy right of any
+person. 
+
+18. Editor and End-User Mods.
+(a)The Software (but not the Server-Only Software) includes an editor
+and associated tools and utilities (the "UnrealEd") which were
+developed by Epic and by other licensors of great software tools. 
+UnrealEd is a really cool feature which allows you to modify the
+Software (but not the Server-Only Software) or to construct new
+variations for use with it.  These modifications and variations can be
+both playable and non-playable.  UnrealEd is NOT shareware.  You may
+not freely distribute it to any BBS, CD, floppy or any other media. 
+You may not sell it or repackage it for sale.  When you finish reading
+this License, you will see that there are additional licenses for
+specific software that is included as part of UnrealEd.  Even though
+their tools are included in the Software, you must read and agree to
+those license terms before you can use the software that is
+specifically referenced.  
+(b)Using UnrealEd, you may create modifications or enhancements to the
+Software (but not the Server-Only Software), including the construction
+of new levels (collectively referred to as "Mods"), subject to the
+following restrictions:
+i.Your Mods must only work with the full, registered copy of the
+Software, not independently or with any other software.
+ii.Your Mods must not contain modifications to any executable file(s).
+iii.Your Mods must not contain any libelous, defamatory, or other
+illegal material, material that is scandalous or invades the rights of
+privacy or publicity of any third party, nor may your Mods contain, or
+be used in conjunction with, any trademarks, copyright-protected work,
+or other recognizable property of third parties, nor may your Mods be
+used by you, or anyone else, for any commercial exploitation including,
+but not limited to advertising or marketing for a company, product or
+service.
+iv.Your Mods will not be supported by Epic, MIDWAY, our third party
+tool licensors or any of such parties' affiliates and subsidiaries, and
+if distributed pursuant to this License, your Mods must include a
+statement to such effect.
+v.Your Mods must be distributed solely for free, period.  Neither you,
+nor any other person or party, may sell them to anyone, commercially
+exploit them in any way, or charge anyone for receiving or using them
+without prior written consent from Epic and Midway.  You may exchange
+them at no charge among other end-users and distribute them to others
+over the Internet, on magazine cover disks, or otherwise for free.
+vi.The prohibitions and restrictions in this section apply to anyone in
+possession of the Software or any of your Mods.
+19.Copyright.  The Software and all copyrights, trademarks and all
+other conceivable intellectual property rights related to the Software
+are owned by Midway, Epic or such parties' licensors and are protected
+by United States copyrights laws, international treaty provisions, an
+army of clones, and all applicable law, such as the Lanham Act.  You
+must treat the Software like any other copyrighted material, as
+required by 17 U.S.C. Section 101 et seq. and other applicable law. 
+Please do not make unauthorized copies.  The program you've licensed
+was produced through the efforts of many people who earn their
+livelihood from its lawful use.  These people like to eat, so don't
+make copies for others who have not paid for the right to use it.  To
+report copyright violations to the Software Publishers Association,
+call 1-800-388-PIR8 or write:  Software Publishers Association, 1101
+Connecticut Ave., Suite 901, Washington, D.C. 20036.
+
+-=-=-=-
+
+Third Party Software Credits
+
+This product includes code licensed from NVIDIA; Use Bink Video.
+Copyright © 1997-2006 by RAD Game Tools, Inc.; Zlib - Copyright ©
+1995-2004 Jean-loup Gailly and Mark Adler; Ogg Vorbis libs - © 2007,
+Xiph.Org Foundation; ConvexDecomposition - Copyright © 2004 Open
+Dynamics Framework Group, www.physicstools.org, All rights reserved;
+Speex Copyright 2002-2003, Jean-Marc Valin/Xiph.Org Foundation;
+MojoSetup - Copyright © 2007 Ryan C. Gordon and others; Lua - Copyright
+© 1994-2006 Lua.org, PUC-Rio.  This product contains software
+technology licensed from GameSpy Industries, Inc. © 1999-2007 GameSpy
+Industries, Inc.  GameSpy and the "Powered by GameSpy" design are
+trademarks of GameSpy Industries, Inc. All rights reserved.
+
+-=-=-=-
+
+Speedtree
+
+Platforms:  PC, PS3, Mac, Linux, Xbox 360
+
+INTERACTIVE DATA VISUALIZATION, INC. END-USER LICENSE AGREEMENT
+YOU SHOULD CAREFULLY READ THE FOLLOWING TERMS AND CONDITIONS BEFORE
+USING SPEEDTREE RT, FEATURING SPEEDWIND (INCLUDING SOURCE CODE),
+SPEEDTREE RT FOR XBOX 360 (INCLUDING UPDATES), SPEEDTREE RT FOR
+PLAYSTATION 3 (INCLUDING UPDATES), SPEEDTREE CAD (OBJECT CODE),
+EPIC-CAD (OBJECT CODE), SPEEDTREE MODEL LIBRARY, SPEEDTREE MAX (OBJECT
+CODE), SPEEDTREE MAYA (OBJECT CODE) OR STF EXPORTER (OBJECT CODE),
+TOGETHER WITH ANY RELATED DOCUMENTATION (INCLUDING DESIGN, SYSTEMS AND
+USER) AND OTHER MATERIALS FOR USE IN CONNECTION WITH SUCH COMPUTER
+SOFTWARE (COLLECTIVELY THE "SPEEDTREE SOFTWARE"). THE USE OF THE
+SPEEDTREE SOFTWARE IS LICENSED BY INTERACTIVE DATA VISUALIZATION, INC.,
+TO ITS CUSTOMERS FOR THEIR USE ONLY AS SET FORTH BELOW. IF YOU DO NOT
+AGREE TO THE TERMS AND CONDITIONS OF THIS AGREEMENT, DO NOT USE THE
+SPEEDTREE SOFTWARE. USING ANY PART OF THE SPEEDTREE SOFTWARE INDICATES
+THAT YOU ACCEPT THESE TERMS.
+
+GRANT OF LICENSE: Interactive Data Visualization, Inc. ("IDV") grants
+to you this personal, limited, non-exclusive, non-transferable,
+non-assignable license solely to use in a single copy of the Speedtree
+Software on a single computer for use by a single concurrent user only,
+and solely provided that you adhere to all of the terms and conditions
+of this Agreement.  The foregoing is an express limited use license and
+not an assignment, sale, or other transfer of the Speedtree Software or
+any Intellectual Property Rights of IDV.  You may make Mods, results
+and/or proceeds available, at no charge or fee (i.e., You may not
+charge a license or other fee for your Mods, results and/or proceeds),
+to other properly licensed end users of the Epic Software including the
+Speedtree Software as part of a "map editor."
+ASSENT: By opening the Speedtree Software in the UnrealEd, you agree
+that this Agreement is a legally binding and valid contract, agree to
+abide by the intellectual property laws and all of the terms and
+conditions of this Agreement, and further agree to take all necessary
+steps to ensure that the terms and conditions of this Agreement are not
+violated by any person or entity under your control or in your service.
+
+ You also acknowledge and agree that IDV is and shall be a third party
+beneficiary of the Epic Games End-User License Agreement. 
+OWNERSHIP OF SPEEDTREE SOFTWARE: IDV and/or its affiliates or
+subsidiaries retain any and all right, title, interest that may exist
+from time to time in this or any other jurisdiction, whether foreign or
+domestic, under patent law, copyright law, publicity rights law, moral
+rights law, trade secret law, trademark law, unfair competition law or
+other similar protections, regardless of whether or not such rights or
+protections are registered or perfected (the "Intellectual Property
+Rights"), in the Speedtree Software.  IDV also retains any and all
+Intellectual Property Rights in and to any results and/or proceeds
+created by You using the Speedtree Software that may be embedded in the
+Software, and no title to such, including any results and/or proceeds,
+is transferred to the You or any third party through this License or
+otherwise.  
+
+NO COMMERCIAL USE: This License Agreement grants you the right to use
+the Software for personal use only. Commercial use of the Speedtree
+Software or of the work products resulting from its use is not
+permitted under this License Agreement. 
+
+RESTRICTIONS:
+(a)  You are expressly prohibited from copying, modifying, merging,
+altering, selling, leasing, redistributing, assigning, or transferring
+in any matter, Speedtree Software or any portion thereof.
+(b)  You may take a single copy of the Speedtree Software and only as
+required for backup purposes.
+(c)  You are also expressly prohibited from reverse engineering,
+decompiling, translating, disassembling, deciphering, decrypting, or
+otherwise attempting to discover the source code of the Speedtree
+Software as the Speedtree Software contain proprietary material of IDV.
+ 
+(d)  You may not remove, alter, deface, overprint or otherwise obscure
+IDV patent, trademark, service mark or copyright notices.
+(e)  You agree that the Speedtree Software, or the direct product of
+the Speedtree Software will not be shipped, transferred or exported
+into any other country, or used in any manner prohibited by any
+government agency or any export laws, restrictions or regulations.
+(f)  You may not publish or distribute in any form of electronic or
+printed communication the materials within or otherwise related to
+Speedtree Software, including but not limited to the object code,
+documentation, help files, examples, and benchmarks.
+
+TERM: This Agreement is effective until terminated.  You may terminate
+this Agreement at any time by uninstalling the Speedtree Software and
+destroying all copies of the Speedtree Software.  Upon any termination,
+you agree to uninstall the Speedtree Software and return or destroy all
+copies of the Speedtree Software, any accompanying documentation, and
+all other associated materials.
+
+WARRANTIES AND DISCLAIMER:
+UNLESS IT IS EXPRESSLY PROVIDED OTHERWISE IN A WRITTEN AGREEMENT
+BETWEEN IDV AND YOU, THE SPEEDTREE SOFTWARE IS PROVIDED "AS IS" WITHOUT
+WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
+PARTICULAR PURPOSE, OR THE WARRANTY OF NON-INFRINGEMENT. IDV
+SPECIFICALLY DISCLAIMS ANY DUTY OR OBLIGATION TO HONOR ANY WARRANTIES
+THAT EPIC MAY PROVIDE TO YOU IN ITS END USER LICENSE AGREEMENT OR
+OTHERWISE.   WITHOUT LIMITING THE FOREGOING, IDV MAKES NO WARRANTY THAT
+(i) THE SPEEDTREE SOFTWARE WILL MEET YOUR REQUIREMENTS, (ii) THE USE OF
+THE SPEEDTREE SOFTWARE WILL BE UNINTERRUPTED, TIMELY, SECURE, OR
+ERROR-FREE, (iii) THE RESULTS THAT MAY BE OBTAINED FROM THE USE OF THE
+SPEEDTREE SOFTWARE WILL BE ACCURATE OR RELIABLE, (iv) THE QUALITY OF
+THE SPEEDTREE SOFTWARE WILL MEET YOUR EXPECTATIONS, (v) ANY ERRORS IN
+THE SPEEDTREE SOFTWARE WILL BE CORRECTED, AND/OR (vi) YOU MAY USE,
+PRACTICE, EXECUTE, OR ACCESS THE SPEEDTREE SOFTWARE WITHOUT VIOLATING
+THE INTELLECTUAL PROPERTY RIGHTS OF OTHERS.  SOME STATES OR
+JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF IMPLIED WARRANTIES OR
+LIMITATIONS ON HOW LONG AN IMPLIED WARRANTY MAY LAST, SO THE ABOVE
+LIMITATIONS MAY NOT APPLY TO YOU.  IF YOU LIVE IN A JURISDICTION WHERE
+WARRANTIES, GUARANTEES, REPRESENTATIONS, AND/OR CONDITIONS OF ANY TYPE
+MAY NOT BE DISCLAIMED, THEN SUCH WARRANTY, GUARANTEE, REPRESENATION
+AND/OR WARRANTY IS: (1) HEREBY LIMITED TO THE PERIOD OF EITHER (A)
+THIRTY (30) DAYS FROM THE DATE OF OPENING THE PACKAGE CONTAINING THE
+SPEEDTREE SOFTWARE OR (B) THE SHORTEST PERIOD ALLOWED BY LAW IN THE
+APPLICABLE JURISDICTION IF A THIRTY (30) DAY LIMITATION WOULD BE
+UNENFORCEABLE; AND (2) IDV'S SOLE LIABILITY FOR ANY BREACH OF ANY SUCH
+WARRANTY, GUARANTEE, REPRESENTATION, AND/OR CONDITION SHALL BE TO
+PROVIDE YOU WITH A NEW COPY OF THE SPEEDTREE SOFTWARE.
+YOU ACKNOWLEDGE AND AGREE THAT NO CLAIM, ACTION, OR DEMAND SHALL LIE
+AGAINST IDV WITH RESPECT TO ANY LOSS, COST, LIABILITY, DAMAGES, OR
+EXPENSE ARISING OUT OF OR RELATED TO THIS LICENSE OR THE SPEEDTREE
+SOFTWARE.  IN NO EVENT SHALL IDV OR ITS SUPPLIERS BE LIABLE TO YOU OR
+ANY THIRD PARTY FOR ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL
+DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER, INCLUDING, WITHOUT
+LIMITATION, THOSE RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
+OR NOT IDV HAD BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, AND ON
+ANY THEORY OF LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE
+OF THE SPEEDTREE SOFTWARE.  FOR PURPOSES OF CLARITY, YOU SHALL NOT FILE
+ANY SUIT OR BRING ANY CAUSE OF ACTION AGAINST IDV WITH RESPECT TO THIS
+LICENSE OR THE SPEEDTREE SOFTWARE.SOME JURISDICTIONS PROHIBIT THE
+EXCLUSION OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL
+DAMAGES, SO THE ABOVE LIMITATIONS MAY NOT APPLY TO YOU.  THESE
+LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF ESSENTIAL
+PURPOSE OF ANY LIMITED REMEDY.
+
+SEVERABILITY: In the event any provision of this License Agreement is
+found to be invalid, illegal or unenforceable, the validity, legality
+and enforceability of any of the remaining provisions shall not in any
+way be affected or impaired and a valid, legal and enforceable
+provision of similar intent and economic impact shall be substituted
+therefore.
+
+ENTIRE AGREEMENT: This License Agreement sets forth the entire
+understanding and agreement between you and IDV, supersedes all prior
+agreements, whether written or oral, with respect to the Speedtree
+Software, and may be amended only in a writing signed by both parties.
+Interactive Data Visualization, Inc., a South Carolina corporation at
+5446 Sunset Blvd., Suite 201, Lexington, SC 29072; 27 February 2007 
+
+-=-=-=-
+
+Fonix VoiceIn and DecTalk
+
+Platforms:  PC, PS3, Mac, Linux, Xbox 360
+
+The Software contains third party programs, including software programs
+licensed by Fonix Speech, Inc., a Delaware corporation with its
+principal place of business at 9350 South 150 East, Suite 700, Sandy,
+Utah 84070 ("Fonix"), and Fonix grants you a nonexclusive,
+nontransferable, worldwide license to use the Fonix software in object
+code form but only as incorporated into the Software and with the
+Software.  
+
+The Software contains copyrighted material, trade secrets and other
+proprietary material which belongs to Fonix.  You agree that you are
+not a third party beneficiary of any agreements between Epic and our
+licensors, including, without limitation Fonix.  Your right to use the
+Fonix software is restricted to the functionality, number of concurrent
+users, and specific primary and secondary languages authorized in
+connection with the Software.  You may not decompile, modify, reverse
+engineer, publicly display, disassemble or otherwise reproduce the
+Fonix software.
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE FONIX SOFTWARE IS PROVIDED
+"AS IS" AND FONIX AND ITS SUPPLIERS AND LICENSORS DISCLAIM ALL
+WARRANTIES, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
+NONINFRINGEMENT, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE.
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL
+FONIX OR ITS SUPPLIERS OR LICENSORS BE LIABLE FOR ANY SPECIAL,
+INCIDENTAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES WHATSOEVER
+(INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF BUSINESS PROFITS,
+BUSINESS INTERRUPTION, LOSS OF BUSINESS INFORMATION, OR ANY OTHER
+PECUNIARY LOSS) ARISING OUT OF THE USE OF OR INABILITY TO USE THE
+SOFTWARE, EVEN IF FONIX HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGES.  UNDER NO CIRCUMSTANCES SHALL FONIX'S AGGREGATE LIABILITY (IF
+ANY) EXCEED THE FEES PAID BY YOU FOR THE SOFTWARE.  
+
+-=-=-=-
+
+Libxml2 (used by Collada)
+
+Platforms:  PC, Mac, Linux
+
+Copyright © 1998-2003 Daniel Veillard.	All Rights Reserved.
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-=-=-=-
+
+ConvexDecomposition
+
+Platforms:  PC, Mac, Linux
+
+Copyright © 2004 Open Dynamics Framework Group, www.physicstools.org,
+All rights reserved.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+Neither the name of the Open Dynamics Framework Group nor the names of
+its contributors may be used to endorse or promote products derived
+from this software without specific prior written permission. THIS
+SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE INTEL OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-=-=-=-
+
+AMD CPU Drivers
+
+Platforms:  PC
+
+Advanced Micro Devices, Inc.
+End User License Agreement
+
+PLEASE READ THIS LICENSE CAREFULLY BEFORE USING THE SOFTWARE.  BY USING
+THE SOFTWARE, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS
+LICENSE. 
+
+1. License. The software accompanying this License (hereinafter
+"Software"), regardless of the media on which it is distributed, are
+licensed to you by Advanced Micro Devices, Inc. ("AMD") for use solely
+in conjunction with AMD hardware products purchased with the Software
+("AMD Hardware").  You own the medium on which the Software is
+recorded, but AMD and AMD's Licensors (referred to collectively as
+"AMD") retain title to the Software and related documentation.	You
+may:
+a)  use the Software solely in conjunction with the AMD Hardware on a
+single computer;
+b) make one copy of the Software in machine-readable form for backup
+purposes only.	You must reproduce on such copy AMD's copyright notice
+and any other proprietary legends that were on the original copy of the
+Software;
+c) transfer all your license rights in the Software provided you must
+also transfer a copy of this License, the backup copy of the Software,
+the AMD Hardware and the related documentation and provided the other
+party reads and agrees to accept the terms and conditions of this
+License.  Upon such transfer your license is then terminated.
+
+2.  Restrictions. The Software contains copyrighted and patented
+material, trade secrets and other proprietary material.  In order to
+protect them, and except as permitted by applicable legislation, you
+may not:
+a) decompile, reverse engineer, disassemble or otherwise reduce the
+Software to a human-perceivable form;
+b) modify, network, rent, lend, loan, distribute or create derivative
+works based upon the Software in whole or in part; or
+c)  electronically transmit the Software from one computer to another
+or over a network or otherwise transfer the Software except as
+permitted by this License.
+
+3.  Termination. This License is effective until terminated.  You may
+terminate this License at any time by destroying the Software, related
+documentation and all copies thereof.  This License will terminate
+immediately without notice from AMD if you fail to comply with any
+provision of this License.  Upon termination you must destroy the
+Software, related documentation and all copies thereof.
+
+4.  Government End Users. If you are acquiring the Software on behalf
+of any unit or agency of the United States Government, the following
+provisions apply.  The Government agrees the Software and documentation
+were developed at private expense and are provided with "RESTRICTED
+RIGHTS".  Use, duplication, or disclosure by the Government is subject
+to restrictions as set forth in DFARS 227.7202-1(a) and 227.7202-3(a)
+(1995), DFARS 252.227-7013(c)(1)(ii) (Oct 1988), FAR 12.212(a)(1995),
+FAR 52.227-19, (June 1987) or FAR 52.227-14(ALT III) (June 1987), as
+amended from time to time.  In the event that this License, or any part
+thereof, is deemed inconsistent with the minimum rights identified in
+the Restricted Rights provisions, the minimum rights shall prevail.
+
+5.  No Other License.  No rights or licenses are granted by AMD under
+this License, expressly or by implication, with respect to any
+proprietary information or patent, copyright, trade secret or other
+intellectual property right owned or controlled by AMD, except as
+expressly provided in this License.
+
+6.  Additional Licenses. DISTRIBUTION OR USE OF THE SOFTWARE WITH AN
+OPERATING SYSTEM MAY REQUIRE ADDITIONAL LICENSES FROM THE OPERATING
+SYSTEM VENDOR.	
+
+7.  Disclaimer of Warranty on Software. You expressly acknowledge and
+agree that use of the Software is at your sole risk.  The Software and
+related documentation are provided "AS IS" and without warranty of any
+kind and AMD EXPRESSLY DISCLAIMS ALL WARRANTIES, EXPRESS AND IMPLIED,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  AMD DOES NOT
+WARRANT THAT THE FUNCTIONS CONTAINED IN THE SOFTWARE WILL MEET YOUR
+REQUIREMENTS, OR THAT THE OPERATION OF THE SOFTWARE WILL BE
+UNINTERRUPTED OR ERROR-FREE, OR THAT DEFECTS IN THE SOFTWARE WILL BE
+CORRECTED.  THE ENTIRE RISK AS TO THE RESULTS AND PERFORMANCE OF THE
+SOFTWARE IS ASSUMED BY YOU.  FURTHERMORE, AMD DOES NOT WARRANT OR MAKE
+ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF THE
+SOFTWARE OR RELATED DOCUMENTATION IN TERMS OF THEIR CORRECTNESS,
+ACCURACY, RELIABILITY, CURRENTNESS, OR OTHERWISE. NO ORAL OR WRITTEN
+INFORMATION OR ADVICE GIVEN BY AMD OR AMD'S AUTHORIZED REPRESENTATIVE
+SHALL CREATE A WARRANTY OR IN ANY WAY INCREASE THE SCOPE OF THIS
+WARRANTY.  SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU (AND NOT AMD OR
+AMD'S AUTHORIZED REPRESENTATIVE) ASSUME THE ENTIRE COST OF ALL
+NECESSARY SERVICING, REPAIR OR CORRECTION.  THE SOFTWARE IS NOT
+INTENDED FOR USE IN MEDICAL, LIFE SAVING OR LIFE SUSTAINING
+APPLICATIONS.  SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF IMPLIED
+WARRANTIES, SO THE ABOVE EXCLUSION MAY NOT APPLY TO YOU.  
+
+8.  Limitation of Liability. UNDER NO CIRCUMSTANCES INCLUDING
+NEGLIGENCE, SHALL AMD, OR ITS DIRECTORS, OFFICERS, EMPLOYEES OR AGENTS,
+BE LIABLE TO YOU FOR ANY INCIDENTAL, INDIRECT, SPECIAL OR CONSEQUENTIAL
+DAMAGES (INCLUDING DAMAGES FOR LOSS OF BUSINESS PROFITS, BUSINESS
+INTERRUPTION, LOSS OF BUSINESS INFORMATION, AND THE LIKE) ARISING OUT
+OF THE USE, MISUSE OR INABILITY TO USE THE SOFTWARE OR RELATED
+DOCUMENTATION, BREACH OR DEFAULT, INCLUDING THOSE ARISING FROM
+INFRINGEMENT OR ALLEGED INFRINGEMENT OF ANY PATENT, TRADEMARK,
+COPYRIGHT OR OTHER INTELLECTUAL PROPERTY RIGHT, BY AMD, EVEN IF AMD OR
+AMD'S AUTHORIZED REPRESENTATIVE HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.  SOME JURISDICTIONS DO NOT ALLOW THE LIMITATION OR
+EXCLUSION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THE
+ABOVE LIMITATION OR EXCLUSION MAY NOT APPLY TO YOU.  AMD will not be
+liable for 1)loss of, or damage to, your records or data or 2) any
+damages claimed by you based on any third party claim.	 In no event
+shall AMD's total liability to you for all damages, losses, and causes
+of action (whether in contract, tort (including negligence) or
+otherwise) exceed the amount paid by you for the Software.
+
+9.  Controlling Law and Severability. This Agreement will be governed
+by and construed under the laws of the State of California without
+reference to its conflicts of law principles. The rights and
+obligations under this Agreement shall not be governed by the United
+Nations Convention on Contracts or the International Sale of Goods, the
+application of which is expressly excluded.  Each party hereto submits
+to the jurisdiction of the state and federal courts of Santa Clara
+County and the Northern District of California for the purpose of all
+legal proceedings arising out of or relating to this Agreement or the
+subject matter hereof.	Each party waives any objection which it may
+have to contest such forum. 
+
+10.  Complete Agreement.  This License constitutes the entire agreement
+between the parties with respect to the use of the Software and the
+related documentation, and supersedes all prior or contemporaneous
+understandings or agreements, written or oral, regarding such subject
+matter.  No amendment to or modification of this License will be
+binding unless in writing and signed by a duly authorized
+representative of AMD.
+
+-=-=-=-
+
+DirectX
+
+Platforms:  PC
+
+MICROSOFT SOFTWARE LICENSE TERMS
+MICROSOFT DIRECTX END USER RUNTIME
+These license terms are an agreement between Microsoft Corporation (or
+based on where you live, one of its affiliates) and you.  Please read
+them.  They apply to the software named above, which includes the media
+on which you received it, if any.  The terms also apply to any
+Microsoft
+* updates,
+* supplements,
+* Internet-based services, and 
+* support services
+for this software, unless other terms accompany those items.  If so,
+those terms apply.
+BY USING THE SOFTWARE, YOU ACCEPT THESE TERMS.	IF YOU DO NOT ACCEPT
+THEM, DO NOT USE THE SOFTWARE.
+If you comply with these license terms, you have the rights below.
+1. INSTALLATION AND USE RIGHTS.  You may install and use any number of
+copies of the software on your devices.
+2. SCOPE OF LICENSE.  The software is licensed, not sold. This
+agreement only gives you some rights to use the software.  Microsoft
+reserves all other rights.  Unless applicable law gives you more rights
+despite this limitation, you may use the software only as expressly
+permitted in this agreement.  In doing so, you must comply with any
+technical limitations in the software that only allow you to use it in
+certain ways.	 You may not
+* work around any technical limitations in the software;
+* reverse engineer, decompile or disassemble the software, except and
+only to the extent that applicable law expressly permits, despite this
+limitation;
+* make more copies of the software than specified in this agreement or
+allowed by applicable law, despite this limitation;
+* publish the software for others to copy;
+* rent, lease or lend the software;
+* transfer the software or this agreement to any third party; or
+* use the software for commercial software hosting services.
+3. BACKUP COPY.  You may make one backup copy of the software.	You may
+use it only to reinstall the software.
+4. DOCUMENTATION.  Any person that has valid access to your computer or
+internal network may copy and use the documentation for your internal,
+reference purposes.
+5. EXPORT RESTRICTIONS.  The software is subject to United States
+export laws and regulations.  You must comply with all domestic and
+international export laws and regulations that apply to the software. 
+These laws include restrictions on destinations, end users and end use.
+ For additional information, see www.microsoft.com/exporting.
+6. SUPPORT SERVICES. Because this software is "as is," we may not
+provide support services for it.
+7. ENTIRE AGREEMENT.  This agreement, and the terms for supplements,
+updates, Internet-based services and support services that you use, are
+the entire agreement for the software and support services.
+8. APPLICABLE LAW.
+a. United States.  If you acquired the software in the United States,
+Washington state law governs the interpretation of this agreement and
+applies to claims for breach of it, regardless of conflict of laws
+principles.  The laws of the state where you live govern all other
+claims, including claims under state consumer protection laws, unfair
+competition laws, and in tort.
+b. Outside the United States.  If you acquired the software in any
+other country, the laws of that country apply.
+9. LEGAL EFFECT.  This agreement describes certain legal rights.  You
+may have other rights under the laws of your country.  You may also
+have rights with respect to the party from whom you acquired the
+software.  This agreement does not change your rights under the laws of
+your country if the laws of your country do not permit it to do so.
+10. DISCLAIMER OF WARRANTY.   THE SOFTWARE IS LICENSED "AS-IS."  YOU
+BEAR THE RISK OF USING IT.  MICROSOFT GIVES NO EXPRESS WARRANTIES,
+GUARANTEES OR CONDITIONS.  YOU MAY HAVE ADDITIONAL CONSUMER RIGHTS
+UNDER YOUR LOCAL LAWS WHICH THIS AGREEMENT CANNOT CHANGE.  TO THE
+EXTENT PERMITTED UNDER YOUR LOCAL LAWS, MICROSOFT EXCLUDES THE IMPLIED
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NON-INFRINGEMENT.
+11. LIMITATION ON AND EXCLUSION OF REMEDIES AND DAMAGES.  YOU CAN
+RECOVER FROM MICROSOFT AND ITS SUPPLIERS ONLY DIRECT DAMAGES UP TO U.S.
+$5.00.	YOU CANNOT RECOVER ANY OTHER DAMAGES, INCLUDING CONSEQUENTIAL,
+LOST PROFITS, SPECIAL, INDIRECT OR INCIDENTAL DAMAGES.
+This limitation applies to
+* anything related to the software, services, content (including code)
+on third party Internet sites, or third party programs; and
+* claims for breach of contract, breach of warranty, guarantee or
+condition, strict liability, negligence, or other tort to the extent
+permitted by applicable law.
+It also applies even if Microsoft knew or should have known about the
+possibility of the damages.  The above limitation or exclusion may not
+apply to you because your country may not allow the exclusion or
+limitation of incidental, consequential or other damages.
+
+MICROSOFT DIRECTX 9.0C
+ERGÄNZENDER ENDBENUTZER-LIZENZVERTRAG FÜR MICROSOFT-SOFTWARE
+("Ergänzendes EULA") 
+WICHTIG: BITTE SORGFÄLTIG LESEN - Diese Microsoft Corporation
+("Microsoft")-Betriebssystemkomponenten unterliegen einschließlich
+Dokumentation im "Online"- oder elektronischen Format
+("BS-Komponenten") den Bestimmungen des Vertrags, unter dem Sie das
+unten beschriebene anwendbare Microsoft-Betriebssystemprodukt
+lizenziert haben (jeder ein "Endbenutzer-Lizenzvertrag" oder "EULA")
+und den Bestimmungen dieses Ergänzenden EULAs. INDEM SIE DIE
+BS-KOMPONENTEN INSTALLIEREN, KOPIEREN ODER ANDERWEITIG VERWENDEN,
+ERKLÄREN SIE SICH EINVERSTANDEN, DURCH DIE BESTIMMUNGEN DES EULAS DES
+ANWENDBAREN BETRIEBSSYSTEMPRODUKTS UND DIESES ERGÄNZENDEN EULAS
+GEBUNDEN ZU SEIN. FALLS SIE DIESEN BESTIMMUNGEN NICHT ZUSTIMMEN, SIND
+SIE NICHT BERECHTIGT, DIE BS-KOMPONENTEN ZU INSTALLIEREN, ZU KOPIEREN
+ODER ZU VERWENDEN. 
+ANMERKUNG: WENN SIE KEINE ORDNUNGSGEMÄSS LIZENZIERTE KOPIE EINER
+VERSION ODER AUSGABE EINES DER BETRIEBSSYSTEME MICROSOFT WINDOWS 95,
+WINDOWS 98, WINDOWS NT 4.0, WINDOWS 2000 ODER EINES
+MICROSOFT-BETRIEBSSYSTEMS BESITZEN, DAS EIN FOLGEPRODUKT EINES DIESER
+BETRIEBSSYSTEME IST, SIND SIE NICHT BERECHTIGT, DIE BS-KOMPONENTEN ZU
+INSTALLIEREN, ZU KOPIEREN ODER ANDERWEITIG ZU VERWENDEN. SIE HABEN
+AUSSERDEM KEINERLEI RECHTE UNTER DIESEM ERGÄNZENDEN EULA. 
+In diesem Ergänzenden EULA verwendete Begriffe, die hierin nicht
+definiert sind, haben die Bedeutung, die im EULA des anwendbaren
+BS-Produkts dafür festgelegt wurde. 
+Allgemeines. Jede der in dieser Site erhältlichen BS-Komponenten ist
+als auf eines oder mehrere der BS-Produkte anwendbar gekennzeichnet.
+Die anwendbaren BS-Komponenten werden Ihnen von Microsoft zur Verfügung
+gestellt, um vorhandene Funktionen des anwendbaren BS-Produkts zu
+aktualisieren, zu ergänzen oder zu ersetzen. Microsoft gewährt Ihnen
+eine Lizenz, die anwendbaren BS-Komponenten unter den Bestimmungen des
+EULAs für das anwendbare BS-Produkt (die hiermit durch Bezugnahme
+eingeschlossen sind, außer wie weiter unten bestimmt), den in diesem
+Ergänzenden EULA genannten Bestimmungen sowie den Bestimmungen jedes
+zusätzlichen Endbenutzer-Lizenzvertrags, der den einzelnen
+BS-Komponenten möglicherweise beiliegt (jeder ein "Einzelnes EULA"), zu
+verwenden, unter der Voraussetzung, dass Sie alle diese Bestimmungen
+einhalten. Insoweit es einen Widerspruch zwischen diesen auf die
+BS-Komponenten anwendbaren Bestimmungen gibt, gilt die folgende
+Rangfolge: 1) die Bestimmungen des Einzelnen EULAs, 2) die Bestimmungen
+in diesem Ergänzenden EULA, und 3) die Bestimmungen des EULAs des
+anwendbaren BS-Produkts. 
+Zusätzliche Rechte und Einschränkungen. 
+* Wenn Sie mehrere ordnungsgemäß lizenzierte Kopien eines BS-Produkts
+haben, dürfen Sie eine Kopie der anwendbaren BS-Komponenten als Teil
+des anwendbaren BS-Produkts auf allen Ihren Computern anfertigen,
+installieren und verwenden, die ordnungsgemäß lizenzierte Kopien des
+anwendbaren BS-Produkts ausführen, vorausgesetzt, Sie verwenden solche
+zusätzlichen Kopien dieser BS-Komponenten unter Einhaltung der oben
+genannten Bestimmungen. Für jede ordnungsgemäß lizenzierte Kopie des
+anwendbaren BS-Produkts dürfen Sie auch eine zusätzliche Kopie der
+anwendbaren BS-Komponenten nur für Archivierungszwecke oder zur
+Reinstallation der BS-Komponenten auf demselben Computer, auf dem die
+BS-Komponenten zuvor installiert waren, anfertigen. Microsoft behält
+das Eigentum und alle Rechte an den BS-Komponenten. Alle nicht
+ausdrücklich gewährten Rechte bleiben Microsoft vorbehalten. 
+* Wenn Sie die BS-Komponenten im Auftrag einer anderen Organisation als
+Ihrer eigenen installieren, müssen Sie vor der Installation der
+BS-Komponenten sicherstellen, dass der Endbenutzer (gleich, ob eine
+natürliche oder eine juristische Person) diese Bestimmungen erhalten,
+gelesen und akzeptiert hat. 
+* Die BS-Komponenten können Technologie enthalten, die die gemeinsame
+Nutzung von Anwendungen auf zwei oder mehr Computern ermöglicht, auch
+wenn eine Anwendung nur auf einem der Computer installiert ist. Sie
+sind berechtigt, diese Technologie mit allen
+Microsoft-Anwendungsprodukten für Konferenzen mit mehreren Parteien zu
+nutzen. Für nicht von Microsoft stammende Anwendungen sollten Sie den
+Lizenzvertrag der Anwendung einsehen oder sich an den Lizenzgeber
+wenden, um zu ermitteln, ob er die gemeinsame Nutzung von Anwendungen
+erlaubt. 
+* Sie dürfen die Ergebnisse, die mit Benchmark-Tests der .NET
+Framework-Komponente von BS-Komponenten erstellt wurden, nicht ohne
+vorherige schriftliche Genehmigung von Microsoft an Dritte weitergeben.
+
+AUSSCHLIESSLICH BEI MICROSOFT VIRTUAL MACHINE FOR JAVA WIRD DIE LIZENZ
+ZUM INSTALLIEREN DIESER BETRIEBSSYSTEMKOMPONENTE NUR AUF COMPUTERN
+GEWÄHRT, AUF DENEN BEREITS EINE VERSION VON MICROSOFT VIRTUAL MACHINE
+FOR JAVA VORHANDEN IST. 
+WENN DAS ANWENDBARE BS-PRODUKT AN SIE VON MICROSOFT ODER EINER IHRER
+100 %-IGEN TOCHTERFIRMEN LIZENZIERT WURDE, GILT DIE GEGEBENENFALLS IM
+EULA DES ANWENDBAREN BS-PRODUKTS ENTHALTENE BESCHRÄNKTE GARANTIE FÜR
+DIE ANWENDBAREN BS-KOMPONENTEN, WENN DIE ANWENDBAREN BS-KOMPONENTEN VON
+IHNEN INNERHALB DER LAUFZEIT DER BESCHRÄNKTEN GARANTIE IM EULA DES
+ANWENDBAREN BS-PRODUKTS LIZENZIERT WURDEN. DIESES ERGÄNZENDE EULA
+VERLÄNGERT JEDOCH NICHT DEN ZEITRAUM, ÜBER DEN DIE BESCHRÄNKTE GARANTIE
+GILT. 
+WENN DAS ANWENDBARE BS-PRODUKT AN SIE VON EINER ANDEREN JURISTISCHEN
+PERSON ALS MICROSOFT ODER EINER IHRER 100 %-IGEN TOCHTERFIRMEN
+LIZENZIERT WURDE, SCHLIESST MICROSOFT ALLE GARANTIEN IN BEZUG AUF DIE
+ANWENDBAREN BS-KOMPONENTEN WIE FOLGT AUS: 
+GARANTIEAUSSCHLUSS. IM GRÖSSTMÖGLICHEN DURCH DAS ANWENDBARE RECHT
+GESTATTETEN UMFANG STELLEN IHNEN MICROSOFT UND DEREN LIEFERANTEN DIE
+BS-KOMPONENTEN UND GEGEBENENFALLS SUPPORTLEISTUNGEN IN VERBINDUNG MIT
+DEN BS-KOMPONENTEN ("SUPPORTLEISTUNGEN") WIE BESEHEN UND OHNE GARANTIE
+AUF FEHLERFREIHEIT ZUR VERFÜGUNG. SIE SCHLIESSEN HIERMIT ALLE GARANTIEN
+UND BEDINGUNGEN IN BEZUG AUF DIE BS-KOMPONENTEN UND SUPPORTLEISTUNGEN,
+GLEICH OB AUSDRÜCKLICH, KONKLUDENT ODER GESETZLICH, AUS,
+EINSCHLIESSLICH, ABER NICHT BESCHRÄNKT AUF (FALLS ZUTREFFEND)
+GARANTIEN, PFLICHTEN UND BEDINGUNGEN VON ODER IN BEZUG AUF:
+HANDELSÜBLICHKEIT, EIGNUNG FÜR EINEN BESTIMMTEN ZWECK, VIRENFREIHEIT,
+GENAUIGKEIT ODER VOLLSTÄNDIGKEIT VON ANTWORTEN, ERGEBNISSE, MANGELNDE
+FACHMÄNNISCHE BEMÜHUNGEN UND FAHRLÄSSIGKEIT. ES WIRD AUCH JEDE
+GARANTIE, PFLICHT ODER BEDINGUNG FÜR EIGENTUM, UNGESTÖRTE NUTZUNG,
+UNGESTÖRTEN BESITZ, ÜBEREINSTIMMUNG MIT DER BESCHREIBUNG ODER
+NICHTVERLETZUNG VON RECHTEN DRITTER AUSGESCHLOSSEN. DAS GESAMTE RISIKO,
+DAS SICH AUS DER VERWENDUNG ODER DER LEISTUNG DER BS-KOMPONENTEN UND
+DER SUPPORTLEISTUNGEN ERGIBT, VERBLEIBT BEI IHNEN. 
+AUSSCHLUSS VON FOLGE-, ZUFÄLLIGEN UND BESTIMMTEN ANDEREN SCHÄDEN. IM
+GRÖSSTMÖGLICHEN DURCH DAS ANWENDBARE RECHT GESTATTETEN UMFANG SIND
+MICROSOFT ODER DEREN LIEFERANTEN IN KEINEM FALL HAFTBAR FÜR
+IRGENDWELCHE SPEZIELLEN, ZUFÄLLIGEN, INDIREKTEN, STRAFRECHTLICHEN ODER
+FOLGESCHÄDEN WELCHER ART AUCH IMMER (EINSCHLIESSLICH, ABER NICHT
+BESCHRÄNKT AUF SCHÄDEN AUS: ENTGANGENEM GEWINN, VERLUST VON
+VERTRAULICHEN ODER ANDEREN INFORMATIONEN, GESCHÄFTSUNTERBRECHUNG,
+PERSONENSCHÄDEN, VERLUST VON PRIVATSPHÄRE, VERLETZUNG VON
+VERTRAGSPFLICHTEN (EINSCHLIESSLICH PFLICHTEN NACH TREU UND GLAUBEN ODER
+SORGFALTSPFLICHTEN), FAHRLÄSSIGKEIT SOWIE VERMÖGENS- ODER SONSTIGE
+SCHÄDEN), DIE AUS DER VERWENDUNG DER BS-KOMPONENTEN ODER DER TATSACHE,
+DASS SIE NICHT VERWENDET WERDEN KÖNNEN, ODER AUS DER BEREITSTELLUNG VON
+SUPPORTLEISTUNGEN ODER DER TATSACHE, DASS SIE NICHT ERBRACHT WORDEN
+SIND, ODER ANDERWEITIG AUS EINER BESTIMMUNG DIESES ERGÄNZENDEN EULAS
+RESULTIEREN ODER IN IRGENDEINEM ZUSAMMENHANG DAMIT STEHEN, SELBST WENN
+MICROSOFT ODER DER LIEFERANT AUF DIE MÖGLICHKEIT SOLCHER SCHÄDEN
+HINGEWIESEN WURDE. 
+BESCHRÄNKUNG DER HAFTUNG UND VON ANSPRÜCHEN. UNGEACHTET ALLER SCHÄDEN,
+DIE SIE AUS WELCHEN GRÜNDEN AUCH IMMER ERLEIDEN MÖGEN (EINSCHLIESSLICH,
+JEDOCH NICHT BESCHRÄNKT AUF ALLE OBEN ANGESPROCHENEN SCHÄDEN SOWIE ALLE
+DIREKTEN ODER ALLGEMEINEN SCHÄDEN), IST DIE GESAMTE HAFTUNG VON
+MICROSOFT UND DEREN LIEFERANTEN UNTER ALLEN BESTIMMUNGEN DIESES
+ERGÄNZENDEN EULAS UND IHR AUSSCHLIESSLICHER ANSPRUCH FÜR ALLES OBEN
+GENANNTE AUF TATSÄCHLICH VON IHNEN ERLITTENE SCHÄDEN AUF DER BASIS
+VERNÜNFTIGEN VERTRAUENS AUF DEN HÖHEREN DIESER BEIDEN BETRÄGE
+BESCHRÄNKT: DEN TATSÄCHLICH FÜR DIE BS-KOMPONENTEN GEZAHLTEN BETRAG
+ODER US-$ 5,00. DIE VORSTEHENDEN BESCHRÄNKUNGEN UND AUSSCHLÜSSE GELTEN
+IM GRÖSSTMÖGLICHEN DURCH DAS ANWENDBARE RECHT GESTATTETEN UMFANG, AUCH
+WENN EIN ANSPRUCH DADURCH SEINEN WESENTLICHEN ZWECK VERFEHLT.
+
+MICROSOFT DIRECTX 9.0C
+CONTRATO COMPLEMENTARIO DE LICENCIA PARA EL USUARIO FINAL DE SOFTWARE
+DE MICROSOFT ("CLUF complementario") 
+IMPORTANTE: LEA ATENTAMENTE: estos componentes de sistema operativo de
+Microsoft Corporation ("Microsoft") incluida cualquier documentación
+"en pantalla" o electrónica ("Componentes de SO") están sujetos a los
+términos y condiciones del contrato bajo el cual obtuvo la licencia
+para el producto de sistema operativo de Microsoft aplicable descrito a
+continuación (cada uno de ellos un "Contrato de licencia para el
+usuario final" o "CLUF") y a los términos y condiciones de este CLUF
+complementario. AL INSTALAR, COPIAR O DE OTRA MANERA UTILIZAR LOS
+COMPONENTES DE SO, USTED ACEPTA QUEDAR OBLIGADO POR LOS TÉRMINOS Y
+CONDICIONES DEL CLUF DEL PRODUCTO DE SISTEMA OPERATIVO APLICABLE Y DE
+ESTE CLUF COMPLEMENTARIO. SI NO ACEPTA ESTOS TÉRMINOS Y CONDICIONES, NO
+INSTALE, COPIE NI USE LOS COMPONENTES DE SO. 
+NOTA: SI NO TIENE UNA COPIA CON LICENCIA VÁLIDA DE CUALQUIER VERSIÓN O
+EDICIÓN DEL SISTEMA OPERATIVO MICROSOFT WINDOWS 95, WINDOWS 98, WINDOWS
+NT 4.0 Ó WINDOWS 2000, Ó DE CUALQUIER SISTEMA OPERATIVO DE MICROSOFT
+QUE SEA UN SUCESOR DE CUALQUIERA DE ESOS SISTEMAS OPERATIVOS(cada uno
+de ellos un "Producto de SO"), NO ESTÁ AUTORIZADO A INSTALAR, COPIAR NI
+DE OTRA FORMA UTILIZAR LOS COMPONENTES DE SO Y NO TIENE DERECHOS BAJO
+ESTE CLUF COMPLEMENTARIO. 
+Los términos en mayúsculas que se usan en este CLUF complementario y no
+se definen de otra forma en la presente tendrán los significados que se
+les asignan en el CLUF del Producto de SO aplicable. 
+General. Cada uno de los Componentes de SO disponibles en este sitio se
+identifica como aplicable a uno o varios de los Productos de SO.
+Microsoft le proporciona los Componentes de SO aplicables para que
+actualice, complemente o reemplace la funcionalidad existente del
+Producto de SO aplicable. Microsoft le concede una licencia para usar
+los Componentes de SO aplicables bajo los términos y condiciones del
+CLUF para el Producto de SO aplicable (que se incorporan a la presente
+por referencia excepto en lo que se dispone a continuación), los
+términos y condiciones establecidos en este CLUF complementario y los
+términos y condiciones de cualquier contrato de licencia para el
+usuario final adicional que pueda acompañar a los Componentes de SO
+individuales (cada uno de ellos un "CLUF individual"), siempre que
+cumpla con todos los dichos términos y condiciones. En la medida en la
+que haya un conflicto entre cualquiera de dichos términos y condiciones
+aplicables a los Componentes de SO, se aplicará la siguiente jerarquía:
+1) los términos y condiciones del CLUF Individual; 2) los términos y
+condiciones de este CLUF complementario; y 3) los términos y
+condiciones del CLUF del Producto de SO aplicable. 
+Derechos y limitaciones adicionales. 
+* Si tiene múltiples copias con licencia válida de cualquier Producto
+de SO, puede reproducir, instalar y utilizar una copia de los
+Componentes de SO aplicables como parte del Producto de SO aplicable en
+todos los equipos que ejecuten copias con licencia válida del Producto
+de SO aplicable, siempre que utilice dichas copias adicionales de tales
+Componentes de SO de acuerdo con los términos y condiciones anteriores.
+Por cada copia con licencia válida del Producto de SO aplicable, puede
+reproducir también una copia adicional de los Componentes de SO
+aplicables únicamente con fines de archivo o para la reinstalación de
+los Componentes de SO en el mismo equipo en el que se instalaron
+anteriormente los Componentes de SO. Microsoft retiene todos los
+derechos, titularidad e intereses de y sobre los Componentes de SO.
+Microsoft se reserva todos los derechos que no se conceden
+expresamente. 
+* Si está instalando los Componentes de SO en nombre de una
+organización que no sea la suya propia, antes de instalar ninguno de
+los Componentes de SO, debe confirmar que el usuario final (ya sea una
+persona física o jurídica) ha recibido, leído y aceptado estos términos
+y condiciones. 
+* Los Componentes de SO pueden contener tecnología que permite que las
+aplicaciones se compartan entre dos o más equipos o PCs, aun si la
+aplicación se ha instalado en sólo uno de los equipos. Usted podrá
+utilizar esta tecnología con todos los productos de aplicación
+Microsoft para conferencias entre varias partes. Con respecto a las
+aplicaciones que no son Microsoft, deberá consultar el contrato de
+licencia que se acompaña o ponerse en contacto con quien ha otorgado la
+licencia para determinar si éste permite compartir la aplicación. 
+* No podrá revelar a terceros los resultados de ninguna prueba
+comparativa del componente .NET Framework de los componented de SO sin
+la autorización previa por escrito de Microsoft. 
+ÚNICAMENTE EN LO QUE SE REFIERE A MICROSOFT VIRTUAL MACHINE PARA JAVA,
+LA INSTALACIÓN DE ESTE COMPONENTE DE SO SÓLO SE AUTORIZA EN UN EQUIPO
+QUE YA CONTENGA UNA VERSIÓN DE MICROSOFT VIRTUAL MACHINE PARA JAVA. 
+SI EL PRODUCTO DE SO APLICABLE LE FUE CONCEDIDO BAJO LICENCIA POR
+MICROSOFT O ALGUNA DE SUS SUBSIDIARIAS DE PROPIEDAD EXCLUSIVA, LA
+GARANTÍA LIMITADA (SI EXISTIERA) INCLUIDA EN EL CLUF DEL PRODUCTO DE SO
+APLICABLE, SE APLICA A LOS COMPONENTES DE SO APLICABLES SIEMPRE QUE LOS
+COMPONENTES DE SO APLICABLES LE HAYAN SIDO CONCEDIDOS BAJO LICENCIA
+DENTRO DEL PERÍODO DE LA GARANTÍA LIMITADA DEL CLUF DEL PRODUCTO DE SO
+APLICABLE. SIN EMBARGO, ESTE CLUF COMPLEMENTARIO NO AMPLÍA EL PERÍODO
+DE TIEMPO PARA EL QUE SE PROPORCIONA LA GARANTÍA LIMITADA. 
+SI EL PRODUCTO DE SO APLICABLE LE FUE CONCEDIDO BAJO LICENCIA POR UNA
+PERSONA JURÍDICA DISTINTA DE MICROSOFT O ALGUNA DE SUS SUBSIDIARIAS DE
+PROPIEDAD EXCLUSIVA, MICROSOFT RENUNCIA A DAR NINGUNA GARANTÍA CON
+RESPECTO A LOS COMPONENTES DE SO APLICABLES DE LA SIGUIENTE FORMA: 
+DENEGACIÓN DE GARANTÍAS. EN LA MEDIDA PERMITIDA POR LA LEY APLICABLE,
+MICROSOFT Y SUS PROVEEDORES LE PROPORCIONAN LOS COMPONENTES DE SO Y LOS
+SERVICIOS DE SOPORTE TÉCNICO (SI EXISTEN) RELACIONADOS CON LOS
+COMPONENTES DE SO ("SERVICIOS DE SOPORTE TÉCNICO") TAL CUAL Y CON TODOS
+LOS DEFECTOS; Y MICROSOFT Y SUS PROVEEDORES RENUNCIAN POR LA PRESENTE
+CON RESPECTO A LOS COMPONENTES DE SO Y LOS SERVICIOS DE SOPORTE TÉCNICO
+A TODA GARANTÍA Y CONDICIÓN YA SEA EXPRESA, IMPLÍCITA O PREVISTA POR
+LEY, INCLUIDAS PERO SIN LIMITARSE A (EN SU CASO) TODA GARANTÍA, DEBER O
+CONDICIÓN DE O RELACIONADA CON: COMERCIABILIDAD, IDONEIDAD PARA UN
+DETERMINADO FIN, AUSENCIA DE VIRUS INFORMÁTICOS, EXACTITUD O INTEGRIDAD
+DE LAS RESPUESTAS, RESULTADOS, ESFUERZO RAZONABLE Y AUSENCIA DE
+NEGLIGENCIA. ASIMISMO NO EXISTE GARANTÍA, DEBER NI CONDICIÓN DE
+TITULARIDAD, DE POSESIÓN Y DISFRUTE PLENOS Y DE CORRESPONDENCIA CON LA
+DESCRIPCIÓN O AUSENCIA DE INFRACCIÓN. USTED ASUME TODO RIESGO QUE SURJA
+DE LA UTILIZACIÓN O DEL RENDIMIENTO DE LOS COMPONENTES DE SO Y, EN SU
+CASO, DE LOS SERVICIOS DE SOPORTE TÉCNICO. 
+EXCLUSIÓN DE RESPONSABILIDAD POR DAÑOS INCIDENTALES, INDIRECTOS Y
+OTROS. EN LA MEDIDA PERMITIDA POR LA LEY APLICABLE, EN NINGÚN CASO
+MICROSOFT O SUS PROVEEDORES SERÁN RESPONSABLES POR NINGÚN DAÑO,
+ESPECIAL, INCIDENTAL, INDIRECTO, SANCIONADOR O CONSECUENCIAL CUALQUIERA
+QUE SEA (INCLUIDOS, PERO SIN LIMITARSE A, DAÑOS POR: PÉRDIDA DE
+BENEFICIOS, PÉRDIDA DE INFORMACIÓN CONFIDENCIAL O DE OTRO TIPO,
+INTERRUPCIÓN DE NEGOCIOS, DAÑOS A LAS PERSONAS, PÉRDIDA DE PRIVACIDAD,
+POR INCUMPLIMIENTO DE OBLIGACIONES (YA SEA DE BUENA FE O CON DILIGENCIA
+RAZONABLE), POR NEGLIGENCIA O POR CUALQUIER OTRA PÉRDIDA PECUNIARIA O
+DE OTRO TIPO) QUE PUDIERE SURGIR DEL USO O IMPOSIBILIDAD DE USO DE LOS
+COMPONENTES DE SO, O DE LOS SERVICIOS DE SOPORTE TÉCNICO O DE LA
+PROVISIÓN O AUSENCIA EN LA PROVISIÓN DE LOS SERVICIOS DE SOPORTE
+TÉCNICO, O DE CUALQUIER OTRA FORMA BAJO O EN CONEXIÓN CON CUALQUIER
+DISPOSICIÓN DE ESTE CLUF COMPLEMENTARIO, AUN EN EL CASO DE QUE SE
+HUBIERA INFORMADO A MICROSOFT O A CUALQUIER PROVEEDOR DE LA POSIBILIDAD
+DE DICHOS DAÑOS. 
+LIMITACIÓN DE RESPONSABILIDAD Y RECURSOS. NO OBSTANTE LOS DAÑOS EN LOS
+QUE PUEDA INCURRIR POR CUALQUIER RAZÓN (INCLUIDOS, PERO SIN LIMITARSE
+A, LOS DAÑOS A LOS QUE SE HIZO REFERENCIA ANTERIORMENTE, Y TODOS LOS
+DAÑOS DIRECTOS O GENERALES), LA ÚNICA RESPONSABILIDAD DE MICROSOFT Y DE
+CUALQUIERA DE SUS PROVEEDORES BAJO CUALQUIER DISPOSICIÓN DE ESTE CLUF
+COMPLEMENTARIO Y EL ÚNICO RECURSO QUE LE COMPETERÁ A USTED POR TODO LO
+ANTEDICHO SE LIMITARÁ A LOS DAÑOS REALES SUFRIDOS POR USTED, BASADOS EN
+UNA CREENCIA DE BUENA FE, HASTA LA CANTIDAD QUE USTED PAGÓ POR LOS
+COMPONENTES DE SO O CINCO DÓLARES ESTADOUNIDENSES, LO QUE RESULTE
+MAYOR. LAS ANTEDICHAS LIMITACIONES, EXCLUSIONES Y RENUNCIAS SE
+APLICARÁN EN LA MEDIDA PERMITIDA POR LA LEY APLICABLE, INCLUSO AUNQUE
+ALGÚN RECURSO TENGA ERRORES EN SU FIN ESENCIAL.
+
+MICROSOFT DIRECTX 9.0C
+CONTRAT DE LICENCE UTILISATEUR FINAL SUPPLÉMENTAIRE POUR LOGICIEL
+MICROSOFT ("CLUF supplémentaire") 
+IMPORTANT : À LIRE ATTENTIVEMENT - Les composants de système
+d'exploitation de Microsoft Corporation ("Microsoft"), y compris toute
+documentation "en ligne" ou sous forme électronique (les "Composants
+SE"), sont soumis aux termes et conditions du contrat par lequel vous
+avez acquis sous licence le système d'exploitation Microsoft applicable
+décrit ci-dessous (chacun étant un "Contrat Licence Utilisateur Final"
+ou "CLUF") ainsi qu'aux stipulations du présent CLUF supplémentaire. EN
+INSTALLANT, EN COPIANT, OU EN UTILISANT DE QUELQUE MANIÈRE QUE CE SOIT
+LES COMPOSANTS SE, VOUS RECONNAISSEZ ÊTRE LIÉ PAR LES TERMES DU CLUF
+APPLICABLE ET DE CE CLUF SUPPLÉMENTAIRE. SI VOUS ÊTES EN DÉSACCORD AVEC
+CES TERMES, VEUILLEZ NE PAS INSTALLER, COPIER, NI UTILISER LES
+COMPOSANTS SE. 
+REMARQUE : SI VOUS NE DISPOSEZ PAS D'UN EXEMPLAIRE CONCÉDÉ SOUS LICENCE
+VALABLE POUR LE SYSTÈME D'EXPLOITATION MICROSOFT WINDOWS 95, MICROSOFT
+WINDOWS 98, MICROSOFT WINDOWS NT 4.0, WINDOWS 2000 OU TOUT SYSTÈME
+D'EXPLOITATION SUCCÉDANT À L'UN DE CES SYSTÈMES D'EXPLOITATION (chacun
+étant un "Produit SE"), VOUS N'ÊTES PAS AUTORISÉ À INSTALLER, À COPIER
+OU À UTILISER DE QUELQUE MANIÈRE QUE CE SOIT LES COMPOSANTS SE ET LE
+PRÉSENT CLUF SUPPLÉMENTAIRE NE VOUS CONCÈDE AUCUN DROIT. 
+Les termes commençant par une majuscule utilisés dans le présent CLUF
+Supplémentaire et non définis par les présentes ont le sens qui leur a
+été attribué dans le CLUF du produit SE applicable. 
+Règle générale. Chaque Composant SE disponible à partir de ce site a
+été identifié comme étant applicable à un ou plusieurs produits SE. Les
+Composants SE applicables vous sont concédés par Microsoft pour mettre
+à jour, apporter un supplément à, ou remplacer la fonctionnalité
+existante du Produit SE applicable. Microsoft vous concède une licence
+vous permettant d'utiliser les Composants SE applicables conformément
+aux termes et conditions du CLUF applicable (incorporé dans les
+présentes par référence), à ceux de ce CLUF Supplémentaire, ainsi qu'à
+ceux de quelconque contrat de licence utilisateur final supplémentaire
+accompagnant un Composant SE particulier (chacun étant un "CLUF
+individuel"), à condition que vous en respectiez les termes et
+conditions. En cas de désaccord entre les termes du présent CLUF
+Supplémentaire et les termes de quelconque CLUF applicable, les termes
+qui prévaudront sont : 1) les termes et conditions du CLUF individuel ;
+2) les termes et conditions du présent CLUF Supplémentaire ; et les
+termes et conditions du CLUF de produit SE applicable. 
+Droits et limitations supplémentaires. 
+
+* Si vous possédez de multiples exemplaires concédés sous licence
+valable de quelconque Produit SE, vous êtes autorisé à créer, installer
+et utiliser un exemplaire des Composants SE applicables en tant que
+partie intégrante du produit SE sur tous les ordinateurs sur lesquels
+fonctionne un exemplaire concédé sous licence valable du produit SE
+applicable, à condition que vous les utilisiez conformément aux termes
+et conditions indiqués plus haut. Pour chaque exemplaire concédé sous
+licence valable du Produit SE applicable, vous êtes autorisé à créer un
+exemplaire supplémentaire des Composants SE uniquement pour des besoins
+d'archivage ou de réinstallation des Composants SE sur le(s) même(s)
+ordinateur(s) sur le(s)quel(s) les Composants SE étaient installés.
+Microsoft conserve tous droits de propriété et de titre sur les
+Composants SE. Tous les droits qui ne sont pas expressément concédés
+sont réservés par Microsoft. 
+* Si vous installez les Composants SE pour une organisation autre que
+la vôtre, avant d'installer un Composant SE, vous devez confirmer que
+l'utilisateur final (personne physique ou morale) a reçu, lu, et
+accepté les présents termes et conditions. 
+* Il se peut que les Composants SE contiennent une technologie
+permettant le partage d'applications entre deux ou plusieurs
+ordinateurs, même si l'application est installée sur un seul
+ordinateur. Vous êtes autorisé à utiliser cette technologie avec toute
+autre application Microsoft dans le cadre de conférences à plusieurs
+personnes. Pour les applications non traitées par Microsoft, veuillez
+consulter le contrat de licence accompagnant le produit ou contacter le
+concédant de licence pour savoir si le partage d'application est
+autorisé. 
+* Vous n'êtes pas autorisé à divulguer les résultats des tests
+d'évaluation du composant .NET Framework des Composants SE à un tiers,
+quel qu'il soit, sans l'accord écrit préalable de Microsoft. 
+UNIQUEMENT EN CE QUI CONCERNE LA MACHINE VIRTUELLE JAVA MICROSOFT,
+VOTRE LICENCE VOUS AUTORISE SEULEMENT À INSTALLER CE COMPOSANT SE SUR
+UN ORDINATEUR CONTENANT DÉJÀ UNE VERSION DE LA MACHINE VIRTUELLE JAVA
+MICROSOFT. 
+SI LE PRODUIT SE APPLICABLE VOUS A ÉTÉ CONCÉDÉ PAR MICROSOFT OU L'UNE
+DE SES FILIALES À 100%, LA GARANTIE LIMITÉE (LE CAS ÉCHÉANT)
+ACCOMPAGNANT LE CLUF DU PRODUIT SE APPLICABLE S'APPLIQUE AUX COMPOSANTS
+SE, À CONDITION QUE CES DERNIERS VOUS AIENT ÉTÉ CONCÉDÉS SOUS LICENCE
+DANS LES DÉLAIS SOULIGNÉS DANS LA GARANTIE LIMITÉE DU CLUF DE PRODUIT
+SE APPLICABLE. TOUTEFOIS, LE BUT DE CE CLUF SUPPLÉMENTAIRE N'EST PAS DE
+PROROGER LA PÉRIODE DE GARANTIE LIMITÉE. 
+SI LE PRODUIT SE APPLICABLE VOUS A ÉTÉ CONCÉDÉ PAR UNE ENTITÉ AUTRE QUE
+MICROSOFT OU UNE DE SES FILIALES À 100%, MICROSOFT DÉCLINE PAR LES
+PRÉSENTES TOUTE GARANTIE AYANT TRAIT AUX COMPOSANTS SE APPLICABLES : 
+EXCLUSION DE GARANTIE. DANS TOUTE LA MESURE PERMISE PAR LA
+RÉGLEMENTATION APPLICABLE, MICROSOFT ET SES FOURNISSEURS VOUS
+FOURNISSENT LES COMPOSANTS SE ET (LE CAS ÉCHÉANT) LES SERVICES
+D'ASSISTANCE LIÉS AUX COMPOSANTS SE ("SERVICES D'ASSISTANCE") EN L'ÉTAT
+ET AVEC TOUTES LEURS IMPERFECTIONS ET EXCLUENT PAR LES PRÉSENTES TOUTE
+AUTRE GARANTIE LÉGALE, EXPRESSE OU IMPLICITE RELATIVE AUX COMPOSANTS SE
+ET AUX SERVICES D'ASSISTANCE, Y COMPRIS, MAIS DE MANIÈRE NON LIMITATIVE
+(LE CAS ÉCHÉANT), TOUTE GARANTIE, OBLIGATION OU CONDITION LÉGALE DE
+QUALITÉ, D'ADÉQUATION À UN USAGE PARTICULIER, D'ABSENCE DE VIRUS, DE
+PRÉCISION OU D'EXHAUSTIVITÉ DES RÉPONSES, DES RÉSULTATS OBTENUS,
+D'EFFORTS PROFESSIONNELS ET D'ABSENCE DE NÉGLIGENCE. EN OUTRE, AUCUNE
+GARANTIE DE PROPRIÉTÉ, DE JOUISSANCE PAISIBLE, D'ABSENCE DE TROUBLE DE
+POSSESSION, DE CONFORMITÉ À LA DESCRIPTION OU D'ABSENCE DE CONTREFAÇON
+N'EST DONNÉE. VOUS ASSUMEZ L'ENSEMBLE DES RISQUES DÉCOULANT DE
+L'UTILISATION OU DU FONCTIONNEMENT DES COMPOSANTS SE ET DES SERVICES
+D'ASSISTANCE. 
+EXCLUSION DE RESPONSABILITÉ POUR LES DOMMAGES ACCESSOIRES, INDIRECTS,
+ET CERTAINS AUTRES TYPES DE DOMMAGES. DANS TOUTE LA MESURE PERMISE PAR
+LA RÉGLEMENTATION APPLICABLE, MICROSOFT OU SES FOURNISSEURS NE POURRONT
+EN AUCUN CAS ÊTRE TENUS RESPONSABLES DE TOUT DOMMAGE SPÉCIAL,
+ACCESSOIRE, INCIDENT OU INDIRECT DE QUELQUE NATURE QUE CE SOIT, Y
+COMPRIS, MAIS DE MANIÈRE NON LIMITATIVE LES PERTES DE BÉNÉFICES, PERTES
+D'INFORMATIONS CONFIDENTIELLES OU AUTRES, INTERRUPTIONS D'ACTIVITÉ,
+PRÉJUDICES CORPORELS, ATTEINTES À LA VIE PRIVÉE, MANQUEMENT À TOUTE
+OBLIGATION (Y COMPRIS L'OBLIGATION DE BONNE FOI OU DE DILIGENCE) POUR
+DES ACTES DE NÉGLIGENCE, ET POUR TOUTE PERTE PÉCUNIAIRE OU AUTRE,
+RÉSULTANT DE, OU LIÉ À L'UTILISATION OU À L'IMPOSSIBILITÉ D'UTILISER
+LES COMPOSANTS SE OU LES SERVICES D'ASSISTANCE, OU À LA FOURNITURE OU
+AU DÉFAUT DE FOURNITURE DES SERVICES D'ASSISTANCE, OU BIEN RÉSULTANT DE
+OU LIÉ À TOUTE DISPOSITION DE CE CLUF SUPPLÉMENTAIRE, MÊME SI LA
+SOCIÉTÉ MICROSOFT OU UN QUELCONQUE FOURNISSEUR A ÉTÉ AVISÉ DE
+L'ÉVENTUALITÉ DE TELS DOMMAGES. 
+LIMITATION DE RESPONSABILITÉ ET RECOURS. NONOBSTANT TOUT DOMMAGE QUE
+VOUS POURRIEZ SUBIR POUR QUELQUE MOTIF QUE CE SOIT (NOTAMMENT TOUS LES
+DOMMAGES ENUMÉRÉS CI-DESSUS ET TOUS LES DOMMAGES DIRECTS OU GÉNÉRAUX),
+L'ENTIÈRE RESPONSABILITÉ DE MICROSOFT ET DE L'UN QUELCONQUE DE SES
+FOURNISSEURS AU TITRE DE TOUTE STIPULATION DE CE CLUF SUPPLÉMENTAIRE ET
+VOTRE SEUL RECOURS EN CE QUI CONCERNE TOUS LES DOMMAGES PRÉCITÉS NE
+SAURAIENT EXCÉDER LE MONTANT QUE VOUS AVEZ EFFECTIVEMENT PAYÉ POUR LES
+COMPOSANTS SE OU 5 DOLLARS US (US$ 5,00) SI CE MONTANT EST PLUS ÉLEVÉ.
+LES PRÉSENTES LIMITATIONS ET EXCLUSIONS DEMEURERONT APPLICABLES DANS
+TOUTE LA MESURE PERMISE PAR LA RÉGLEMENTATION EN VIGUEUR QUAND BIEN
+MÊME UN QUELCONQUE RECOURS EXERCÉ À L'OCCASION DE TOUT MANQUEMENT
+QUELCONQUE NE PRODUIRAIT PAS D'EFFET.
+
+MICROSOFT DIRECTX 9.0C
+CONTRATTO DI LICENZA SUPPLEMENTARE CON L'UTENTE FINALE PER IL PRODOTTO
+SOFTWARE MICROSOFT ("Contratto Supplementare") 
+IMPORTANTE - LEGGERE CON ATTENZIONE: i componenti software del sistema
+operativo di Microsoft Corporation ("Microsoft") e l'eventuale
+documentazione "online" o elettronica ("Componenti del Sistema
+Operativo") sono soggetti ai termini e alle condizioni del Contratto di
+Licenza con l'utente finale ("Contratto") relativo alla copia del
+prodotto software del sistema operativo Microsoft ("Prodotto del
+Sistema Operativo") concessa in licenza e ai termini e alle condizioni
+del Contratto di Licenza supplementare. INSTALLANDO, COPIANDO O
+ALTRIMENTI UTILIZZANDO I COMPONENTI DEL SISTEMA OPERATIVO, L'UTENTE
+ACCETTA DI ESSERE VINCOLATO DAI TERMINI E DALLE CONDIZIONI
+DELL'APPLICABILE CONTRATTO DI LICENZA PER IL PRODOTTO DEL SISTEMA
+OPERATIVO E DEL PRESENTE CONTRATTO DI LICENZA SUPPLEMENTARE. QUALORA
+L'UTENTE NON ACCETTI TALI TERMINI E CONDIZIONI, NON SARÀ AUTORIZZATO A
+INSTALLARE, COPIARE O ALTRIMENTI UTILIZZARE I COMPONENTI DEL SISTEMA
+OPERATIVO. 
+NOTA: QUALORA L'UTENTE NON DISPONGA DI UNA COPIA DI LICENZA VALIDA PER
+QUALSIASI VERSIONE O EDIZIONE DI MICROSOFT WINDOWS 95, WINDOWS 98,
+WINDOWS NT 4.0, DEL SISTEMA OPERATIVO WINDOWS 2000 O DI QUALSIASI
+SISTEMA OPERATIVO MICROSOFT CHE SIA UN PRODOTTO SUCCESSORE RISPETTO A
+TALI SISTEMI OPERATIVI (ognuno dei quali è denominato "Prodotto del
+sistema operativo"), NON SARÀ AUTORIZZATO A INSTALLARE, COPIARE O
+ALTRIMENTI UTILIZZARE I COMPONENTI DEL SISTEMA OPERATIVO E NON DISPORRÀ
+DEI DIRITTI CONCESSI DAL PRESENTE CONTRATTO DI LICENZA SUPPLEMENTARE. 
+Tutti i termini in maiuscolo contenuti nel presente Contratto di
+Licenza Supplementare e non altrimenti definiti avranno il significato
+assegnato loro nell'applicabile Contratto di Licenza per il Prodotto
+del Sistema Operativo. 
+In generale. Ogni singolo Componente del Sistema Operativo disponibile
+in questo sito è identificato come applicabile a uno o più Prodotti del
+Sistema Operativo. I Componenti del Sistema Operativo in uso sono
+forniti da Microsoft per aggiornare, integrare o sostituire la
+esistente funzionalità dell'applicabile Prodotto del Sistema Operativo.
+Microsoft concede all'utente una licenza di utilizzo dei Componenti del
+Sistema Operativo in base ai termini e alle condizioni del Contratto di
+Licenza per il Prodotto del Sistema Operativo applicabile (da
+considerarsi parte integrante del presente Contratto di Licenza
+Supplementare salvo quanto specificato di seguito), in base ai termini
+e alle condizioni del presente Contratto di Licenza Supplementare e ai
+termini e alle condizioni di qualsiasi Contratto di Licenza aggiuntivo
+accluso ai Componenti del Sistema Operativo individuali (ognuno dei
+quali viene identificato come "Contratto di Licenza Individuale"), a
+condizione che si attenga a tutti i termini e condizioni. Nella misura
+in cui si verificasse un conflitto nei termini e nelle condizioni
+applicabili ai Componenti del Sistema Operativo, verrà applicato il
+seguente ordine di priorità: 1) i termini e le condizioni del Contratto
+di Licenza Individuale; 2) i termini e le condizioni del presente
+Contratto di Licenza Supplementare; 3) i termini e le condizioni
+dell'applicabile Contratto di Licenza per il Prodotto del Sistema
+Operativo. 
+Diritti e limitazioni aggiuntivi. 
+* Qualora l'utente disponga di più copie validamente concesse in
+licenza del Prodotto del Sistema Operativo, potrà riprodurre,
+installare e utilizzare una copia del Componente del Sistema Operativo
+in quanto parte del suddetto Prodotto del Sistema Operativo su tutti i
+suoi computer che eseguono copie validamente concesse in licenza del
+Prodotto del Sistema Operativo, a condizione che utilizzi tali copie
+aggiuntive dei Componenti del Sistema Operativo in conformità con i
+termini e le condizioni di cui sopra. Per ogni copia validamente
+concessa in licenza del Prodotto del Sistema Operativo, l'utente potrà
+inoltre riprodurre una copia aggiuntiva dei Componenti del Sistema
+Operativo esclusivamente come copia di archivio o per un'eventuale
+reinstallazione dei Componenti del Sistema Operativo sul medesimo
+computer sul quale essi erano precedentemente installati. Microsoft
+mantiene la titolarità, i diritti e gli interessi relativi ai
+Componenti del Sistema Operativo. Microsoft si riserva tutti i diritti
+non espressamente concessi dal presente Contratto. 
+* Qualora i Componenti del Sistema Operativo vengano installati
+nell'ambito di un'organizzazione diversa dalla propria, prima di
+effettuare l'installazione dei Componenti del Sistema Operativo, sarà
+necessario confermare che l'utente finale (una persona fisica o
+giuridica) abbia ricevuto, letto e accettato i termini e le condizioni
+del presente Contratto. 
+* I Componenti del Sistema Operativo contengono tecnologia che consente
+alle applicazioni di essere condivise tra due o più computer, anche se
+un'applicazione è installata su di uno solo di essi. Questa tecnologia
+può essere utilizzata in congiunzione con tutti i prodotti Microsoft
+per conferenze a cui partecipano più utenti. Nel caso di applicazioni
+non sviluppate da Microsoft, l'utente è tenuto a consultare il relativo
+contratto di licenza o a contattare il licenziante al fine di
+determinare se la condivisione sia consentita dal licenziante. 
+* L'utente non potrà divulgare a terze parti i risultati di test
+benchmark del componente .NET Framework dei Componenti del Sistema
+Operativo se non previa autorizzazione scritta da parte di Microsoft. 
+
+LIMITATAMENTE A MICROSOFT VIRTUAL MACHINE PER JAVA, L'UTENTE DISPONE
+SOLO DELLA LICENZA PER INSTALLARE QUESTO COMPONENTE DEL SISTEMA
+OPERATIVO SU UN COMPUTER CHE GIÀ CONTIENE UNA VERSIONE DI MICROSOFT
+VIRTUAL MACHINE PER JAVA. 
+QUALORA IL PRODOTTO DEL SISTEMA OPERATIVO SIA STATO CONCESSO IN LICENZA
+ALL'UTENTE DA MICROSOFT O DA UNA DELLE SUE FILIALI, L'EVENTUALE
+GARANZIA LIMITATA INCLUSA NELL'APPLICABILE CONTRATTO DI LICENZA PER IL
+PRODOTTO DEL SISTEMA OPERATIVO SI APPLICA AI COMPONENTI DEL SISTEMA
+OPERATIVO, A CONDIZIONE CHE QUESTI SIANO STATI RICEVUTI IN LICENZA
+ENTRO IL PERIODO DI VALIDITÀ DELLA GARANZIA LIMITATA DELL'APPLICABILE
+CONTRATTO DI LICENZA PER IL PRODOTTO DEL SISTEMA OPERATIVO. TUTTAVIA,
+IL PRESENTE CONTRATTO DI LICENZA SUPPLEMENTARE NON ESTENDE IL PERIODO
+DI VALIDITÀ DELLA GARANZIA LIMITATA. 
+QUALORA IL PRODOTTO DEL SISTEMA OPERATIVO SIA STATO CONCESSO IN LICENZA
+DA UNA PERSONA FISICA O GIURIDICA DIVERSA DA MICROSOFT O DA UNA DELLE
+SUE FILIALI, MICROSOFT NON RICONOSCE ALCUNA GARANZIA RELATIVAMENTE AI
+COMPONENTI DEL SISTEMA OPERATIVO, COME INDICATO DI SEGUITO. 
+ESCLUSIONE DI GARANZIE. NELLA MISURA MASSIMA CONSENTITA DALLA LEGGE IN
+VIGORE, MICROSOFT E I SUOI FORNITORI FORNISCONO ALL'UTENTE I COMPONENTI
+DEL SISTEMA OPERATIVO ED EVENTUALI SERVIZI DI SUPPORTO RELATIVI AI
+COMPONENTI DEL SISTEMA OPERATIVO ("I SERVIZI DI SUPPORTO") "COSÌ COME
+SONO" E CON I POSSIBILI DIFETTI. RELATIVAMENTE AI COMPONENTI DEL
+SISTEMA OPERATIVO E AI SERVIZI DI SUPPORTO TECNICO, MICROSOFT E I SUOI
+FORNITORI NON FORNISCONO ALCUNA GARANZIA O DICHIARAZIONE, ESPRESSA,
+IMPLICITA O DI LEGGE, COMPRESE, IN VIA ESEMPLIFICATIVA, EVENTUALI
+GARANZIE O CONDIZIONI RELATIVE A: COMMERCIABILITÀ, IDONEITÀ PER UNO
+SCOPO SPECIFICO, ASSENZA DI VIRUS, ACCURATEZZA O ESAUSTIVITÀ, RISULTATI
+E MANCANZA DI NEGLIGENZA O DI PERIZIA IN RIFERIMENTO AL PRODOTTO E
+ALL'ERRATA O MANCATA FORNITURA DEI SERVIZI DI SUPPORTO. INOLTRE NON
+ESISTE ALCUNA GARANZIA O CONDIZIONE DI TITOLARITÀ, DI POSSESSO
+PACIFICO, DI CORRISPONDENZA ALLA DESCRIZIONE O DI NON VIOLAZIONE DI
+DIRITTI ALTRUI. IL RISCHIO DERIVANTE DALL'UTILIZZO O DALLE PRESTAZIONI
+DEI COMPONENTI DEL SISTEMA OPERATIVO E DEI SERVIZI DI SUPPORTO È
+INTERAMENTE A CARICO DELL'UTENTE. 
+ESCLUSIONE DI RESPONSABILITÀ PER DANNI INCIDENTALI, INDIRETTI E DI
+ALTRO TIPO. NELLA MISURA MASSIMA CONSENTITA DALLA LEGGE IN VIGORE, IN
+NESSUN CASO MICROSOFT O I SUOI FORNITORI SARANNO RESPONSABILI PER DANNI
+SPECIALI, INCIDENTALI, INDIRETTI, MORALI O CONSEQUENZIALI DI QUALSIASI
+TIPO (COMPRESI, MA NON LIMITATAMENTE A, DANNI PER: MANCATO GUADAGNO,
+PERDITA DI INFORMAZIONI CONFIDENZIALI O DI ALTRO TIPO, INTERRUZIONE
+DELL'ATTIVITÀ, DANNI FISICI, PERDITA DI PRIVACY, OMISSIONE DI RISPETTO
+DI OBBLIGHI - INCLUSO QUELLO DI COMPORTARSI IN BUONA FEDE O CON
+RAGIONEVOLE DILIGENZA - NEGLIGENZA O ALTRE PERDITE ECONOMICHE)
+DERIVANTI DALL'UTILIZZO O DALL'INCAPACITÀ DI UTILIZZARE I COMPONENTI
+DEL SISTEMA OPERATIVO O I SERVIZI DI SUPPORTO O DALLA FORNITURA O DALLA
+MANCATA FORNITURA DEI SERVIZI DI SUPPORTO O, COMUNQUE, IN RELAZIONE AL
+PRESENTE CONTRATTO DI LICENZA SUPPLEMENTARE, ANCHE QUALORA MICROSOFT O
+I SUOI FORNITORI FOSSERO STATI AVVISATI DELLA POSSIBILITÀ DEL
+VERIFICARSI DI TALI DANNI. 
+LIMITAZIONE DI RESPONSABILITÀ E RIMEDI DELL'UTENTE. NONOSTANTE
+EVENTUALI DANNI IN CUI, PER QUALSIASI MOTIVO, POTRÀ INCORRERE L'UTENTE
+(INCLUSI, IN VIA ESEMPLIFICATIVA, I DANNI DI CUI SOPRA E OGNI TIPO DI
+DANNO DIRETTO O GENERALE), LA RESPONSABILITÀ COMPLESSIVA DI MICROSOFT E
+DEI SUOI FORNITORI E L'UNICO RIMEDIO DELL'UTENTE, PER QUANTO ATTIENE UN
+EVENTUALE RISARCIMENTO, IN BASE A QUESTO CONTRATTO DI LICENZA
+SUPPLEMENTARE, SARANNO LIMITATI AI DANNI EFFETTIVI RIPORTATI
+DALL'UTENTE BASATI SULLA RAGIONEVOLE BUONA FEDE E NON POTRANNO COMUNQUE
+ECCEDERE IL MAGGIOR IMPORTO TRA QUELLO PAGATO DALL'UTENTE PER I
+COMPONENTI DEL SISTEMA OPERATIVO E LA SOMMA DI CINQUE DOLLARI (US$ 5).
+LE SUDDETTE LIMITAZIONI, ESCLUSIONI E DICHIARAZIONI DI NON
+RESPONSABILITÀ SONO APPLICABILI NELLA MISURA MASSIMA CONSENTITA DALLA
+LEGGE IN VIGORE, ANCHE QUALORA IL RIMEDIO NON RAGGIUNGA IL SUO SCOPO
+ESSENZIALE.
+
+-=-=-=-
+
+PhysX
+
+Platforms:  PC, PS3, Mac, Linux, Xbox 360
+
+Copyright © 2007 AGEIA Technologies, Inc.
+
+AGEIA PhysX Driver License Agreement
+
+This End User License Agreement (the "Agreement") is a legal agreement
+between you (either individually or an entity) ("You" and "Your") and
+AGEIA Technologies Inc. ("AGEIA" and "AGEIA's") regarding the use of
+the AGEIA PhysX Driver and any accompanying documentation
+(collectively, the "Software").
+
+YOU MUST READ AND AGREE TO THE TERMS OF THIS AGREEMENT BEFORE ANY
+SOFTWARE CAN BE DOWNLOADED OR INSTALLED OR USED.  BY CLICKING ON THE
+"AGREE" BUTTON OF THIS AGREEMENT, OR INSTALLING SOFTWARE, OR USING
+SOFTWARE, YOU ARE AGREEING TO BE BOUND BY THE TERMS AND CONDITIONS OF
+THIS AGREEMENT.  IF YOU DO NOT AGREE WITH THE TERMS AND CONDITIONS OF
+THIS AGREEMENT, THEN YOU SHOULD EXIT THIS PAGE, NOT INSTALL OR USE ANY
+SOFTWARE, AND DESTROY ALL COPIES OF THE SOFTWARE THAT YOU HAVE
+DOWNLOADED.  BY DOING SO YOU FOREGO ANY IMPLIED OR STATED RIGHTS TO
+DOWNLOAD OR INSTALL OR USE SOFTWARE.
+
+This license is only granted to and only may be used by You.  AGEIA
+grants You a limited, non-exclusive, non-transferable license to use
+the provided Software for evaluation, testing and non-commercial
+production purposes according to the terms set forth below:
+
+1. Use of the Software.
+a.  You may use, display and reproduce the AGEIA PhysX Driver.
+
+b.  You may not and shall not permit others to:
+(i)  modify, translate, reverse engineer, decompile, disassemble or
+otherwise attempt to defeat, avoid, bypass, remove, deactivate or
+otherwise circumvent any software protection mechanisms in the
+Software, including without limitation any such mechanism used to
+restrict or control the functionality of the Software, or to derive the
+source code or the underlying ideas, algorithms, structure or
+organization from the Software (except that the foregoing restrictions
+do not apply to the extent that such activities may not be prohibited
+under applicable law);
+(ii) alter, adapt, modify or translate the Software in any way for any
+purpose, including without limitation error correction;
+(iii) distribute, rent, loan, lease, transfer or grant any rights in
+the Software or modifications thereof in any form to any person without
+the prior written consent of AGEIA.
+
+c.  No Commercial Distribution Right.  This license grants no rights to
+distribute the Software for any commercial purposes.  Any and all
+individuals, companies, non-academic government agencies or other
+organizations wishing to redistribute the Software for any purpose must
+enter into written contract with AGEIA.  Please contact info@AGEIA.com
+for further information.
+
+2. Ownership.  This license is not a sale.  Title, copyrights and all
+other rights to the Software and any copy made by You remain with AGEIA
+and its suppliers and licensors. Unauthorized copying of the Software,
+or failure to comply with the license restrictions set forth in Section
+1(b) above, will result in automatic termination of this license and
+will make available to AGEIA other legal remedies.
+
+3. Termination.  This license is effective once You click the "AGREE"
+button of this Agreement, or install or use the Software, and will
+continue until terminated.  Unauthorized copying of the Software, Your
+failure to comply with the above restrictions or Your failure to comply
+with any terms of this Agreement will result in automatic termination
+of this Agreement and will make available to AGEIA other legal
+remedies.  Upon termination of this license for any reason You will
+destroy all copies of the Software. Any use of the Software after
+termination is unlawful.  Upon termination of this Agreement, all
+rights granted to You in this Agreement shall immediately terminate. 
+AGEIA's rights and Your obligations under this Agreement shall survive
+any termination of this Agreement.
+
+4. Trademarks.	Certain of the product names used in this Agreement and
+the Software constitute trademarks, trade names, trade dress, or
+service marks ("Trademarks") of AGEIA or other third parties.  You are
+not authorized to use any such Trademarks for any purpose.
+
+5. No Warranty. THE SOFTWARE IS BEING DELIVERED TO YOU "AS IS" AND
+AGEIA MAKES NO WARRANTIES WHATSOEVER WITH RESPECT TO THE SOFTWARE. 
+AGEIA AND ITS SUPPLIERS AND LICENSORS MAKE AND YOU RECEIVE NO OTHER
+WARRANTIES OR CONDITIONS, EXPRESS, IMPLIED, STATUTORY OR OTHERWISE OR
+IN ANY COMMUNICATION WITH YOU, AND AGEIA AND ITS SUPPLIERS AND
+LICENSORS SPECIFICALLY DISCLAIM ANY IMPLIED WARRANTY OF
+MERCHANTABILITY, SATISFACTORY QUALITY, FITNESS FOR A PARTICULAR PURPOSE
+OR NONINFRINGEMENT AND THEIR EQUIVALENTS.  AGEIA does not warrant that
+the operation of the Software will be uninterrupted or error free or
+that the Software will meet Your specific requirements.
+
+SOME STATES OR OTHER JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF
+IMPLIED WARRANTIES, SO THE ABOVE EXCLUSIONS MAY NOT APPLY TO YOU.  YOU
+MAY ALSO HAVE OTHER RIGHTS THAT VARY FROM STATE TO STATE AND
+JURISDICTION TO JURISDICTION.
+
+6. Limitation of Liability.  IN NO EVENT WILL AGEIA, ITS SUPPLIERS OR
+ITS LICENSORS BE LIABLE FOR LOSS OF OR CORRUPTION TO DATA, LOST PROFITS
+OR LOSS OF CONTRACTS, COST OF PROCUREMENT OF SUBSTITUTE PRODUCTS OR
+OTHER SPECIAL, INCIDENTAL, PUNITIVE, CONSEQUENTIAL OR INDIRECT DAMAGES,
+LOSSES, COSTS OR EXPENSES OF ANY KIND ARISING FROM THE SUPPLY OR USE OF
+THE SOFTWARE, HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY (INCLUDING
+WITHOUT LIMITATION NEGLIGENCE).  THIS LIMITATION WILL APPLY EVEN IF
+AGEIA OR AN AUTHORIZED DISTRIBUTOR HAS BEEN ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES AND NOTWITHSTANDING THE FAILURE OF ESSENTIAL PURPOSE OF
+ANY LIMITED REMEDY EXCEPT TO THE EXTENT THAT LIABILITY MAY NOT BY LAW
+BE LIMITED OR EXCLUDED.  YOU ACKNOWLEDGE THAT THE LACK OF A REQUIRED
+PAYMENT BY YOU FOR THE SOFTWARE REFLECT THIS ALLOCATION OF RISK.
+
+SOME STATES OR OTHER JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR
+LIMITATION OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THE
+ABOVE LIMITATIONS AND EXCLUSIONS MAY NOT APPLY TO YOU.
+
+7. Indemnity. You agree to indemnify and hold AGEIA, its successors,
+assigns, subsidiaries, affiliates, officers, directors, agents, and
+employees harmless from any claim or demand, including reasonable
+attorneys' fees, made by any third party due to or arising out of Your
+failure to comply with this Agreement or Your violation of any law or
+the rights of any third party.
+
+8. Legal Compliance. You agree that You shall fully comply with all
+applicable laws, statutes, ordinances and regulations regarding Your
+use of the Software.
+
+9. Governing Law and General Provisions. This Agreement shall not be
+governed by the 1980 U.N. Convention on Contracts for the International
+Sale of Goods; rather, this Agreement and the performance of the
+parties hereunder shall be construed in accordance with and governed by
+the laws of the State of California, U.S.A., except for its conflict of
+law rules.  The exclusive jurisdiction and venue of any action arising
+out of or related to this Agreement will be either the state or federal
+courts in Santa Clara County, California, U.S.A., and the parties agree
+and submit to the personal and exclusive jurisdiction and venue of
+these courts.  This Agreement is the entire agreement between You and
+AGEIA and supersedes any other communications, representations or
+advertising with respect to the Software.  If any provision of this
+Agreement is held invalid or unenforceable, such provision shall be
+revised to the extent necessary to cure the invalidity or
+unenforceability, and the remainder of the Agreement shall continue in
+full force and effect.	Failure to prosecute a party's rights with
+respect to a default hereunder will not constitute a waiver of the
+right to enforce rights with respect to the same or any other breach. 
+If You are acquiring the Software on behalf of any part of the U.S.
+Government, the following provisions apply.  The Software programs and
+documentation are deemed to be "Commercial computer software" and
+"Commercial computer software documentation" respectively, pursuant to
+DFAR Section 227.7202 and FAR 12.212(b), as applicable.  Any use,
+modification, reproduction, release, performance, display or disclosure
+of the Software programs and/or documentation by the U.S. Government or
+any of its agencies shall be governed solely by the terms of this
+Agreement and shall be prohibited except to the extent expressly
+permitted by the terms of this Agreement.  Any technical data provided
+that is not covered by the above provisions is deemed to be "Technical
+data-commercial items" pursuant to DFAR Section 227.7015(a). Any use,
+modification, reproduction, release, performance, display or disclosure
+of such technical data shall be governed by the terms of DFAR Section
+227.7015(b).
+
+10. Questions.	Should You have any questions relating to this
+Agreement, or if You desire to contact AGEIA for any reason, please
+contact info@AGEIA.com.
+
+Copyright © 2007 AGEIA Technologies, Inc.  All rights reserved.
+http://www.AGEIA.com
+
+-=-=-=-
+
+Visual Studio 2005
+Platforms:  PC
+
+MICROSOFT SOFTWARE LICENSE TERMS
+
+MICROSOFT VISUAL STUDIO 2005 PROFESSIONAL EDITION 
+
+These license terms are an agreement between Microsoft Corporation (or
+based on where you live, one of its affiliates) and you.  Please read
+them.  They apply to the software named above, which includes the media
+on which you received it, if any.  The terms also apply to any
+Microsoft
+
+  - updates, 
+  - supplements, 
+  - Internet-based services, and
+  - support services
+
+for this software, unless other terms accompany those items.  If so,
+those terms apply.
+
+BY USING THE SOFTWARE, YOU ACCEPT THESE TERMS.	IF YOU DO NOT ACCEPT
+THEM, DO NOT USE THE SOFTWARE.	INSTEAD, RETURN IT TO THE RETAILER FOR
+A REFUND OR CREDIT.  If you cannot obtain a refund there, contact
+Microsoft or the Microsoft affiliate serving your country for
+information about Microsoft's refund policies.	See
+www.microsoft.com/worldwide.  In the United States and Canada, call
+(800) MICROSOFT or see www.microsoft.com/info/nareturns.htm.
+
+AS DESCRIBED BELOW, USING SOME FEATURES ALSO OPERATES AS YOUR CONSENT
+TO THE TRANSMISSION OF CERTAIN STANDARD COMPUTER INFORMATION FOR
+INTERNET-BASED SERVICES.
+
+NOTICE:  APPLICATIONS AND SERVICES BUILT WITH MICROSOFT VISUAL J# 2005
+WILL RUN ONLY IN THE MICROSOFT .NET FRAMEWORK.	VISUAL J# 2005 HAS BEEN
+INDEPENDENTLY DEVELOPED BY MICROSOFT.  IT IS NOT ENDORSED OR APPROVED
+BY SUN MICROSYSTEMS, INC.
+------------------------------
+
+IF YOU COMPLY WITH THESE LICENSE TERMS, YOU HAVE THE RIGHTS BELOW FOR
+EACH LICENSE YOU ACQUIRE.
+
+1. OVERVIEW.
+
+a. Software.  The software includes development tools, software
+programs and documentation.
+b. License Model.  The software is licensed on a per user basis.
+
+2. INSTALLATION AND USE RIGHTS.
+
+a. General.  One user may install and use copies of the software to
+design, develop, test and demonstrate your programs.  Testing does not
+include staging on a server in a production environment, such as
+loading content prior to production use.
+b. Included Microsoft Programs.  These license terms apply to all
+Microsoft programs included with the software.	If the license terms
+with any of those programs give you other rights that do not expressly
+conflict with these license terms, you also have those rights.
+c. Third Party Programs.  The software contains third party programs. 
+The license terms with those programs apply to your use of them.
+
+3. ADDITIONAL LICENSING REQUIREMENTS AND/OR USE RIGHTS.
+
+a. User Testing.  Your end users may access the software to perform
+acceptance tests on your programs.
+b. Distributable Code.	The software contains code that you are
+permitted to distribute in programs you develop if you comply with the
+terms below.
+i. Right to Use and Distribute.  The code and text files listed below
+are "Distributable Code."
+  - REDIST.TXT Files.  You may copy and distribute the object code form
+of code listed in REDIST.TXT files.
+  - Sample Code.  You may modify, copy, and distribute the source and
+object code form of code marked as "sample."
+  - Microsoft Merge Modules.  You may copy and distribute the
+unmodified output of Microsoft Merge Modules.
+  - MFCs, ATLs and CRTs.  You may modify the source code form of
+Microsoft Foundation Classes (MFCs), Active Template Libraries (ATLs),
+and C runtimes (CRTs) to design, develop and test your programs, and
+copy and distribute the object code form of your modified files under a
+new name.
+  - MDAC.  You may copy and distribute the object code form of the
+MDAC_TYP.EXE file.
+  - Image Library.  You may copy and distribute images and animations
+in the Image Library as described in the software documentation.  You
+may also modify that content.  If you modify the content, it must be
+for use that is consistent with the permitted use of the unmodified
+content.
+  - Third Party Distribution.  You may permit distributors of your
+programs to copy and distribute the Distributable Code as part of those
+programs.
+ii. Distribution Requirements.	For any Distributable Code you
+distribute, you must
+  - add significant primary functionality to it in your programs;
+  - require distributors and external end users to agree to terms that
+protect it at least as much as this agreement;
+  - display your valid copyright notice on your programs; and
+  - indemnify, defend, and hold harmless Microsoft from any claims,
+including attorneys' fees, related to the distribution or use of your
+programs.
+
+iii. Distribution Restrictions.  You may not
+  - alter any copyright, trademark or patent notice in the
+Distributable Code;
+  - use Microsoft's trademarks in your programs' names or in a way that
+suggests your programs come from or are endorsed by Microsoft;
+  - distribute Distributable Code, other than code listed in
+OTHER-DIST.TXT files, to run on a platform other than the Windows
+platform;
+  - include Distributable Code in malicious, deceptive or unlawful
+programs; or
+  - modify or distribute the source code of any Distributable Code so
+that any part of it becomes subject to an Excluded License.  An
+Excluded License is one that requires, as a condition of use,
+modification or distribution, that
+  - the code be disclosed or distributed in source code form; or
+  - others have the right to modify it.
+c. Additional Functionality.  Microsoft may provide additional
+functionality for the software.  Other license terms and fees may
+apply.
+
+4. INTERNET-BASED SERVICES.  Microsoft provides Internet-based services
+with the software.  It may change or cancel them at any time.
+
+a. Consent for Internet-Based Services.  The software feature described
+below connects to Microsoft or service provider computer systems over
+the Internet.  In some cases, you will not receive a separate notice
+when they connect.  You may switch off this feature or not use it.  For
+more information about this feature, see the software documentation. 
+BY USING THIS FEATURE, YOU CONSENT TO THE TRANSMISSION OF THIS
+INFORMATION.  Microsoft does not use the information to identify or
+contact you.
+Computer Information.  The following feature uses Internet protocols,
+which send to the appropriate systems computer information, such as
+your Internet protocol address, the type of operating system, browser
+and name and version of the software you are using, and the language
+code of the device where you installed the software.  Microsoft uses
+this information to make the Internet-based service available to you.
+  - Digital Certificates.  The software uses digital certificates. 
+These digital certificates confirm the identity of Internet users
+sending X.509 standard encrypted information.  The software retrieves
+certificates and updates certificate revocation lists. These security
+features operate only when you use the Internet.
+b. Misuse of Internet-based Services.  You may not use this service in
+any way that could harm it or impair anyone else's use of it.  You may
+not use the service to try to gain unauthorized access to any service,
+data, account or network by any means.
+-
+5. TIME-SENSITIVE SOFTWARE.  If the version of the software is a trial
+version, the software will stop running either ninety days or one
+hundred eighty days after you install it, depending on the trial
+version you have.  You will receive notice before it stops running. 
+You may not be able to access data used with the software when it stops
+running.
+
+
+
+6. PRODUCT KEYS.  The software requires a key to install or access it. 
+You are responsible for the use of keys assigned to you.  You should
+not share the keys with third parties.
+
+7. MICROSOFT WINDOWS SOFTWARE.	The software contains the Microsoft
+.NET Framework 2.0 and Microsoft Data Access Component 2.8  SP1
+software.  These software are part of Windows.	The license terms for
+Windows apply to your use of the .NET Framework 2.0 and Microsoft Data
+Access Component software.
+
+8. SQL SERVER BENCHMARK TESTING.  You must obtain Microsoft's prior
+written approval to disclose to a third party the results of any
+benchmark test of the SQL Server software that accompanies this
+software. 
+
+9. MICROSOFT .NET FRAMEWORK BENCHMARK TESTING.	The software includes
+the .NET Framework component of the Windows operating systems (".NET
+Component").  You may conduct internal benchmark testing of the .NET
+Component.  You may disclose the results of any benchmark test of the
+.NET Component, provided that you comply with the following terms:  (1)
+you must disclose all the information necessary for replication of the
+tests, including complete and accurate details of your benchmark
+testing methodology,  the test scripts/cases, tuning parameters
+applied, hardware and software platforms tested, the name and version
+number of any third party testing tool used to conduct the testing, and
+complete source code for the benchmark suite/harness that is developed
+by or for you and used to test both the .NET Component and the
+competing implementation(s); (2) you must disclose the date (s) that
+you conducted the benchmark tests, along with specific version
+information for all Microsoft software products tested, including the
+.NET Component; (3) your benchmark testing was performed using all
+performance tuning and best practice guidance set forth in the product
+documentation and/or on Microsoft's support web sites, and uses the
+latest updates, patches and fixes available for the .NET Component and
+the relevant Microsoft operating system; (4) it shall be sufficient if
+you make the disclosures provided for above at a publicly available
+location such as a website, so long as every public disclosure of the
+results of your benchmark test expressly identifies the public site
+containing all required disclosures; and (5) nothing in this provision
+shall be deemed to waive any other right that you may have to conduct
+benchmark testing.  The foregoing obligations shall not apply to your
+disclosure of the results of any customized benchmark test of the .NET
+Component, whereby such disclosure is made under confidentiality in
+conjunction with a bid request by a prospective customer, such
+customer's application(s) are specifically tested and the results are
+only disclosed to such specific customer.  Notwithstanding any other
+agreement you may have with Microsoft, if you disclose such benchmark
+test results, Microsoft shall have the right to disclose the results of
+benchmark tests it conducts of your products that compete with the .NET
+Component, provided it complies with the same conditions above.
+
+10. SCOPE OF LICENSE.  The software is licensed, not sold. This
+agreement only gives you some rights to use the software.  Microsoft
+reserves all other rights.  Unless applicable law gives you more rights
+despite this limitation, you may use the software only as expressly
+permitted in this agreement.  In doing so, you must comply with any
+technical limitations in the software that only allow you to use it in
+certain ways.  For more information, see
+www.microsoft.com/licensing/userights.	You may not
+
+  - work around any technical limitations in the software;
+  - reverse engineer, decompile or disassemble the software, except and
+only to the extent that applicable law expressly permits, despite this
+limitation;
+  - make more copies of the software than specified in this agreement
+or allowed by applicable law, despite this limitation;
+  - publish the software for others to copy;
+  - rent, lease or lend the software; or
+  - use the software for commercial software hosting services.
+
+11. BACKUP COPY.  You may make one backup copy of the software.  You
+may use it only to reinstall the software.
+
+12. DOCUMENTATION.  Any person that has valid access to your computer
+or internal network may copy and use the documentation for your
+internal, reference purposes.
+
+13. NOT FOR RESALE SOFTWARE.  You may not sell software marked as "NFR"
+or "Not for Resale."
+
+14. ACADEMIC EDITION SOFTWARE.	You must be a "Qualified Educational
+User" to use software marked as "Academic Edition" or "AE."   If you do
+not know whether you are a Qualified Educational User, visit
+www.microsoft.com/education or contact the Microsoft affiliate serving
+your country.
+
+15. UPGRADE.  If this software is marked as an upgrade version, you may
+use it only if you have a license to use the software eligible for
+upgrade.  If you upgrade, this software takes the place of the earlier
+version, and this agreement takes the place of the agreement for that
+earlier version.  You may use the earlier version only as permitted in
+the Downgrade clause below.  
+
+16. DOWNGRADE.	You may install and use this version and an earlier
+version of the software at the same time.  This agreement applies to
+your use of the earlier version.  If the earlier version includes
+different components, any terms for those components in the agreement
+that comes with the earlier version apply to your use of them. 
+Microsoft is not obligated to supply earlier versions to you.
+
+17. TRANSFER TO A THIRD PARTY.	The first user of the software may
+transfer it, and this agreement, directly to a third party.  Before the
+transfer, that party must agree that this agreement applies to the
+transfer and use of the software.  The first user must uninstall the
+software before transferring it separately from the device.  The first
+user may not retain any copies.
+
+18. EXPORT RESTRICTIONS.  The software is subject to United States
+export laws and regulations.  You must comply with all domestic and
+international export laws and regulations that apply to the software. 
+These laws include restrictions on destinations, end users and end use.
+ For additional information, see www.microsoft.com/exporting.
+
+19. SUPPORT SERVICES.  Microsoft provides support services for the
+software as described at
+www.support.microsoft.com/common/international.aspx.
+
+20. ENTIRE AGREEMENT.  This agreement (including the warranty below),
+and the terms for supplements, updates, Internet-based services and
+support services that you use, are the entire agreement for the
+software and support services.
+
+21. APPLICABLE LAW.
+
+a. United States.  If you acquired the software in the United States,
+Washington state law governs the interpretation of this agreement and
+applies to claims for breach of it, regardless of conflict of laws
+principles.  The laws of the state where you live govern all other
+claims, including claims under state consumer protection laws, unfair
+competition laws, and in tort.
+b. Outside the United States.  If you acquired the software in any
+other country, the laws of that country apply.
+
+22. LEGAL EFFECT.  This agreement describes certain legal rights.  You
+may have other rights under the laws of your state or country.	You may
+also have rights with respect to the party from whom you acquired the
+software.  This agreement does not change your rights under the laws of
+your state or country if the laws of your state or country do not
+permit it to do so.
+
+23. LIMITATION ON AND EXCLUSION OF DAMAGES.  YOU CAN RECOVER FROM
+MICROSOFT AND ITS SUPPLIERS ONLY DIRECT DAMAGES UP TO THE AMOUNT YOU
+PAID FOR THE SOFTWARE. YOU CANNOT RECOVER ANY OTHER DAMAGES, INCLUDING
+CONSEQUENTIAL, LOST PROFITS, SPECIAL, INDIRECT OR INCIDENTAL DAMAGES.
+
+This limitation applies to
+  - anything related to the software, services, content (including
+code) on third party Internet sites, or third party programs; and
+  - claims for breach of contract, breach of warranty, guarantee or
+condition, strict liability, negligence, or other tort to the extent
+permitted by applicable law.
+
+It also applies even if
+  - repair, replacement or a refund for the software does not fully
+compensate you for any losses; or
+  - Microsoft knew or should have known about the possibility of the
+damages.
+
+Some states do not allow the exclusion or limitation of incidental or
+consequential damages, so the above limitation or exclusion may not
+apply to you.  They also may not apply to you because your country may
+not allow the exclusion or limitation of incidental, consequential or
+other damages. 
+
+***********************************************************************
+**************
+
+LIMITED WARRANTY
+
+A. LIMITED WARRANTY.  If you follow the instructions, the software will
+perform substantially as described in the Microsoft materials that you
+receive in or with the software.
+
+B. TERM OF WARRANTY; WARRANTY RECIPIENT; LENGTH OF ANY IMPLIED
+WARRANTIES.  THE LIMITED WARRANTY COVERS THE SOFTWARE FOR ONE YEAR
+AFTER ACQUIRED BY THE FIRST USER.  IF YOU RECEIVE SUPPLEMENTS, UPDATES,
+OR REPLACEMENT SOFTWARE DURING THAT YEAR, THEY WILL BE COVERED FOR THE
+REMAINDER OF THE WARRANTY OR 30 DAYS, WHICHEVER IS LONGER.  If the
+first user transfers the software, the remainder of the warranty will
+apply to the recipient.
+
+TO THE EXTENT PERMITTED BY LAW, ANY IMPLIED WARRANTIES, GUARANTEES OR
+CONDITIONS LAST ONLY DURING THE TERM OF THE LIMITED WARRANTY.  Some
+states do not allow limitations on how long an implied warranty lasts,
+so these limitations may not apply to you.  They also might not apply
+to you because some countries may not allow limitations on how long an
+implied warranty, guarantee or condition lasts.
+
+C. EXCLUSIONS FROM WARRANTY.  This warranty does not cover problems
+caused by your acts (or failures to act), the acts of others, or events
+beyond Microsoft's reasonable control.
+
+D. REMEDY FOR BREACH OF WARRANTY.  MICROSOFT WILL REPAIR OR REPLACE THE
+SOFTWARE AT NO CHARGE.	IF MICROSOFT CANNOT REPAIR OR REPLACE IT,
+MICROSOFT WILL REFUND THE AMOUNT SHOWN ON YOUR RECEIPT FOR THE
+SOFTWARE.  IT WILL ALSO REPAIR OR REPLACE SUPPLEMENTS, UPDATES AND
+REPLACEMENT SOFTWARE AT NO CHARGE.  IF MICROSOFT CANNOT REPAIR OR
+REPLACE THEM, IT WILL REFUND THE AMOUNT YOU PAID FOR THEM, IF ANY.  YOU
+MUST UNINSTALL THE SOFTWARE AND RETURN ANY MEDIA AND OTHER ASSOCIATED
+MATERIALS TO MICROSOFT WITH PROOF OF PURCHASE TO OBTAIN A REFUND. 
+THESE ARE YOUR ONLY REMEDIES FOR BREACH OF THE LIMITED WARRANTY.
+
+E. CONSUMER RIGHTS NOT AFFECTED.  YOU MAY HAVE ADDITIONAL CONSUMER
+RIGHTS UNDER YOUR LOCAL LAWS, WHICH THIS AGREEMENT CANNOT CHANGE.
+
+F. WARRANTY PROCEDURES.  You need proof of purchase for warranty
+service.
+
+1. United States and Canada.  For warranty service or information about
+how to obtain a refund for software acquired in the United States and
+Canada, contact Microsoft at
+
+  - (800) MICROSOFT;
+  - Microsoft Customer Service and Support, One Microsoft Way, Redmond,
+WA 98052-6399; or
+  - visit www.microsoft.com/info/nareturns.htm.
+
+2. Europe, Middle East and Africa.  If you acquired the software in
+Europe, the Middle East or Africa, Microsoft Ireland Operations Limited
+makes this limited warranty.  To make a claim under this warranty, you
+should contact either
+
+  - Microsoft Ireland Operations Limited, Customer Care Centre, Atrium
+Building Block B, Carmanhall Road, Sandyford Industrial Estate, Dublin
+18, Ireland; or
+  - the Microsoft affiliate serving your country (see
+www.microsoft.com/worldwide).
+
+3. Outside United States, Canada, Europe, Middle East and Africa.  If
+you acquired the software outside the United States, Canada, Europe,
+the Middle East and Africa, contact the Microsoft affiliate serving
+your country (see www.microsoft.com/worldwide).
+
+G. NO OTHER WARRANTIES.  THE LIMITED WARRANTY IS THE ONLY DIRECT
+WARRANTY FROM MICROSOFT.  MICROSOFT GIVES NO OTHER EXPRESS WARRANTIES,
+GUARANTEES OR CONDITIONS.  WHERE ALLOWED BY YOUR LOCAL LAWS, MICROSOFT
+EXCLUDES IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NON-INFRINGEMENT.  If your local laws give you
+any implied warranties, guarantees or conditions, despite this
+exclusion, your remedies are described in the Remedy for Breach of
+Warranty clause above, to the extent permitted by your local laws.
+
+H. LIMITATION ON AND EXCLUSION OF DAMAGES FOR BREACH OF WARRANTY.  THE
+LIMITATION ON AND EXCLUSION OF DAMAGES CLAUSE ABOVE APPLIES TO BREACHES
+OF THIS LIMITED WARRANTY.
+
+THIS WARRANTY GIVES YOU SPECIFIC LEGAL RIGHTS, AND YOU MAY ALSO HAVE
+OTHER RIGHTS WHICH VARY FROM STATE TO STATE.  YOU MAY ALSO HAVE OTHER
+RIGHTS WHICH VARY FROM COUNTRY TO COUNTRY. 
+
+Please note: As this software is distributed in Quebec, Canada, some of
+the clauses in this agreement are provided below in French.
+
+Remarque : Ce logiciel étant distribué au Québec, Canada, certaines des
+clauses dans ce contrat sont fournies ci-dessous en français.
+
+GARANTIE LIMITÉE
+
+A. GARANTIE LIMITÉE.  Si vous suivez les instructions, le logiciel
+fonctionnera dans son ensemble comme il est décrit dans la
+documentation de Microsoft reçue avec ou dans le logiciel.
+
+B. DURÉE DE LA GARANTIE ; BÉNÉFICIAIRE DE LA GARANTIE ; DURÉE DE TOUTE
+GARANTIE IMPLICITE.  La garantie limitée couvre le logiciel pendant un
+an après son acquisition par le premier utilisateur.  Si vous recevez
+des compléments, des mises à jour ou un logiciel de remplacement au
+cours de cette année, ils seront couverts par la garantie pendant la
+durée restante ou pendant 30 jours, la période la plus longue étant
+retenue.  Si le premier utilisateur transfère le logiciel, la durée
+restante de la garantie s'applique au destinataire.
+
+Dans la limite autorisée par la loi en vigueur, toute garantie ou
+condition implicite dont vous bénéficiez prendra fin au terme de la
+garantie limitée.  Certains États n'autorisent pas les limitations
+portant sur la durée d'une garantie implicite, de sorte que les
+limitations ci-dessus peuvent ne pas vous être applicables.  Elles
+peuvent également ne pas vous être applicables, car certains pays
+n'autorisent pas les limitations portant sur la durée d'une garantie ou
+condition implicite.
+
+C. EXCLUSIONS DE LA GARANTIE.  Cette garantie ne couvre pas les
+problèmes engendrés par vos propres actes (ou absences d'actes), ceux
+de tiers ou tout autre événement indépendant de la volonté de
+Microsoft.
+
+D. RECOURS DANS LE CADRE DE LA VIOLATION DE GARANTIE.  Nous nous
+engageons à réparer ou à remplacer le logiciel gratuitement.  Si nous
+ne pouvons pas le réparer ni le remplacer, nous rembourserons le
+montant que vous avez payé pour le logiciel figurant sur le reçu.  Nous
+nous engageons à réparer ou à remplacer les compléments, les mises à
+jour et le logiciel de remplacement gratuitement.  Si nous ne pouvons
+pas les réparer ni les remplacer, nous rembourserons le montant que
+vous avez payé pour ces composants, le cas échéant.  Vous devez
+désinstaller le logiciel et le renvoyer à Microsoft avec une preuve
+d'achat pour vous faire rembourser.  Ces recours sont les seuls dont
+vous disposez dans le cadre de la violation de garantie limitée.
+
+E. DROITS DES CONSOMMATEURS NON AFFECTÉS.  Vous pouvez bénéficier de
+droits des consommateurs supplémentaires dans le cadre du droit local,
+que ce contrat ne peut modifier.
+
+F. PROCÉDURES RELATIVES AUX RÉCLAMATIONS DANS LE CADRE DE LA GARANTIE. 
+Vous devrez fournir une preuve d'achat pour obtenir de l'aide en
+matière de garantie.
+
+1. États-Unis et Canada.  Pour obtenir de l'aide en matière de garantie
+ou des informations sur la procédure à suivre pour vous faire
+rembourser un logiciel acquis aux États-Unis et au Canada, mettez-vous
+en rapport avec Microsoft
+
+  - (800) MICROSOFT ;
+  - Microsoft Customer Service and Support, One Microsoft Way, Redmond,
+WA 98052-6399 ; ou
+  - en visitant www.microsoft.com/info/nareturns.htm.
+
+
+2. Europe, Moyen-Orient et Afrique.  Si vous avez acquis le logiciel en
+Europe, au Moyen-Orient ou en Afrique, Microsoft Ireland Operations
+Limited offre cette garantie limitée.  Pour faire une réclamation au
+titre de cette garantie, vous devez vous mettre en rapport avec
+
+  - Microsoft Ireland Operations Limited, Customer Care Centre, Atrium
+Building Block B, Carmanhall Road, Sandyford Industrial Estate, Dublin
+18, Irlande ; ou
+  - votre filiale nationale de Microsoft (visitez le site
+www.microsoft.com/worldwide).
+
+3. En dehors des États-Unis, du Canada, de l'Europe, du Moyen-Orient et
+de l'Afrique.  Si vous avez acquis le logiciel en dehors des
+États-Unis, du Canada, de l'Europe, du Moyen-Orient et de l'Afrique,
+mettez-vous en rapport avec votre filiale nationale de Microsoft
+(visitez le site www.microsoft.com/worldwide).
+
+G. AUCUNE AUTRE GARANTIE.  La garantie limitée est la seule garantie
+directe de Microsoft.  Nous n'accordons aucune autre garantie ou
+condition expresse.  Dans toute la mesure permise par le droit local,
+les garanties implicites de qualité marchande, d'adéquation à un usage
+particulier et d'absence de contrefaçon sont exclues.  Si le droit
+local vous accorde des garanties ou conditions implicites, nonobstant
+la présente exclusion, les recours dont vous disposez sont ceux
+présentés dans la clause de recours dans le cadre de la violation de
+garantie ci-dessus, dans la limite autorisée par le droit local.
+
+H. LIMITATION DES DOMMAGES-INTÉRÊTS ET EXCLUSION DE RESPONSABILITÉ DANS
+LE CADRE DE LA VIOLATION DE GARANTIE.  La clause de limitation des
+dommages-intérêts et exclusion de responsabilité ci-dessous s'applique
+aux violations de cette garantie limitée.
+
+La présente garantie vous confère des droits légaux spécifiques et vous
+pouvez également bénéficier d'autres droits qui varient d'un État à
+l'autre.  Vous pouvez également bénéficier d'autres droits qui varient
+d'un pays à l'autre.
+
+LIMITATION DES DOMMAGES-INTÉRÊTS ET EXCLUSION DE RESPONSABILITÉ POUR
+LES DOMMAGES.  Vous pouvez obtenir de Microsoft et de ses fournisseurs
+une indemnisation en cas de dommages directs uniquement à hauteur du
+montant que vous avez payé pour le logiciel. Vous ne pouvez prétendre à
+aucune indemnisation pour les autres dommages, y compris les dommages
+spéciaux, indirects ou accessoires et pertes de bénéfices.
+
+Cette limitation concerne
+
+  - toute affaire liée au logiciel, aux services ou au contenu (y
+compris le code) figurant sur des sites Internet tiers ou dans des
+programmes tiers ; et
+  - les réclamations au titre de violation de contrat ou de garantie ou
+condition, ou au titre de responsabilité stricte, de négligence ou
+d'une autre faute dans la limite autorisée par la loi en vigueur.
+
+Elle s'applique également, même si
+  - la réparation, le remplacement ou le remboursement du logiciel ne
+compense pas intégralement toute perte subie ; ou
+  - Microsoft connaissait l'éventualité d'un tel dommage.
+
+Certains États n'autorisent pas l'exclusion ou la limitation de
+responsabilité pour les dommages indirects ou accessoires, de sorte que
+la limitation ou l'exclusion ci-dessus peut ne pas vous être
+applicable.  Elles peuvent également ne pas vous être applicables, car
+votre pays n'autorise pas l'exclusion ou la limitation de
+responsabilité pour les dommages indirects, accessoires ou de quelque
+nature que ce soit.
+
+EFFET JURIDIQUE.  Le présent contrat décrit certains droits juridiques.
+Vous pourriez avoir d'autres droits prévus par les lois de votre État
+ou pays. Vous pourriez également avoir des droits à l'égard de la
+partie de qui vous avez acquis de logiciel. Le présent contrat ne
+modifie pas les droits que vous confèrent les lois de votre État ou
+pays si celles ci ne le permettent pas.
+
+-=-=-=-
+
+GameSpy
+Platforms:  PC, PS3, Mac, Linux
+
+IGN Privacy Policy
+Effective as of February 2, 2007.  This policy will change from time to
+time.  The  most recent version can be found at:
+http://corp.ign.com/privacy.html
+IGN Entertainment, Inc. (together with its subsidiaries, "IGN" or "we")
+is part of the News America Group, which has adopted a set of Privacy
+Principles http://www.newscorp.com/privacy.html applicable to all its
+U.S.-based companies. IGN has implemented those Principles in this
+Privacy Policy, which describes how we collect, use, and share
+personally identifiable information (information that can be used to
+identify you, such as your full name, email address, mailing address,
+or telephone number) ("PII") we obtain from and about individuals
+located in the U.S. both online and off-line.
+This Policy applies to all web sites and services owned or provided by
+IGN, including its subsidiaries (collectively "IGN Sites"). IGN Sites
+include, but are not limited to, IGN.com, VaultNetwork.com,
+CheatsCodesGuides.com, GameStats.com, TeamXbox.com, GameSpy.com,
+GameSpyArcade.com, GameSpyArena.com, Direct2Drive.com,
+RottenTomatoes.com, FilePlanet.com, 3DGamers.com, Insider.ign.com, and
+AskMen.com, as well as other IGN-branded services. New sites, domain
+names, or services that we add to the IGN Sites will be subject to this
+Policy.
+The IGN Sites are general audience web sites, and IGN does not
+knowingly collect PII from children under 13 years of age. 
+From time to time we may revise this Policy to reflect industry
+initiatives or changes in the law, our information collection and use
+practices, the features of the IGN Sites, or technology. If we make
+revisions that change the way we collect or use your PII, those changes
+will be posted in this Policy and the effective date will be noted at
+the beginning of this Policy. Therefore, you should review it
+periodically so that you are up to date on our most current policies
+and practices. If we materially change our practices regarding use of
+your PII, your PII will continue to be governed by the Policy under
+which it was collected unless you have been provided notice of, and
+have not objected to, the change. 
+COLLECTION: Collection of PII by IGN
+General. IGN collects PII in order to create or enhance our
+relationship with you. When we collect PII from you it is because you
+are voluntarily submitting the information to us in order to
+participate in certain activities including (i) registration for
+certain online services and tools such as downloads, message boards,
+chat rooms or other community services; (ii) registration for special
+communications, such as email updates and newsletters; (iii)
+subscription registration; (iv) purchase products or services from or
+through the IGN Sites; (v) user surveys; (vi) events, sweepstakes,
+contests or promotions; and (vii) registration for online multi- or
+single-player gaming. We may obtain PII from third parties that we
+consider to be reputable. We also may receive on the IGN Sites
+user-generated content or information of any type or medium, which may
+include PII, including but not limited to: audio conversations; text
+chat and video images from chat rooms; user reviews; and game guide
+submissions.
+Please keep in mind that whenever you voluntarily disclose personal
+information in public areas of an IGN Site, such as the member home
+pages and message boards, your information can be viewed and possibly
+used by others. We advise users to be especially careful in such public
+areas about disclosing PII, such as full name, home address, or phone
+number.
+Cookies. Cookies are small bits of information that are placed on the
+hard drive of your computer when you visit the IGN Sites. We may use
+cookies to recognize users who have already registered for an IGN Site,
+allowing those users to speed up their future activities on the IGN
+Sites. Information about your activities on IGN sites and other
+non-personally identifiable information about you may also be used to
+tailor the online ads you encounter to those we believe are consistent
+with your interests. 
+Third party advertisements displayed on the IGN Sites may also contain
+cookies set by Internet advertising companies or advertisers. IGN does
+not control these cookies. You should check the privacy policy of the
+Internet advertising company or advertiser to see whether and how it
+uses cookies. See the "Notice" section below for more information on
+third party advertisements.
+IGN may use cookies and similar tools to relate your use of the IGN
+Sites to PII obtained from you or a third party. For example, if you've
+asked us to provide you with information about our products or
+promotions, cookie and/or click stream data about your activities on
+the IGN Sites may allow us to limit the materials we provide you to
+items we think you will find interesting, based on your prior online
+activities and preferences. We will not coordinate your PII and web
+site activity information in this manner without first obtaining your
+express affirmative consent. 
+You can set your computer to alert you each time a cookie is being sent
+or to refuse cookies completely. However, without cookies, you may not
+have access to certain features on the IGN Sites.
+Web beacons. The IGN Sites may contain electronic images known as Web
+beacons - sometimes called single-pixel gifs - that may be used to
+assist in delivering or accessing cookies on our sites and allow us to
+count users who have visited those pages and to deliver co-branded
+services. We may include Web beacons in promotional e-mail messages or
+our newsletters in order to determine whether messages have been opened
+and acted upon.
+We may also employ Web beacons from third parties in order to help us
+compile aggregated statistics and determine the effectiveness of our
+promotional campaigns. We prohibit Web beacons on our sites from being
+used by third parties to collect or access your personal information.
+Finally, we may work with other companies that advertise on the IGN
+Sites to place Web beacons on their sites in order to allow us to
+develop statistics on how often clicking on an advertisement on an IGN
+site results in a purchase or other action on the advertiser's site.
+NOTICE: IGN Will Provide You with Notice About its PII Collection
+Practices
+When you voluntarily provide PII in response to our request or we
+authorize a third party to collect PII from you on the IGN Sites, we
+will inform you about who is collecting the information, how and why
+the information is being collected, and the types of uses IGN will make
+of the information At the time you provide your PII, IGN will notify
+you of your options regarding our use of your PII (See "Choice" below).
+This Policy describes the types of other companies that may want to
+send you information about their products and services and with whom we
+may want to share your personal information, as provided in this Policy
+(See "Use" below).
+Sometimes we collect PII from consumers in manual format or off-line,
+such as a post card or subscription form. Providing detailed notice in
+those situations often proves impractical, so consumers will instead be
+provided with a short notice that describes how to obtain the full text
+of this Policy and other relevant information from us.
+When you sign up with our partners for services such as game hosting,
+userpages, and other services, you are providing information to the
+partner offering the service as well as to IGN. Use of your PII by the
+partner is subject to that partner's privacy policy, and you should
+carefully read the privacy policy of the partner providing the service
+before deciding to take advantage of the service.
+The IGN Sites may be linked to Internet sites operated by other
+companies. Some of these third party sites may be co-branded with an
+IGN or affiliated entity's logo, even though they are not operated or
+maintained by IGN. The IGN Sites also carry advertisements from other
+companies. IGN is not responsible for the privacy practices of web
+sites operated by third parties that are linked to the IGN Sites or for
+the privacy practices of third party or national Internet advertising
+companies. Once you've left an IGN Site via such a link or by clicking
+on an advertisement, you should check the applicable privacy policy of
+the third party or advertiser site to determine how they will handle
+any PII they collect from you.
+The IGN Sites may also be linked to sites operated by companies
+affiliated with IGN (i.e., that are part of the News America Group).
+Although all News America Group entities adhere to the group's Privacy
+Principles http://www.newscorp.com/privacy.html, visitors to those
+affiliated sites should still refer to their separate privacy policies
+and practices, which may differ in some respects from this Policy. 
+Some of the advertisements that appear on the IGN Sites are delivered
+to you by nationalInternet advertising companies such as those listed
+below. These companies utilize certain technologies to deliver
+advertisements and marketing messages and to collect anonymous
+information about your visit to the IGN Sites, including information
+about the ads they display, via a cookie placed on your computer that
+reads (or approximates) your IP address. To opt out of information
+collection by these companies, or to obtain information about the
+technologies they use or their own privacy policies, please visit:
+http://www.doubleclick.com/us/about_doubleclick/privacy/
+or
+http://www.networkadvertising.org/optout_nonppii.asp.
+CHOICE: IGN Will Provide You with Choices About the Use of Your PII
+IGN will not use your PII for purposes different from those about which
+you have been notified, or share your PII with third parties that are
+not affiliated with IGN, unless you have asked to receive certain
+information and/or services from third parties or participate in
+certain third-party programs (such as beta or demos) and have been
+notified that the fulfillment of such a request requires the sharing of
+your PII or you have consented to such sharing. 
+For example, IGN provides game owners/publishers with certain hosted
+technology and software that enables various game related
+functionalities, such as online multi- or single-player gaming, on our
+Sites. If you are not already a registered user of the IGN Sites you
+may be asked to provide PII in connection with your use of such
+services. In addition, we may share your PII with game
+owners/publishers so that they can provide you with the services you
+have elected to receive. Similarly, IGN may provide downloads of
+software for, or host play of, pre-release test, or "beta", versions of
+games as well as partial game demonstrations, trials and full game
+downloads provided by the owner/publisher. In order to receive or
+participate in these programs, you may be required to provide PII,
+which we may provide to the owner/publisher. Any PII that you provide
+to game owners/publishers will be subject to the game
+owner's/publisher's privacy policy, and we have no control over the
+ways that game owners/publishers to whom you provide your PII may use
+your PII. 
+USE: IGN's Use of PII
+IGN will use your PII in a manner that is consistent with this Policy.
+If IGN obtains PII from a third party, such as a business partner, our
+use of that information is governed by this Policy. IGN may use PII in
+aggregate, anonymous form for research purposes.
+We may contact you regarding account status, changes to this Policy,
+our User Agreement or other terms of use, to confirm your registration,
+for customer service purposes or for any other business reason related
+to your use of IGN Sites.
+IGN may share your PII with companies that are affiliated with us, that
+is, are part of the News America Group of companies. Provided you have
+given us consent, IGN may also share your PII with advertisers and
+business partners that are not affiliated with IGN, but would like to
+send you information about their products and services, such as
+sponsors of promotions or sweepstakes that appear on the IGN sites. We
+will never share your credit card information with third parties except
+those IGN uses to perform tasks (such as order fulfillment and payment
+processing) required to complete purchases you make through web sites.
+IGN employees, agents, and contractors are required to have a
+legitimate business reason to obtain access to your PII. IGN may share
+your PII with outside contractors or agents who help us manage our
+information activities (i.e., sweepstakes administration, order
+fulfillment, statistical analyses), but they must have agreed only to
+use your PII to provide IGN with a specific service and not for any
+other purpose. 
+IGN may also enter into agreements with outside companies that possess
+the technology that allows IGN to customize the advertising and
+marketing messages you receive on the IGN Sites. Your non-PII and click
+stream data about your activities on our sites may be shared with these
+companies so this customization can be accomplished. These companies
+have agreed not to share your information with any third party or use
+it for any other purpose. Anonymous click stream and demographic
+information may also be shared with IGN's advertisers and business
+partners. 
+IGN automatically updates software used in conjunction with certain of
+the services available on the IGN Sites. In order to accomplish this,
+IGN collects information about a user's current version of the software
+from the user's computer. This information is not archived but is only
+used to determine which software requires updating. 
+IGN may record audio conversations or copy text chat or video images
+from chat rooms on the IGN Sites and may use and therefore disclose
+such material for use in connection with promoting the IGN Sites. In
+addition, IGN may collect other user-generated content such as user
+reviews and game guide submissions to post on our community hub site.
+Further information regarding user-generated content is available in
+the IGN User Agreement located at
+http://corp.ign.com/user-agreement.html.
+There may be instances when IGN may disclose PII without providing you
+with a choice in order to protect the legal rights of IGN, other
+companies within the News America Group or their employees, agents, and
+contractors; to protect the safety and security of visitors to our web
+sites; to investigate, prevent or protect against suspected fraud,
+illegal activity, violations of our user agreement or for risk
+management purposes; or to respond to subpoenas, court orders, or legal
+process, or to establish or exercise our legal rights or defend against
+legal claims. In addition, if IGN sells all or part of its business or
+makes a sale or transfer of assets or is otherwise involved in a merger
+or business transfer, IGN may transfer your PII to a third party as
+part of that transaction. 
+SECURITY: IGN Protects the Security of PII
+IGN uses reasonable administrative, technical, personnel, and physical
+measures to safeguard PII in its possession against loss, theft and
+unauthorized use, disclosure, or modification. Passwords and other
+sensitive information stored by IGN are encrypted in transit.
+Notwithstanding these security measures, please be aware that when you
+submit PII to the IGN Sites over the Internet, the information may
+travel over many systems that are not under the IGN's control and may
+not be secure. 
+If a password is used to help protect your accounts and personal
+information, it is your responsibility to keep your password
+confidential. Do not share this information with anyone. Anyone who has
+access to your password will have access to your PII, as well as to any
+credit card information that you have submitted. If you are sharing a
+computer with anyone you should always log out before leaving a site or
+service to protect access to your information from subsequent users.
+ACCESS: How to Access, Correct, or Delete Your Preferences Regarding
+Your PII
+To access, correct or update your account or other Personal Information
+such as your city or interests, please use the "My Account" link on the
+IGN Site on which you are registered. 
+If you want to update your email address or stop receiving these types
+of promotional emails, please follow the procedures to unsubscribe at
+the bottom of any email we send you. You may unsubscribe from any
+Premium service for which you have previously elected by following the
+instructions included in the IGN User Agreement
+http://corp.ign.com/user-agreement.html.
+REMEDIES AND COMPLIANCE: How to Contact IGN About Privacy Concerns
+If you have any other questions, comments or complaints about this
+Policy, please contact us via our online form, available at
+http://support.ign.com/ or write to us at:
+IGN Entertainment, Inc.
+Attn: Legal Department/Privacy Administrator
+8000 Marina Blvd.
+4th Floor
+Brisbane, CA 94005
+*Be sure to include the specific IGN Site to which you are a member and
+about which you have a question.
+
+-=-=-=-
+
+Lua
+Platforms:  Linux (installer only)
+
+Copyright © 1994-2006 Lua.org, PUC-Rio.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+-=-=-=-
+
+SDL 1.2
+Platforms:  Mac, Linux
+
+GNU Lesser General Public License
+
+Version 2.1, February 1999
+
+    Copyright (C) 1991, 1999 Free Software Foundation, Inc. 59 Temple
+Place, Suite 330, Boston, MA 02111-1307 USA Everyone is permitted to
+copy and distribute verbatim copies of this license document, but
+changing it is not allowed.
+
+    [This is the first released version of the Lesser GPL. It also
+counts as the successor of the GNU Library Public License, version 2,
+hence the version number 2.1.]
+
+Preamble
+
+The licenses for most software are designed to take away your freedom
+to share and change it. By contrast, the GNU General Public Licenses
+are intended to guarantee your freedom to share and change free
+software--to make sure the software is free for all its users.
+
+This license, the Lesser General Public License, applies to some
+specially designated software packages--typically libraries--of the
+Free Software Foundation and other authors who decide to use it. You
+can use it too, but we suggest you first think carefully about whether
+this license or the ordinary General Public License is the better
+strategy to use in any particular case, based on the explanations
+below.
+
+When we speak of free software, we are referring to freedom of use, not
+price. Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+this service if you wish); that you receive source code or can get it
+if you want it; that you can change the software and use pieces of it
+in new free programs; and that you are informed that you can do these
+things.
+
+To protect your rights, we need to make restrictions that forbid
+distributors to deny you these rights or to ask you to surrender these
+rights. These restrictions translate to certain responsibilities for
+you if you distribute copies of the library or if you modify it.
+
+For example, if you distribute copies of the library, whether gratis or
+for a fee, you must give the recipients all the rights that we gave
+you. You must make sure that they, too, receive or can get the source
+code. If you link other code with the library, you must provide
+complete object files to the recipients, so that they can relink them
+with the library after making changes to the library and recompiling
+it. And you must show them these terms so they know their rights.
+
+We protect your rights with a two-step method: (1) we copyright the
+library, and (2) we offer you this license, which gives you legal
+permission to copy, distribute and/or modify the library.
+
+To protect each distributor, we want to make it very clear that there
+is no warranty for the free library. Also, if the library is modified
+by someone else and passed on, the recipients should know that what
+they have is not the original version, so that the original author's
+reputation will not be affected by problems that might be introduced by
+others.
+
+Finally, software patents pose a constant threat to the existence of
+any free program. We wish to make sure that a company cannot
+effectively restrict the users of a free program by obtaining a
+restrictive license from a patent holder. Therefore, we insist that any
+patent license obtained for a version of the library must be consistent
+with the full freedom of use specified in this license.
+
+Most GNU software, including some libraries, is covered by the ordinary
+GNU General Public License. This license, the GNU Lesser General Public
+License, applies to certain designated libraries, and is quite
+different from the ordinary General Public License. We use this license
+for certain libraries in order to permit linking those libraries into
+non-free programs.
+
+When a program is linked with a library, whether statically or using a
+shared library, the combination of the two is legally speaking a
+combined work, a derivative of the original library. The ordinary
+General Public License therefore permits such linking only if the
+entire combination fits its criteria of freedom. The Lesser General
+Public License permits more lax criteria for linking other code with
+the library.
+
+We call this license the "Lesser" General Public License because it
+does Less to protect the user's freedom than the ordinary General
+Public License. It also provides other free software developers Less of
+an advantage over competing non-free programs. These disadvantages are
+the reason we use the ordinary General Public License for many
+libraries. However, the Lesser license provides advantages in certain
+special circumstances.
+
+For example, on rare occasions, there may be a special need to
+encourage the widest possible use of a certain library, so that it
+becomes a de-facto standard. To achieve this, non-free programs must be
+allowed to use the library. A more frequent case is that a free library
+does the same job as widely used non-free libraries. In this case,
+there is little to gain by limiting the free library to free software
+only, so we use the Lesser General Public License.
+
+In other cases, permission to use a particular library in non-free
+programs enables a greater number of people to use a large body of free
+software. For example, permission to use the GNU C Library in non-free
+programs enables many more people to use the whole GNU operating
+system, as well as its variant, the GNU/Linux operating system.
+
+Although the Lesser General Public License is Less protective of the
+users' freedom, it does ensure that the user of a program that is
+linked with the Library has the freedom and the wherewithal to run that
+program using a modified version of the Library.
+
+
+The precise terms and conditions for copying, distribution and
+modification follow. Pay close attention to the difference between a
+"work based on the library" and a "work that uses the library". The
+former contains code derived from the library, whereas the latter must
+be combined with the library in order to run.
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+0. This License Agreement applies to any software library or other
+program which contains a notice placed by the copyright holder or other
+authorized party saying it may be distributed under the terms of this
+Lesser General Public License (also called "this License"). Each
+licensee is addressed as "you".
+
+A "library" means a collection of software functions and/or data
+prepared so as to be conveniently linked with application programs
+(which use some of those functions and data) to form executables.
+
+The "Library", below, refers to any such software library or work which
+has been distributed under these terms. A "work based on the Library"
+means either the Library or any derivative work under copyright law:
+that is to say, a work containing the Library or a portion of it,
+either verbatim or with modifications and/or translated
+straightforwardly into another language. (Hereinafter, translation is
+included without limitation in the term "modification".)
+
+"Source code" for a work means the preferred form of the work for
+making modifications to it. For a library, complete source code means
+all the source code for all modules it contains, plus any associated
+interface definition files, plus the scripts used to control
+compilation and installation of the library.
+
+Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope. The act of running
+a program using the Library is not restricted, and output from such a
+program is covered only if its contents constitute a work based on the
+Library (independent of the use of the Library in a tool for writing
+it). Whether that is true depends on what the Library does and what the
+program that uses the Library does.
+
+1. You may copy and distribute verbatim copies of the Library's
+complete source code as you receive it, in any medium, provided that
+you conspicuously and appropriately publish on each copy an appropriate
+copyright notice and disclaimer of warranty; keep intact all the
+notices that refer to this License and to the absence of any warranty;
+and distribute a copy of this License along with the Library.
+
+You may charge a fee for the physical act of transferring a copy, and
+you may at your option offer warranty protection in exchange for a fee.
+
+2. You may modify your copy or copies of the Library or any portion of
+it, thus forming a work based on the Library, and copy and distribute
+such modifications or work under the terms of Section 1 above, provided
+that you also meet all of these conditions:
+
+    a) The modified work must itself be a software library.
+
+    b) You must cause the files modified to carry prominent notices
+stating that you changed the files and the date of any change.
+
+    c) You must cause the whole of the work to be licensed at no charge
+to all third parties under the terms of this License.
+
+    d) If a facility in the modified Library refers to a function or a
+table of data to be supplied by an application program that uses the
+facility, other than as an argument passed when the facility is
+invoked, then you must make a good faith effort to ensure that, in the
+event an application does not supply such function or table, the
+facility still operates, and performs whatever part of its purpose
+remains meaningful.
+
+    (For example, a function in a library to compute square roots has a
+purpose that is entirely well-defined independent of the application.
+Therefore, Subsection 2d requires that any application-supplied
+function or table used by this function must be optional: if the
+application does not supply it, the square root function must still
+compute square roots.)
+
+    These requirements apply to the modified work as a whole. If
+identifiable sections of that work are not derived from the Library,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works. But when you
+distribute the same sections as part of a whole which is a work based
+on the Library, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote
+it.
+
+    Thus, it is not the intent of this section to claim rights or
+contest your rights to work written entirely by you; rather, the intent
+is to exercise the right to control the distribution of derivative or
+collective works based on the Library.
+
+    In addition, mere aggregation of another work not based on the
+Library with the Library (or with a work based on the Library) on a
+volume of a storage or distribution medium does not bring the other
+work under the scope of this License. 
+
+3. You may opt to apply the terms of the ordinary GNU General Public
+License instead of this License to a given copy of the Library. To do
+this, you must alter all the notices that refer to this License, so
+that they refer to the ordinary GNU General Public License, version 2,
+instead of to this License. (If a newer version than version 2 of the
+ordinary GNU General Public License has appeared, then you can specify
+that version instead if you wish.) Do not make any other change in
+these notices.
+
+Once this change is made in a given copy, it is irreversible for that
+copy, so the ordinary GNU General Public License applies to all
+subsequent copies and derivative works made from that copy.
+
+This option is useful when you wish to copy part of the code of the
+Library into a program that is not a library.
+
+4. You may copy and distribute the Library (or a portion or derivative
+of it, under Section 2) in object code or executable form under the
+terms of Sections 1 and 2 above provided that you accompany it with the
+complete corresponding machine-readable source code, which must be
+distributed under the terms of Sections 1 and 2 above on a medium
+customarily used for software interchange.
+
+If distribution of object code is made by offering access to copy from
+a designated place, then offering equivalent access to copy the source
+code from the same place satisfies the requirement to distribute the
+source code, even though third parties are not compelled to copy the
+source along with the object code.
+
+5. A program that contains no derivative of any portion of the Library,
+but is designed to work with the Library by being compiled or linked
+with it, is called a "work that uses the Library". Such a work, in
+isolation, is not a derivative work of the Library, and therefore falls
+outside the scope of this License.
+
+However, linking a "work that uses the Library" with the Library
+creates an executable that is a derivative of the Library (because it
+contains portions of the Library), rather than a "work that uses the
+library". The executable is therefore covered by this License. Section
+6 states terms for distribution of such executables.
+
+When a "work that uses the Library" uses material from a header file
+that is part of the Library, the object code for the work may be a
+derivative work of the Library even though the source code is not.
+Whether this is true is especially significant if the work can be
+linked without the Library, or if the work is itself a library. The
+threshold for this to be true is not precisely defined by law.
+
+If such an object file uses only numerical parameters, data structure
+layouts and accessors, and small macros and small inline functions (ten
+lines or less in length), then the use of the object file is
+unrestricted, regardless of whether it is legally a derivative work.
+(Executables containing this object code plus portions of the Library
+will still fall under Section 6.)
+
+Otherwise, if the work is a derivative of the Library, you may
+distribute the object code for the work under the terms of Section 6.
+Any executables containing that work also fall under Section 6, whether
+or not they are linked directly with the Library itself.
+
+6. As an exception to the Sections above, you may also combine or link
+a "work that uses the Library" with the Library to produce a work
+containing portions of the Library, and distribute that work under
+terms of your choice, provided that the terms permit modification of
+the work for the customer's own use and reverse engineering for
+debugging such modifications.
+
+You must give prominent notice with each copy of the work that the
+Library is used in it and that the Library and its use are covered by
+this License. You must supply a copy of this License. If the work
+during execution displays copyright notices, you must include the
+copyright notice for the Library among them, as well as a reference
+directing the user to the copy of this License. Also, you must do one
+of these things:
+
+    a) Accompany the work with the complete corresponding
+machine-readable source code for the Library including whatever changes
+were used in the work (which must be distributed under Sections 1 and 2
+above); and, if the work is an executable linked with the Library, with
+the complete machine-readable "work that uses the Library", as object
+code and/or source code, so that the user can modify the Library and
+then relink to produce a modified executable containing the modified
+Library. (It is understood that the user who changes the contents of
+definitions files in the Library will not necessarily be able to
+recompile the application to use the modified definitions.)
+
+    b) Use a suitable shared library mechanism for linking with the
+Library. A suitable mechanism is one that (1) uses at run time a copy
+of the library already present on the user's computer system, rather
+than copying library functions into the executable, and (2) will
+operate properly with a modified version of the library, if the user
+installs one, as long as the modified version is interface-compatible
+with the version that the work was made with.
+
+    c) Accompany the work with a written offer, valid for at least
+three years, to give the same user the materials specified in
+Subsection 6a, above, for a charge no more than the cost of performing
+this distribution.
+
+    d) If distribution of the work is made by offering access to copy
+from a designated place, offer equivalent access to copy the above
+specified materials from the same place.
+
+    e) Verify that the user has already received a copy of these
+materials or that you have already sent this user a copy.
+
+For an executable, the required form of the "work that uses the
+Library" must include any data and utility programs needed for
+reproducing the executable from it. However, as a special exception,
+the materials to be distributed need not include anything that is
+normally distributed (in either source or binary form) with the major
+components (compiler, kernel, and so on) of the operating system on
+which the executable runs, unless that component itself accompanies the
+executable.
+
+It may happen that this requirement contradicts the license
+restrictions of other proprietary libraries that do not normally
+accompany the operating system. Such a contradiction means you cannot
+use both them and the Library together in an executable that you
+distribute.
+
+7. You may place library facilities that are a work based on the
+Library side-by-side in a single library together with other library
+facilities not covered by this License, and distribute such a combined
+library, provided that the separate distribution of the work based on
+the Library and of the other library facilities is otherwise permitted,
+and provided that you do these two things:
+
+    a) Accompany the combined library with a copy of the same work
+based on the Library, uncombined with any other library facilities.
+This must be distributed under the terms of the Sections above.
+
+    b) Give prominent notice with the combined library of the fact that
+part of it is a work based on the Library, and explaining where to find
+the accompanying uncombined form of the same work.
+
+8. You may not copy, modify, sublicense, link with, or distribute the
+Library except as expressly provided under this License. Any attempt
+otherwise to copy, modify, sublicense, link with, or distribute the
+Library is void, and will automatically terminate your rights under
+this License. However, parties who have received copies, or rights,
+from you under this License will not have their licenses terminated so
+long as such parties remain in full compliance.
+
+9. You are not required to accept this License, since you have not
+signed it. However, nothing else grants you permission to modify or
+distribute the Library or its derivative works. These actions are
+prohibited by law if you do not accept this License. Therefore, by
+modifying or distributing the Library (or any work based on the
+Library), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying the
+Library or works based on it.
+
+10. Each time you redistribute the Library (or any work based on the
+Library), the recipient automatically receives a license from the
+original licensor to copy, distribute, link with or modify the Library
+subject to these terms and conditions. You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties with
+this License.
+
+11. If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License. If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Library at all. For example, if a patent license
+would not permit royalty-free redistribution of the Library by all
+those who receive copies directly or indirectly through you, then the
+only way you could satisfy both it and this License would be to refrain
+entirely from distribution of the Library.
+
+If any portion of this section is held invalid or unenforceable under
+any particular circumstance, the balance of the section is intended to
+apply, and the section as a whole is intended to apply in other
+circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system which is implemented
+by public license practices. Many people have made generous
+contributions to the wide range of software distributed through that
+system in reliance on consistent application of that system; it is up
+to the author/donor to decide if he or she is willing to distribute
+software through any other system and a licensee cannot impose that
+choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+12. If the distribution and/or use of the Library is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Library under this License may
+add an explicit geographical distribution limitation excluding those
+countries, so that distribution is permitted only in or among countries
+not thus excluded. In such case, this License incorporates the
+limitation as if written in the body of this License.
+
+13. The Free Software Foundation may publish revised and/or new
+versions of the Lesser General Public License from time to time. Such
+new versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.
+
+Each version is given a distinguishing version number. If the Library
+specifies a version number of this License which applies to it and "any
+later version", you have the option of following the terms and
+conditions either of that version or of any later version published by
+the Free Software Foundation. If the Library does not specify a license
+version number, you may choose any version ever published by the Free
+Software Foundation.
+
+14. If you wish to incorporate parts of the Library into other free
+programs whose distribution conditions are incompatible with these,
+write to the author to ask for permission. For software which is
+copyrighted by the Free Software Foundation, write to the Free Software
+Foundation; we sometimes make exceptions for this. Our decision will be
+guided by the two goals of preserving the free status of all
+derivatives of our free software and of promoting the sharing and reuse
+of software generally.
+
+NO WARRANTY
+
+15. BECAUSE THE LIBRARY IS LICENSED FREE OF CHARGE, THERE IS NO
+WARRANTY FOR THE LIBRARY, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
+EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+OTHER PARTIES PROVIDE THE LIBRARY "AS IS" WITHOUT WARRANTY OF ANY KIND,
+EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE LIBRARY IS WITH
+YOU. SHOULD THE LIBRARY PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+16. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY
+AND/OR REDISTRIBUTE THE LIBRARY AS PERMITTED ABOVE, BE LIABLE TO YOU
+FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR
+CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+LIBRARY (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE LIBRARY TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGES.
+END OF TERMS AND CONDITIONS
+How to Apply These Terms to Your New Libraries
+If you develop a new library, and you want it to be of the greatest
+possible use to the public, we recommend making it free software that
+everyone can redistribute and change. You can do so by permitting
+redistribution under these terms (or, alternatively, under the terms of
+the ordinary General Public License).
+
+To apply these terms, attach the following notices to the library. It
+is safest to attach them to the start of each source file to most
+effectively convey the exclusion of warranty; and each file should have
+at least the "copyright" line and a pointer to where the full notice is
+found.
+
+    <one line to give the library's name and an idea of what it does.>
+Copyright (C) <year> <name of author>
+
+    This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
+General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+
+Also add information on how to contact you by electronic and paper
+mail.
+
+You should also get your employer (if you work as a programmer) or your
+school, if any, to sign a "copyright disclaimer" for the library, if
+necessary. Here is a sample; alter the names:
+
+    Yoyodyne, Inc., hereby disclaims all copyright interest in the
+library `Frob' (a library for tweaking knobs) written by James Random
+Hacker.
+
+    signature of Ty Coon, 1 April 1990
+    Ty Coon, President of Vice
+
+That's all there is to it!
+
