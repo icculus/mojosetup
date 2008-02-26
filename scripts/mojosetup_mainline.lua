@@ -907,6 +907,7 @@ local function install_control_app(desc, key)
     while ent ~= nil do
         -- Make sure this is in a directory we want to write out...
         local should_write = false
+
         if (ent.filename ~= nil) and (ent.filename ~= "") then
             for i,dir in ipairs(needdirs) do
                 local clipdir = "^" .. dir .. "/"
@@ -919,7 +920,10 @@ local function install_control_app(desc, key)
 
         if should_write then
             dst = MojoSetup.controldir .. "/" .. ent.filename
-            install_archive_entity(dst, ent, base, desc, key)
+            -- don't overwrite preexisting stuff.
+            if not MojoSetup.platform.exists(dst) then
+                install_archive_entity(dst, ent, base, desc, key)
+            end
         end
 
         -- and check the next entry in the archive...
