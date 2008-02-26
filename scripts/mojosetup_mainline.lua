@@ -726,9 +726,9 @@ local function set_destination(dest)
 end
 
 
-local function run_config_defined_hook(func, install)
+local function run_config_defined_hook(func, pkg)
     if func ~= nil then
-        local errstr = func(install)
+        local errstr = func(pkg)
         if errstr ~= nil then
             MojoSetup.fatal(errstr)
         end
@@ -829,6 +829,8 @@ local function serialize(obj)
             retval = tostring(obj)
         elseif objtype == "string" then
             retval = string.format("%q", obj)
+        elseif objtype == "function" then
+            retval = "loadstring(" .. string.format("%q", string.dump(obj)) .. ")"
         elseif objtype == "table" then
             retval = "{\n"
             local tab = string.rep("\t", indent)
@@ -981,7 +983,9 @@ local function install_manifests(desc, key)
         version = MojoSetup.install.version,
         manifest = MojoSetup.manifest,
         splash = MojoSetup.install.splash,
-        desktopmenuitems = MojoSetup.install.desktopmenuitems
+        desktopmenuitems = MojoSetup.install.desktopmenuitems,
+        preuninstall = MojoSetup.install.preuninstall,
+        postuninstall = MojoSetup.install.postuninstall
     }
 
     -- now build these things...
@@ -1800,6 +1804,7 @@ local function uninstaller()
 
     if uninstall_permitted then
         start_gui(package.description, package.splash)
+        run_config_defined_hook(package.preuninstall, package)
 
         uninstall_desktop_menu_items(package)
 
@@ -1823,6 +1828,7 @@ local function uninstaller()
 
         local filelist = flatten_manifest(package.manifest, prepend_dest_dir)
         delete_files(filelist, callback, true)
+        run_config_defined_hook(package.postuninstall, package)
         MojoSetup.gui.final(_("Uninstall complete"))
         stop_gui()
     end

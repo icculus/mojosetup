@@ -285,6 +285,30 @@ Here are the elements, and the attributes they can possess.
     Setup.Package table as a parameter.
 
 
+   preuninstall (no default, mustBeFunction)
+
+    If this attribute is defined, it is called by the uninstaller after the
+    user confirms that uninstallation is acceptable and deletion of
+    files is about to begin. It passes something like the finalized
+    Setup.Package table as a parameter. This function is serialized for later
+    use, in a different program running in a different context: it may NOT use
+    any Lua upvalues (they will be local variables set to nil when the function
+    runs) and any globals you reference may or may not exist when the
+    function runs. Try to do the bare minimum here if you must use this hook.
+
+
+   postinstall (no default, mustBeFunction)
+
+    If this attribute is defined, it is called by the uninstaller after the
+    uninstallation has successfully finished. It passes something like the
+    finalized Setup.Package table as a parameter. This function is serialized
+    for later use, in a different program running in a different context: it
+    may NOT use any Lua upvalues (they will be local variables set to nil when
+    the function runs) and any globals you reference may or may not exist when
+    the function runs. Try to do the bare minimum here if you must use this
+    hook.
+
+
    updateurl (no default, mustBeUrl)
 
     This is written to the manifest files for the aid of external tools, but

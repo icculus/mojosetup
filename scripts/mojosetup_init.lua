@@ -266,6 +266,8 @@ function Setup.Package(tab)
         { "superuser", false, mustBeBool },
         { "write_manifest", true, mustBeBool },
         { "support_uninstall", true, mustBeBool },
+        { "preuninstall", nil, mustBeFunction },
+        { "postuninstall", nil, mustBeFunction }
     })
 
     if MojoSetup.installs == nil then
@@ -278,33 +280,6 @@ function Setup.Package(tab)
     return tab
 
 --[[
- preuninstall
-            This is a shell script which is executed at the very beginning
-            of the uninstall process. It will be run before any RPM uninstall
-            scripts. This file is not installed, but is added to the
-            beginning of uninstall script.
-
- postuninstall 
-            This is a shell script which is executed at the very end of the 
-            uninstall process. It will be run after any RPM uninstall
-            scripts. This file is not installed, but is added to the
-            end of the uninstall script.
-
-            IMPORTANT: An actual file name for a shell scripts needs to be specified,
-            not a command, for both pre/postuninstall entries.
-            "sh script.sh" is incorrect, but "script.sh" is correct.
-
-            Both the preuninstall and postuninstall scripts will have access
-            to the default environment variables. See the 'SCRIPT' section
-            for details. 
-
-            Also, these scripts will be run at the very beginning and very 
-            end of the install cleanup if the install is aborted.
-
- nouninstall This is an optional flag which, if specified, tells setup
-             not to generate an uninstall script after it runs. It also
-             doesn't generate any data for product queries and auto-updating.
-
  promptbinaries When set to "yes", setup will create a checkbox
                 to allow the user whether or not to create 
                 a symbolic link to the binaries.
