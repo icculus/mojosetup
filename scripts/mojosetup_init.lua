@@ -38,7 +38,12 @@ function MojoSetup.dumptable(tabname, tab, depth)
     end
 
     if tabname ~= nil then
-        MojoSetup.logdebug(tabname .. " = {")
+        if tab == nil then
+            MojoSetup.logdebug(tabname .. " = nil")
+            return
+        else
+            MojoSetup.logdebug(tabname .. " = {")
+        end
     end
 
     local depthstr = ""
