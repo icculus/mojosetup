@@ -464,7 +464,7 @@ local function prepare_localization()
     end
     MojoSetup.applocalization = nil  -- done with this; garbage collect it.
 
-    if MojoSetup.localization == nil then
+    if MojoSetup.localization ~= nil then
         local at_least_one = false
         local locale = MojoSetup.info.locale
         local lang = string.gsub(locale, "_%w+", "", 1)  -- make "en_US" into "en"
