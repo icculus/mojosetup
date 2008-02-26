@@ -1383,7 +1383,7 @@ local function do_install(install)
                     if install.desktopmenuitems == nil then
                         install.desktopmenuitems = {}
                     end
-                    install.desktopmenuitems[#install.desktopmenuitems] = item
+                    install.desktopmenuitems[#install.desktopmenuitems+1] = item
                 end
             end
         end
