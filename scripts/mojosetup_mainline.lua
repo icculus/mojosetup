@@ -1816,7 +1816,7 @@ local function uninstaller()
         local ptype = _("Uninstalling")
         local callback = function(fname, current, total)
             fname = make_relative(fname, MojoSetup.destination)
-            local percent = calc_percent(current, total)
+            local percent = 100 - calc_percent(current, total)
             local component = package.manifest[fname].key
             if component == nil then
                 component = ""
