@@ -456,7 +456,7 @@ local function prepare_localization()
                 MojoSetup.localization[k] = v  -- just take the whole table as-is.
             else
                 -- This can add or overwrite entries...
-                for lang,str in pairs(MojoSetup.applocalization) do
+                for lang,str in pairs(v) do
                     MojoSetup.localization[k][lang] = str
                 end
             end
