@@ -398,7 +398,7 @@ boolean MojoLua_callProcedure(const char *funcname)
 boolean MojoLua_runFileFromDir(const char *dir, const char *name)
 {
     MojoArchive *ar = GBaseArchive;   // in case we want to generalize later.
-    const MojoArchiveEntry *entinfo;
+    const MojoArchiveEntry *entinfo = NULL;
     boolean retval = false;
     char *clua = format("%0/%1.luac", dir, name);  // compiled filename.
     char *ulua = format("%0/%1.lua", dir, name);   // uncompiled filename.
