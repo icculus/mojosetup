@@ -1298,7 +1298,14 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
 
     if (newopt != NULL)
     {
-        newopt->next_sibling = opts;
+        GuiOptions *prev = NULL;  // find the end of the list...
+        GuiOptions *i = newopt;
+        do
+        {
+            prev = i;
+            i = i->next_sibling;
+        } while (i != NULL);
+        prev->next_sibling = opts;
         opts = newopt;  // prepend to list (we'll reverse it later...)
     } // if
 
