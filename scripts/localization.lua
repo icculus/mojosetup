@@ -304,7 +304,7 @@ MojoSetup.localization = {
     };
 
     -- This is shown if the config file wants us to add desktop menu items
-    --  but uninstaller support isn't enabled. This is considered bad taste
+    --  but uninstaller support isn't enabled. It is considered bad taste
     --  to add system menu items without a way to remove them. This is
     --  a bug the developer must fix before shipping her installer.
     ["BUG: Setup.DesktopMenuItem requires support_uninstall"] = {
@@ -313,7 +313,7 @@ MojoSetup.localization = {
     -- This is a file's permissions. Programmers give these as strings, and
     --  if one isn't valid, the program will report this. So, on Unix, they
     --  might specify "0600" as a valid string, but "sdfksjdfk" wouldn't be
-    --  and cause this error.
+    --  valid and would cause this error.
     ["BUG: '%0' is not a valid permission string"] = {
         de = "FEHLER: '%0' ist keine zulässiger Berechtigungs-String",
         nb = "FEIL: '%0' er ikke en gyldig rettighetsstreng",
@@ -321,7 +321,7 @@ MojoSetup.localization = {
     };
 
     -- If there's a string in the program that needs be formatted with
-    --  %0, %1, etc, and it specifies an invalid sequence like "%'", this
+    --  %0, %1, etc, and it specifies an invalid sequence like "%z", this
     --  error pops up to inform the programmer/translator.
     -- "format()" is a proper name in this case (program function name)
     ["BUG: Invalid format() string"] = {
@@ -985,8 +985,8 @@ MojoSetup.localization = {
 
     -- This is the text when asking the user if they want to uninstall
     --  the package named '%0'.
-    ["Are you sure you want to uninstall '%0'?)"] = {
-        nb = "Er du sikker på at du vil avinstallere '%0'?)",
+    ["Are you sure you want to uninstall '%0'?"] = {
+        nb = "Er du sikker på at du vil avinstallere '%0'?",
     };
 
     -- This is a window title, shown while the actual uninstall is in process
