@@ -38,17 +38,17 @@ print([[
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: mojosetup\\n"
-"Report-Msgid-Bugs-To: icculus@icculus.org\\n"
-"POT-Creation-Date: 2008-02-28 04:26:12-0500\\n"
-"PO-Revision-Date: $now\\n"
-"Last-Translator: Ryan C. Gordon <icculus@icculus.org>\\n"]])
+"Project-Id-Version: mojosetup\n"
+"Report-Msgid-Bugs-To: icculus@icculus.org\n"
+"POT-Creation-Date: 2008-02-28 04:26:12-0500\n"
+"PO-Revision-Date: $now\n"
+"Last-Translator: Ryan C. Gordon <icculus@icculus.org>\n"]])
 
 print('"Language-Team: ' .. langformal .. ' <' .. lang .. '@li.org>\\n"')
 
-print([["MIME-Version: 1.0\\n"
-"Content-Type: text/plain; charset=UTF-8\\n"
-"Content-Transfer-Encoding: 8bit\\n"
+print([["MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 ]])
 
