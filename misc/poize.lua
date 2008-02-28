@@ -90,7 +90,7 @@ if MojoSetup.translations ~= nil then
     end
 end
 
-print('end of localization-' .. lang .. '.po ...')
+print('# end of localization-' .. lang .. '.po ...')
 print('')
 print('')
 
