@@ -38,6 +38,7 @@ foreach (@ARGV) {
     my $currentlang = '';
 
     while (<POIO>) {
+        utf8::decode($_);
         chomp;
         s/\A\s+//;
         s/\s+\Z//;
@@ -57,6 +58,7 @@ foreach (@ARGV) {
         if (s/msgid\s*\"(.*?)\"\Z/$1/) {
             if ($_ eq '') {   # initial string.
                 while (<POIO>) {  # Skip most of the metadata.
+                    utf8::decode($_);
                     chomp;
                     s/\A\s+//;
                     s/\s+\Z//;
@@ -81,6 +83,7 @@ foreach (@ARGV) {
                 my $msgstr = '';
                 my $msgid = $_;
                 while (<POIO>) {   # check for multiline msgid strings.
+                    utf8::decode($_);
                     chomp;
                     s/\A\s+//;
                     s/\s+\Z//;
@@ -95,6 +98,7 @@ foreach (@ARGV) {
                     }
                 }
                 while (<POIO>) {   # check for multiline msgstr strings.
+                    utf8::decode($_);
                     chomp;
                     s/\A\s+//;
                     s/\s+\Z//;
