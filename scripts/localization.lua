@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version svn-527M ...
---  on 2008-02-29 07:02:42-0500
+-- This file was generated with po2localization.pl, version svn-530 ...
+--  on 2008-02-29 18:13:18-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -14,6 +14,9 @@
 --    https://translations.launchpad.net/mojosetup/
 --
 -- ...and that work eventually ends up in this file.
+--
+-- X-Launchpad-Export-Date: 2008-02-29 10:16+0000
+-- X-Generator: Launchpad (build Unknown)
 
 MojoSetup.languages = {
     en_US = "English (United States)",
