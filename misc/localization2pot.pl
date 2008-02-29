@@ -16,6 +16,22 @@ my $svnver = `svnversion . 2>/dev/null`;
 chomp($svnver);
 $svnver = 'svn-' . (($svnver eq '') ? '???' : $svnver);
 
+my $exportdate = '';
+my $generator = '';
+while (<STDIN>) {
+    chomp;
+    if (s/\A\-\-\s*(X-Launchpad-Export-Date: .*?)\Z/"$1\\n"/) {
+        $exportdate = $_;
+        next;
+    }
+    if (s/\A\-\-\s*(X-Generator: .*?)\Z/"$1\\n"/) {
+        $generator = $_;
+        next;
+    }
+    last if (/MojoSetup.localization = {/);
+}
+
+
 print <<__EOF__;
 # MojoSetup; a portable, flexible installation application.
 #    http://icculus.org/mojosetup/
@@ -58,12 +74,11 @@ msgstr ""
 "MIME-Version: 1.0\\n"
 "Content-Type: text/plain; charset=UTF-8\\n"
 "Content-Transfer-Encoding: 8bit\\n"
-
+$exportdate
+$generator
 
 __EOF__
 
-
-while (<STDIN>) { last if (/MojoSetup.localization = {/); }
 
 my $looking_for_end = 0;
 
