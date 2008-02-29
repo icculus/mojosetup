@@ -401,7 +401,7 @@ char *MojoPlatform_locale(void)
             {
                 CFStringRef locale =
                         CFLocaleCreateCanonicalLocaleIdentifierFromString(
-                                                kCFAllocatorDefault, primary);                if (locale != NULL)
+                                                kCFAllocatorDefault, primary);
                 if (locale != NULL)
                 {
                     const CFIndex len = (CFStringGetLength(locale) + 1) * 6;
