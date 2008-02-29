@@ -380,6 +380,9 @@ char *MojoPlatform_locale(void)
         ptr = strchr(retval, '.');  // chop off encoding if explicitly listed.
         if (ptr != NULL)
             *ptr = '\0';
+        ptr = strchr(retval, '@');  // chop off extra bits if explicitly listed.
+        if (ptr != NULL)
+            *ptr = '\0';
     } // if
 
     #if PLATFORM_MACOSX
