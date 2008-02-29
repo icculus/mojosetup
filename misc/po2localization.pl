@@ -43,8 +43,12 @@ foreach (@ARGV) {
         s/\s+\Z//;
         next if ($_ eq '');
 
-        if (s/\A\#\.\s*(.*)\Z/    -- $1\n/) {
-            $comment .= $_ if ($template);
+        if (s/\A\#\.\s*(.*)\Z/$1/) {
+            if ($template) {
+                my $txt = $_;
+                $txt = " $txt" if ($comment ne '');
+                $comment .= "    -- $txt\n";
+            }
             next;
         }
 
