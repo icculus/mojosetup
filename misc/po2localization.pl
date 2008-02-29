@@ -22,6 +22,9 @@ my %comments;
 my %msgstrs;
 my @strings;
 my $saw_template = 0;
+my $exportdate = '';
+my $generator = '';
+
 foreach (@ARGV) {
     my $fname = $_;
     my $template = /\.pot\Z/;
@@ -34,7 +37,6 @@ foreach (@ARGV) {
     }
 
     my $comment = '';
-    my $exportdate = '';
     my $currentlang = '';
 
     while (<POIO>) {
@@ -73,8 +75,10 @@ foreach (@ARGV) {
                             die("Found an 'en_US' translation.\n");
                         }
                         $languages{$currentlang} = $1 if (not $template);
-                    } elsif (/\A\"X-Launchpad-Export-Date: /) {
+                    } elsif (s/\A\"(X-Launchpad-Export-Date: .*?)\\n\"/$1/) {
                         $exportdate = $_ if ($template);
+                    } elsif (s/\A"(X-Generator: .*?)\\n\"\Z/$1/) {
+                        $generator = $_ if ($template);
                     }
                 }
             } elsif ($currentlang eq '') {
@@ -144,6 +148,9 @@ print <<__EOF__;
 --    https://translations.launchpad.net/mojosetup/
 --
 -- ...and that work eventually ends up in this file.
+--
+-- $exportdate
+-- $generator
 
 MojoSetup.languages = {
 __EOF__
