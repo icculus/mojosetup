@@ -155,10 +155,11 @@ foreach (sort keys %languages) {
     my $v = $languages{$k};
     print ",\n    $k = \"$v\""
 }
-print "\n};\n\nMojoSetup.localization = {\n";
+print "\n};\n\nMojoSetup.localization = {";
 
 foreach (@strings) {
     my $msgid = $_;
+    print "\n";
     print $comments{$msgid};
     print "    [\"$msgid\"] = {\n";
     my $first = 1;
@@ -170,7 +171,7 @@ foreach (@strings) {
         print "        $k = \"$str\"";
         $first = 0;
     }
-    print "\n    };\n\n";
+    print "\n    };\n";
 }
 
 print "};\n\n-- end of localization.lua ...\n\n";
