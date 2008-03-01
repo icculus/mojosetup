@@ -433,7 +433,7 @@ local function prepare_localization()
                 end
                 if val ~= "%" then
                     if tonumber(val) > maxval then
-                        MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has escape sequence > max for translation.")
+                        MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has escape sequence > max for translation of ['" .. str .. "'].")
                     end
                 end
             end
