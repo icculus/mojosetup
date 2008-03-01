@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version svn-530 ...
---  on 2008-02-29 18:13:18-0500
+-- This file was generated with po2localization.pl, version svn-533 ...
+--  on 2008-03-01 00:01:48-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -369,7 +369,6 @@ MojoSetup.localization = {
         nb = "Akseptere denne lisensen?",
         nds = "Akzeptiere diese Lizenz?",
         nl = "Accepteert u deze licentie?",
-        ru = "Нажмите '%0' чтобы вернуться",
         sv = "Acceptera licensen?"
     };
 
