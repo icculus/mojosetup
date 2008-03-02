@@ -429,7 +429,7 @@ local function prepare_localization()
             for val in string.gmatch(v, "%%.") do
                 val = string.sub(val, 2)
                 if string.match(val, "^[^%%0-9]$") ~= nil then
-                    MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has invalid escape sequence.")
+                    MojoSetup.fatal("BUG: '" .. k .. "' localization ['" .. v .. "'] has invalid escape sequence for translation of ['" .. str .. "'].")
                 end
                 if val ~= "%" then
                     if tonumber(val) > maxval then
