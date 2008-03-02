@@ -116,13 +116,6 @@ const MojoGui *MojoGui_initGuiPlugin(void);
 void MojoGui_deinitGuiPlugin(void);
 #else
 
-// can't use normal STUBBED in gui plugins, since it references logDebug
-//  without entry-> ...
-#ifndef DOXYGEN_SHOULD_IGNORE_THIS
-#undef STUBBED
-#define STUBBED(x) STUBBED2(entry->,x)
-#endif
-
 __EXPORT__ const MojoGui *MOJOGUI_ENTRY_POINT(int revision,
                                               const MojoSetupEntryPoints *e);
 
@@ -190,6 +183,71 @@ const MojoGui *MOJOGUI_ENTRY_POINT(int rev, const MojoSetupEntryPoints *e) \
 { \
     return MojoGuiPlugin_##module(rev, e); \
 } \
+
+
+// Redefine things that need to go through the plugin entry point interface,
+//  so plugins calling into the MojoSetup core can use the same code as the
+//  rest of the app.
+
+#ifdef _
+#undef _
+#endif
+#define _(x) entry->translate(x)
+
+#ifdef xmalloc
+#undef xmalloc
+#endif
+#define xmalloc(x) entry->xmalloc(x)
+
+#ifdef xrealloc
+#undef xrealloc
+#endif
+#define xrealloc(x,y) entry->xrealloc(x,y)
+
+#ifdef xstrdup
+#undef xstrdup
+#endif
+#define xstrdup(x) entry->xstrdup(x)
+
+#ifdef xstrncpy
+#undef xstrncpy
+#endif
+#define xstrncpy(x,y,z) entry->xstrcpy(x,y,z)
+
+#ifdef logWarning
+#undef logWarning
+#endif
+#define logWarning entry->logWarning
+
+#ifdef logError
+#undef logError
+#endif
+#define logError entry->logError
+
+#ifdef logInfo
+#undef logInfo
+#endif
+#define logInfo entry->logInfo
+
+#ifdef logDebug
+#undef logDebug
+#endif
+#define logDebug entry->logDebug
+
+#ifdef format
+#undef format
+#endif
+#define format entry->format
+
+#ifdef numstr
+#undef numstr
+#endif
+#define numstr(x) entry->numstr(x)
+
+#ifdef ticks
+#undef ticks
+#endif
+#define ticks() entry->ticks()
 
 #endif
 

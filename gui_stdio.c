@@ -46,15 +46,15 @@ static int readstr(const char *prompt, char *buf, int len,
     // !!! FIXME:  abort in read_stdin() if i/o fails?
 
     int retval = 0;
-    char *backstr = (back) ? entry->xstrdup(entry->_("back")) : NULL;
+    char *backstr = (back) ? xstrdup(_("back")) : NULL;
 
     if (prompt != NULL)
         printf("%s\n", prompt);
 
     if (back)
     {
-        char *fmt = entry->xstrdup(entry->_("Type '%0' to go back."));
-        char *msg = entry->format(fmt, backstr);
+        char *fmt = xstrdup(_("Type '%0' to go back."));
+        char *msg = format(fmt, backstr);
         printf("%s\n", msg);
         free(msg);
         free(fmt);
@@ -62,11 +62,11 @@ static int readstr(const char *prompt, char *buf, int len,
 
     if (fwd)
     {
-        printf(entry->_("Press enter to continue."));
+        printf(_("Press enter to continue."));
         printf("\n");
     } // if
 
-    printf(entry->_("> "));
+    printf(_("> "));
     fflush(stdout);
 
     if ((retval = read_stdin(buf, len)) >= 0)
@@ -113,8 +113,8 @@ static void MojoGui_stdio_deinit(void)
 static void MojoGui_stdio_msgbox(const char *title, const char *text)
 {
     char buf[128];
-    char *fmt = entry->xstrdup(entry->_("NOTICE: %0\n[hit enter]"));
-    char *msg = entry->format(fmt, text);
+    char *fmt = xstrdup(_("NOTICE: %0\n[hit enter]"));
+    char *msg = format(fmt, text);
     printf("%s\n", msg);
     free(msg);
     free(fmt);
@@ -129,14 +129,11 @@ static boolean MojoGui_stdio_promptyn(const char *title, const char *text,
     boolean retval = false;
     if (!feof(stdin))
     {
-        const char *_fmt = ((defval) ?
-                                entry->_("%0 [Y/n]: ") :
-                                entry->_("%0 [y/N]: "));
-
-        char *fmt = entry->xstrdup(_fmt);
-        char *msg = entry->format(fmt, text);
-        char *localized_no = entry->xstrdup(entry->_("N"));
-        char *localized_yes = entry->xstrdup(entry->_("Y"));
+        const char *_fmt = ((defval) ? _("%0 [Y/n]: ") : _("%0 [y/N]: "));
+        char *fmt = xstrdup(_fmt);
+        char *msg = format(fmt, text);
+        char *localized_no = xstrdup(_("N"));
+        char *localized_yes = xstrdup(_("Y"));
         boolean getout = false;
         char buf[128];
 
@@ -177,12 +174,12 @@ static MojoGuiYNAN MojoGui_stdio_promptynan(const char *title, const char *txt,
     MojoGuiYNAN retval = MOJOGUI_NO;
     if (!feof(stdin))
     {
-        char *fmt = entry->xstrdup(_("%0\n[y/n/Always/Never]: "));
-        char *msg = entry->format(fmt, txt);
-        char *localized_no = entry->xstrdup(entry->_("N"));
-        char *localized_yes = entry->xstrdup(entry->_("Y"));
-        char *localized_always = entry->xstrdup(entry->_("Always"));
-        char *localized_never = entry->xstrdup(entry->_("Never"));
+        char *fmt = xstrdup(_("%0\n[y/n/Always/Never]: "));
+        char *msg = format(fmt, txt);
+        char *localized_no = xstrdup(_("N"));
+        char *localized_yes = xstrdup(_("Y"));
+        char *localized_always = xstrdup(_("Always"));
+        char *localized_never = xstrdup(_("Never"));
         boolean getout = false;
         char buf[128];
 
@@ -242,7 +239,7 @@ static void MojoGui_stdio_stop(void)
 // !!! FIXME: this is not really Unicode friendly...
 static char **splitText(const char *_text, int *_count, int *_w)
 {
-    char *ptr = entry->xstrdup(_text);
+    char *ptr = xstrdup(_text);
     char *text = ptr;
     int i;
     int scrw = 80;
@@ -262,10 +259,9 @@ static char **splitText(const char *_text, int *_count, int *_w)
             if ((ch == '\r') || (ch == '\n'))
             {
                 count++;
-                retval = (char **) entry->xrealloc(retval,
-                                                   count * sizeof (char *));
+                retval = (char **) xrealloc(retval, count * sizeof (char *));
                 text[i] = '\0';
-                retval[count-1] = entry->xstrdup(text);
+                retval[count-1] = xstrdup(text);
                 text += i;
                 *text = ch;
                 if ((ch == '\r') && (text[1] == '\n'))
@@ -296,9 +292,9 @@ static char **splitText(const char *_text, int *_count, int *_w)
         {
             char ch = text[pos];
             count++;
-            retval = (char **) entry->xrealloc(retval, count * sizeof (char*));
+            retval = (char **) xrealloc(retval, count * sizeof (char*));
             text[pos] = '\0';
-            retval[count-1] = entry->xstrdup(text);
+            retval[count-1] = xstrdup(text);
             text += pos;
             *text = ch;
             if (pos > w)
@@ -316,7 +312,7 @@ static char **splitText(const char *_text, int *_count, int *_w)
 static void dumb_pager(const char *name, const char *data, size_t datalen)
 {
     const int MAX_PAGE_LINES = 21;
-    char *fmt = entry->xstrdup(entry->_("(%0-%1 of %2 lines, see more?)"));
+    char *fmt = xstrdup(_("(%0-%1 of %2 lines, see more?)"));
     int i = 0;
     int w = 0;
     int linecount = 0;
@@ -343,9 +339,8 @@ static void dumb_pager(const char *name, const char *data, size_t datalen)
             {
                 char *msg = NULL;
                 printf("\n");
-                msg = entry->format(fmt, entry->numstr((printed-i)+1),
-                                    entry->numstr(printed),
-                                    entry->numstr(linecount));
+                msg = format(fmt, numstr((printed-i)+1),
+                             numstr(printed), numstr(linecount));
                 getout = !MojoGui_stdio_promptyn("", msg, true);
                 free(msg);
                 printf("\n");
@@ -485,8 +480,8 @@ static void print_options(MojoGuiSetupOptions *opts, int *line, int level)
 static int MojoGui_stdio_options(MojoGuiSetupOptions *opts,
                                  boolean can_back, boolean can_fwd)
 {
-    const char *inst_opts_str = entry->xstrdup(entry->_("Options"));
-    const char *prompt = entry->xstrdup(entry->_("Choose number to change."));
+    const char *inst_opts_str = xstrdup(_("Options"));
+    const char *prompt = xstrdup(_("Choose number to change."));
     int retval = -1;
     boolean getout = false;
     char buf[128];
@@ -532,7 +527,7 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
                                        int *command, boolean can_back,
                                        boolean can_fwd)
 {
-    const char *instdeststr = entry->xstrdup(entry->_("Destination"));
+    const char *instdeststr = xstrdup(_("Destination"));
     const char *prompt = NULL;
     char *retval = NULL;
     boolean getout = false;
@@ -543,9 +538,9 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
     *command = -1;
 
     if (recnum > 0)
-        prompt = entry->xstrdup(entry->_("Choose install destination by number (hit enter for #1), or enter your own."));
+        prompt = xstrdup(_("Choose install destination by number (hit enter for #1), or enter your own."));
     else
-        prompt = entry->xstrdup(entry->_("Enter path where files will be installed."));
+        prompt = xstrdup(_("Enter path where files will be installed."));
 
     while (!getout)
     {
@@ -559,7 +554,7 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
 
         else if ((len == 0) && (recnum > 0))   // default to first in list.
         {
-            retval = entry->xstrdup(recommends[0]);
+            retval = xstrdup(recommends[0]);
             *command = 1;
             getout = true;
         } // else if
@@ -570,9 +565,9 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
             int target = (int) strtol(buf, &endptr, 10);
             // complete string was a valid number?
             if ((*endptr == '\0') && (target > 0) && (target <= recnum))
-                retval = entry->xstrdup(recommends[target-1]);
+                retval = xstrdup(recommends[target-1]);
             else
-                retval = entry->xstrdup(buf);
+                retval = xstrdup(buf);
 
             *command = 1;
             getout = true;
@@ -589,9 +584,9 @@ static char *MojoGui_stdio_destination(const char **recommends, int recnum,
 static boolean MojoGui_stdio_insertmedia(const char *medianame)
 {
     char buf[32];
-    char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
-    char *msg = entry->format(fmt, medianame);
-    printf("%s\n", entry->_("Media change"));
+    char *fmt = xstrdup(_("Please insert '%0'"));
+    char *msg = format(fmt, medianame);
+    printf("%s\n", _("Media change"));
     printf("%s\n", msg);
     free(msg);
     free(fmt);
@@ -610,7 +605,7 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
                                       int percent, const char *item,
                                       boolean can_cancel)
 {
-    const uint32 now = entry->ticks();
+    const uint32 now = ticks();
 
     if ( (lastComponent == NULL) ||
          (strcmp(lastComponent, component) != 0) ||
@@ -619,8 +614,8 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
     {
         free(lastProgressType);
         free(lastComponent);
-        lastProgressType = entry->xstrdup(type);
-        lastComponent = entry->xstrdup(component);
+        lastProgressType = xstrdup(type);
+        lastComponent = xstrdup(component);
         printf("%s\n%s\n", type, component);
     } // if
 
@@ -636,8 +631,8 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
             printf("%s\n", item);
         else
         {
-            fmt = entry->xstrdup(entry->_("%0 (total progress: %1%%)"));
-            msg = entry->format(fmt, item, entry->numstr(percent));
+            fmt = xstrdup(_("%0 (total progress: %1%%)"));
+            msg = format(fmt, item, numstr(percent));
             printf("%s\n", msg);
             free(msg);
             free(fmt);

@@ -133,7 +133,7 @@ static boolean do_prompt(const char *title, const char *text,
 static boolean MojoGui_macosx_promptyn(const char *title, const char *text,
                                        boolean defval)
 {
-    return do_prompt(title, text, defval, entry->_("Yes"), entry->_("No"));
+    return do_prompt(title, text, defval, _("Yes"), _("No"));
 } // MojoGui_macosx_promptyn
 
 
@@ -183,7 +183,7 @@ static char *MojoGui_macosx_destination(const char **recommends, int recnum,
     // !!! FIXME: write me.
     STUBBED("macosx destination");
     *command = 1;
-    return entry->xstrdup("/Applications");
+    return xstrdup("/Applications");
 } // MojoGui_macosx_destination
 
 
@@ -191,8 +191,7 @@ static boolean MojoGui_macosx_insertmedia(const char *medianame)
 {
     // !!! FIXME: "please insert '%s' ..."
     // !!! FIXME: localization.
-    return do_prompt("Please insert", medianame, true,
-                     entry->_("OK"), entry->_("Cancel"));
+    return do_prompt("Please insert", medianame, true, _("OK"), _("Cancel"));
 } // MojoGui_macosx_insertmedia
 
 

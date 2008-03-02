@@ -111,10 +111,9 @@ static char **splitText(char *text, int *_count, int *_w)
             if ((ch == '\r') || (ch == '\n'))
             {
                 count++;
-                retval = (char **) entry->xrealloc(retval,
-                                                   count * sizeof (char *));
+                retval = (char **) xrealloc(retval, count * sizeof (char *));
                 text[i] = '\0';
-                retval[count-1] = entry->xstrdup(text);
+                retval[count-1] = xstrdup(text);
                 text += i;
                 *text = ch;
                 if ((ch == '\r') && (text[1] == '\n'))
@@ -145,9 +144,9 @@ static char **splitText(char *text, int *_count, int *_w)
         {
             char ch = text[pos];
             count++;
-            retval = (char **) entry->xrealloc(retval, count * sizeof (char*));
+            retval = (char **) xrealloc(retval, count * sizeof (char*));
             text[pos] = '\0';
-            retval[count-1] = entry->xstrdup(text);
+            retval[count-1] = xstrdup(text);
             text += pos;
             *text = ch;
             if (pos > w)
@@ -250,9 +249,9 @@ static void confirmTerminalSize(void)
         scrh--; // -1 to save the title at the top of the screen...
 
         if (scrw < 30)  // too thin
-            msg = entry->xstrdup(entry->_("[Make the window wider!]"));
+            msg = xstrdup(_("[Make the window wider!]"));
         else if (scrh < 10)  // too short
-            msg = entry->xstrdup(entry->_("[Make the window taller!]"));
+            msg = xstrdup(_("[Make the window taller!]"));
         else
             break;  // we're good, get out.
 
@@ -300,18 +299,18 @@ static MojoBox *makeBox(const char *title, const char *text,
     getmaxyx(stdscr, scrh, scrw);
     scrh--; // -1 to save the title at the top of the screen...
 
-    retval = (MojoBox *) entry->xmalloc(sizeof (MojoBox));
+    retval = (MojoBox *) xmalloc(sizeof (MojoBox));
     retval->hidecursor = hidecursor;
     retval->ndelay = ndelay;
     retval->cursval = ((hidecursor) ? curs_set(0) : ERR);
-    retval->title = entry->xstrdup(title);
-    retval->text = entry->xstrdup(text);
+    retval->title = xstrdup(title);
+    retval->text = xstrdup(text);
     retval->buttoncount = bcount;
-    retval->buttons = (WINDOW **) entry->xmalloc(sizeof (WINDOW*) * bcount);
-    retval->buttontext = (char **) entry->xmalloc(sizeof (char*) * bcount);
+    retval->buttons = (WINDOW **) xmalloc(sizeof (WINDOW*) * bcount);
+    retval->buttontext = (char **) xmalloc(sizeof (char*) * bcount);
 
     for (i = 0; i < bcount; i++)
-        retval->buttontext[i] = entry->xstrdup(buttons[i]);
+        retval->buttontext[i] = xstrdup(buttons[i]);
 
     retval->textlines = splitText(retval->text, &retval->textlinecount, &w);
 
@@ -628,7 +627,7 @@ static boolean MojoGui_ncurses_init(void)
 {
     if (initscr() == NULL)
     {
-        entry->logInfo("ncurses: initscr() failed, use another UI.");
+        logInfo("ncurses: initscr() failed, use another UI.");
         return false;
     } // if
 
@@ -676,7 +675,7 @@ static void MojoGui_ncurses_deinit(void)
 
 static void MojoGui_ncurses_msgbox(const char *title, const char *text)
 {
-    char *localized_ok = entry->xstrdup(entry->_("OK"));
+    char *localized_ok = xstrdup(_("OK"));
     MojoBox *mojobox = makeBox(title, text, &localized_ok, 1, false, true);
     while (upkeepBox(&mojobox, wgetch(mojobox->mainwin)) == -1) {}
     freeBox(mojobox, true);
@@ -687,8 +686,8 @@ static void MojoGui_ncurses_msgbox(const char *title, const char *text)
 static boolean MojoGui_ncurses_promptyn(const char *title, const char *text,
                                         boolean defval)
 {
-    char *localized_yes = entry->xstrdup(entry->_("Yes"));
-    char *localized_no = entry->xstrdup(entry->_("No"));
+    char *localized_yes = xstrdup(_("Yes"));
+    char *localized_no = xstrdup(_("No"));
     char *buttons[] = { localized_yes, localized_no };
     MojoBox *mojobox = makeBox(title, text, buttons, 2, false, true);
     int rc = 0;
@@ -715,10 +714,10 @@ static MojoGuiYNAN MojoGui_ncurses_promptynan(const char *title,
                                               const char *text,
                                               boolean defval)
 {
-    char *loc_yes = entry->xstrdup(entry->_("Yes"));
-    char *loc_no = entry->xstrdup(entry->_("No"));
-    char *loc_always = entry->xstrdup(entry->_("Always"));
-    char *loc_never = entry->xstrdup(entry->_("Never"));
+    char *loc_yes = xstrdup(_("Yes"));
+    char *loc_no = xstrdup(_("No"));
+    char *loc_always = xstrdup(_("Always"));
+    char *loc_never = xstrdup(_("Never"));
     char *buttons[] = { loc_yes, loc_always, loc_never, loc_no };
     MojoBox *mojobox = makeBox(title, text, buttons, 4, false, true);
     int rc = 0;
@@ -757,7 +756,7 @@ static boolean MojoGui_ncurses_start(const char *_title,
                                      const MojoGuiSplash *splash)
 {
     free(title);
-    title = entry->xstrdup(_title);
+    title = xstrdup(_title);
     drawBackground(stdscr);
     wrefresh(stdscr);
     return true;
@@ -788,16 +787,16 @@ static int MojoGui_ncurses_readme(const char *name, const uint8 *data,
     if (can_fwd)
     {
         fwdbutton = bcount++;
-        buttons[fwdbutton] = entry->xstrdup(entry->_("Next"));
+        buttons[fwdbutton] = xstrdup(_("Next"));
     } // if
 
     if (can_back)
     {
         backbutton = bcount++;
-        buttons[backbutton] = entry->xstrdup(entry->_("Back"));
+        buttons[backbutton] = xstrdup(_("Back"));
     } // if
 
-    buttons[bcount++] = entry->xstrdup(entry->_("Cancel"));
+    buttons[bcount++] = xstrdup(_("Cancel"));
 
     mojobox = makeBox(name, (char *) data, buttons, bcount, false, true);
     while ((rc = upkeepBox(&mojobox, wgetch(mojobox->mainwin))) == -1) {}
@@ -873,8 +872,8 @@ static void build_options(MojoGuiSetupOptions *opts, int *line, int level,
     if (opts != NULL)
     {
         const char *desc = opts->description;
-        char *spacebuf = (char *) entry->xmalloc(maxw + 1);
-        char *buf = (char *) entry->xmalloc(maxw + 1);
+        char *spacebuf = (char *) xmalloc(maxw + 1);
+        char *buf = (char *) xmalloc(maxw + 1);
         int len = 0;
         int spacing = level * 2;
 
@@ -907,7 +906,7 @@ static void build_options(MojoGuiSetupOptions *opts, int *line, int level,
         if (len > 0)
         {
             const size_t newlen = strlen(*lines) + strlen(buf) + 2;
-            *lines = (char*) entry->xrealloc(*lines, newlen);
+            *lines = (char*) xrealloc(*lines, newlen);
             strcat(*lines, buf);
             strcat(*lines, "\n");  // I'm sorry, Joel Spolsky!
         } // if
@@ -946,19 +945,19 @@ static int optionBox(const char *title, MojoGuiSetupOptions *opts,
     if (can_fwd)
     {
         fwdbutton = bcount++;
-        buttons[fwdbutton] = entry->xstrdup(entry->_("Next"));
+        buttons[fwdbutton] = xstrdup(_("Next"));
     } // if
 
     if (can_back)
     {
         backbutton = bcount++;
-        buttons[backbutton] = entry->xstrdup(entry->_("Back"));
+        buttons[backbutton] = xstrdup(_("Back"));
     } // if
 
     lasthoverover = togglebutton = bcount++;
-    buttons[togglebutton] = entry->xstrdup(entry->_("Toggle"));
+    buttons[togglebutton] = xstrdup(_("Toggle"));
     cancelbutton = bcount++;
-    buttons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+    buttons[cancelbutton] = xstrdup(_("Cancel"));
 
     do
     {
@@ -968,7 +967,7 @@ static int optionBox(const char *title, MojoGuiSetupOptions *opts,
             int line = 0;
             int maxw, maxh;
             getmaxyx(stdscr, maxh, maxw);
-            char *text = entry->xstrdup("");
+            char *text = xstrdup("");
             build_options(opts, &line, 0, maxw-6, &text);
             mojobox = makeBox(title, text, buttons, bcount, false, true);
             free(text);
@@ -1119,7 +1118,7 @@ static int optionBox(const char *title, MojoGuiSetupOptions *opts,
 static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
                                    boolean can_back, boolean can_fwd)
 {
-    char *title = entry->xstrdup(entry->_("Options"));
+    char *title = xstrdup(_("Options"));
     int rc = optionBox(title, opts, can_back, can_fwd);
     free(title);
     return rc;
@@ -1136,7 +1135,7 @@ static char *inputBox(const char *prompt, int *command, boolean can_back)
     MojoBox *mojobox = NULL;
     size_t retvalalloc = 64;
     size_t retvallen = 0;
-    char *retval = (char *) entry->xmalloc(retvalalloc);
+    char *retval = (char *) xmalloc(retvalalloc);
     char *buttons[3] = { NULL, NULL, NULL };
     int drawpos = 0;
     int drawlen = 0;
@@ -1144,20 +1143,20 @@ static char *inputBox(const char *prompt, int *command, boolean can_back)
     int backbutton = -1;
     int cancelbutton = -1;
 
-    buttons[bcount++] = entry->xstrdup(entry->_("OK"));
+    buttons[bcount++] = xstrdup(_("OK"));
 
     if (can_back)
     {
         backbutton = bcount++;
-        buttons[backbutton] = entry->xstrdup(entry->_("Back"));
+        buttons[backbutton] = xstrdup(_("Back"));
     } // if
 
     cancelbutton = bcount++;
-    buttons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+    buttons[cancelbutton] = xstrdup(_("Cancel"));
 
     getmaxyx(stdscr, h, w);
     w -= 10;
-    text = (char *) entry->xmalloc(w+4);
+    text = (char *) xmalloc(w+4);
     text[0] = '\n';
     memset(text+1, ' ', w);
     text[w+1] = '\n';
@@ -1189,7 +1188,7 @@ static char *inputBox(const char *prompt, int *command, boolean can_back)
             if (retvalalloc <= retvallen)
             {
                 retvalalloc *= 2;
-                retval = entry->xrealloc(retval, retvalalloc);
+                retval = xrealloc(retval, retvalalloc);
             } // if
             retval[retvallen++] = (char) ch;
             retval[retvallen] = '\0';
@@ -1206,7 +1205,7 @@ static char *inputBox(const char *prompt, int *command, boolean can_back)
             wrefresh(stdscr);
             getmaxyx(stdscr, h, w);
             w -= 10;
-            text = (char *) entry->xrealloc(mojobox->text, w+4);
+            text = (char *) xrealloc(mojobox->text, w+4);
             text[0] = '\n';
             memset(text+1, ' ', w);
             text[w+1] = '\n';
@@ -1268,15 +1267,15 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
             int i;
             for (i = 0; i < recnum; i++)
             {
-                opt = (MojoGuiSetupOptions *) entry->xmalloc(sizeof (*opt));
+                opt = (MojoGuiSetupOptions *) xmalloc(sizeof (*opt));
                 opt->description = recommends[i];
                 opt->size = -1;
                 prev->next_sibling = opt;
                 prev = opt;
             } // for
 
-            choosetxt = entry->xstrdup(entry->_("(I want to specify a path.)"));
-            opt = (MojoGuiSetupOptions *) entry->xmalloc(sizeof (*opt));
+            choosetxt = xstrdup(_("(I want to specify a path.)"));
+            opt = (MojoGuiSetupOptions *) xmalloc(sizeof (*opt));
             opt->description = choosetxt;
             opt->size = -1;
             prev->next_sibling = opt;
@@ -1288,7 +1287,7 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
             opts.is_group_parent = true;
             opts.size = -1;
 
-            title = entry->xstrdup(entry->_("Destination"));
+            title = xstrdup(_("Destination"));
             rc = optionBox(title, &opts, can_back, can_fwd);
             free(title);
 
@@ -1308,13 +1307,13 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
                 return NULL;
 
             else if ((chosen >= 0) && (chosen < recnum))  // a specific entry
-                return entry->xstrdup(recommends[chosen]);
+                return xstrdup(recommends[chosen]);
         } // if
 
         // either no recommendations or user wants to enter own path...
 
-        localized = entry->_("Enter path where files will be installed.");
-        title = entry->xstrdup(localized);
+        localized = _("Enter path where files will be installed.");
+        title = xstrdup(localized);
         retval = inputBox(title, &rc, (can_back) || (recnum > 0));
         free(title);
 
@@ -1337,15 +1336,15 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
 
 static boolean MojoGui_ncurses_insertmedia(const char *medianame)
 {
-    char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
-    char *text = entry->format(fmt, medianame);
-    char *localized_ok = entry->xstrdup(entry->_("OK"));
-    char *localized_cancel = entry->xstrdup(entry->_("Cancel"));
+    char *fmt = xstrdup(_("Please insert '%0'"));
+    char *text = format(fmt, medianame);
+    char *localized_ok = xstrdup(_("OK"));
+    char *localized_cancel = xstrdup(_("Cancel"));
     char *buttons[] = { localized_ok, localized_cancel };
     MojoBox *mojobox = NULL;
     int rc = 0;
 
-    mojobox = makeBox(entry->_("Media change"), text, buttons, 2, false, true);
+    mojobox = makeBox(_("Media change"), text, buttons, 2, false, true);
     while ((rc = upkeepBox(&mojobox, wgetch(mojobox->mainwin))) == -1) {}
 
     freeBox(mojobox, true);
@@ -1367,7 +1366,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
                                         int percent, const char *item,
                                         boolean can_cancel)
 {
-    const uint32 now = entry->ticks();
+    const uint32 now = ticks();
     boolean rebuild = (progressBox == NULL);
     int ch = 0;
     int rc = -1;
@@ -1380,8 +1379,8 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
     {
         free(lastProgressType);
         free(lastComponent);
-        lastProgressType = entry->xstrdup(type);
-        lastComponent = entry->xstrdup(component);
+        lastProgressType = xstrdup(type);
+        lastComponent = xstrdup(component);
         lastCanCancel = can_cancel;
         rebuild = true;
     } // if
@@ -1390,18 +1389,17 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
     {
         int w, h;
         char *text = NULL;
-        char *localized_cancel =
-                    (can_cancel) ? entry->xstrdup(entry->_("Cancel")) : NULL;
+        char *localized_cancel = (can_cancel) ? xstrdup(_("Cancel")) : NULL;
         char *buttons[] = { localized_cancel };
         const int buttoncount = (can_cancel) ? 1 : 0;
         char *spacebuf = NULL;
         getmaxyx(stdscr, h, w);
         w -= 10;
-        text = (char *) entry->xmalloc((w * 3) + 16);
+        text = (char *) xmalloc((w * 3) + 16);
         if (snprintf(text, w, "%s", component) > (w-4))
             strcpy((text+w)-4, "...");  // !!! FIXME: Unicode problem.
         strcat(text, "\n\n");
-        spacebuf = (char *) entry->xmalloc(w+1);
+        spacebuf = (char *) xmalloc(w+1);
         memset(spacebuf, ' ', w);  // xmalloc provides null termination.
         strcat(text, spacebuf);
         free(spacebuf);
@@ -1422,7 +1420,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
         int w, h;
         getmaxyx(win, h, w);
         w -= 2;
-        buf = (char *) entry->xmalloc(w+1);
+        buf = (char *) xmalloc(w+1);
 
         if (percent < 0)
         {
@@ -1483,7 +1481,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
 
 static void MojoGui_ncurses_final(const char *msg)
 {
-    char *title = entry->xstrdup(entry->_("Finish"));
+    char *title = xstrdup(_("Finish"));
     MojoGui_ncurses_msgbox(title, msg);
     free(title);
 } // MojoGui_ncurses_final

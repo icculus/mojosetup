@@ -53,19 +53,18 @@ CREATE_MOJOGUI_ENTRY_POINT(www)
         int rc = WSAStartup(MAKEWORD(1, 1), &data);
         if (rc != 0)
         {
-            entry->logError("www: WSAStartup() failed: %0", sockStrErrVal(rc));
+            logError("www: WSAStartup() failed: %0", sockStrErrVal(rc));
             return false;
         } // if
 
-        entry->logInfo("www: WinSock initialized (want %0.%1, got %2.%3).",
-                        entry->numstr((int) (LOBYTE(data.wVersion))),
-                        entry->numstr((int) (HIBYTE(data.wVersion))),
-                        entry->numstr((int) (LOBYTE(data.wHighVersion))),
-                        entry->numstr((int) (HIBYTE(data.wHighVersion))));
-        entry->logInfo("www: WinSock description: %0", data.szDescription);
-        entry->logInfo("www: WinSock system status: %0", data.szSystemStatus);
-        entry->logInfo("www: WinSock max sockets: %0",
-                        entry->numstr((int) data.iMaxSockets));
+        logInfo("www: WinSock initialized (want %0.%1, got %2.%3).",
+                        numstr((int) (LOBYTE(data.wVersion))),
+                        numstr((int) (HIBYTE(data.wVersion))),
+                        numstr((int) (LOBYTE(data.wHighVersion))),
+                        numstr((int) (HIBYTE(data.wHighVersion))));
+        logInfo("www: WinSock description: %0", data.szDescription);
+        logInfo("www: WinSock system status: %0", data.szSystemStatus);
+        logInfo("www: WinSock max sockets: %0", numstr((int) data.iMaxSockets));
 
         return true;
     } // initSocketSupport
@@ -155,12 +154,12 @@ static void addWebRequest(const char *key, const char *val)
 {
     if ((key != NULL) && (*key != '\0'))
     {
-        WebRequest *req = (WebRequest *) entry->xmalloc(sizeof (WebRequest));
-        req->key = entry->xstrdup(key);
-        req->value = entry->xstrdup(val);
+        WebRequest *req = (WebRequest *) xmalloc(sizeof (WebRequest));
+        req->key = xstrdup(key);
+        req->value = xstrdup(val);
         req->next = webRequest;
         webRequest = req;
-        entry->logDebug("www: request element '%0' = '%1'", key, val);
+        logDebug("www: request element '%0' = '%1'", key, val);
     } // if
 } // addWebRequest
 
@@ -218,7 +217,7 @@ static int strAdd(char **ptr, size_t *len, size_t *alloc, const char *fmt, ...)
         const size_t add = (*alloc + (bw + 1));  // double plus the new len.
         *alloc += add;
         avail += add;
-        *ptr = entry->xrealloc(*ptr, *alloc);
+        *ptr = xrealloc(*ptr, *alloc);
         va_start(ap, fmt);
         bw = vsnprintf(*ptr + *len, avail, fmt, ap);
         va_end(ap);
@@ -310,7 +309,7 @@ static void sendStringAndDrop(SOCKET *_s, const char *str)
             const int err = sockErrno();
             if (!intrError(err))
             {
-                entry->logError("www: send() failed: %0", sockStrErrVal(err));
+                logError("www: send() failed: %0", sockStrErrVal(err));
                 break;
             } // if
         } // else
@@ -323,7 +322,7 @@ static void sendStringAndDrop(SOCKET *_s, const char *str)
 
 static void respond404(SOCKET *s)
 {
-    char *text = htmlescape(entry->_("Not Found"));
+    char *text = htmlescape(_("Not Found"));
     char *str = NULL;
     size_t len = 0, alloc = 0;
     char *html = NULL;
@@ -458,7 +457,7 @@ static WebRequest *servePage(boolean blocking)
             assert(!blocking);
         else
         {
-            entry->logError("www: accept() failed: %0", sockStrErrVal(err));
+            logError("www: accept() failed: %0", sockStrErrVal(err));
             closesocket(listenSocket);  // make all future i/o fail too.
             listenSocket = INVALID_SOCKET;
         } // else
@@ -476,7 +475,7 @@ static WebRequest *servePage(boolean blocking)
             const int err = sockErrno();
             if (!intrError(err))  // just try again on interrupt.
             {
-                entry->logError("www: recv() failed: %0", sockStrErrVal(err));
+                logError("www: recv() failed: %0", sockStrErrVal(err));
                 FREE_AND_NULL(reqstr);
                 closesocket(s);
                 s = INVALID_SOCKET;
@@ -509,7 +508,7 @@ static WebRequest *servePage(boolean blocking)
         } // if
 
         // reqstr is the GET (or whatever) request, ptr is the rest.
-        get = entry->xstrdup(reqstr);
+        get = xstrdup(reqstr);
         if (ptr == NULL)
         {
             *ptr = '\0';
@@ -521,15 +520,15 @@ static WebRequest *servePage(boolean blocking)
             memmove(reqstr, ptr, len+1);
         } // else
 
-        entry->logDebug("www: request '%0'", get);
+        logDebug("www: request '%0'", get);
 
         // okay, now (get) and (reqptr) are separate strings.
         // These parse*() functions update (webRequest).
         if ( (parseGet(get)) && (parseRequest(reqstr)) )
-            entry->logDebug("www: accepted request");
+            logDebug("www: accepted request");
         else
         {
-            entry->logError("www: rejected bogus request");
+            logError("www: rejected bogus request");
             freeWebRequest();
             respond404(&s);
         } // else
@@ -556,7 +555,7 @@ static SOCKET create_listen_socket(short portnum)
 
     s = socket(PF_INET, SOCK_STREAM, protocol);
     if (s == INVALID_SOCKET)
-        entry->logInfo("www: socket() failed ('%0')", sockStrError());
+        logInfo("www: socket() failed ('%0')", sockStrError());
     else
     {
         boolean success = false;
@@ -574,13 +573,13 @@ static SOCKET create_listen_socket(short portnum)
         #endif
 
         if (bind(s, (struct sockaddr *) &addr, sizeof (addr)) == SOCKET_ERROR)
-            entry->logError("www: bind() failed ('%0')", sockStrError());
+            logError("www: bind() failed ('%0')", sockStrError());
         else if (listen(s, 5) == SOCKET_ERROR)
-            entry->logError("www: listen() failed ('%0')", sockStrError());
+            logError("www: listen() failed ('%0')", sockStrError());
         else
         {
-            entry->logInfo("www: socket created on port %0",
-                           entry->numstr(portnum));
+            logInfo("www: socket created on port %0",
+                           numstr(portnum));
             success = true;
         } // else
 
@@ -603,14 +602,14 @@ static boolean MojoGui_www_init(void)
 
     if (!initSocketSupport())
     {
-        entry->logInfo("www: socket subsystem init failed, use another UI.");
+        logInfo("www: socket subsystem init failed, use another UI.");
         return false;
     } // if
     
     listenSocket = create_listen_socket(portnum);
     if (listenSocket < 0)
     {
-        entry->logInfo("www: no listen socket, use another UI.");
+        logInfo("www: no listen socket, use another UI.");
         return false;
     } // if
 
@@ -624,8 +623,8 @@ static boolean MojoGui_www_init(void)
 static void MojoGui_www_deinit(void)
 {
     // Catch any waiting browser connections...and tell them to buzz off!  :)
-    char *donetitle = htmlescape(entry->_("Shutting down..."));
-    char *donetext = htmlescape(entry->_("You can close this browser now."));
+    char *donetitle = htmlescape(_("Shutting down..."));
+    char *donetext = htmlescape(_("You can close this browser now."));
     size_t len = 0, alloc = 0;
     char *html = NULL;
 
@@ -733,7 +732,7 @@ static int doPromptPage(const char *title, const char *text, boolean centertxt,
 static void MojoGui_www_msgbox(const char *title, const char *text)
 {
     const char *buttons[] = { "ok" };
-    const char *locButtons[] = { htmlescape(entry->_("OK")) };
+    const char *locButtons[] = { htmlescape(_("OK")) };
     char *htmltext = htmlescape(text);
     doPromptPage(title, htmltext, true, "msgbox", buttons, locButtons, 1);
     free(htmltext);
@@ -750,10 +749,8 @@ static boolean MojoGui_www_promptyn(const char *title, const char *text,
     int i, rc;
     char *htmltext = htmlescape(text);
     const char *buttons[] = { "no", "yes" };
-    const char *locButtons[] = {
-            htmlescape(entry->_("No")),
-            htmlescape(entry->_("Yes")),
-    };
+    const char *locButtons[] = { htmlescape(_("No")), htmlescape(_("Yes")) };
+
     assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
     rc = doPromptPage(title, htmltext, true, "promptyn", buttons, locButtons,
@@ -777,10 +774,10 @@ static MojoGuiYNAN MojoGui_www_promptynan(const char *title, const char *text,
     char *htmltext = htmlescape(text);
     const char *buttons[] = { "no", "yes", "always", "never" };
     const char *locButtons[] = {
-            htmlescape(entry->_("No")),
-            htmlescape(entry->_("Yes")),
-            htmlescape(entry->_("Always")),
-            htmlescape(entry->_("Never")),
+        htmlescape(_("No")),
+        htmlescape(_("Yes")),
+        htmlescape(_("Always")),
+        htmlescape(_("Never")),
     };
     assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
 
@@ -826,20 +823,20 @@ static int MojoGui_www_readme(const char *name, const uint8 *data,
 
     cancelbutton = bcount++;
     buttons[cancelbutton] = "cancel";
-    locButtons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+    locButtons[cancelbutton] = xstrdup(_("Cancel"));
 
     if (can_back)
     {
         backbutton = bcount++;
         buttons[backbutton] = "back";
-        locButtons[backbutton] = entry->xstrdup(entry->_("Back"));
+        locButtons[backbutton] = xstrdup(_("Back"));
     } // if
 
     if (can_fwd)
     {
         fwdbutton = bcount++;
         buttons[fwdbutton] = "next";
-        locButtons[fwdbutton] = entry->xstrdup(entry->_("Next"));
+        locButtons[fwdbutton] = xstrdup(_("Next"));
     } // if
 
     strAdd(&text, &len, &alloc, "<pre>\n%s\n</pre>", htmldata);
@@ -873,7 +870,7 @@ static char *MojoGui_www_destination(const char **recommends, int recnum,
                                      boolean can_fwd)
 {
     char *retval = NULL;
-    char *title = entry->xstrdup(entry->_("Destination"));
+    char *title = xstrdup(_("Destination"));
     char *html = NULL;
     size_t len = 0, alloc = 0;
     boolean checked = true;
@@ -889,20 +886,20 @@ static char *MojoGui_www_destination(const char **recommends, int recnum,
 
     cancelbutton = bcount++;
     buttons[cancelbutton] = "cancel";
-    locButtons[cancelbutton] = entry->xstrdup(entry->_("Cancel"));
+    locButtons[cancelbutton] = xstrdup(_("Cancel"));
 
     if (can_back)
     {
         backbutton = bcount++;
         buttons[backbutton] = "back";
-        locButtons[backbutton] = entry->xstrdup(entry->_("Back"));
+        locButtons[backbutton] = xstrdup(_("Back"));
     } // if
 
     if (can_fwd)
     {
         fwdbutton = bcount++;
         buttons[fwdbutton] = "next";
-        locButtons[fwdbutton] = entry->xstrdup(entry->_("Next"));
+        locButtons[fwdbutton] = xstrdup(_("Next"));
     } // if
 
     strAdd(&html, &len, &alloc,
@@ -969,7 +966,7 @@ static char *MojoGui_www_destination(const char **recommends, int recnum,
             *command = 0;   // !!! FIXME: maybe loop with doPromptPage again.
         else
         {
-            retval = entry->xstrdup(dest);
+            retval = xstrdup(dest);
             *command = 1;
         } // else
     } // else
@@ -986,14 +983,11 @@ static boolean MojoGui_www_insertmedia(const char *medianame)
     int i, rc;
 
     const char *buttons[] = { "cancel", "ok" };
-    const char *locButtons[] = {
-            htmlescape(entry->_("Cancel")),
-            htmlescape(entry->_("OK")),
-    };
+    const char *locButtons[] = { htmlescape(_("Cancel")), htmlescape(_("OK")) };
 
-    char *title = entry->xstrdup(entry->_("Media change"));
-    char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
-    char *msg = entry->format(fmt, medianame);
+    char *title = xstrdup(_("Media change"));
+    char *fmt = xstrdup(_("Please insert '%0'"));
+    char *msg = format(fmt, medianame);
     strAdd(&text, &len, &alloc, msg);
     free(msg);
     free(fmt);
@@ -1031,7 +1025,7 @@ static boolean MojoGui_www_progress(const char *type, const char *component,
 
 static void MojoGui_www_final(const char *msg)
 {
-    MojoGui_www_msgbox(entry->_("Finish"), msg);
+    MojoGui_www_msgbox(_("Finish"), msg);
 } // MojoGui_www_final
 
 // end of gui_www.c ...

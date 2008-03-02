@@ -27,14 +27,16 @@ MOJOGUI_PLUGIN(gtkplus2)
 CREATE_MOJOGUI_ENTRY_POINT(gtkplus2)
 #endif
 
+#undef format
 #include <gtk/gtk.h>
+#define format entry->format
 
 typedef enum
 {
     PAGE_INTRO,
     PAGE_README,
     PAGE_OPTIONS,
-    PAGE_DESTINATION,
+    PAGE_DEST,
     PAGE_PROGRESS,
     PAGE_FINAL
 } WizardPages;
@@ -99,8 +101,8 @@ static int wait_event(void)
     gtk_main_iteration();
     if (click_value == CLICK_CANCEL)
     {
-        char *title = entry->xstrdup(entry->_("Cancel installation"));
-        char *text = entry->xstrdup(entry->_("Are you sure you want to cancel installation?"));
+        char *title = xstrdup(_("Cancel installation"));
+        char *text = xstrdup(_("Are you sure you want to cancel installation?"));
         if (!MojoGui_gtkplus2_promptyn(title, text, false))
             click_value = CLICK_NONE;
         free(title);
@@ -162,7 +164,7 @@ static void signal_clicked(GtkButton *_button, gpointer data)
 static void signal_browse_clicked(GtkButton *_button, gpointer data)
 {
     GtkWidget *dialog = gtk_file_chooser_dialog_new (
-        entry->_("Destination"),
+        _("Destination"),
         NULL,
         GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
         GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -198,7 +200,7 @@ static void signal_browse_clicked(GtkButton *_button, gpointer data)
 static void signal_dest_changed(GtkComboBox *combo, gpointer user_data)
 {
     // Disable the forward button when the destination entry is blank.
-    if ((currentpage == PAGE_DESTINATION) && (canfwd))
+    if ((currentpage == PAGE_DEST) && (canfwd))
     {
         gchar *str = gtk_combo_box_get_active_text(combo);
         const gboolean filled_in = ((str != NULL) && (*str != '\0'));
@@ -225,7 +227,7 @@ static boolean MojoGui_gtkplus2_init(void)
     char **tmpargv = args;
     if (!gtk_init_check(&tmpargc, &tmpargv))
     {
-        entry->logInfo("gtkplus2: gtk_init_check() failed, use another UI.");
+        logInfo("gtkplus2: gtk_init_check() failed, use another UI.");
         return false;
     } // if
     return true;
@@ -292,8 +294,8 @@ static boolean MojoGui_gtkplus2_promptyn(const char *title, const char *text,
 
 static void promptynanButtonCallback(GtkWidget *_msgbox)
 {
-    char *always = entry->xstrdup(entry->_("_Always"));
-    char *never = entry->xstrdup(entry->_("N_ever"));
+    char *always = xstrdup(_("_Always"));
+    char *never = xstrdup(_("N_ever"));
     gtk_dialog_add_buttons(GTK_DIALOG(_msgbox),
                            GTK_STOCK_YES, GTK_RESPONSE_YES,
                            GTK_STOCK_NO, GTK_RESPONSE_NO,
@@ -362,7 +364,7 @@ static GtkWidget *build_splash(const MojoGuiSplash *splash)
     if ((splash->rgba == NULL) || (splashlen == 0))
         return NULL;
 
-    rgba = (guchar *) entry->xmalloc(splashlen);
+    rgba = (guchar *) xmalloc(splashlen);
     memcpy(rgba, splash->rgba, splashlen);
     pixbuf = gdk_pixbuf_new_from_data(rgba, GDK_COLORSPACE_RGB, TRUE, 8,
                                       splash->w, splash->h, splash->w * 4,
@@ -462,10 +464,10 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_button_box_set_spacing(GTK_BUTTON_BOX (widget), 6);
 
     box = widget;
-    cancel = create_button(box, "gtk-cancel", entry->_("Cancel"), signal_clicked);
-    back = create_button(box, "gtk-go-back", entry->_("Back"), signal_clicked);
-    next = create_button(box, "gtk-go-forward", entry->_("Next"), signal_clicked);
-    finish = create_button(box, "gtk-goto-last", entry->_("Finish"), signal_clicked);
+    cancel = create_button(box, "gtk-cancel", _("Cancel"), signal_clicked);
+    back = create_button(box, "gtk-go-back", _("Back"), signal_clicked);
+    next = create_button(box, "gtk-go-forward", _("Next"), signal_clicked);
+    finish = create_button(box, "gtk-goto-last", _("Finish"), signal_clicked);
     gtk_widget_hide(finish);
 
     // !!! FIXME: intro page.
@@ -503,7 +505,7 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_widget_show(box);
 
     hbox = gtk_hbox_new (FALSE, 6);
-    widget = gtk_label_new(entry->_("Folder:"));
+    widget = gtk_label_new(_("Folder:"));
     gtk_widget_show(widget);
     gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, TRUE, 0);
     gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
@@ -515,7 +517,7 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_container_add(GTK_CONTAINER(alignment), destination);
     gtk_box_pack_start(GTK_BOX(hbox), alignment, TRUE, TRUE, 0);
     browse = create_button(hbox, "gtk-open",
-                           entry->_("B_rowse..."), signal_browse_clicked);
+                           _("B_rowse..."), signal_browse_clicked);
     gtk_widget_show_all (hbox);
     gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, FALSE, 0);
     gtk_container_add(GTK_CONTAINER(notebook), box);    
@@ -736,10 +738,7 @@ static int MojoGui_gtkplus2_options(MojoGuiSetupOptions *opts,
     gtk_box_pack_start(GTK_BOX(page), box, FALSE, FALSE, 0);
 
     build_options(opts, box, TRUE);
-
-    retval = run_wizard(entry->_("Options"), PAGE_OPTIONS,
-                        can_back, can_fwd, true);
-
+    retval = run_wizard(_("Options"), PAGE_OPTIONS, can_back, can_fwd, true);
     gtk_widget_destroy(box);
     return retval;
 } // MojoGui_gtkplus2_options
@@ -758,15 +757,14 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
         gtk_combo_box_prepend_text(combo, recommends[i]);
     gtk_combo_box_set_active (combo, 0);
 
-    *command = run_wizard(entry->_("Destination"), PAGE_DESTINATION,
-                          can_back, can_fwd, true);
+    *command = run_wizard(_("Destination"),PAGE_DEST,can_back,can_fwd,true);
 
     str = gtk_combo_box_get_active_text(combo);
 
     // shouldn't ever be empty ("next" should be disabled in that case).
     assert( (*command <= 0) || ((str != NULL) && (*str != '\0')) );
 
-    retval = entry->xstrdup(str);
+    retval = xstrdup(str);
     g_free(str);
 
     for (i = recnum-1; i >= 0; i--)
@@ -781,10 +779,10 @@ static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
     gint rc = 0;
     // !!! FIXME: Use stock GTK icon for "media"?
     // !!! FIXME: better text.
-    const char *title = entry->xstrdup(entry->_("Media change"));
+    const char *title = xstrdup(_("Media change"));
     // !!! FIXME: better text.
-    const char *fmt = entry->xstrdup(entry->_("Please insert '%0'"));
-    const char *text = entry->format(fmt, medianame);
+    const char *fmt = xstrdup(_("Please insert '%0'"));
+    const char *text = format(fmt, medianame);
     rc = do_msgbox(title, text, GTK_MESSAGE_WARNING,
                    GTK_BUTTONS_OK_CANCEL, GTK_RESPONSE_OK, NULL);
     free((void *) text);
@@ -805,7 +803,7 @@ static boolean MojoGui_gtkplus2_progress(const char *type, const char *component
                                          boolean can_cancel)
 {
     static uint32 lastTicks = 0;
-    const uint32 ticks = entry->ticks();
+    const uint32 ticks = ticks();
     int rc;
 
     if ((ticks - lastTicks) > 200)  // just not to spam this...
@@ -833,7 +831,7 @@ static void MojoGui_gtkplus2_final(const char *msg)
     gtk_widget_hide(next);
     gtk_widget_show(finish);
     gtk_label_set_text(GTK_LABEL(finallabel), msg);
-    run_wizard(entry->_("Finish"), PAGE_FINAL, false, true, false);
+    run_wizard(_("Finish"), PAGE_FINAL, false, true, false);
 } // MojoGui_gtkplus2_final
 
 // end of gui_gtkplus2.c ...
