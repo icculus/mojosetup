@@ -174,7 +174,7 @@ MojoSetup.localization = {
         nb = "%0 [j/N]: ",
         nds = "%0 [j/N] ",
         nl = "%0 [j/N]: ",
-        pt = "% [s/N] ",
+        pt = "%0 [s/N] ",
         ru = "%0 [y/N]: ",
         sv = "%0 [j/N]: ",
         uk = "%0 [так/НІ] "
@@ -1490,7 +1490,7 @@ MojoSetup.localization = {
         nds = "%0 %1",
         nl = "%0 %1",
         pt = "%0 %1",
-        ru = "0% %1",
+        ru = "%0 %1",
         sv = "%0 %1"
     };
 
