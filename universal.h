@@ -96,6 +96,13 @@ extern const char *GBuildVer;
 // Static, non-stack memory for scratch work...not thread safe!
 extern uint8 scratchbuf_128k[128 * 1024];
 
+
+#define UNICODE_BOGUS_CHAR_VALUE 0xFFFFFFFF
+#define UNICODE_BOGUS_CHAR_CODEPOINT '?'
+// !!! FIXME: document me!
+uint32 utf8codepoint(const char **_str);
+
+
 // Format a string, sort of (but not exactly!) like sprintf().
 //  The only formatters accepted are %0 through %9 (and %%), which do not
 //  have to appear in order in the string, but match the varargs passed to the
@@ -347,6 +354,7 @@ typedef struct MojoSetupEntryPoints
     char *(*format)(const char *fmt, ...);
     const char *(*numstr)(int val);
     uint32 (*ticks)(void);
+    uint32 (*utf8codepoint)(const char **_str);
 } MojoSetupEntryPoints;
 extern MojoSetupEntryPoints GEntryPoints;
 

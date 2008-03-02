@@ -249,6 +249,11 @@ const MojoGui *MOJOGUI_ENTRY_POINT(int rev, const MojoSetupEntryPoints *e) \
 #endif
 #define ticks() entry->ticks()
 
+#ifdef utf8codepoint
+#undef utf8codepoint
+#endif
+#define utf8codepoint(x) entry->utf8codepoint(x)
+
 #endif
 
 
