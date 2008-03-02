@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version svn-533 ...
---  on 2008-03-01 00:01:48-0500
+-- This file was generated with po2localization.pl, version svn-534 ...
+--  on 2008-03-01 22:00:16-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,7 +15,7 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2008-02-29 10:16+0000
+-- X-Launchpad-Export-Date: 2008-03-02 02:32+0000
 -- X-Generator: Launchpad (build Unknown)
 
 MojoSetup.languages = {
@@ -30,6 +30,7 @@ MojoSetup.languages = {
     nb = "Norwegian Bokmal",
     nds = "German, Low",
     nl = "Dutch",
+    pt = "Portuguese",
     ru = "Russian",
     sv = "Swedish",
     uk = "Ukrainian"
@@ -47,6 +48,7 @@ MojoSetup.localization = {
         nb = "trenger ordbok",
         nds = "Wörterbuch benötigt",
         nl = "woordenboek nodig",
+        pt = "é necessário um dicionário",
         ru = "необходим словарь",
         sv = "behöver ordbok",
         uk = "потрібен словник"
@@ -63,6 +65,7 @@ MojoSetup.localization = {
         nb = "datafeil",
         nds = "Datenfehler",
         nl = "data fout",
+        pt = "erro de dados",
         ru = "ошибка данных",
         sv = "datafel",
         uk = "помилка даних"
@@ -79,6 +82,7 @@ MojoSetup.localization = {
         nb = "minnefeil",
         nds = "Speicherfehler",
         nl = "geheugen fout",
+        pt = "erro na memória",
         ru = "ошибка памяти",
         sv = "minnesfel",
         uk = "помилка пам'яті"
@@ -95,6 +99,7 @@ MojoSetup.localization = {
         nb = "bufferfeil",
         nds = "Pufferfehler",
         nl = "buffer fout",
+        pt = "erro no tampão",
         ru = "ошибка буфера",
         sv = "bufferfel",
         uk = "помилка буферу"
@@ -111,6 +116,7 @@ MojoSetup.localization = {
         nb = "versjonsfeil",
         nds = "Versionsfehler",
         nl = "versie fout",
+        pt = "erro na versão",
         ru = "ошибка версии",
         sv = "versionsfel",
         uk = "помилка версії"
@@ -128,6 +134,7 @@ MojoSetup.localization = {
         nb = "ukjent feil",
         nds = "unbekannter Fehler",
         nl = "onbekende fout",
+        pt = "erro desconhecido",
         ru = "неизвестная ошибка",
         sv = "okänt fel",
         uk = "невідома помилка"
@@ -148,6 +155,7 @@ MojoSetup.localization = {
         nb = "%0 [J/n]: ",
         nds = "%0 [J/n] ",
         nl = "%0 [J/n]: ",
+        pt = "%0 [S/n] ",
         ru = "%0 [Y/n]: ",
         sv = "%0 [J/n]: ",
         uk = "%0 [ТАК/ні] "
@@ -166,6 +174,7 @@ MojoSetup.localization = {
         nb = "%0 [j/N]: ",
         nds = "%0 [j/N] ",
         nl = "%0 [j/N]: ",
+        pt = "% [s/N] ",
         ru = "%0 [y/N]: ",
         sv = "%0 [j/N]: ",
         uk = "%0 [так/НІ] "
@@ -184,6 +193,7 @@ MojoSetup.localization = {
         nb = "%0 [j/n/Alltid/Aldri]: ",
         nds = "%0 [j/n/Immer/Niemals] ",
         nl = "%0 [j/n/Altijd/Nooit]: ",
+        pt = "%0 [s/n/Sempre/Nunca] ",
         ru = "%0 [y/n/Всегда(A)/Никогда(N)]: ",
         sv = "%0 [j/n/Alltid/Aldrig]: ",
         uk = "%0 [так/ні/Завжди/Ніколи]: "
@@ -201,6 +211,7 @@ MojoSetup.localization = {
         nb = "J",
         nds = "J",
         nl = "J",
+        pt = "S",
         ru = "Y",
         sv = "J"
     };
@@ -217,6 +228,7 @@ MojoSetup.localization = {
         nb = "N",
         nds = "N",
         nl = "N",
+        pt = "N",
         ru = "N",
         sv = "N"
     };
@@ -234,6 +246,7 @@ MojoSetup.localization = {
         nb = "Alltid",
         nds = "Immer",
         nl = "Altijd",
+        pt = "Sempre",
         ru = "Всегда",
         sv = "Alltid"
     };
@@ -251,6 +264,7 @@ MojoSetup.localization = {
         nb = "Aldri",
         nds = "Niemals",
         nl = "Nooit",
+        pt = "Nunca",
         ru = "Никогда",
         sv = "Aldrig"
     };
@@ -268,7 +282,8 @@ MojoSetup.localization = {
         nb = "(%0-%1 av %2 linjer, se mer?)",
         nds = "%0-%1 vom %2 lines, mehr?",
         nl = "(%0-%1 van %2 regels, meer zien?)",
-        ru = "%0-%1 из %2 строк, дальше?",
+        pt = "(%0-%1 de %2 linhas, ver mais?)",
+        ru = "(%0-%1 из %2 строк, дальше?)",
         sv = "(%0-%1 av %2 rader, visa fler?)"
     };
 
@@ -286,6 +301,7 @@ MojoSetup.localization = {
         nb = "Skriv '%0' for å gå tilbake.",
         nds = "Drücken Sie '%0' um zurückzukehren",
         nl = "Typ %0 om terug te gaan.",
+        pt = "Escreva '%0' para regressar.",
         ru = "Нажмите '%0' чтобы вернуться.",
         sv = "Skriv '%0' för att gå tillbaka."
     };
@@ -305,6 +321,7 @@ MojoSetup.localization = {
         nb = "tilbake",
         nds = "Zurück",
         nl = "terug",
+        pt = "retroceder",
         ru = "назад",
         sv = "tillbaka"
     };
@@ -320,6 +337,7 @@ MojoSetup.localization = {
         it = "> ",
         nb = "> ",
         nl = "> ",
+        pt = "> ",
         ru = "> ",
         sv = "> "
     };
@@ -334,7 +352,9 @@ MojoSetup.localization = {
         fr = "%0 : %1%%",
         it = "%0: %1%%",
         nb = "%0: %1%%",
+        nds = "%0: %1%%",
         nl = "%0: %1%%",
+        pt = "%0: %1%%",
         ru = "%0: %1%%",
         sv = "%0: %1%%"
     };
@@ -351,6 +371,7 @@ MojoSetup.localization = {
         nb = "%0 (totalt: %1%%)",
         nds = "%0 (Fortschritt insgesamt: %1%%)",
         nl = "%0 (totale voortgang: %1%%)",
+        pt = "%0 (progresso total: %1%%)",
         ru = "%0 (всего: %1%%)",
         sv = "%0 (totalt: %1%%)"
     };
@@ -369,6 +390,8 @@ MojoSetup.localization = {
         nb = "Akseptere denne lisensen?",
         nds = "Akzeptiere diese Lizenz?",
         nl = "Accepteert u deze licentie?",
+        pt = "Aceita esta licença?",
+        ru = "Вы соглашаетесь?",
         sv = "Acceptera licensen?"
     };
 
@@ -385,6 +408,7 @@ MojoSetup.localization = {
         nb = "_Alltid",
         nds = "Immer",
         nl = "_Altijd",
+        pt = "_Sempre",
         ru = "_Всегда",
         sv = "_Alltid"
     };
@@ -401,6 +425,7 @@ MojoSetup.localization = {
         nb = "Fant ikke arkiv",
         nds = "Archiv nicht gefunden",
         nl = "Archief niet gevonden",
+        pt = "O Arquivo não foi encontrado",
         ru = "Архив не найден",
         sv = "Hittade inte arkivet"
     };
@@ -418,6 +443,7 @@ MojoSetup.localization = {
         nb = "Er du sikker på at du vil avbryte installasjonen?",
         nds = "Sind Sie sicher, dass Sie die Installation abbrechen wollen?",
         nl = "Weet u zeker dat u de installatie wilt afbreken?",
+        pt = "Tem a certeza que quer cancelar a instalação?",
         ru = "Вы уведены что вы хотите прекратить установку?",
         sv = "Är du säker på att du vill avbryta installationen?"
     };
@@ -434,6 +460,7 @@ MojoSetup.localization = {
         nb = "Tilbake",
         nds = "Zurück",
         nl = "Vorige",
+        pt = "Anterior",
         ru = "Назад",
         sv = "Tillbaka"
     };
@@ -452,6 +479,8 @@ MojoSetup.localization = {
         nb = "B_la gjennom...",
         nds = "Du_rchsuchen",
         nl = "Bl_aderen...",
+        pt = "_Procurar...",
+        ru = "Открыть...",
         sv = "B_läddra"
     };
 
@@ -472,6 +501,7 @@ MojoSetup.localization = {
         nb = "FEIL: duplisert media-id",
         nds = "BUG: Doppelte media id",
         nl = "BUG: dubbele media id",
+        pt = "BUG: media id duplicada",
         sv = "FEL: dupliserat media id"
     };
 
@@ -484,9 +514,11 @@ MojoSetup.localization = {
         en_GB = "BUG: no options",
         es = "FALLO: sin opciones",
         fi = "BUGI: ei vaihtoehtoja",
+        fr = "BOGUE: Pas d'options",
         nb = "FEIL: ingen valg",
         nds = "BUG: keine Optionen",
         nl = "BUG: geen opties",
+        pt = "BUG: sem opções",
         ru = "Баг: нету опций",
         sv = "FEL: inget option"
     };
@@ -504,6 +536,7 @@ MojoSetup.localization = {
         nb = "FEIL: support_uninstall krever write_manifest",
         nds = "BUG: support_uninstall benötigt write_manifest",
         nl = "BUG: ondersteuning_deinstalleren heeft schrijf_manifest nodig",
+        pt = "BUG:  support_uninstall requer write_manifest",
         ru = "Баг: support_uninstall нуждается в write_manifest",
         sv = "FEL: support_uninstall kräver write_manifest"
     };
@@ -519,6 +552,7 @@ MojoSetup.localization = {
         es = "FALLO: write_manifest requiere el soporte de un intérprete Lua",
         fi = "BUGI: write_manifest vaatii Lua parser -tuen",
         nb = "FEIL: write_manifest krever støtte for Lua-parser",
+        pt = "BUG: write_manifest requer suporte do analisador da linguagem Lua",
         ru = "Баг: write_manifest нуждается в поддержке Lua parser",
         sv = "FEL: write_manifest kräver Lua parser stöd"
     };
@@ -534,6 +568,7 @@ MojoSetup.localization = {
         es = "FALLO: Setup.DesktopMenuItem requiere support_uninstall",
         fi = "BUGI: Setup.DesktopMenuItem vaatii support_uninstall:n",
         nds = "BUG: Setup.DesktopMenuItem benötigt support_uninstall",
+        pt = "BUG: Setup.DesktopMenuItem requer support_uninstall",
         ru = "Баг: Setup.DesktopMenuItem нуждается в support_uninstall",
         sv = "FEL: Setup.DesktopMenuItem kräver support_uninstall"
     };
@@ -544,13 +579,15 @@ MojoSetup.localization = {
     --  valid and would cause this error.
     ["BUG: '%0' is not a valid permission string"] = {
         cs = "CHYBA: '%0' není platným řetězcem vyjadřujícím oprávnění",
-        de = "FEHLER: '%0' ist keine zulässiger Berechtigungs-String",
+        de = "FEHLER: '%0' ist kein zulässiger Berechtigungs-String",
         en_GB = "BUG: '%0' is not a valid permission string",
         es = "FALLO: '%0' no es una cadena de permisos válida",
         fi = "BUGI: \"%0\" ei ole kelvollinen oikeuksia määrittävä merkkijono",
         nb = "FEIL: '%0' er ikke en gyldig rettighetsstreng",
         nds = "BUG: '%0' ist kein gültiger \"permission string\"",
         nl = "BUG: '%0' is geen geldige permissie string",
+        pt = "BUG: '%0' não é uma expressão válida",
+        ru = "Баг: '%0' не правильный текст для прав.",
         sv = "FEL: '%0' är inte en giltig rättighetssträng"
     };
 
@@ -565,6 +602,8 @@ MojoSetup.localization = {
         es = "FALLO: Cadena format() no válida",
         fi = "BUGI: Epäkelpo format()-merkkijono",
         nb = "FEIL: Ugyldig format()-streng",
+        nds = "Fehler: Ungültiger format() string",
+        pt = "BUG: format() inválido da expressão",
         ru = "Баг: Недействитeльний текст format()",
         sv = "FEL: Ogiltig format() sträng"
     };
@@ -580,7 +619,10 @@ MojoSetup.localization = {
         es = "FALLO: la etapa ha devuelto tipo erróneo",
         fi = "BUGI: vaihe palautti väärää tyyppiä",
         nb = "FEIL: nivå returnerte feil type",
+        nds = "Fehler: Stage Rückgabewert ist vom falschen Typ",
         nl = "BUG: stadium gaf verkeerd type op",
+        pt = "BUG: A etapa retornou um tipo errado",
+        ru = "Баг: этап выдал неожиданный тип результата",
         sv = "FEL: nivå returnerade fel typ"
     };
 
@@ -596,6 +638,8 @@ MojoSetup.localization = {
         fi = "BUGI: vaihe palautti väärän arvon",
         nb = "FEIL: nivå returnerte feil verdi",
         nl = "BUG: stadium gaf verkeerde waarde terug",
+        pt = "BUG: A etapa retornou um valor errado",
+        ru = "Баг: этап выдал неожиданный результат",
         sv = "FEL: nivå returnerade fel värde"
     };
 
@@ -611,6 +655,8 @@ MojoSetup.localization = {
         fi = "BUGI: palattiin ensimmäisen vaiheen ohi",
         nb = "FEIL: Gikk tilbake forbi startnivå",
         nl = "BUG: teruggegaan naar voor eerste stadium.",
+        pt = "BUG: Retrocedeu na primeira etapa",
+        ru = "Баг: этап вышел сзади первого этапа",
         sv = "FEL: Gick tillbaka förbi startnivå"
     };
 
@@ -624,6 +670,7 @@ MojoSetup.localization = {
         fi = "BUGI: Käsittelemätön datatyyppi",
         nb = "FEIL: Uhåndtert datatype",
         nl = "BUG: onbekend data type",
+        pt = "BUG: tipo sem tratamento",
         sv = "FEL: Ohanterad datatyp"
     };
 
@@ -638,6 +685,7 @@ MojoSetup.localization = {
         fi = "BUGI: tar-syötteitä ei voida kahdentaa",
         nb = "FEIL: Kan ikke duplisere innfiler for tar",
         nl = "BUG: kan tar input kan niet gedupliceerd woorden.",
+        pt = "BUG: Impossível duplicar as entradas do tar",
         ru = "Баг: Не можем дублировать ввод tar",
         sv = "FEL: Kan inte duplicera infiler för tar"
     };
@@ -653,6 +701,7 @@ MojoSetup.localization = {
         fi = "BUGI: Odottamaton arvo",
         nds = "Unerwarteter Wert",
         nl = "BUG: Onverwachte waarde",
+        pt = "BUG: Valor inexperado",
         ru = "Баг: Неожидданый ответ",
         sv = "FEL: Oväntat värde"
     };
@@ -670,7 +719,9 @@ MojoSetup.localization = {
         fi = "BUGI: Config %0 %1",
         it = "BUG: Config %0 %1",
         nb = "FEIL: Konfigurasjon %0 %1",
+        nds = "Fehler: Config %0 %1",
         nl = "BUG: configuratie %0 %1",
+        pt = "BUG: Configuração %0 %1",
         ru = "Баг: Опция %0 %1",
         sv = "FEL: Konfiguration %0 %1"
     };
@@ -684,7 +735,9 @@ MojoSetup.localization = {
         fi = "täytyy määritellä täsmällisesti",
         fr = "doit être spécifié explicitement",
         nb = "må spesifiseres eksplisitt",
+        nds = "muss ausdrücklich spezifiziert werden",
         nl = "moet expliciet gespecifieerd worden",
+        pt = "Tem que ser especificado explicitamente",
         ru = "должна быть указана прямо",
         sv = "måste vara explicit specifierad"
     };
@@ -698,7 +751,10 @@ MojoSetup.localization = {
         fi = "täytyy olla merkkijono tai merkkijonotaulukko",
         fr = "doit être une chaîne de caractères ou un tableau de chaînes de caractères",
         nb = "må være streng eller tabell av strenger",
+        nds = "muss String oder Tabelle von Strings sein",
         nl = "moet een string of een tabel met strings zijn",
+        pt = "Tem que ser uma expressão ou uma tabela de expressões",
+        ru = "должна быть текстом или таблицей с текстами",
         sv = "måste vara en sträng eller en tabell av strängar"
     };
 
@@ -713,6 +769,7 @@ MojoSetup.localization = {
         nb = "må være streng eller nummer",
         nds = "muss string oder number sein",
         nl = "moet een string of een nummer zijn",
+        pt = "Tem que ser uma expressão ou um número",
         ru = "должна текстом или номером",
         sv = "måste vara en sträng eller ett nummer"
     };
@@ -726,7 +783,9 @@ MojoSetup.localization = {
         fi = "ei saa olla tyhjä merkkijono",
         fr = "ne peut être une chaîne de caractères vide",
         nb = "kan ikke være tom streng",
+        nds = "kann String nicht leeren",
         nl = "kan geen lege string zijn",
+        pt = "Não pode ser uma expressão vazia",
         ru = "не может быть пустым текстом",
         sv = "kan inte vara en tom sträng"
     };
@@ -742,6 +801,7 @@ MojoSetup.localization = {
         nb = "URL har ikke protokoll",
         nds = "URL hat kein Protokoll",
         nl = "URL heeft geen protocol",
+        pt = "O URL não tem o protocolo",
         ru = "не имеет протокола для URL",
         sv = "URL saknar protokoll"
     };
@@ -757,6 +817,7 @@ MojoSetup.localization = {
         nb = "URL har ikke ver",
         nds = "URL hat keinen Host",
         nl = "URL heeft geen host",
+        pt = "O URL não tem servidor",
         sv = "URL saknar värd"
     };
 
@@ -770,6 +831,7 @@ MojoSetup.localization = {
         fr = "L'URL manque un chemin",
         nb = "URL har ikke sti",
         nds = "URL hat keinen Pfad",
+        pt = "O URL não tem recurso",
         sv = "URL saknar sökväg"
     };
 
@@ -784,6 +846,8 @@ MojoSetup.localization = {
         nb = "URL-protokollen er ikke støttet",
         nds = "URL Protokoll wird nicht unterstützt",
         nl = "protocol van URL wordt niet ondersteund",
+        pt = "O protocolo do URL não é suportado",
+        ru = "URL прротокол не поддержан",
         sv = "URL-protokollet har inget stöd"
     };
 
@@ -799,7 +863,10 @@ MojoSetup.localization = {
         fr = "Chaine de permissions invalide",
         it = "Stringa dei permessi non valida",
         nb = "Rettighetsstrengen er ugyldig",
+        nds = "Zugriffsberechtigungs String ist ungültig",
         nl = "Permissie string is niet geldig",
+        pt = "A expressão de permissão não é válida",
+        ru = "права не правильные",
         sv = "Rättighetssträngen är ogiltig"
     };
 
@@ -814,7 +881,9 @@ MojoSetup.localization = {
         fr = "n'est pas une propriété valide",
         it = "non è una proprietà valida",
         nb = "er ikke en gyldig egenskap",
+        nds = "ist keine gültige Eigenschaft",
         nl = "is geen geldige eigenschap",
+        pt = "não é uma propriedade válida",
         sv = "är inte ett giltigt attribut"
     };
 
@@ -831,6 +900,8 @@ MojoSetup.localization = {
         nb = "må være %0",
         nds = "muss %0 sein",
         nl = "moet %0 zijn",
+        pt = "tem que ser %0",
+        ru = "должна быть %0",
         sv = "måste vara %0"
     };
 
@@ -846,7 +917,8 @@ MojoSetup.localization = {
         nb = "streng",
         nds = "string",
         nl = "string",
-        ru = "строка",
+        pt = "expressão",
+        ru = "строкой",
         sv = "sträng"
     };
 
@@ -862,6 +934,7 @@ MojoSetup.localization = {
         nb = "boolsk verdi",
         nds = "boolean",
         nl = "boolean",
+        pt = "boleano",
         sv = "boolskt värde"
     };
 
@@ -877,7 +950,8 @@ MojoSetup.localization = {
         nb = "nummer",
         nds = "number",
         nl = "nummer",
-        ru = "число",
+        pt = "número",
+        ru = "числом",
         sv = "nummer"
     };
 
@@ -891,8 +965,10 @@ MojoSetup.localization = {
         fr = "fonction",
         it = "funzione",
         nb = "funksjon",
+        nds = "Funktion",
         nl = "functie",
-        ru = "функция",
+        pt = "função",
+        ru = "функцией",
         sv = "funktion"
     };
 
@@ -906,8 +982,10 @@ MojoSetup.localization = {
         fr = "tableau",
         it = "tabella",
         nb = "tabell",
+        nds = "Tabelle",
         nl = "tabel",
-        ru = "таблица",
+        pt = "tabela",
+        ru = "таблицей",
         sv = "tabell"
     };
 
@@ -919,8 +997,11 @@ MojoSetup.localization = {
         en_GB = "bzlib triggered an internal error: %0",
         es = "bzlib ha provocado un error interno: %0",
         fi = "bzlib laukaisi sisäisen virheen: %0",
+        fr = "bzlib a causé une erreur interne: %0",
         nb = "intern feil i bzlib: %0",
+        nds = "bzlib löste eine internen Fehler aus: %0",
         nl = "bzlib heeft een interne fout veroorzaakt: %0",
+        pt = "A bzlib despoletou um erro interno: %0",
         sv = "internt fel i bzlib: %0"
     };
 
@@ -937,6 +1018,7 @@ MojoSetup.localization = {
         nb = "Avbryt",
         nds = "Abbrechen",
         nl = "Annuleren",
+        pt = "Cancelar",
         ru = "Отменить",
         sv = "Avbryt"
     };
@@ -954,6 +1036,7 @@ MojoSetup.localization = {
         nb = "Avbryt installasjonen",
         nds = "Installation abbrechen",
         nl = "Installatie afbreken?",
+        pt = "Cancelar a instalação",
         ru = "Отменить установку",
         sv = "Avbryt installationen"
     };
@@ -968,6 +1051,7 @@ MojoSetup.localization = {
         fi = "Paketin tiedostojen listaus epäonnistui",
         fr = "Ne peux pas énumérer les fichiers de l'archive",
         nb = "Kunne ikke liste filer i arkivet",
+        pt = "Foi impossível enumerar o arquivo",
         sv = "Kunde inte lista filen"
     };
 
@@ -984,6 +1068,8 @@ MojoSetup.localization = {
         nb = "Kunne ikke åpne arkivet",
         nds = "Kann Archiv nicht öffnen",
         nl = "Kon archief niet openen",
+        pt = "Foi impossível abrir o arquivo",
+        ru = "Не могли открыть архив",
         sv = "Kunde inte öppna filen"
     };
 
@@ -1002,8 +1088,12 @@ MojoSetup.localization = {
         en_GB = "Choose number to change.",
         es = "Elegir número para cambiar",
         fi = "Valitse muutettavan numero.",
+        fr = "Entrez le numéro de l'option à changer.",
         nb = "Velg nummer som skal endres.",
+        nds = "Wähle eine Nummer zum ändern",
         nl = "Kies een nummer om te veranderen",
+        pt = "Escolha um número para alterar",
+        ru = "Выберите номер чтобы поменять",
         sv = "Välj nummer som skall ändras."
     };
 
@@ -1019,6 +1109,8 @@ MojoSetup.localization = {
         nb = "Konflikt!",
         nds = "Konflikt!",
         nl = "Conflict!",
+        pt = "Conflito!",
+        ru = "Конфликт!",
         sv = "Konflikt!"
     };
 
@@ -1029,12 +1121,13 @@ MojoSetup.localization = {
     --  This error is shown if we can't move a file out of the way.
     ["Couldn't backup file for rollback"] = {
         cs = "Nemohu zazálohovat soubor pro obnovu",
-        de = "Konnte Datei nicht zur Wiederherstellung speichern",
+        de = "Konnte Datei nicht zur Wiederherstellung sichern",
         en_GB = "Couldn't backup file for rollback",
         es = "No se pudo guardar el archivo para inversión",
         fi = "Tiedoston varmuuskopionti ei onnistunut",
         nb = "Kunne ikke sikkerhetskopiere fil for tilbakerulling",
         nl = "Kon bestand niet backupen om de installatie terug te kunnen draaien",
+        pt = "Foi impossível salvaguardar o ficheiro para refazer as acções",
         sv = "Kunde inte säkerhetskopiera filen för återställning"
     };
 
@@ -1046,8 +1139,11 @@ MojoSetup.localization = {
         en_GB = "Couldn't create manifest",
         es = "No se podía crear manifest",
         fi = "Asennusluettelon luominen epäonnistui",
+        fr = "Echec de création du fichier manifest",
         nb = "Kunne ikke lage manifest",
+        nds = "Erstellen des Manifests schlug fehl.",
         nl = "Kon het installatiemanifest niet maken",
+        pt = "Foi impossível criar o manifesto",
         sv = "Kunde inte skapa manifest"
     };
 
@@ -1064,6 +1160,8 @@ MojoSetup.localization = {
         nb = "Kunne ikke slette!",
         nds = "Löschen fehlgeschlagen!",
         nl = "Verwijderen mislukt!",
+        pt = "A remoção falhou!",
+        ru = "Не смогли удалить!",
         sv = "Kunde inte radera!"
     };
 
@@ -1081,6 +1179,8 @@ MojoSetup.localization = {
         nb = "Katalog:",
         nds = "Ordner:",
         nl = "Map:",
+        pt = "Directoria:",
+        ru = "Папка:",
         sv = "Katalog:"
     };
 
@@ -1096,6 +1196,8 @@ MojoSetup.localization = {
         nb = "Destinasjon",
         nds = "Ziel",
         nl = "Bestemming",
+        pt = "Destino",
+        ru = "Назначение",
         sv = "Mål"
     };
 
@@ -1112,6 +1214,8 @@ MojoSetup.localization = {
         nb = "Laster ned",
         nds = "Lade herunter",
         nl = "Bezig met downloaden",
+        pt = "A descarregar",
+        ru = "Идёт скачивание",
         sv = "Hämtar"
     };
 
@@ -1119,7 +1223,7 @@ MojoSetup.localization = {
     --  a destination for newly-installed files.
     ["Enter path where files will be installed."] = {
         cs = "Zadejte cestu, kam mají být soubory nainstalovány.",
-        de = "Geben Sie den Pfad an, wo Dateien installiert werden sollen.",
+        de = "Geben Sie den Pfad an, wohin die Dateien installiert werden sollen.",
         en_GB = "Enter path where files will be installed.",
         es = "Introduce la ruta donde los archivos serán instalados",
         fi = "Syötä polku, johon tiedostot asennetaan.",
@@ -1128,6 +1232,7 @@ MojoSetup.localization = {
         nb = "Skriv inn destinasjonssti for installasjonen.",
         nds = "Pfad eingeben, in den installiert werden soll.",
         nl = "Geef de map op waar de bestanden geinstalleerd zullen worden",
+        pt = "Introduza o caminho para os ficheiros que serão instalados.",
         sv = "Välj den mapp där filerna ska installeras."
     };
 
@@ -1138,9 +1243,12 @@ MojoSetup.localization = {
         en_GB = "failed to load file '%0'",
         es = "no se pudo leer el archivo '%0'",
         fi = "tiedoston \"%0\" lukeminen epäonnistui",
+        fr = "Echec du chargement du fichier '%0'",
         nb = "kunne ikke laste fil '%0'",
         nds = "Fehler beim Laden von '%0'",
         nl = "laden van bestand \"%0\" mislukt",
+        pt = "falhou a carregar o filheiro '%0'",
+        ru = "не смогли загрузить файл '%0'",
         sv = "Misslyckades med att läsa filen '%0'"
     };
 
@@ -1156,6 +1264,8 @@ MojoSetup.localization = {
         nb = "Fatal feil",
         nds = "Fataler Fehler",
         nl = "Fatale fout",
+        pt = "Erro fatal",
+        ru = "Фатальная ошибка",
         sv = "Allvarligt fel"
     };
 
@@ -1170,6 +1280,8 @@ MojoSetup.localization = {
         it = "Creazione file fallita",
         nb = "Kunne ikke lage fil!",
         nl = "aanmaken bestand mislukt!",
+        pt = "Falhou a criação do ficheiro!",
+        ru = "Не смогли сделать файл!",
         sv = "Misslyckades med att skapa fil!"
     };
 
@@ -1185,6 +1297,8 @@ MojoSetup.localization = {
         nb = "Kunne ikke laste ned fil!",
         nds = "Dateidownload fehlgeschlagen!",
         nl = "downloaden van bestand mislukt!",
+        pt = "Falhou a descarregar!",
+        ru = "Не смогли скачать файл!",
         sv = "Hämtning av fil misslyckades!"
     };
 
@@ -1201,6 +1315,8 @@ MojoSetup.localization = {
         nb = "Filen '%0' eksisterer allerede! Skrive over?",
         nds = "Datei '%0' existiert bereits! Überschreiben?",
         nl = "Bestand \"%0\" bestaat al! Vervangen?",
+        pt = "O ficheiro '%0' já existe! Substituir?",
+        ru = "Уже есть файл '%0'. Хотите заменить?",
         sv = "Filen '%0' existerar redan! Vill du ersätta filen?"
     };
 
@@ -1208,7 +1324,7 @@ MojoSetup.localization = {
     --  stages to move forward to.
     ["Finish"] = {
         cs = "Dokončit",
-        de = "Fertig",
+        de = "Fertig stellen",
         en_GB = "Finish",
         es = "Terminar",
         fi = "Valmis",
@@ -1217,6 +1333,8 @@ MojoSetup.localization = {
         nb = "Ferdig",
         nds = "Fertig",
         nl = "Voltooien",
+        pt = "Finalizar",
+        ru = "Закончить",
         sv = "Slutför"
     };
 
@@ -1228,9 +1346,12 @@ MojoSetup.localization = {
         en_GB = "GUI failed to start",
         es = "El interfaz gráfico de usuario ha fallado al arrancar",
         fi = "Graafinen käyttöliittymä ei käynnistynyt",
+        fr = "Echec du démarrage de l'interface",
         nb = "Kunne ikke starte grafisk grensesnitt",
         nds = "Fehler beim starten der GUI",
         nl = "Opstarten GUI mislukt",
+        pt = "O GUI falhou a iniciar",
+        ru = "Графический елемент не змог запустится",
         sv = "Kunde inte starta grafisk gränssnitt"
     };
 
@@ -1245,7 +1366,9 @@ MojoSetup.localization = {
         fi = "Asennus jäi kesken. Tehdyt muutokset perutaan.",
         fr = "Installation incomplète. Tous les changements effectués seront annulés.",
         nb = "Installasjonen ble ikke ferdig. Vi vil tilbakestille alle endringer som ble gjort.",
-        nl = "Incomplete installatie. We zullen de gemaakte veranderingen ongedaan maken.",
+        nl = "Incomplete installatie. De veranderingen zullen ongedaan gemaakt worden.",
+        pt = "Instalação incompleta. Todas as alterações serão desfeitas.",
+        ru = "Не змогли установить программу. Мы отменим все сделанные изменения.",
         sv = "Ofullständig installation. Återställning av alla gjorda ändringar utförs."
     };
 
@@ -1259,7 +1382,10 @@ MojoSetup.localization = {
         fr = "Installation réussie.",
         it = "Installazione riuscita.",
         nb = "Installasjonen var en suksess.",
+        nds = "Die Installation war erfolgreich",
         nl = "De installatie is succesvol verlopen.",
+        pt = "A instalação foi bem sucedida.",
+        ru = "Установка была успешна.",
         sv = "Installationen lyckades."
     };
 
@@ -1274,7 +1400,10 @@ MojoSetup.localization = {
         fr = "En cours d'installation",
         it = "Installazione in corso",
         nb = "Installerer",
+        nds = "Installiere ...",
         nl = "Installeren",
+        pt = "A instalar",
+        ru = "Устанавливаем",
         sv = "Installerar"
     };
 
@@ -1289,7 +1418,10 @@ MojoSetup.localization = {
         fr = "Options",
         it = "Opzioni",
         nb = "Valg",
+        nds = "Optionen",
         nl = "Opties",
+        pt = "Opções",
+        ru = "Параметры",
         sv = "Alternativ"
     };
 
@@ -1306,6 +1438,7 @@ MojoSetup.localization = {
         it = "(Voglio specificare un percorso)",
         nb = "(Jeg vil skrive inn min egen sti.)",
         nl = "(Ik wil een pad specificeren.)",
+        pt = "(Eu quero especificar o caminho.)",
         sv = "(Jag vill skriva in en egen sökväg.)"
     };
 
@@ -1319,7 +1452,10 @@ MojoSetup.localization = {
         fr = "Ko/s",
         it = "KB/s",
         nb = "KB/s",
+        nds = "kB/s",
         nl = "KB/s",
+        pt = "KB/s",
+        ru = "кб/с",
         sv = "KB/s"
     };
 
@@ -1333,7 +1469,10 @@ MojoSetup.localization = {
         fr = "octets/s",
         it = "B/s",
         nb = "B/s",
+        nds = "B/s",
         nl = "B/s",
+        pt = "B/s",
+        ru = "б/с",
         sv = "B/s"
     };
 
@@ -1348,7 +1487,10 @@ MojoSetup.localization = {
         fr = "%0 %1",
         it = "%0 %1",
         nb = "%0 %1",
+        nds = "%0 %1",
         nl = "%0 %1",
+        pt = "%0 %1",
+        ru = "0% %1",
         sv = "%0 %1"
     };
 
@@ -1361,22 +1503,29 @@ MojoSetup.localization = {
         en_GB = "%0 %1, %2:%3:%4 remaining",
         es = "%0 %1, %2:%3:%4 restantes",
         fi = "%0 %1, %2:%3:%4 jäljellä",
+        fr = "%0 %1, %2:%3:%4 restantes",
         nb = "%0 %1, %2:%3:%4 igjen",
+        nds = "%0 %1, %2:%3:%4 verbleiben",
         nl = "%0 %1, %2:%3:%4 resterend",
+        pt = "restam %0 %1, %2:%3:%4",
+        ru = "%0 %1, осталось %2:%3:%4",
         sv = "%0 %1, %2:%3:%4 återstår"
     };
 
     -- download rate when download isn't progressing at all.
     ["stalled"] = {
         cs = "zaseknuté",
-        de = "Stillstand",
+        de = "wartend",
         en_GB = "stalled",
         es = "parado",
         fi = "seisahtunut",
         fr = "bloqué",
         it = "in stallo",
         nb = "står fast",
+        nds = "Angehalten",
         nl = "geen progressie",
+        pt = "Parado",
+        ru = "застряло",
         sv = "avstannad"
     };
 
@@ -1388,8 +1537,12 @@ MojoSetup.localization = {
         en_GB = "%0: %1%% (%2)",
         es = "%0: %1%% (%2)",
         fi = "%0: %1%% (%2)",
+        fr = "%0: %1%% (%2)",
         nb = "%0: %1%% (%2)",
+        nds = "%0: %1%% (%2)",
         nl = "%0: %1%% (%2)",
+        pt = "%0: %1%% (%2)",
+        ru = "%0: %1%% (%2)",
         sv = "%0: %1%% (%2)"
     };
 
@@ -1403,6 +1556,7 @@ MojoSetup.localization = {
         fr = "Changement de média",
         nb = "Mediaendring",
         nl = "Verwissel medium",
+        pt = "Mudança de media",
         sv = "Mediabyte"
     };
 
@@ -1418,6 +1572,8 @@ MojoSetup.localization = {
         it = "Creazione directory fallita",
         nb = "Kunne ikke lage katalog",
         nl = "Aanmaken folder mislukt",
+        pt = "A criação da directoria falhou",
+        ru = "Не смогли сделать папку",
         sv = "Kunde inte skapa katalog"
     };
 
@@ -1432,6 +1588,9 @@ MojoSetup.localization = {
         fr = "_Jamais",
         it = "_Mai",
         nb = "Al_dri",
+        nds = "N_ie",
+        pt = "N_unca",
+        ru = "Никогда",
         sv = "Al_drig"
     };
 
@@ -1446,7 +1605,10 @@ MojoSetup.localization = {
         fr = "Suivant",
         it = "Avanti",
         nb = "Neste",
+        nds = "Weiter",
         nl = "Volgende",
+        pt = "Seguinte",
+        ru = "Далее",
         sv = "Nästa"
     };
 
@@ -1460,7 +1622,10 @@ MojoSetup.localization = {
         fr = "Non",
         it = "No",
         nb = "Nei",
+        nds = "Nein",
         nl = "Nee",
+        pt = "Não",
+        ru = "Нет",
         sv = "Nej"
     };
 
@@ -1474,7 +1639,10 @@ MojoSetup.localization = {
         fr = "Oui",
         it = "Si",
         nb = "Ja",
+        nds = "Ja",
         nl = "Ja",
+        pt = "Sim",
+        ru = "Да",
         sv = "Ja"
     };
 
@@ -1489,7 +1657,10 @@ MojoSetup.localization = {
         fr = "Introuvable",
         it = "Non Trovato",
         nb = "Ikke funnet",
+        nds = "Nicht gefunden",
         nl = "Niet Gevonden",
+        pt = "Inexistente",
+        ru = "Не найдено",
         sv = "Hittades inte"
     };
 
@@ -1503,7 +1674,10 @@ MojoSetup.localization = {
         fi = "Ei tehtävää!",
         fr = "Rien à faire!",
         nb = "Ingenting å gjøre!",
+        nds = "Nichts zu tun!",
         nl = "Niets te doen!",
+        pt = "Nada por fazer!",
+        ru = "Нечего делать!",
         sv = "Ingenting att göra!"
     };
 
@@ -1514,9 +1688,13 @@ MojoSetup.localization = {
         en_GB = "OK",
         es = "Aceptar",
         fi = "Hyväksy",
+        fr = "OK",
         it = "OK",
         nb = "OK",
+        nds = "OK",
         nl = "OK",
+        pt = "Aceitar",
+        ru = "Далее",
         sv = "OK"
     };
 
@@ -1531,8 +1709,12 @@ MojoSetup.localization = {
         en_GB = "PANIC",
         es = "PÁNICO",
         fi = "HÄTÄTILA",
+        fr = "PANIC",
         nb = "PANIKK",
+        nds = "PANIK",
         nl = "PROBLEEM",
+        pt = "PÂNICO",
+        ru = "ПАНИКА",
         sv = "PANIK"
     };
 
@@ -1543,8 +1725,11 @@ MojoSetup.localization = {
         en_GB = "Please insert '%0'",
         es = "Por favor introduce '%0'",
         fi = "Syötä \"%0\"",
+        fr = "Veuillez insérer '%0'",
         nb = "Sett inn '%0'",
+        nds = "Bitte '%0' in das Laufwerk legen.",
         nl = "Laadt '%0' a.u.b.",
+        pt = "Por favor insira '%0'",
         sv = "Sätt in '%0'"
     };
 
@@ -1560,7 +1745,9 @@ MojoSetup.localization = {
         fr = "Veuillez appuyer sur Entrée pour continuer.",
         it = "Premere invio per continuare.",
         nb = "Trykk enter for å fortsette.",
-        nl = "Druk 'enter' om door te gaan.",
+        nds = "Drücke Enter, um fortzufahren.",
+        nl = "Toets enter om door te gaan",
+        pt = "Pressione enter para continuar.",
         sv = "Tryck enter för att fortsätta."
     };
 
@@ -1575,7 +1762,9 @@ MojoSetup.localization = {
         fi = "Vakava ongelma",
         fr = "Problème grave",
         nb = "Alvorlig problem",
+        nds = "Ernstzunehmender Fehler",
         nl = "Serieus probleem",
+        pt = "Problema sério",
         sv = "Allvarligt problem"
     };
 
@@ -1589,6 +1778,7 @@ MojoSetup.localization = {
         fr = "Fermeture en cours...",
         nb = "Avslutter...",
         nl = "Afsluiten...",
+        pt = "A terminar...",
         sv = "Avslutar..."
     };
 
@@ -1602,7 +1792,9 @@ MojoSetup.localization = {
         fr = "Vous pouvez maintenant fermer ce navigateur",
         it = "Puoi chiudere il browser adesso.",
         nb = "Du kan lukke denne nettleseren nå.",
+        nds = "Sie können den Browser nun schließen.",
         nl = "U kunt dit scherm nu sluiten.",
+        pt = "Já pode fechar este browser.",
         sv = "Du kan stänga denna webbläsare nu."
     };
 
@@ -1618,6 +1810,7 @@ MojoSetup.localization = {
         it = "Creazione del collegamento fallita!",
         nb = "Kunne ikke lage symbolsk lenke!",
         nl = "Aanmaken Symlink mislukt!",
+        pt = "A criação de uma ligação simbólica falhou!",
         sv = "Kunde inte skapa symbolisk länk!"
     };
 
@@ -1632,6 +1825,7 @@ MojoSetup.localization = {
         fr = "L'installeur a été interrompu par le système.",
         nb = "Installasjonsprogrammet ble stoppet av systemet.",
         nl = "Het installatieprogramma is door het systeem gestopt.",
+        pt = "O instalador foi parado pelo sistema.",
         sv = "Installationsprogrammet blev stoppat av systemet."
     };
 
@@ -1643,8 +1837,10 @@ MojoSetup.localization = {
         en_GB = "The installer has crashed due to a bug.",
         es = "El instalador se ha bloqueado por un fallo de memoria.",
         fi = "Bugi kaatoi asennusohjelman.",
+        fr = "L'installateur a quitté inopinément à cause d'un bogue.",
         nb = "Installasjonsprogrammet kræsjet pga. en feil.",
         nl = "Het installatieprogramma is door een bug gecrasht.",
+        pt = "O instalador terminou acidentalmente devido a um erro.",
         sv = "Installationsprogrammet kraschade pga. ett fel."
     };
 
@@ -1659,6 +1855,7 @@ MojoSetup.localization = {
         it = "Attiva/Disattiva",
         nb = "Inverter valg",
         nl = "Aan/Uit",
+        pt = "Alternar",
         sv = "Växla"
     };
 
@@ -1671,8 +1868,10 @@ MojoSetup.localization = {
         en_GB = "Unknown file type in archive",
         es = "Tipo de fichero desconocido en el archivo",
         fi = "Paketissa on tiedosto, jonka tyyppiä ei tunneta.",
+        fr = "Type de fichier inconnu dans cette archive.",
         nb = "Ukjent filtype i arkivet",
         nl = "Onbekend bestandstype in archief",
+        pt = "Tipo de ficheiro desconhecido no arquivo",
         sv = "Okänd filtyp påträffad i arkivet"
     };
 
@@ -1688,6 +1887,7 @@ MojoSetup.localization = {
         nb = "Lisensen må godkjennes før du kan installere",
         nds = "Du must den Lizenzbedingungen zustimmen, um die Installation fortzusetzen",
         nl = "U moet akkoord gaan met de licentie om te kunnen installeren",
+        pt = "Tem que aceitar a licença antes de prosseguir com a instalação",
         sv = "Du måste acceptera licensavtalet innan du kan fortsätta med installationen"
     };
 
@@ -1704,6 +1904,8 @@ MojoSetup.localization = {
         fr = "Métadonnées",
         it = "Metadati",
         nb = "Metadata",
+        nl = "Metadata",
+        pt = "Meta-Informação",
         sv = "Metadata"
     };
 
@@ -1718,6 +1920,7 @@ MojoSetup.localization = {
         it = "Linea di comando non valida",
         nb = "Ugyldig kommandolinje",
         nl = "Ongeldige opdrachtregel",
+        pt = "Argumento da linha de comandos inválido",
         sv = "Ogiltigt argument"
     };
 
@@ -1730,6 +1933,7 @@ MojoSetup.localization = {
         es = "No pudo cargar el archivo manifest de '%0'",
         fi = "Asennusluetteloa paketille \"%0\" ei kyetty lukemaan.",
         nb = "Kunne ikke laste manifestfil for '%0'",
+        pt = "Foi impossível carregar o ficheiro de manifesto para '%0'",
         sv = "Kunde inte ladda manifestfil för '%0'"
     };
 
@@ -1741,9 +1945,11 @@ MojoSetup.localization = {
         en_GB = "File %0 not found",
         es = "Archivo %0 no encontrado",
         fi = "Tiedostoa \"%0\" ei ole.",
+        fr = "Fichier %0 introuvable",
         nb = "Filen '%0' ble ikke funnet",
         nds = "Datei %0 wurde nicht gefunden",
         nl = "Bestand %0 niet gevonden",
+        pt = "O ficheiro %0 não foi encontrado",
         sv = "Filen '%0' hittades inte"
     };
 
@@ -1760,6 +1966,7 @@ MojoSetup.localization = {
         nb = "Avinstallasjon",
         nds = "Deinstalleren",
         nl = "Deïnstalleren",
+        pt = "Desinstalar",
         sv = "Avinstallera"
     };
 
@@ -1774,6 +1981,7 @@ MojoSetup.localization = {
         fr = "Êtes-vous sûr de vouloir désinstaller '%0' ?",
         nb = "Er du sikker på at du vil avinstallere '%0'?",
         nl = "Bent u er zeker van dat u '%0' wilt deïnstalleren?",
+        pt = "Tem a certeza que quer desinstalar '%0'?",
         sv = "Är du säker på att du vill avinstallera '%0'?"
     };
 
@@ -1789,6 +1997,7 @@ MojoSetup.localization = {
         nb = "Avinstallerer",
         nds = "Deinstallation",
         nl = "Deïnstallatie",
+        pt = "A desinstalar",
         sv = "Avinstallerar"
     };
 
@@ -1803,6 +2012,7 @@ MojoSetup.localization = {
         nb = "Avinstallasjonen er ferdig",
         nds = "Deinstallation abgeschlossen",
         nl = "Deïnstallatie voltooid",
+        pt = "A desinstalação foi bem sucedida",
         sv = "Avinstallation slutförd"
     };
 
@@ -1815,12 +2025,14 @@ MojoSetup.localization = {
     --  aren't required.
     ["[Make the window wider!]"] = {
         cs = "[Zvětšit šířku okna!]",
-        de = "[Verbreitern Sie das Fenster!]",
+        de = "[Fenster breiter machen!]",
         en_GB = "[Make the window wider!]",
         es = "[¡Ensancha la ventana!]",
         fi = "[Levennä ikkunaa!]",
+        fr = "[Élargissez la fenêtre!]",
         nb = "[Gjør vinduet bredere!]",
         nl = "[Maak het scherm breder!]",
+        pt = "[Torne a janela mais larga!]",
         sv = "[Gör fönstret bredare!]"
     };
 
@@ -1833,12 +2045,14 @@ MojoSetup.localization = {
     --  aren't required.
     ["[Make the window taller!]"] = {
         cs = "[Zvětšit výšku okna!]",
-        de = "[Vergrößern Sie das Fenster!]",
+        de = "[Fenster höher machen!]",
         en_GB = "[Make the window taller!]",
         es = "[¡Estira la ventana!]",
         fi = "[Tee ikkunasta korkeampi!]",
+        fr = "[Agrandissez la fenêtre!]",
         nb = "[Gjør vinduet høyere!]",
         nl = "[Maak het scherm langer!]",
+        pt = "[Torne a janela mais alta!]",
         sv = "[Gör fönstret högre!]"
     };
 
@@ -1853,6 +2067,7 @@ MojoSetup.localization = {
         fi = "Kohdan lisääminen työpöytävalikkoon epäonnistui.",
         fr = "Echec de l'installation des éléments du bureau",
         nl = "Installatie van het bureaublad menu item is mislukt",
+        pt = "A instalação do menu no desktop falhou",
         sv = "Misslycklades med att lägga till genväg i programmenyn"
     };
 
@@ -1866,7 +2081,8 @@ MojoSetup.localization = {
         es = "Fallo al quitar un elemento del menú de escritorio",
         fi = "Kohdan poistaminen työpöytävalikkosta epäonnistui.",
         fr = "Echec de la désinstallation des éléments du bureau",
-        nl = "Deïnstallatie van het bureaublad-menu-item is mislukt",
+        nl = "Deïnstallatie van het bureaublad menu item is mislukt",
+        pt = "A desinstalação do menu no desktop falhou",
         sv = "Misslyckades med att ta bort genväg i programmenyn"
     };
 };
