@@ -100,7 +100,7 @@ extern uint8 scratchbuf_128k[128 * 1024];
 #define UNICODE_BOGUS_CHAR_VALUE 0xFFFFFFFF
 #define UNICODE_BOGUS_CHAR_CODEPOINT '?'
 // !!! FIXME: document me!
-uint32 utf8codepoint(const char **_str);
+uint32 utf8codepoint(const char **str);
 
 
 // Format a string, sort of (but not exactly!) like sprintf().

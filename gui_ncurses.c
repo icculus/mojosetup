@@ -21,7 +21,8 @@ CREATE_MOJOGUI_ENTRY_POINT(ncurses)
 
 #include <unistd.h>
 #include <ctype.h>
-#include <curses.h>
+#include <ncursesw/curses.h>
+#include <locale.h>
 
 // This was built to look roughly like dialog(1), but it's not nearly as
 //  robust. Also, I didn't use any of dialog's code, as it is GPL/LGPL,
@@ -36,6 +37,14 @@ CREATE_MOJOGUI_ENTRY_POINT(ncurses)
 //
 // Pradeep Padala's ncurses HOWTO was very helpful in teaching me curses
 //  quickly: http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html
+
+// !!! FIXME: this should all be UTF-8 and Unicode clean with ncursesw, but
+// !!! FIXME:  it relies on the terminal accepting UTF-8 output (we don't
+// !!! FIXME:  attempt to convert) and assumes all characters fit in one
+// !!! FIXME:  column, which they don't necessarily for some Asian languages,
+// !!! FIXME:  etc. I'm not sure how to properly figure out column width, if
+// !!! FIXME:  it's possible at all, but for that, you should probably
+// !!! FIXME:  go to a proper GUI plugin like GTK+ anyhow.
 
 typedef enum
 {
@@ -53,11 +62,13 @@ typedef enum
 } MojoColor;
 
 
-static int strcells(const char *str)
+static int strchars(const char *str)
 {
-    // !!! FIXME: how to know how many _cells_ UTF-8 strings take in cursesw?
-    return (int) strlen(str);
-} // strcells
+    int retval = 0;
+    while (utf8codepoint(&str))
+        retval++;
+    return retval;
+} // strchars
 
 
 typedef struct
@@ -89,7 +100,7 @@ static MojoBox *progressBox = NULL;
 
 // !!! FIXME: cut and pasted in gui_stdio.c, too...fix bugs in both copies!
 // !!! FIXME:  (or move this somewhere else...)
-// !!! FIXME: this is not really Unicode friendly...
+// !!! FIXME: this handles Unicode, but assumes each glyph takes one column.
 static char **splitText(char *text, int *_count, int *_w)
 {
     int i;
@@ -102,53 +113,63 @@ static char **splitText(char *text, int *_count, int *_w)
     *_count = *_w = 0;
     while (*text)
     {
+        const char *utf8text = text;
+        uint32 ch = 0;
         int pos = 0;
         int furthest = 0;
 
-        for (i = 0; (text[i]) && (i < (scrw-4)); i++)
+        for (i = 0; ((ch = utf8codepoint(&utf8text)) && (i < (scrw-4))); i++)
         {
-            const int ch = text[i];
             if ((ch == '\r') || (ch == '\n'))
             {
+                char *endptr = (char *) utf8text;
+                const char nextbyte = *utf8text;
                 count++;
                 retval = (char **) xrealloc(retval, count * sizeof (char *));
-                text[i] = '\0';
+                *endptr = '\0';
                 retval[count-1] = xstrdup(text);
-                text += i;
-                *text = ch;
-                if ((ch == '\r') && (text[1] == '\n'))
-                    text++;
-                text++;
+                *endptr = nextbyte;
+                if ((ch == '\r') && (nextbyte == '\n'))  // DOS endlines!
+                    utf8text++; // skip it.
+                text = (char *) utf8text;  // update to start of new line.
 
                 if (i > w)
                     w = i;
                 i = -1;  // will be zero on next iteration...
             } // if
-            else if (isspace(ch))
+            else if ((ch == ' ') || (ch == '\t'))
             {
                 furthest = i;
             } // else if
         } // for
 
         // line overflow or end of stream...
-        pos = (text[i]) ? furthest : i;
-        if ((text[i]) && (furthest == 0))  // uhoh, no split at all...hack it.
+        pos = (ch) ? furthest : i;
+        if ((ch) && (furthest == 0))  // uhoh, no split at all...hack it.
         {
-            // !!! FIXME: might be chopping in the middle of a UTF-8 seq.
-            pos = strlen(text);
-            if (pos > scrw-4)
+            pos = strchars(text);
+            if (pos > scrw-4)  // too big, have to chop a string in the middle.
                 pos = scrw-4;
         } // if
 
         if (pos > 0)
         {
-            char ch = text[pos];
+            char *endptr = NULL;
+            int j = 0;
+            char tmpch = 0;
+
+            utf8text = text;  // adjust pointer by redecoding from start...
+            for (j = 0; j < pos; j++)
+                utf8codepoint(&utf8text);
+
+            endptr = (char *) utf8text;
+            tmpch = *utf8text;
             count++;
             retval = (char **) xrealloc(retval, count * sizeof (char*));
-            text[pos] = '\0';
+            *endptr = '\0';
             retval[count-1] = xstrdup(text);
-            text += pos;
-            *text = ch;
+            text = (char *) utf8text;
+            *endptr = tmpch;
             if (pos > w)
                 w = pos;
         } // if
@@ -255,7 +276,7 @@ static void confirmTerminalSize(void)
         else
             break;  // we're good, get out.
 
-        len = strcells(msg);
+        len = strchars(msg);
         y = scrh / 2;
         x = ((scrw - len) / 2);
 
@@ -314,7 +335,7 @@ static MojoBox *makeBox(const char *title, const char *text,
 
     retval->textlines = splitText(retval->text, &retval->textlinecount, &w);
 
-    len = strcells(title);
+    len = strchars(title);
     if (len > scrw-4)
     {
         len = scrw-4;
@@ -327,7 +348,7 @@ static MojoBox *makeBox(const char *title, const char *text,
     if (bcount > 0)
     {
         for (i = 0; i < bcount; i++)
-            buttonsw += strcells(buttons[i]) + 5;  // '<', ' ', ' ', '>', ' '
+            buttonsw += strchars(buttons[i]) + 5;  // '<', ' ', ' ', '>', ' '
         if (buttonsw > w)
             w = buttonsw;
         // !!! FIXME: what if these overflow the screen?
@@ -369,7 +390,7 @@ static MojoBox *makeBox(const char *title, const char *text,
     wmove(win, h-1, w-1);
     waddch(win, ACS_LRCORNER | COLOR_PAIR(MOJOCOLOR_BORDERBOTTOM));
 
-    len = strcells(retval->title);
+    len = strchars(retval->title);
     wmove(win, 0, ((w-len)/2)-1);
     wattron(win, COLOR_PAIR(MOJOCOLOR_BORDERTITLE) | A_BOLD);
     waddch(win, ' ');
@@ -386,7 +407,7 @@ static MojoBox *makeBox(const char *title, const char *text,
         whline(win, ACS_HLINE | A_BOLD | COLOR_PAIR(MOJOCOLOR_BORDERTOP), w-2);
         for (i = 0; i < bcount; i++)
         {
-            len = strcells(buttons[i]) + 4;
+            len = strchars(buttons[i]) + 4;
             buttonx -= len+1;
             win = retval->buttons[i] = newwin(1, len, buttony, buttonx);
             keypad(win, TRUE);
@@ -625,6 +646,7 @@ static uint8 MojoGui_ncurses_priority(boolean istty)
 
 static boolean MojoGui_ncurses_init(void)
 {
+    setlocale(LC_CTYPE, ""); // !!! FIXME: we assume you have a UTF-8 terminal.
     if (initscr() == NULL)
     {
         logInfo("ncurses: initscr() failed, use another UI.");
@@ -1441,7 +1463,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
         {
             int cells = (int) ( ((double) w) * (((double) percent) / 100.0) );
             snprintf(buf, w+1, "%d%%", percent);
-            mvwaddstr(win, h-3, ((w+2) - strcells(buf)) / 2, buf);
+            mvwaddstr(win, h-3, ((w+2) - strchars(buf)) / 2, buf);
             mvwchgat(win, h-3, 1, cells, A_BOLD, MOJOCOLOR_DONE, NULL);
             mvwchgat(win, h-3, 1+cells, w-cells, A_BOLD, MOJOCOLOR_TODO, NULL);
         } // else
@@ -1451,7 +1473,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
         if (snprintf(buf, w+1, "%s", item) > (w-4))
             strcpy((buf+w)-4, "...");  // !!! FIXME: Unicode problem.
         mvwhline(win, h-2, 1, ' ', w);
-        mvwaddstr(win, h-2, ((w+2) - strcells(buf)) / 2, buf);
+        mvwaddstr(win, h-2, ((w+2) - strchars(buf)) / 2, buf);
 
         free(buf);
         wrefresh(win);
