@@ -523,10 +523,10 @@ MojoSetup.localization = {
         sv = "FEL: inget option"
     };
 
-    -- This is shown if the config file wants us to add an installer to the
-    --  files we write to disk, but didn't enable the manifest support the
-    --  installer needs. This is a bug the developer must fix before shipping
-    --  her installer.
+    -- This is shown if the config file wants us to include the uninstaller
+    --  program with the rest of the files we write to disk, but didn't enable
+    --  the manifest support the installer needs. This is a bug the developer
+    --  must fix before shipping her installer.
     ["BUG: support_uninstall requires write_manifest"] = {
         cs = "CHYBA: support_uninstall vyžaduje write_manifest",
         de = "FEHLER: support_uninstall benötigt write_manifest",
@@ -541,10 +541,12 @@ MojoSetup.localization = {
         sv = "FEL: support_uninstall kräver write_manifest"
     };
 
-    -- This is shown if the config file wants us to add a manifest to the
-    --  files we write to disk, but didn't enable Lua parser support in the
-    --  binary (this is done through CMake when compiling the C code). This is
-    --  a bug the developer must fix before shipping her installer.
+    -- This is shown if the config file wants us to install a manifest (a list
+    --  of everything we wrote to disk) but didn't enable Lua parser support
+    --  in the binary, which they need to handle Lua source code without
+    --  compiling it first (as it needs to be "parsed")...the manifest is
+    --  ultimately just an uncompiled Lua program that the installer generates.
+    --  This is a bug the developer must fix before shipping her installer.
     ["BUG: write_manifest requires Lua parser support"] = {
         cs = "CHYBA: write_manifest vyžaduje podporu Lua parseru",
         de = "FEHLER: write_manifest benötigt Lua Parser Unterstützung",
@@ -1132,7 +1134,10 @@ MojoSetup.localization = {
     };
 
     -- This error is shown if we aren't able to write the list of files
-    --  that were installed (the "manifest") to disk.
+    --  that were installed (the "manifest") to disk. Apparently some languages
+    --  don't have a convenient translation of "manifest" ... it is not
+    --  important that this word maps directly for end-users, as long as the
+    --  general concept is explained.
     ["Couldn't create manifest"] = {
         cs = "Nemohu vytvořit manifest",
         de = "Konnte Manifest nicht erstellen",
@@ -1894,7 +1899,9 @@ MojoSetup.localization = {
     -- Installations display the currently-installing component, such as
     --  "Base game" or "Bonus pack content" or whatnot. The installer lists
     --  the current component as "Metadata" when writing out its own
-    --  information, such as file manifests, uninstall support, etc.
+    --  information, such as the final list of installed files, the uninstall
+    --  support application, etc. It's a catch-all category: data about the
+    --  actual data, basically.
     ["Metadata"] = {
         cs = "Metadata",
         de = "Metadaten",
@@ -1924,8 +1931,9 @@ MojoSetup.localization = {
         sv = "Ogiltigt argument"
     };
 
-    -- This error is shown when updating the manifest, if it can't load the
-    --  file for some reason. '%0' is the manifest's package name.
+    -- This error is shown when updating the manifest (the list of files that
+    --  we installed), if it can't load the file for some reason. '%0' is the
+    --  manifest's package name.
     ["Couldn't load manifest file for '%0'"] = {
         cs = "Nemohu načíst soubor s manifestem pro '%0'",
         de = "Konnte Manifestdatei für '%0' nicht laden",
