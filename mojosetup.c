@@ -40,6 +40,8 @@ MojoSetupEntryPoints GEntryPoints =
     numstr,
     MojoPlatform_ticks,
     utf8codepoint,
+    utf8len,
+    splitText,
 };
 
 int GArgc = 0;
@@ -775,6 +777,92 @@ uint32 utf8codepoint(const char **_str)
 
     return UNICODE_BOGUS_CHAR_VALUE;
 } // utf8codepoint
+
+
+int utf8len(const char *str)
+{
+    int retval = 0;
+    while (utf8codepoint(&str))
+        retval++;
+    return retval;
+} // utf8len
+
+
+static char *strfrombuf(const char *text, int len)
+{
+    char *retval = xmalloc(len + 1);
+    memcpy(retval, text, len);
+    retval[len] = '\0';
+    return retval;
+} // strfrombuf
+
+
+char **splitText(const char *text, int scrw, int *_count, int *_w)
+{
+    int i = 0;
+    int j = 0;
+    char **retval = NULL;
+    int count = 0;
+    int w = 0;
+
+    *_count = *_w = 0;
+    while (*text)
+    {
+        const char *utf8text = text;
+        uint32 ch = 0;
+        int pos = 0;
+        int furthest = 0;
+
+        for (i = 0; ((ch = utf8codepoint(&utf8text))) && (i < scrw); i++)
+        {
+            if ((ch == '\r') || (ch == '\n'))
+            {
+                const char nextbyte = *utf8text;
+                count++;
+                retval = (char **) xrealloc(retval, count * sizeof (char *));
+                retval[count-1] = strfrombuf(text, utf8text - text);
+                if ((ch == '\r') && (nextbyte == '\n'))  // DOS endlines!
+                    utf8text++; // skip it.
+                text = (char *) utf8text;  // update to start of new line.
+
+                if (i > w)
+                    w = i;
+                i = -1;  // will be zero on next iteration...
+            } // if
+            else if ((ch == ' ') || (ch == '\t'))
+            {
+                furthest = i;
+            } // else if
+        } // for
+
+        // line overflow or end of stream...
+        pos = (ch) ? furthest : i;
+        if ((ch) && (furthest == 0))  // uhoh, no split at all...hack it.
+        {
+            pos = utf8len(text);
+            if (pos > scrw)  // too big, have to chop a string in the middle.
+                pos = scrw;
+        } // if
+
+        if (pos > 0)
+        {
+            utf8text = text;  // adjust pointer by redecoding from start...
+            for (j = 0; j < pos; j++)
+                utf8codepoint(&utf8text);
+
+            count++;
+            retval = (char **) xrealloc(retval, count * sizeof (char*));
+            retval[count-1] = strfrombuf(text, utf8text - text);
+            text = (char *) utf8text;
+            if (pos > w)
+                w = pos;
+        } // if
+    } // while
+
+    *_count = count;
+    *_w = w;
+    return retval;
+} // splitText
 
 
 static void outOfMemory(void)

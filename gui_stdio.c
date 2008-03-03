@@ -234,81 +234,6 @@ static void MojoGui_stdio_stop(void)
 } // MojoGui_stdio_stop
 
 
-// !!! FIXME: cut and pasted in gui_ncurses.c, too...fix bugs in both copies!
-// !!! FIXME:  (or move this somewhere else...)
-// !!! FIXME: this is not really Unicode friendly...
-static char **splitText(const char *_text, int *_count, int *_w)
-{
-    char *ptr = xstrdup(_text);
-    char *text = ptr;
-    int i;
-    int scrw = 80;
-    char **retval = NULL;
-    int count = 0;
-    int w = 0;
-
-    *_count = *_w = 0;
-    while (*text)
-    {
-        int pos = 0;
-        int furthest = 0;
-
-        for (i = 0; (text[i]) && (i < (scrw-4)); i++)
-        {
-            const int ch = text[i];
-            if ((ch == '\r') || (ch == '\n'))
-            {
-                count++;
-                retval = (char **) xrealloc(retval, count * sizeof (char *));
-                text[i] = '\0';
-                retval[count-1] = xstrdup(text);
-                text += i;
-                *text = ch;
-                if ((ch == '\r') && (text[1] == '\n'))
-                    text++;
-                text++;
-
-                if (i > w)
-                    w = i;
-                i = -1;  // will be zero on next iteration...
-            } // if
-            else if (isspace(ch))
-            {
-                furthest = i;
-            } // else if
-        } // for
-
-        // line overflow or end of stream...
-        pos = (text[i]) ? furthest : i;
-        if ((text[i]) && (furthest == 0))  // uhoh, no split at all...hack it.
-        {
-            // !!! FIXME: might be chopping in the middle of a UTF-8 seq.
-            pos = strlen(text);
-            if (pos > scrw-4)
-                pos = scrw-4;
-        } // if
-
-        if (pos > 0)
-        {
-            char ch = text[pos];
-            count++;
-            retval = (char **) xrealloc(retval, count * sizeof (char*));
-            text[pos] = '\0';
-            retval[count-1] = xstrdup(text);
-            text += pos;
-            *text = ch;
-            if (pos > w)
-                w = pos;
-        } // if
-    } // while
-
-    free(ptr);
-    *_count = count;
-    *_w = w;
-    return retval;
-} // splitText
-
-
 static void dumb_pager(const char *name, const char *data, size_t datalen)
 {
     const int MAX_PAGE_LINES = 21;
@@ -317,7 +242,7 @@ static void dumb_pager(const char *name, const char *data, size_t datalen)
     int w = 0;
     int linecount = 0;
     boolean getout = false;
-    char **lines = splitText(data, &linecount, &w);
+    char **lines = splitText(data, 80, &linecount, &w);
 
     assert(linecount >= 0);
 

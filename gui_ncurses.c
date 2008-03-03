@@ -62,15 +62,6 @@ typedef enum
 } MojoColor;
 
 
-static int strchars(const char *str)
-{
-    int retval = 0;
-    while (utf8codepoint(&str))
-        retval++;
-    return retval;
-} // strchars
-
-
 typedef struct
 {
     WINDOW *mainwin;
@@ -96,89 +87,6 @@ static boolean lastCanCancel = false;
 static uint32 percentTicks = 0;
 static char *title = NULL;
 static MojoBox *progressBox = NULL;
-
-
-// !!! FIXME: cut and pasted in gui_stdio.c, too...fix bugs in both copies!
-// !!! FIXME:  (or move this somewhere else...)
-// !!! FIXME: this handles Unicode, but assumes each glyph takes one column.
-static char **splitText(char *text, int *_count, int *_w)
-{
-    int i;
-    int scrw, scrh;
-    char **retval = NULL;
-    getmaxyx(stdscr, scrh, scrw);
-    int count = 0;
-    int w = 0;
-
-    *_count = *_w = 0;
-    while (*text)
-    {
-        const char *utf8text = text;
-        uint32 ch = 0;
-        int pos = 0;
-        int furthest = 0;
-
-        for (i = 0; ((ch = utf8codepoint(&utf8text)) && (i < (scrw-4))); i++)
-        {
-            if ((ch == '\r') || (ch == '\n'))
-            {
-                char *endptr = (char *) utf8text;
-                const char nextbyte = *utf8text;
-                count++;
-                retval = (char **) xrealloc(retval, count * sizeof (char *));
-                *endptr = '\0';
-                retval[count-1] = xstrdup(text);
-                *endptr = nextbyte;
-                if ((ch == '\r') && (nextbyte == '\n'))  // DOS endlines!
-                    utf8text++; // skip it.
-                text = (char *) utf8text;  // update to start of new line.
-
-                if (i > w)
-                    w = i;
-                i = -1;  // will be zero on next iteration...
-            } // if
-            else if ((ch == ' ') || (ch == '\t'))
-            {
-                furthest = i;
-            } // else if
-        } // for
-
-        // line overflow or end of stream...
-        pos = (ch) ? furthest : i;
-        if ((ch) && (furthest == 0))  // uhoh, no split at all...hack it.
-        {
-            pos = strchars(text);
-            if (pos > scrw-4)  // too big, have to chop a string in the middle.
-                pos = scrw-4;
-        } // if
-
-        if (pos > 0)
-        {
-            char *endptr = NULL;
-            int j = 0;
-            char tmpch = 0;
-
-            utf8text = text;  // adjust pointer by redecoding from start...
-            for (j = 0; j < pos; j++)
-                utf8codepoint(&utf8text);
-
-            endptr = (char *) utf8text;
-            tmpch = *utf8text;
-            count++;
-            retval = (char **) xrealloc(retval, count * sizeof (char*));
-            *endptr = '\0';
-            retval[count-1] = xstrdup(text);
-            text = (char *) utf8text;
-            *endptr = tmpch;
-            if (pos > w)
-                w = pos;
-        } // if
-    } // while
-
-    *_count = count;
-    *_w = w;
-    return retval;
-} // splitText
 
 
 static void drawButton(MojoBox *mojobox, int button)
@@ -276,7 +184,7 @@ static void confirmTerminalSize(void)
         else
             break;  // we're good, get out.
 
-        len = strchars(msg);
+        len = utf8len(msg);
         y = scrh / 2;
         x = ((scrw - len) / 2);
 
@@ -333,9 +241,10 @@ static MojoBox *makeBox(const char *title, const char *text,
     for (i = 0; i < bcount; i++)
         retval->buttontext[i] = xstrdup(buttons[i]);
 
-    retval->textlines = splitText(retval->text, &retval->textlinecount, &w);
+    retval->textlines = splitText(retval->text, scrw-4,
+                                  &retval->textlinecount, &w);
 
-    len = strchars(title);
+    len = utf8len(title);
     if (len > scrw-4)
     {
         len = scrw-4;
@@ -348,7 +257,7 @@ static MojoBox *makeBox(const char *title, const char *text,
     if (bcount > 0)
     {
         for (i = 0; i < bcount; i++)
-            buttonsw += strchars(buttons[i]) + 5;  // '<', ' ', ' ', '>', ' '
+            buttonsw += utf8len(buttons[i]) + 5;  // '<', ' ', ' ', '>', ' '
         if (buttonsw > w)
             w = buttonsw;
         // !!! FIXME: what if these overflow the screen?
@@ -390,7 +299,7 @@ static MojoBox *makeBox(const char *title, const char *text,
     wmove(win, h-1, w-1);
     waddch(win, ACS_LRCORNER | COLOR_PAIR(MOJOCOLOR_BORDERBOTTOM));
 
-    len = strchars(retval->title);
+    len = utf8len(retval->title);
     wmove(win, 0, ((w-len)/2)-1);
     wattron(win, COLOR_PAIR(MOJOCOLOR_BORDERTITLE) | A_BOLD);
     waddch(win, ' ');
@@ -407,7 +316,7 @@ static MojoBox *makeBox(const char *title, const char *text,
         whline(win, ACS_HLINE | A_BOLD | COLOR_PAIR(MOJOCOLOR_BORDERTOP), w-2);
         for (i = 0; i < bcount; i++)
         {
-            len = strchars(buttons[i]) + 4;
+            len = utf8len(buttons[i]) + 4;
             buttonx -= len+1;
             win = retval->buttons[i] = newwin(1, len, buttony, buttonx);
             keypad(win, TRUE);
@@ -1463,7 +1372,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
         {
             int cells = (int) ( ((double) w) * (((double) percent) / 100.0) );
             snprintf(buf, w+1, "%d%%", percent);
-            mvwaddstr(win, h-3, ((w+2) - strchars(buf)) / 2, buf);
+            mvwaddstr(win, h-3, ((w+2) - utf8len(buf)) / 2, buf);
             mvwchgat(win, h-3, 1, cells, A_BOLD, MOJOCOLOR_DONE, NULL);
             mvwchgat(win, h-3, 1+cells, w-cells, A_BOLD, MOJOCOLOR_TODO, NULL);
         } // else
@@ -1473,7 +1382,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
         if (snprintf(buf, w+1, "%s", item) > (w-4))
             strcpy((buf+w)-4, "...");  // !!! FIXME: Unicode problem.
         mvwhline(win, h-2, 1, ' ', w);
-        mvwaddstr(win, h-2, ((w+2) - strchars(buf)) / 2, buf);
+        mvwaddstr(win, h-2, ((w+2) - utf8len(buf)) / 2, buf);
 
         free(buf);
         wrefresh(win);

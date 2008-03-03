@@ -254,6 +254,16 @@ const MojoGui *MOJOGUI_ENTRY_POINT(int rev, const MojoSetupEntryPoints *e) \
 #endif
 #define utf8codepoint(x) entry->utf8codepoint(x)
 
+#ifdef utf8len
+#undef utf8len
+#endif
+#define utf8len(x) entry->utf8len(x)
+
+#ifdef splitText
+#undef splitText
+#endif
+#define splitText(w,x,y,z) entry->splitText(w,x,y,z)
+
 #endif
 
 

@@ -102,6 +102,12 @@ extern uint8 scratchbuf_128k[128 * 1024];
 // !!! FIXME: document me!
 uint32 utf8codepoint(const char **str);
 
+// !!! FIXME: document me!
+int utf8len(const char *str);
+
+// !!! FIXME: document me!
+char **splitText(const char *text, int scrw, int *_count, int *_w);
+
 
 // Format a string, sort of (but not exactly!) like sprintf().
 //  The only formatters accepted are %0 through %9 (and %%), which do not
@@ -355,6 +361,8 @@ typedef struct MojoSetupEntryPoints
     const char *(*numstr)(int val);
     uint32 (*ticks)(void);
     uint32 (*utf8codepoint)(const char **_str);
+    int (*utf8len)(const char *str);
+    char **(*splitText)(const char *text, int scrw, int *_count, int *_w);
 } MojoSetupEntryPoints;
 extern MojoSetupEntryPoints GEntryPoints;
 
