@@ -831,7 +831,13 @@ char **splitText(const char *text, int scrw, int *_count, int *_w)
             } // if
             else if ((ch == ' ') || (ch == '\t'))
             {
-                furthest = i;
+                if (i != 0)  // trim spaces from start of line...
+                    furthest = i;
+                else
+                {
+                    text++;
+                    i = -1;  // it'll be zero on next iteration.
+                } // else
             } // else if
         } // for
 
