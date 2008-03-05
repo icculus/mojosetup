@@ -27,8 +27,14 @@
 #error Please define APPREV in the build system.
 #endif
 
-#ifndef __VERSION__
-#define __VERSION__ "(Unknown compiler version)"
+#if (defined __GNUC__)
+#   define VERSTR2(x) #x
+#   define VERSTR(x) VERSTR2(x)
+#   define COMPILERVER " " VERSTR(__GNUC__) "." VERSTR(__GNUC_MINOR__) "." VERSTR(__GNUC_PATCHLEVEL__)
+#elif (defined __VERSION__)
+#   define COMPILERVER " " __VERSION__
+#else
+#   define COMPILERVER ""
 #endif
 
 #ifndef __DATE__
@@ -52,7 +58,7 @@
 // macro mess so we can turn APPID and APPREV into a string literal...
 #define MAKEBUILDVERSTRINGLITERAL2(id, rev) \
     #id ", revision " #rev ", built " __DATE__ " " __TIME__ \
-    ", by " COMPILER " " __VERSION__
+    ", by " COMPILER COMPILERVER
 
 #define MAKEBUILDVERSTRINGLITERAL(id, rev) MAKEBUILDVERSTRINGLITERAL2(id, rev)
 
