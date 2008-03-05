@@ -164,6 +164,12 @@ MojoSetup.localization = {
 
     -- stdio UI plugin says this for "OK"-only msgboxes. "%0" is the message
     --  box's text content.
+    ["NOTICE: %0\n[hit enter]"] = {
+        de = "HINWEIS: %0\n[Drücken Sie Enter]",
+        nb = "NB: %0\n[trykk enter]",
+        se = "NB: %0\n[tryck enter]",
+    };
+
     --  stdio UI plugin says this for yes/no prompts that default to yes.
     --  "%0" is the question the user is being asked to respond to.
     ["%0 [Y/n]: "] = {
@@ -1273,6 +1279,12 @@ MojoSetup.localization = {
     --  its number (default is number one), or enter their own text instead of
     --  choosing a default. This string is the instructions printed for the
     --  user before the prompt.
+    ["Choose install destination by number (hit enter for #1), or enter your own."] = {
+        de = "Wählen Sie eine Nummer für das Installationsziel (drücken Sie Enter für #1), oder geben Sie ein eigenes an.",
+        nb = "Velg installasjonssti etter nummer (trykk enter for #1), eller skriv inn din egen.",
+        se = "Välg sökväg för installationen efter nummer (tryck enter för #1), eller skriv in din egen.",
+    };
+
     --  This is used by the stdio UI to toggle options. A numbered list is
     --  printed, and the user can enter one of those numbers to toggle that
     --  option on or off. This string is the instructions printed for the
@@ -1359,6 +1371,12 @@ MojoSetup.localization = {
     };
 
     -- This is an error message. It speaks for itself.   :)
+    ["Couldn't restore some files. Your existing installation is likely damaged."] = {
+        de = "Konnte einige Dateien nicht widerherstellen. Ihre Installation ist wahrscheinlich beschädigt.",
+        nb = "Noen filer kunne ikke tilbakestilles. Den eksisterende installasjonen er sannsynligvis skadet.",
+        se = "Några filer kunde inte återskapas. Den existerande installationen är troligtvis skadad.",
+    };
+
     --  Error message when deleting a file fails.
     ["Deletion failed!"] = {
         cs = "Mazání selhalo!",
