@@ -726,7 +726,7 @@ MojoSetup.localization = {
         ru = "Ошибка: '%0' неправильное значение для прав.",
         sk = "CHYBA: '%0' nieje správny spôsob zápisu práv",
         sv = "FEL: '%0' är inte en giltig rättighetssträng",
-        zh_TW = "臭蟲：'%' 並不是有效的檔案權限設定"
+        zh_TW = "臭蟲：'%0' 並不是有效的檔案權限設定"
     };
 
     -- If there's a string in the program that needs be formatted with
@@ -2437,7 +2437,7 @@ MojoSetup.localization = {
         ru = "Не могу загрузить файл манифеста '%0'",
         sk = "Nemôžem nahrať manifest súbor pre '%0'",
         sv = "Kunde inte ladda manifestfil för '%0'",
-        zh_TW = "無法讀取來自 '%' 的檔案清單"
+        zh_TW = "無法讀取來自 '%0' 的檔案清單"
     };
 
     -- This error is shown when the user prompted the app to read a filename
