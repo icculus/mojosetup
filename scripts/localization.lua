@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version svn-543 ...
---  on 2008-03-03 18:57:17-0500
+-- This file was generated with po2localization.pl, version svn-547 ...
+--  on 2008-03-04 22:18:48-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,12 +15,13 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2008-03-03 23:52+0000
+-- X-Launchpad-Export-Date: 2008-03-05 01:36+0000
 -- X-Generator: Launchpad (build Unknown)
 
 MojoSetup.languages = {
     en_US = "English (United States)",
     cs = "Czech",
+    da = "Danish",
     de = "German",
     el = "Greek",
     en_CA = "English (Canada)",
@@ -84,6 +85,7 @@ MojoSetup.localization = {
     -- zlib error message
     ["memory error"] = {
         cs = "paměťová chyba",
+        da = "hukommelsesfejl",
         de = "Speicherfehler",
         el = "σφάλμα μνήμης",
         en_GB = "memory error",
@@ -124,6 +126,7 @@ MojoSetup.localization = {
     -- zlib error message
     ["version error"] = {
         cs = "chyba verze",
+        da = "versionsfejl",
         de = "Versionsfehler",
         el = "εσφαλμένη έκδοση λογισμικού",
         en_GB = "version error",
@@ -144,6 +147,7 @@ MojoSetup.localization = {
     -- zlib error message
     ["unknown error"] = {
         cs = "neznámá chyba",
+        da = "ukendt fejl",
         de = "Unbekannter Fehler",
         el = "άγνωστο σφάλμα",
         en_GB = "unknown error",
@@ -165,12 +169,26 @@ MojoSetup.localization = {
     -- stdio UI plugin says this for "OK"-only msgboxes. "%0" is the message
     --  box's text content.
     ["NOTICE: %0\n[hit enter]"] = {
+        cs = "UPOZORNĚNÍ: %0\n[stiskněte enter]",
         de = "HINWEIS: %0\n[Drücken Sie Enter]",
+        el = "ΠΡΟΣΟΧΗ: %0\n[πατήστε ENTER]",
+        en_GB = "NOTICE: %0\n[hit enter]",
+        es = "AVISO: %0\n[presiona Intro]",
+        fi = "ILMOITUS: %0\n[paina enter]",
+        fr = "INFORMATION : %0\n[pressez entrée]",
+        it = "NOTICE: %0",
         nb = "NB: %0\n[trykk enter]",
-        se = "NB: %0\n[tryck enter]",
+        nds = "Notiz: %0\n[Enter drücken, um fortzufahren]",
+        nl = "OPMERKING: %0\n[Toets enter]",
+        pt = "AVISO: %0\n[pressione enter]",
+        ru = "УВЕДОМЛЕНИЕ: %0",
+        sk = "Správa: %0",
+        sv = "NB: %0\n[tryck enter]",
+        uk = "ДО УВАГИ: %0",
+        zh_TW = "提醒：%0"
     };
 
-    --  stdio UI plugin says this for yes/no prompts that default to yes.
+    -- stdio UI plugin says this for yes/no prompts that default to yes.
     --  "%0" is the question the user is being asked to respond to.
     ["%0 [Y/n]: "] = {
         cs = "%0 [A/n]: ",
@@ -259,6 +277,7 @@ MojoSetup.localization = {
     -- This is used for "no" in stdio UI's yes/no prompts (case insensitive).
     ["N"] = {
         cs = "N",
+        da = "N",
         de = "N",
         el = "Ο",
         en_GB = "N",
@@ -280,6 +299,7 @@ MojoSetup.localization = {
     --  (case insensitive).
     ["Always"] = {
         cs = "Vždy",
+        da = "Altid",
         de = "Immer",
         el = "Πάντα",
         en_GB = "Always",
@@ -301,6 +321,7 @@ MojoSetup.localization = {
     --  (case insensitive).
     ["Never"] = {
         cs = "niKdy",
+        da = "Aldrig",
         de = "Niemals",
         el = "Ποτέ",
         en_GB = "Never",
@@ -367,6 +388,7 @@ MojoSetup.localization = {
     --  string for their button ("Back" vs "back" specifically).
     ["back"] = {
         cs = "zpět",
+        da = "tilbage",
         de = "zurück",
         el = "πίσω",
         en_GB = "back",
@@ -387,6 +409,7 @@ MojoSetup.localization = {
     -- This is the prompt in the stdio driver when user input is expected.
     ["> "] = {
         cs = "> ",
+        da = "> ",
         de = "> ",
         el = "> ",
         en_GB = "> ",
@@ -449,6 +472,7 @@ MojoSetup.localization = {
     --  them. It's a yes/no question.
     ["Accept this license?"] = {
         cs = "Přijímáte podmínky licence?",
+        da = "Accepter denne licens?",
         de = "Nehmen Sie die Lizenzbedingungen an?",
         el = "Δέχεστε αυτή την άδεια χρήσης?",
         en_GB = "Accept this licence?",
@@ -470,6 +494,7 @@ MojoSetup.localization = {
     --  The '_' comes before the hotkey character.
     ["_Always"] = {
         cs = "_Vždy",
+        da = "_Altid",
         de = "_Immer",
         el = "_Πάντα",
         en_GB = "_Always",
@@ -491,6 +516,7 @@ MojoSetup.localization = {
     --  we need can't be located.
     ["Archive not found"] = {
         cs = "Archiv nenalezen",
+        da = "Arkiv ikke fundet",
         de = "Archiv nicht gefunden",
         el = "Το αρχείο δεν βρέθηκε.",
         en_GB = "Archive not found",
@@ -511,6 +537,7 @@ MojoSetup.localization = {
     --  to confirm they really want to stop. It's a yes/no question.
     ["Are you sure you want to cancel installation?"] = {
         cs = "Opravdu chcete zrušit instalaci?",
+        da = "Vil du afbryde installationen?",
         de = "Sind Sie sicher, dass Sie die Installation abbrechen wollen?",
         el = "Είστε σίγουροι ότι θέλετε να ακυρώσετε την εγκατάσταση?",
         en_GB = "Are you sure you want to cancel installation?",
@@ -531,6 +558,7 @@ MojoSetup.localization = {
     -- The opposite of "next", used as a UI button label.
     ["Back"] = {
         cs = "Zpět",
+        da = "Tilbage",
         de = "Zurück",
         el = "Προηγούμενο",
         en_GB = "Back",
@@ -553,6 +581,7 @@ MojoSetup.localization = {
     --  dialog where the end-user can navigate to and select files.
     ["B_rowse..."] = {
         cs = "_Procházet...",
+        da = "_Gennemse...",
         de = "Du_rchsuchen",
         el = "_Αναζήτηση...",
         en_GB = "B_rowse...",
@@ -565,9 +594,9 @@ MojoSetup.localization = {
         nl = "Bl_aderen...",
         pt = "_Procurar...",
         ru = "Открыть...",
-        sk = "_Vybrať",
+        sk = "P_rehliadať...",
         sv = "B_läddra",
-        zh_TW = "瀏覽(_R)..."
+        zh_TW = "瀏覽(_B)"
     };
 
     -- All the "BUG:" strings are generally meant to be seen by developers,
@@ -592,7 +621,7 @@ MojoSetup.localization = {
         ru = "Ошибка: дублирование media_id",
         sk = "CHYBA: duplicitné media id",
         sv = "FEL: dupliserat media id",
-        zh_TW = "臭蟲：相同的媒體序號"
+        zh_TW = "臭蟲：重複的媒體序號"
     };
 
     -- This is shown if the configuration file has no installable options,
@@ -696,7 +725,8 @@ MojoSetup.localization = {
         pt = "BUG: '%0' não é uma expressão válida",
         ru = "Ошибка: '%0' неправильное значение для прав.",
         sk = "CHYBA: '%0' nieje správny spôsob zápisu práv",
-        sv = "FEL: '%0' är inte en giltig rättighetssträng"
+        sv = "FEL: '%0' är inte en giltig rättighetssträng",
+        zh_TW = "臭蟲：'%' 並不是有效的檔案權限設定"
     };
 
     -- If there's a string in the program that needs be formatted with
@@ -738,7 +768,8 @@ MojoSetup.localization = {
         pt = "BUG: A etapa retornou um tipo errado",
         ru = "Ошибка: этап выдал неожиданный тип",
         sk = "CHYBA: fáza vrátila nesprávny typ",
-        sv = "FEL: nivå returnerade fel typ"
+        sv = "FEL: nivå returnerade fel typ",
+        zh_TW = "臭蟲：此階段傳回錯誤類別"
     };
 
     -- The program runs in "stages" and as it transitions from one stage to
@@ -759,7 +790,8 @@ MojoSetup.localization = {
         pt = "BUG: A etapa retornou um valor errado",
         ru = "Ошибка: этап выдал неожиданный результат",
         sk = "CHYBA: fáza vrátila nesprávnu hodnotu",
-        sv = "FEL: nivå returnerade fel värde"
+        sv = "FEL: nivå returnerade fel värde",
+        zh_TW = "臭蟲：此階段傳回錯誤值"
     };
 
     -- The program runs in "stages", which can in many cases be revisited
@@ -780,7 +812,8 @@ MojoSetup.localization = {
         pt = "BUG: Retrocedeu na primeira etapa",
         ru = "Ошибка: первый этап содержит кнопку \"Назад\"",
         sk = "CHYBA: vrátili ste sa pred začiatok počiatočnej fázy",
-        sv = "FEL: Gick tillbaka förbi startnivå"
+        sv = "FEL: Gick tillbaka förbi startnivå",
+        zh_TW = "臭蟲：在起始階段進行返回"
     };
 
     -- This happens if there's an unusual case when writing out Lua scripts
@@ -798,7 +831,8 @@ MojoSetup.localization = {
         pt = "BUG: tipo sem tratamento",
         ru = "Ошибка: неподдерживаемый тип данных",
         sk = "CHYBA: Nespracovateľný typ dát",
-        sv = "FEL: Ohanterad datatyp"
+        sv = "FEL: Ohanterad datatyp",
+        zh_TW = "臭蟲：未處理的資料類別"
     };
 
     -- This is triggered by a logic bug in the i/o subsystem.
@@ -818,7 +852,8 @@ MojoSetup.localization = {
         pt = "BUG: Impossível duplicar as entradas do tar",
         ru = "Ошибка: нельзя дублировать исходные данные для tar",
         sk = "CHYBA: Nemôžete duplikovať tar vstupy",
-        sv = "FEL: Kan inte duplicera infiler för tar"
+        sv = "FEL: Kan inte duplicera infiler för tar",
+        zh_TW = "臭蟲：無法重複 tar 的輸入"
     };
 
     -- This is a generic error message when a programming bug produced a
@@ -837,7 +872,8 @@ MojoSetup.localization = {
         pt = "BUG: Valor inexperado",
         ru = "Ошибка: Неожиданное значение",
         sk = "CHYBA: Neočakávaná hodnota",
-        sv = "FEL: Oväntat värde"
+        sv = "FEL: Oväntat värde",
+        zh_TW = "臭蟲：意外的值"
     };
 
     -- Buggy config elements:
@@ -860,7 +896,8 @@ MojoSetup.localization = {
         pt = "BUG: Configuração %0 %1",
         ru = "Ошибка: Опция %0 %1",
         sk = "CHYBA: Config %0 %1",
-        sv = "FEL: Konfiguration %0 %1"
+        sv = "FEL: Konfiguration %0 %1",
+        zh_TW = "臭蟲：設定 %0 %1"
     };
 
     -- This is an error string for a buggy config element. See notes above.
@@ -897,7 +934,8 @@ MojoSetup.localization = {
         pt = "Tem que ser uma expressão ou uma tabela de expressões",
         ru = "должна быть строкой или таблицей строк",
         sk = "musí byť reťazec alebo tabuľka reťazcov",
-        sv = "måste vara en sträng eller en tabell av strängar"
+        sv = "måste vara en sträng eller en tabell av strängar",
+        zh_TW = "必須是字串或字串表格"
     };
 
     -- This is an error string for a buggy config element. See notes above.
@@ -959,7 +997,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["URL doesn't have host"] = {
-        cs = "URL nemá určeného hostitele",
+        cs = "URL neobsahuje hostitele",
         de = "URL hat keinen Host",
         el = "το URL δεν περιέχει περιγραφή διακομιστή",
         en_GB = "URL doesn't have host",
@@ -978,7 +1016,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["URL doesn't have path"] = {
-        cs = "URL nemá určenou cestu",
+        cs = "URL neobsahuje cestu",
         de = "URL hat keinen Pfad",
         el = "το URL δεν περιέχει το μονοπάτι",
         en_GB = "URL doesn't have path",
@@ -996,7 +1034,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["URL protocol is unsupported"] = {
-        cs = "Protokol v URL je nepodporovaný",
+        cs = "Protokol v URL není podporován",
         de = "URL Protokoll wird nicht unterstützt",
         el = "το προτόκολο που περιέχει το URL δεν υποστηρίζεται",
         en_GB = "URL protocol is unsupported",
@@ -1031,7 +1069,8 @@ MojoSetup.localization = {
         pt = "A expressão de permissão não é válida",
         ru = "Строка прав доступа некорректна",
         sk = "Reťazec práv je neplatný",
-        sv = "Rättighetssträngen är ogiltig"
+        sv = "Rättighetssträngen är ogiltig",
+        zh_TW = "無效的檔案權限設定"
     };
 
     -- This is an error string for a buggy config element. See notes above.
@@ -1051,13 +1090,15 @@ MojoSetup.localization = {
         pt = "não é uma propriedade válida",
         ru = "недопустимое значение",
         sk = "nieje správnym atribútom",
-        sv = "är inte ett giltigt attribut"
+        sv = "är inte ett giltigt attribut",
+        zh_TW = "並不是有效設定"
     };
 
     -- This is an error string for a buggy config element. See notes above.
     --  %0 is a data type name (string, number, table, etc).
     ["must be %0"] = {
         cs = "musí být %0",
+        da = "skal være %0",
         de = "muss vom Typ %0 sein",
         el = "πρέπει να είναι %0",
         en_GB = "must be %0",
@@ -1098,6 +1139,7 @@ MojoSetup.localization = {
     -- Data type for "must be %0" above...
     ["boolean"] = {
         cs = "booleovská hodnota",
+        da = "boolsk",
         de = "Bool",
         el = "boolean",
         en_GB = "boolean",
@@ -1118,6 +1160,7 @@ MojoSetup.localization = {
     -- Data type for "must be %0" above...
     ["number"] = {
         cs = "číslo",
+        da = "nummer",
         de = "Zahl",
         el = "αριθμός",
         en_GB = "number",
@@ -1158,6 +1201,7 @@ MojoSetup.localization = {
     -- Data type for "must be %0" above...
     ["table"] = {
         cs = "tabulka",
+        da = "tabel",
         de = "Tabelle",
         el = "πίνακας",
         en_GB = "table",
@@ -1178,7 +1222,8 @@ MojoSetup.localization = {
     -- bzlib is a proper name. The error message (%0) may not be localized,
     --  it's meant to be a developer error and not an end-user message.
     ["bzlib triggered an internal error: %0"] = {
-        cs = "bzlib vyvolalo vnitřní chybu: %0",
+        cs = "bzlib vyvolala vnitřní chybu: %0",
+        da = "bzlib forårsagede en intern fejl:",
         de = "bzlib hat einen internen Fehler ausgelöst: %0",
         el = "το bzlib παρουσίασε εσωτερικό σφάλμα: %0",
         en_GB = "bzlib triggered an internal error: %0",
@@ -1191,13 +1236,15 @@ MojoSetup.localization = {
         pt = "A bzlib despoletou um erro interno: %0",
         ru = "произошла ошибка в bzlib: %0",
         sk = "bzlib spôsobilo vnútornú chybu: %0",
-        sv = "internt fel i bzlib: %0"
+        sv = "internt fel i bzlib: %0",
+        zh_TW = "bzlib 遭遇一個內部錯誤： %0"
     };
 
     -- This is a UI button label, usually paired with "OK", but also usually
     --  present as a generic "stop the program" button.
     ["Cancel"] = {
         cs = "Zrušit",
+        da = "Annuller",
         de = "Abbrechen",
         el = "Άκυρο",
         en_GB = "Cancel",
@@ -1251,13 +1298,15 @@ MojoSetup.localization = {
         pt = "Foi impossível enumerar o arquivo",
         ru = "Не могу прочитать архив",
         sk = "Nemôžem prelistovať archív",
-        sv = "Kunde inte lista filen"
+        sv = "Kunde inte lista filen",
+        zh_TW = "無法列出檔案包的內容"
     };
 
     -- This error is reported for i/o failures while opening a .zip
     --  (or whatever) file.
     ["Couldn't open archive"] = {
         cs = "Nemohu otevřít archiv",
+        da = "Kunne ikke åbne arkiv",
         de = "Archiv kann nicht geöffnet werden",
         el = "Δεν μπόρεσε να ανοίξει το αρχείο",
         en_GB = "Couldn't open archive",
@@ -1271,7 +1320,8 @@ MojoSetup.localization = {
         pt = "Foi impossível abrir o arquivo",
         ru = "Не могу открыть архив",
         sk = "Nemôžem otvoriť archív",
-        sv = "Kunde inte öppna filen"
+        sv = "Kunde inte öppna filen",
+        zh_TW = "無法開啟檔案包"
     };
 
     -- This is used by the stdio UI to choose a location to write files.
@@ -1280,12 +1330,23 @@ MojoSetup.localization = {
     --  choosing a default. This string is the instructions printed for the
     --  user before the prompt.
     ["Choose install destination by number (hit enter for #1), or enter your own."] = {
+        cs = "Zvolte cíl instalace číslem (stiskněte enter pro #1) nebo zadejte vlastní cíl.",
         de = "Wählen Sie eine Nummer für das Installationsziel (drücken Sie Enter für #1), oder geben Sie ein eigenes an.",
+        el = "Διαλέξτε προορισμό εγκατάστασης βάση αριθμού (πατήστε ENTER για #1), ή γραψτε τον δικό σας.",
+        en_GB = "Choose install destination by number (hit enter for #1), or enter your own.",
+        es = "Elige lugar de instalación con números (pulsa Intro para #1), o especifícalo",
+        fi = "Valitse asennuskohteen numero (enter valitsee kohteen 1) tai syötä oma kohde.",
+        fr = "Choisissez la destination d'installation par un nombre (Appuyez sur Entrée pour le n°1), ou entrez votre propre choix.",
         nb = "Velg installasjonssti etter nummer (trykk enter for #1), eller skriv inn din egen.",
-        se = "Välg sökväg för installationen efter nummer (tryck enter för #1), eller skriv in din egen.",
+        nds = "Wählen Sie das Installationsverzeichnis durch Drücken einer Nummer (enter für #1), oder geben Sie selber einen ein.",
+        nl = "Kies installatiemap met het bijbehorende nummer, of voer u eigen keuze in.",
+        pt = "Escolha o destino da instalação pelo seu número (pressione enter para o primeiro destino), ou introduza um outro destino.",
+        ru = "Выберите путь установки (нажмите Enter для номера 1), или введите свой.",
+        sk = "Vyberte cieľ inštalácie pomocou čísla (stlačte enter pre prvú možnosť).",
+        sv = "Välj sökväg för installationen efter nummer (tryck enter för #1), eller skriv in din egen."
     };
 
-    --  This is used by the stdio UI to toggle options. A numbered list is
+    -- This is used by the stdio UI to toggle options. A numbered list is
     --  printed, and the user can enter one of those numbers to toggle that
     --  option on or off. This string is the instructions printed for the
     --  user before the prompt.
@@ -1303,13 +1364,15 @@ MojoSetup.localization = {
         pt = "Escolha um número para alterar",
         ru = "Выберите число для изменения",
         sk = "Vyberte pomocou čísla ak chcete zmeniť nastavenie",
-        sv = "Välj nummer som skall ändras."
+        sv = "Välj nummer som skall ändras.",
+        zh_TW = "選擇數字以更改"
     };
 
     -- As in "two different files want to use the same name." This is a title
     --  on a message box.
     ["Conflict!"] = {
         cs = "Konflikt!",
+        da = "Konflikt!",
         de = "Konflikt!",
         el = "Διένεξη!",
         en_GB = "Conflict!",
@@ -1345,7 +1408,8 @@ MojoSetup.localization = {
         pt = "Foi impossível salvaguardar o ficheiro para refazer as acções",
         ru = "Не могу сохранить копию файла для восстановления",
         sk = "Nemôžem zálohovať súbor pre obnovu",
-        sv = "Kunde inte säkerhetskopiera filen för återställning"
+        sv = "Kunde inte säkerhetskopiera filen för återställning",
+        zh_TW = "無法備份檔案以復原"
     };
 
     -- This error is shown if we aren't able to write the list of files
@@ -1367,17 +1431,30 @@ MojoSetup.localization = {
         pt = "Foi impossível criar o manifesto",
         ru = "Не могу создать манифест",
         sk = "Nemôžem vytvoriť manifest",
-        sv = "Kunde inte skapa manifest"
+        sv = "Kunde inte skapa manifest",
+        zh_TW = "無法建立檔案清單"
     };
 
     -- This is an error message. It speaks for itself.   :)
     ["Couldn't restore some files. Your existing installation is likely damaged."] = {
-        de = "Konnte einige Dateien nicht widerherstellen. Ihre Installation ist wahrscheinlich beschädigt.",
+        cs = "Nepodařilo se obnovit některé soubory. Vaše existující instalace je pravděpodobně poškozená.",
+        de = "Konnte einige Dateien nicht wiederherstellen. Ihre Installation ist wahrscheinlich beschädigt.",
+        el = "Δεν μπόρεσε να ανακτήση κάποια αρχεία. Είναι πιθανόν η εγκατάσταση να είναι κατεστραμένη.",
+        en_GB = "Couldn't restore some files. Your existing installation is likely to be damaged.",
+        es = "No se pudieron restaurar algunos archivos. Tu instalación posiblemente esté dañada",
+        fi = "Joidenkin tiedostojen palauttaminen epäonnistui. Asennuksesi on todennäköisesti rikki.",
+        fr = "Impossible de restaurer certains fichiers. Votre installation existante est certainement endommagée.",
         nb = "Noen filer kunne ikke tilbakestilles. Den eksisterende installasjonen er sannsynligvis skadet.",
-        se = "Några filer kunde inte återskapas. Den existerande installationen är troligtvis skadad.",
+        nds = "Konnte einige Dateien nicht wiederherstellen. Ihre Installation ist möglicherweise beschädigt.",
+        nl = "Kon sommige bestanden niet terugzetten. Uw bestaande installatie is waarschijnlijk beschadigd.",
+        pt = "Foi impossível recuperar alguns ficheiros. Provavelmente, a sua instalação está danificada.",
+        ru = "Не могу восстановить некоторые файлы. Ваша установка наверно повреждена.",
+        sk = "Nemôžem obnoviť niektoré súbory. Vaša aktuálna inštalácia je zrejme poškodená.",
+        sv = "Några filer kunde inte återskapas. Den existerande installationen är troligtvis skadad.",
+        zh_TW = "一些檔案無法復原，現有的安裝內容似乎已損毀。"
     };
 
-    --  Error message when deleting a file fails.
+    -- Error message when deleting a file fails.
     ["Deletion failed!"] = {
         cs = "Mazání selhalo!",
         de = "Löschen fehlgeschlagen!",
@@ -1402,6 +1479,7 @@ MojoSetup.localization = {
     --  the filesystem.
     ["Folder:"] = {
         cs = "Složka:",
+        da = "Mappe:",
         de = "Verzeichnis:",
         el = "Φάκελος:",
         en_GB = "Folder:",
@@ -1422,6 +1500,7 @@ MojoSetup.localization = {
     -- This is a window title when user is selecting a path to install files.
     ["Destination"] = {
         cs = "Cíl",
+        da = "Destination",
         de = "Ziel",
         el = "Προορισμός",
         en_GB = "Destination",
@@ -1443,6 +1522,7 @@ MojoSetup.localization = {
     --  it needs from the network.
     ["Downloading"] = {
         cs = "Stahuji",
+        da = "Henter",
         de = "Lade herunter",
         el = "Γίνεται λήψη",
         en_GB = "Downloading",
@@ -1503,6 +1583,7 @@ MojoSetup.localization = {
     -- This is a window title when something goes very wrong.
     ["Fatal error"] = {
         cs = "Kritická chyba",
+        da = "Alvorlig fejl",
         de = "Schwerer Fehler",
         el = "Μοιραίο σφάλμα",
         en_GB = "Fatal error",
@@ -1556,7 +1637,8 @@ MojoSetup.localization = {
         pt = "Falhou a descarregar!",
         ru = "Ошибка скачивания файла!",
         sk = "Sťahovanie zlyhalo!",
-        sv = "Hämtning av fil misslyckades!"
+        sv = "Hämtning av fil misslyckades!",
+        zh_TW = "檔案下載失敗"
     };
 
     -- This prompt is shown to users when we may overwrite an existing file.
@@ -1584,6 +1666,7 @@ MojoSetup.localization = {
     --  stages to move forward to.
     ["Finish"] = {
         cs = "Dokončit",
+        da = "Udfør",
         de = "Fertig stellen",
         el = "Τέλος",
         en_GB = "Finish",
@@ -1645,6 +1728,7 @@ MojoSetup.localization = {
     -- Reported to the user if everything worked out.
     ["Installation was successful."] = {
         cs = "Instalace byla úspěšná.",
+        da = "Installationen var succesfuld.",
         de = "Installation war erfolgreich.",
         el = "Η εγκατάσταση πέτυχε.",
         en_GB = "Installation was successful.",
@@ -1666,6 +1750,7 @@ MojoSetup.localization = {
     --  is in process and a progress meter is being shown.
     ["Installing"] = {
         cs = "Instaluji",
+        da = "Installerer",
         de = "Installiere",
         el = "Γίνεται εγκατάσταση",
         en_GB = "Installing",
@@ -1687,6 +1772,7 @@ MojoSetup.localization = {
     --  installation-specific options.
     ["Options"] = {
         cs = "Volby",
+        da = "Indstillinger",
         de = "Optionen",
         el = "Επιλογές",
         en_GB = "Options",
@@ -1729,6 +1815,7 @@ MojoSetup.localization = {
     -- "kilobytes per second" ... download rate.
     ["KB/s"] = {
         cs = "KB/s",
+        da = "KB/s",
         de = "KB/s",
         el = "KB/δευτ.",
         en_GB = "KB/s",
@@ -1762,7 +1849,8 @@ MojoSetup.localization = {
         pt = "B/s",
         ru = "Б/с",
         sk = "B/s",
-        sv = "B/s"
+        sv = "B/s",
+        zh_TW = "位元組/秒"
     };
 
     -- Download rate when we don't know the goal (can't report time left).
@@ -1782,7 +1870,8 @@ MojoSetup.localization = {
         pt = "%0 %1",
         ru = "%0 %1",
         sk = "%0 %1",
-        sv = "%0 %1"
+        sv = "%0 %1",
+        zh_TW = "%0 %1"
     };
 
     -- Download rate when we know the goal (can report time left).
@@ -1802,7 +1891,8 @@ MojoSetup.localization = {
         pt = "restam %0 %1, %2:%3:%4",
         ru = "%0 %1, осталось %2:%3:%4",
         sk = "%0 %1, %2:%3:%4 zostáva",
-        sv = "%0 %1, %2:%3:%4 återstår"
+        sv = "%0 %1, %2:%3:%4 återstår",
+        zh_TW = "剩餘 %0 %1, %2:%3:%4"
     };
 
     -- download rate when download isn't progressing at all.
@@ -1821,7 +1911,8 @@ MojoSetup.localization = {
         pt = "Parado",
         ru = "застряло",
         sk = "zastavený",
-        sv = "avstannad"
+        sv = "avstannad",
+        zh_TW = "已延遲"
     };
 
     -- Download progress string: filename (%0), percent downloaded (%1),
@@ -1840,12 +1931,14 @@ MojoSetup.localization = {
         pt = "%0: %1%% (%2)",
         ru = "%0: %1%% (%2)",
         sk = "%0: %1%% (%2)",
-        sv = "%0: %1%% (%2)"
+        sv = "%0: %1%% (%2)",
+        zh_TW = "%0: %1%% (%2)"
     };
 
     -- This is a window title when prompting the user to insert a new disc.
     ["Media change"] = {
         cs = "Výměna média",
+        da = "Skift medie",
         de = "Medienwechsel",
         el = "Αλάξτε μέσο αποθήκευσης",
         en_GB = "Media change",
@@ -1899,13 +1992,15 @@ MojoSetup.localization = {
         pt = "N_unca",
         ru = "Н_икогда",
         sk = "N_ikdy",
-        sv = "Al_drig"
+        sv = "Al_drig",
+        zh_TW = "永不(_N)"
     };
 
     -- This is a GUI button label, to move forward to the next stage of
     --  installation. It's opposite is "Back" in this case.
     ["Next"] = {
         cs = "Další",
+        da = "Næste",
         de = "Weiter",
         el = "Επόμενο",
         en_GB = "Next",
@@ -1926,6 +2021,7 @@ MojoSetup.localization = {
     -- This is a GUI button label, indicating a negative response.
     ["No"] = {
         cs = "Ne",
+        da = "Nej",
         de = "Nein",
         el = "Όχι",
         en_GB = "No",
@@ -1946,6 +2042,7 @@ MojoSetup.localization = {
     -- This is a GUI button label, indicating a positive response.
     ["Yes"] = {
         cs = "Ano",
+        da = "Ja",
         de = "Ja",
         el = "Ναί",
         en_GB = "Yes",
@@ -1967,6 +2064,7 @@ MojoSetup.localization = {
     --  file is missing.
     ["Not Found"] = {
         cs = "Nenalezeno",
+        da = "Ikke fundet",
         de = "Nicht gefunden",
         el = "Δεν βρέθηκε",
         en_GB = "Not Found",
@@ -2007,6 +2105,7 @@ MojoSetup.localization = {
     -- This is a GUI button label, sometimes paired with "Cancel"
     ["OK"] = {
         cs = "OK",
+        da = "OK",
         de = "OK",
         el = "Εντάξει",
         en_GB = "OK",
@@ -2071,6 +2170,7 @@ MojoSetup.localization = {
     --  scrolling by.
     ["Press enter to continue."] = {
         cs = "Pro pokračování stiskněte enter.",
+        da = "Tryk retur for at fortsætte.",
         de = "Drücken Sie Enter um fortzufahren",
         el = "Πατήστε ENTER για συνέχεια.",
         en_GB = "Press enter to continue.",
@@ -2093,6 +2193,7 @@ MojoSetup.localization = {
     --  during a rollback).
     ["Serious problem"] = {
         cs = "Závažný problém",
+        da = "Seriøst problem",
         de = "Ernstes Problem",
         el = "Σοβαρό πρόβλημα",
         en_GB = "Serious problem",
@@ -2112,6 +2213,7 @@ MojoSetup.localization = {
     -- The www UI uses this as a page title when the program is terminating.
     ["Shutting down..."] = {
         cs = "Ukončuji se...",
+        da = "Lukker ned...",
         de = "Schließe...",
         el = "Γίνεται τερματισμός...",
         en_GB = "Shutting down...",
@@ -2131,6 +2233,7 @@ MojoSetup.localization = {
     -- The www UI uses this as page text when the program is terminating.
     ["You can close this browser now."] = {
         cs = "Nyní můžete ukončit tento prohlížeč.",
+        da = "Du kan lukke browseren nu.",
         de = "Sie können diesen Browser nun schließen.",
         el = "Μπορείτε να κλείσετε αυτόν τον περιηγητή τώρα.",
         en_GB = "You can close this browser now.",
@@ -2144,7 +2247,8 @@ MojoSetup.localization = {
         pt = "Já pode fechar este browser.",
         ru = "Можете закрыть браузер.",
         sk = "Môžete zavreť tento prehliadač.",
-        sv = "Du kan stänga denna webbläsare nu."
+        sv = "Du kan stänga denna webbläsare nu.",
+        zh_TW = "你現在已可以關閉瀏覽器"
     };
 
     -- Error message shown to end-user when we can't write a symbolic link
@@ -2211,6 +2315,7 @@ MojoSetup.localization = {
     -- This is a button label in the ncurses ui to flip an option on/off.
     ["Toggle"] = {
         cs = "Přepnout",
+        da = "Skift",
         de = "Umschalten",
         el = "Εναλλαγή",
         en_GB = "Toggle",
@@ -2233,6 +2338,7 @@ MojoSetup.localization = {
     --  how to handle.
     ["Unknown file type in archive"] = {
         cs = "Neznámý typ souboru v archivu.",
+        da = "Ukendt filtype i arkiv",
         de = "Unbekannter Dateityp im Archiv",
         el = "Άγνωστος τύπος αρχείου μέσα στο πακέτο αρχείων.",
         en_GB = "Unknown file type in archive",
@@ -2245,7 +2351,8 @@ MojoSetup.localization = {
         pt = "Tipo de ficheiro desconhecido no arquivo",
         ru = "Неизвестный тип файла в архиве",
         sk = "Neznámy typ súboru v archíve",
-        sv = "Okänd filtyp påträffad i arkivet"
+        sv = "Okänd filtyp påträffad i arkivet",
+        zh_TW = "檔案包中有未知的檔案類別"
     };
 
     -- This is an error message shown to the end-user if they refuse to
@@ -2276,6 +2383,7 @@ MojoSetup.localization = {
     --  actual data, basically.
     ["Metadata"] = {
         cs = "Metadata",
+        da = "Metadata",
         de = "Metadaten",
         el = "Μεταδεδομένα",
         en_GB = "Metadata",
@@ -2289,7 +2397,8 @@ MojoSetup.localization = {
         pt = "Meta-Informação",
         ru = "Метаданные",
         sk = "Metadáta",
-        sv = "Metadata"
+        sv = "Metadata",
+        zh_TW = "中繼資料"
     };
 
     -- This error is shown if incorrect command line arguments are used.
@@ -2327,7 +2436,8 @@ MojoSetup.localization = {
         pt = "Foi impossível carregar o ficheiro de manifesto para '%0'",
         ru = "Не могу загрузить файл манифеста '%0'",
         sk = "Nemôžem nahrať manifest súbor pre '%0'",
-        sv = "Kunde inte ladda manifestfil för '%0'"
+        sv = "Kunde inte ladda manifestfil för '%0'",
+        zh_TW = "無法讀取來自 '%' 的檔案清單"
     };
 
     -- This error is shown when the user prompted the app to read a filename
@@ -2354,6 +2464,7 @@ MojoSetup.localization = {
     --  they want to uninstall a package.
     ["Uninstall"] = {
         cs = "Odinstalovat",
+        da = "Afinstallér",
         de = "Deinstallieren",
         el = "Απεγκατάσταση",
         en_GB = "Uninstall",
@@ -2395,6 +2506,7 @@ MojoSetup.localization = {
     --  and a progress meter is being shown.
     ["Uninstalling"] = {
         cs = "Odinstalovávám",
+        da = "Afinstallerer",
         de = "Deinstalliere",
         el = "Γίνεται απεγκατάσταση",
         en_GB = "Uninstalling",
@@ -2451,7 +2563,8 @@ MojoSetup.localization = {
         pt = "[Torne a janela mais larga!]",
         ru = "Сделайте окно шире!",
         sk = "[Roztiahnite okno do šírky!]",
-        sv = "[Gör fönstret bredare!]"
+        sv = "[Gör fönstret bredare!]",
+        zh_TW = "[使視窗更寬]"
     };
 
     -- This is written to the terminal in the ncurses UI when the window is
@@ -2475,7 +2588,8 @@ MojoSetup.localization = {
         pt = "[Torne a janela mais alta!]",
         ru = "Сделайте окно выше!",
         sk = "[Roztiahnite okno do výšky!]",
-        sv = "[Gör fönstret högre!]"
+        sv = "[Gör fönstret högre!]",
+        zh_TW = "[使視窗更長]"
     };
 
     -- This is written out if we failed to add an item to the desktop
