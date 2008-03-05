@@ -58,7 +58,7 @@ foreach (@ARGV) {
         next if /\A\#/;
 
         if (s/msgid\s*\"(.*?)\"\Z/$1/) {
-            if ($_ eq '') {   # initial string.
+            if (($_ eq '') and ($currentlang eq '')) {   # initial string.
                 while (<POIO>) {  # Skip most of the metadata.
                     chomp;
                     s/\A\s+//;
