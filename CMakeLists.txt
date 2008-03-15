@@ -13,6 +13,7 @@
 # Only choose options you want/need to squeeze every byte off the download.
 
 PROJECT(MojoSetup)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 EXECUTE_PROCESS(
     COMMAND "svnversion"
