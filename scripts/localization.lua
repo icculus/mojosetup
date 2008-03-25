@@ -415,8 +415,8 @@ MojoSetup.localization = {
 
     -- This is the string used for the '%0' in the above string.
     --  This is only for the stdio UI, so choose something easy and
-    --  reasonable for the user to manually type. The UIs use a different
-    --  string for their button ("Back" vs "back" specifically).
+    --  reasonable for the user to manually type. The graphical UIs use a
+    --  different string for their button ("Back" vs "back" specifically).
     ["back"] = {
         cs = "zpět",
         da = "tilbage",
