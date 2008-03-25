@@ -49,156 +49,9 @@ MojoSetup.languages = {
 };
 
 MojoSetup.localization = {
-    -- zlib error message
-    ["need dictionary"] = {
-        cs = "je třeba slovník",
-        da = "behøver ordbog",
-        de = "Wörterbuch benötigt",
-        el = "χρειάζεται λεξικό",
-        en_AU = "need dictionary",
-        en_CA = "need dictionary",
-        en_GB = "need dictionary",
-        es = "necesita diccionario",
-        et = "vaja sõnastiku",
-        fi = "tarve sanastolle",
-        fr = "dictionnaire nécessaire",
-        hu = "szótár szükséges",
-        it = "zlib: need dictionary",
-        ja = "自余を必要だ",
-        nb = "trenger ordbok",
-        nds = "Wörterbuch benötigt",
-        nl = "woordenboek nodig",
-        pl = "potrzebny słownik",
-        pt = "é necessário um dicionário",
-        pt_BR = "precisa de dicionário",
-        ru = "необходим словарь",
-        sk = "potrebujem slovník",
-        sv = "behöver ordbok",
-        tr = "sözlük gerekiyor",
-        uk = "потрібен словник",
-        zh_TW = "需要辭典"
-    };
-
-    -- zlib error message
-    ["data error"] = {
-        cs = "datová chyba",
-        da = "datafejl",
-        de = "Datenfehler",
-        el = "σφάλμα δεδομένων",
-        en_AU = "data error",
-        en_CA = "data error",
-        en_GB = "data error",
-        es = "error de datos",
-        et = "andmeviga",
-        fi = "datavirhe",
-        fr = "Erreur de données",
-        hu = "adat hiba",
-        it = "zlib: data error",
-        ja = "データ誤り",
-        nb = "datafeil",
-        nds = "Datenfehler",
-        nl = "data fout",
-        pl = "błąd danych",
-        pt = "erro de dados",
-        pt_BR = "erro de dados",
-        ru = "ошибка данных",
-        sk = "chyba dát",
-        sv = "datafel",
-        tr = "veri hatası",
-        uk = "помилка даних",
-        zh_TW = "資料錯誤"
-    };
-
-    -- zlib error message
-    ["memory error"] = {
-        cs = "paměťová chyba",
-        da = "hukommelsesfejl",
-        de = "Speicherfehler",
-        el = "σφάλμα μνήμης",
-        en_AU = "memory error",
-        en_CA = "memory error",
-        en_GB = "memory error",
-        es = "error de memoria",
-        et = "mäluviga",
-        fi = "muistivirhe",
-        fr = "Erreur mémoire",
-        hu = "memória hiba",
-        it = "zlib: memory error",
-        ja = "記憶誤り",
-        nb = "minnefeil",
-        nds = "Speicherfehler",
-        nl = "geheugen fout",
-        pl = "błąd pamięci",
-        pt = "erro na memória",
-        pt_BR = "erro de memória",
-        ru = "ошибка памяти",
-        sk = "chyba pamäte",
-        sv = "minnesfel",
-        tr = "bellek hatası",
-        uk = "помилка пам'яті",
-        zh_TW = "記憶體錯誤"
-    };
-
-    -- zlib error message
-    ["buffer error"] = {
-        cs = "chyba bufferu",
-        da = "buffer fejl",
-        de = "Pufferfehler",
-        el = "σφάλμα ενδιάμεσου χώρου αποθήκευσης",
-        en_AU = "buffer error",
-        en_CA = "buffer error",
-        en_GB = "buffer error",
-        es = "error de buffer",
-        et = "puhvriviga",
-        fi = "puskurivirhe",
-        fr = "Erreur de tampon",
-        hu = "puffer hiba",
-        it = "zlib: buffer error",
-        ja = "バッファ誤り",
-        nb = "bufferfeil",
-        nds = "Pufferfehler",
-        nl = "buffer fout",
-        pl = "błąd bufora",
-        pt = "erro no tampão",
-        pt_BR = "Erro de armazenamento",
-        ru = "ошибка буфера",
-        sk = "chyba vyrovnávacej pamäte",
-        sv = "bufferfel",
-        tr = "tampon hatası",
-        uk = "помилка буферу",
-        zh_TW = "緩衝區錯誤"
-    };
-
-    -- zlib error message
-    ["version error"] = {
-        cs = "chyba verze",
-        da = "versionsfejl",
-        de = "Versionsfehler",
-        el = "εσφαλμένη έκδοση λογισμικού",
-        en_AU = "version error",
-        en_CA = "version error",
-        en_GB = "version error",
-        es = "error de versión",
-        et = "versiooniviga",
-        fi = "versiovirhe",
-        fr = "Erreur de version",
-        hu = "verizó hiba",
-        it = "zlib: version error",
-        nb = "versjonsfeil",
-        nds = "Versionsfehler",
-        nl = "versie fout",
-        pl = "błąd wersji",
-        pt = "erro na versão",
-        pt_BR = "erro de versão",
-        ru = "ошибка версии",
-        sk = "chyba verzie",
-        sv = "versionsfel",
-        tr = "sürüm hatası",
-        uk = "помилка версії",
-        zh_TW = "版本錯誤"
-    };
-
-    -- zlib error message
+    -- This may be shown to the end-user if the application gets extremely
+    --  confused. It may be shown in desperate sitations when we know
+    --  something has gone wrong, but not what exactly.
     ["unknown error"] = {
         cs = "neznámá chyba",
         da = "ukendt fejl",
@@ -229,7 +82,10 @@ MojoSetup.localization = {
     };
 
     -- stdio UI plugin says this for "OK"-only msgboxes. "%0" is the message
-    --  box's text content.
+    --  box's text content. "[hit enter]" should be translated, too! It's
+    --  trying to tell the application's user that they should press the
+    --  key that is normally used to complete a line of text at a terminal's
+    --  prompt.
     ["NOTICE: %0\n[hit enter]"] = {
         cs = "UPOZORNĚNÍ: %0\n[stiskněte enter]",
         da = "NB: %0\n[tryk enter]",
@@ -260,6 +116,13 @@ MojoSetup.localization = {
 
     -- stdio UI plugin says this for yes/no prompts that default to yes.
     --  "%0" is the question the user is being asked to respond to.
+    --  "[Y/n]" are two options that the user will have to type in response.
+    --  Please pick reasonable abbreviations for YES and NO that can be
+    --  typed easily by the user. Case of the "Y" and "n" are not important,
+    --  although we are using the capital letter to show the default option
+    --  if the user just presses enter. Be sure to translate the strings "Y"
+    --  and "N", elsewhere, to match what you enter here! At runtime, the
+    --  user's response is compared to those strings without case sensitivity.
     ["%0 [Y/n]: "] = {
         cs = "%0 [A/n]: ",
         da = "%0 [J/n]: ",
@@ -290,6 +153,13 @@ MojoSetup.localization = {
 
     -- stdio UI plugin says this for yes/no prompts that default to no.
     --  "%0" is the question the user is being asked to respond to.
+    --  "[y/N]" are two options that the user will have to type in response.
+    --  Please pick reasonable abbreviations for YES and NO that can be
+    --  typed easily by the user. Case of the "Y" and "n" are not important,
+    --  although we are using the capital letter to show the default option
+    --  if the user just presses enter. Be sure to translate the strings "Y"
+    --  and "N", elsewhere, to match what you enter here! At runtime, the
+    --  user's response is compared to those strings without case sensitivity.
     ["%0 [y/N]: "] = {
         cs = "%0 [a/N] ",
         da = "%0 [j/N]: ",
@@ -320,6 +190,15 @@ MojoSetup.localization = {
 
     -- stdio UI plugin says this for yes/no/always/never prompts.
     --  "%0" is the question the user is being asked to respond to.
+    --  "[Y/n/Always/Never]" are options that the user will have to type in
+    --  response. Please pick reasonable abbreviations for YES and NO (and
+    --  full words for ALWAYS and NEVER) that can be typed easily by the user.
+    --  Case of the "Y" and "n" are not important; there is no default option
+    --  chosen here, so the user will have to fully type out one of these four
+    --  options in response. Be sure to translate the strings "Y", "N",
+    --  "Always", and "Never", elsewhere, to match what you enter here! At
+    --  runtime, the user's response is compared to those strings without
+    --  case sensitivity.
     ["%0 [y/n/Always/Never]: "] = {
         cs = "%0 [a/n/Vždy/niKdy] ",
         da = "%0 [j/n/Alltid/Aldrig]: ",
@@ -349,6 +228,9 @@ MojoSetup.localization = {
     };
 
     -- This is used for "yes" in stdio UI's yes/no prompts (case insensitive).
+    --  Make sure this matches the string you chose for the "[y/n]" and
+    --  the "y/n/always/never" prompt, above! This should be reasonable for
+    --  the end user to enter at a terminal prompt.
     ["Y"] = {
         cs = "A",
         da = "J",
@@ -378,6 +260,9 @@ MojoSetup.localization = {
     };
 
     -- This is used for "no" in stdio UI's yes/no prompts (case insensitive).
+    --  Make sure this matches the string you chose for the "[y/n]" and
+    --  the "y/n/always/never" prompt, above! This should be reasonable for
+    --  the end user to enter at a terminal prompt.
     ["N"] = {
         cs = "N",
         da = "N",
@@ -407,7 +292,9 @@ MojoSetup.localization = {
     };
 
     -- This is used for "always" in stdio UI's yes/no/always/never prompts
-    --  (case insensitive).
+    --  (case insensitive). Make sure this matches the string you chose for
+    --  the "y/n/always/never" prompt, above! This should be reasonable for
+    --  the end user to enter at a terminal prompt.
     ["Always"] = {
         cs = "Vždy",
         da = "Altid",
@@ -437,7 +324,9 @@ MojoSetup.localization = {
     };
 
     -- This is used for "never" in stdio UI's yes/no/always/never prompts
-    --  (case insensitive).
+    --  (case insensitive). Make sure this matches the string you chose for
+    --  the "y/n/always/never" prompt, above! This should be reasonable for
+    --  the end user to enter at a terminal prompt.
     ["Never"] = {
         cs = "niKdy",
         da = "Aldrig",
