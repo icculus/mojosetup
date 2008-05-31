@@ -508,7 +508,7 @@ boolean MojoPlatform_unlink(const char *fname)
 {
     boolean retval = false;
     struct stat statbuf;
-    if (stat(fname, &statbuf) != -1)
+    if (lstat(fname, &statbuf) != -1)
     {
         if (S_ISDIR(statbuf.st_mode))
             retval = (rmdir(fname) == 0);
