@@ -1121,7 +1121,8 @@ static void prepareSplash(MojoGuiSplash *splash, const char *fname)
         {
             splash->rgba = decodeImage(data, size, &splash->w, &splash->h);
             if (splash->rgba != NULL)
-                splash->position = MOJOGUI_SPLASH_TOP;  // !!! FIXME: others?
+                splash->position = (splash->w >= splash->h) ?
+                    MOJOGUI_SPLASH_TOP : MOJOGUI_SPLASH_LEFT;  // !!! FIXME: others?
         } // if
         free(data);
     } // if
