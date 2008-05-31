@@ -1328,6 +1328,7 @@ local function do_install(install)
     stages[#stages+1] = function(thisstage, maxstage)
         -- Make sure we install the destination dir, so it's in the manifest.
         if not MojoSetup.platform.exists(MojoSetup.destination) then
+            install_parent_dirs(MojoSetup.destination, MojoSetup.metadatakey)
             install_directory(MojoSetup.destination, nil, MojoSetup.metadatakey)
         end
 
