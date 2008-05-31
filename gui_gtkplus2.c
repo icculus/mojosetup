@@ -754,7 +754,7 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
     int i;
 
     for (i = 0; i < recnum; i++)
-        gtk_combo_box_prepend_text(combo, recommends[i]);
+        gtk_combo_box_append_text(combo, recommends[i]);
     gtk_combo_box_set_active (combo, 0);
 
     *command = run_wizard(_("Destination"),PAGE_DEST,can_back,can_fwd,true);
