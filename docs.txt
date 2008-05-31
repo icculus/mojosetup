@@ -297,7 +297,7 @@ Here are the elements, and the attributes they can possess.
     function runs. Try to do the bare minimum here if you must use this hook.
 
 
-   postinstall (no default, mustBeFunction)
+   postuninstall (no default, mustBeFunction)
 
     If this attribute is defined, it is called by the uninstaller after the
     uninstallation has successfully finished. It passes something like the
