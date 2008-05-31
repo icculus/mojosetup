@@ -171,8 +171,8 @@ static void signal_browse_clicked(GtkButton *_button, gpointer data)
         GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
         NULL);
 
-    // !!! FIXME: should set the initial path to the existent portion
-    // !!! FIXME:  of the currently suggested path.
+    gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog),
+            gtk_combo_box_get_active_text(GTK_COMBO_BOX(destination)));
 
     if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
         gchar *filename;
