@@ -51,7 +51,9 @@ mkdir image/meta
 # Build MojoSetup binaries from scratch.
 # YOU ALWAYS NEED THE LUA PARSER IF YOU WANT UNINSTALL SUPPORT!
 cd ../..
-rm -rf `svn propget svn:ignore .`
+rm -rf cmake-build
+mkdir cmake-build
+cd cmake-build
 cmake \
     -DCMAKE_BUILD_TYPE=$BUILDTYPE \
     -DMOJOSETUP_ARCHIVE_TAR=FALSE \
@@ -67,7 +69,7 @@ cmake \
     -DMOJOSETUP_IMAGE_JPG=FALSE \
     -DMOJOSETUP_IMAGE_PNG=FALSE \
     -DMOJOSETUP_URL_FTP=FALSE \
-    .
+    ..
 make -j$NCPU
 
 # Strip the binaries and GUI plugins, put them somewhere useful.
@@ -75,31 +77,31 @@ if [ "$DEBUG" != "1" ]; then
     strip ./mojosetup
 fi
 
-mv ./mojosetup ./examples/duke3d/duke3d-installer
+mv ./mojosetup ../examples/duke3d/duke3d-installer
 for feh in *.so *.dll *.dylib ; do
     if [ -f $feh ]; then
         if [ "$DEBUG" != "1" ]; then
             strip $feh
         fi
-        mv $feh examples/duke3d/image/guis
+        mv $feh ../examples/duke3d/image/guis
     fi
 done
 
 # Compile the Lua scripts, put them in the base archive.
-for feh in scripts/*.lua ; do
-    ./mojoluac $LUASTRIPOPT -o examples/duke3d/image/${feh}c $feh
+for feh in ../scripts/*.lua ; do
+    ./mojoluac $LUASTRIPOPT -o ../examples/duke3d/image/${feh}c $feh
 done
 
 # Don't want the example config...use our's instead.
-rm -f examples/duke3d/image/scripts/config.luac
-./mojoluac $LUASTRIPOPT -o examples/duke3d/image/scripts/config.luac examples/duke3d/scripts/config.lua
+rm -f ../examples/duke3d/image/scripts/config.luac
+./mojoluac $LUASTRIPOPT -o ../examples/duke3d/image/scripts/config.luac ../examples/duke3d/scripts/config.lua
 
 # Don't want the example app_localization...use our's instead.
-rm -f examples/duke3d/image/scripts/app_localization.luac
-./mojoluac $LUASTRIPOPT -o examples/duke3d/image/scripts/app_localization.luac examples/duke3d/scripts/app_localization.lua
+rm -f ../examples/duke3d/image/scripts/app_localization.luac
+./mojoluac $LUASTRIPOPT -o ../examples/duke3d/image/scripts/app_localization.luac ../examples/duke3d/scripts/app_localization.lua
 
 # Fill in the rest of the Base Archive...
-cd examples/duke3d
+cd ../examples/duke3d
 cp data/* image/data/
 cp meta/* image/meta/
 

@@ -21,19 +21,21 @@ Each step has a lot of details, but all installers basically follow those same
 Compile the software:
 
 You will need some tools. First, you'll need your platform's favorite build
- tools. You'll also need CMake (http://www.cmake.org/), and a Subversion
- (http://subversion.tigris.org/) client. These are all available for most
+ tools. You'll also need CMake (http://www.cmake.org/), and a Mercurial
+ (http://www.selenic.com/mercurial/) client. These are all available for most
  popular operating systems, and some not-so-popular ones.
 
-Get the latest version of MojoSetup from Subversion:
+Get the latest version of MojoSetup from Mercurial:
 
-     svn co svn://svn.icculus.org/mojosetup/trunk mojosetup
+     hg clone http://hg.icculus.org/icculus/mojosetup
 
 
 Then you'll need to point CMake at it:
 
      cd mojosetup
-     ccmake .
+     mkdir cmake-build
+     cd cmake-build
+     ccmake ..
 
 Tweak the build settings to your liking. You'll want to set CMAKE_BUILD_TYPE
  to MinSizeRel, to make the compiled binary be as small as possible, and

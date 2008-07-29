@@ -12,7 +12,7 @@ if [ ! -d data/Binaries ]; then
     echo "We don't see data/Binaries ..."
     echo " Either you're in the wrong directory, or you didn't copy the"
     echo " install data into here (it's unreasonably big to store it in"
-    echo " Subversion for no good reason)."
+    echo " revision control for no good reason)."
     exit 1
 fi
 
@@ -60,8 +60,6 @@ fi
 
 # this is a little nasty, but it works!
 TOTALINSTALL=`du -sb data |perl -w -pi -e 's/\A(\d+)\s+data\Z/$1/;'`
-TOTALINSTALLSVN=`du -sb data/.svn |perl -w -pi -e 's/\A(\d+)\s+data\/\.svn\Z/$1/;'`
-let TOTALINSTALL=$TOTALINSTALL-$TOTALINSTALLSVN
 perl -w -pi -e "s/\A\s*(local TOTAL_INSTALL_SIZE)\s*\=\s*\d+\s*;\s*\Z/\$1 = $TOTALINSTALL;\n/;" scripts/config.lua
 
 # Clean up previous run, build fresh dirs for Base Archive.
@@ -73,7 +71,9 @@ mkdir image/data
 
 # Build MojoSetup binaries from scratch.
 cd ../..
-rm -rf `svn propget svn:ignore .`
+rm -rf cmake-build
+mkdir cmake-build
+cd cmake-build
 cmake \
     -DCMAKE_BUILD_TYPE=$BUILDTYPE \
     -DCMAKE_C_COMPILER=/opt/crosstool/gcc-4.1.2-glibc-2.3.6/i686-unknown-linux-gnu/i686-unknown-linux-gnu/bin/gcc \
@@ -99,7 +99,7 @@ cmake \
     -DMOJOSETUP_URL_FTP=FALSE \
     -DMOJOSETUP_IMAGE_JPG=FALSE \
     -DMOJOSETUP_IMAGE_PNG=FALSE \
-    .
+    ..
 
 #make -j5 VERBOSE=1
 make -j$NCPU
@@ -109,28 +109,28 @@ if [ "$DEBUG" != "1" ]; then
     strip ./mojosetup
 fi
 
-mv ./mojosetup examples/$pkg/
+mv ./mojosetup ../examples/$pkg/
 
 for feh in *.so *.dll *.dylib ; do
     if [ -f $feh ]; then
         if [ "$DEBUG" != "1" ]; then
             strip $feh
         fi
-        mv $feh examples/$pkg/image/guis
+        mv $feh ../examples/$pkg/image/guis
     fi
 done
 
 # Compile the Lua scripts, put them in the base archive.
-for feh in scripts/*.lua ; do
-    ./mojoluac $LUASTRIPOPT -o examples/$pkg/image/${feh}c $feh
+for feh in ../scripts/*.lua ; do
+    ./mojoluac $LUASTRIPOPT -o ../examples/$pkg/image/${feh}c $feh
 done
 
 # Don't want the example config...use our's instead.
-rm -f examples/$pkg/image/scripts/config.luac
-./mojoluac $LUASTRIPOPT -o examples/$pkg/image/scripts/config.luac examples/$pkg/scripts/config.lua
+rm -f ../examples/$pkg/image/scripts/config.luac
+./mojoluac $LUASTRIPOPT -o ../examples/$pkg/image/scripts/config.luac ../examples/$pkg/scripts/config.lua
 
 # Fill in the rest of the Base Archive...
-cd examples/$pkg
+cd ../examples/$pkg
 cp -R data/* image/data/
 
 # Make a .zip archive of the Base Archive dirs and nuke the originals...

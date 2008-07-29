@@ -12,10 +12,8 @@ binmode(STDERR, ":utf8");
 my $now = `date '+%Y-%m-%d %H:%M:%S%z'`;
 chomp($now);
 
-my $svnver = `svnversion . 2>/dev/null`;
-chomp($svnver);
-$svnver = 'svn-' . (($svnver eq '') ? '???' : $svnver);
-
+my $hgver = `hg tip --template 'hg-{rev}:{node|short}' 2>/dev/null`;
+$hgver = '???' if ($hgver eq '');
 
 my %languages;
 my %comments;
@@ -134,7 +132,7 @@ print <<__EOF__;
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version $svnver ...
+-- This file was generated with po2localization.pl, version $hgver ...
 --  on $now
 --
 -- Your own installer's localizations go into app_localization.lua instead.
