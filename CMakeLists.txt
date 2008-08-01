@@ -16,7 +16,7 @@ PROJECT(MojoSetup)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 EXECUTE_PROCESS(
-    COMMAND "hg tip --template 'hg-{rev}:{node|short}\n'"
+    COMMAND hg tip --template hg-{rev}:{node|short}
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     RESULT_VARIABLE HGVERSION_RC
     OUTPUT_VARIABLE MOJOSETUP_VERSION
