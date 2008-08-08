@@ -112,7 +112,7 @@ done
 
 # Compile the Lua scripts, put them in the base archive.
 for feh in ../scripts/*.lua ; do
-    ./mojoluac $LUASTRIPOPT -o ../examples/ut3-dedicated/image/${feh}c $feh
+    ./mojoluac $LUASTRIPOPT -o ../examples/ut3-dedicated/image/scripts/${feh}c $feh
 done
 
 # Don't want the example config...use our's instead.

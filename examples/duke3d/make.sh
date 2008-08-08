@@ -89,7 +89,7 @@ done
 
 # Compile the Lua scripts, put them in the base archive.
 for feh in ../scripts/*.lua ; do
-    ./mojoluac $LUASTRIPOPT -o ../examples/duke3d/image/${feh}c $feh
+    ./mojoluac $LUASTRIPOPT -o ../examples/duke3d/image/scripts/${feh}c $feh
 done
 
 # Don't want the example config...use our's instead.
