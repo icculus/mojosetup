@@ -256,7 +256,7 @@ static void dumb_pager(const char *name, const char *data, size_t datalen)
         do
         {
             for (i = 0; (i < MAX_PAGE_LINES) && (printed < linecount); i++)
-                printf("%s\n", lines[printed++]);
+                printf("%s", lines[printed++]);
 
             if (printed >= linecount)
                 getout = true;
