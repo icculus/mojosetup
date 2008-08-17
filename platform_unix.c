@@ -453,20 +453,43 @@ char *MojoPlatform_osType(void)
 char *MojoPlatform_osVersion()
 {
 #if PLATFORM_MACOSX
-    // !!! FIXME: this is wrong...it doesn't with with 10.y.xx, where 'xx'
-    // !!! FIXME:  is more than one digit (it appears to clamp to 9 in these
-    // !!! FIXME:  cases inside Gestalt(), for obvious reasons).
-    // !!! FIXME: This is a legacy--and incorrect--way to get this information.
-    long ver = 0x0000;
-	if (Gestalt(gestaltSystemVersion, &ver) == noErr)
+    long ver, major, minor, patch;
+    boolean convert = false;
+    char *buf = NULL;
+    char dummy = 0;
+    int len = 0;
+
+	if (Gestalt(gestaltSystemVersion, &ver) != noErr)
+        return NULL;
+
+    if (ver < 0x1030)
+        convert = true;  // split (ver) into (major),(minor),(patch).
+    else
     {
-        const size_t len = 8;
-        char *buf = (char *) xmalloc(len);
-        char str[16];
-        snprintf(str, sizeof (str), "%X", (int) ver);
-        snprintf(buf, len, "%c%c.%c.%c", str[0], str[1], str[2], str[3]);
-        return buf;
-    } // if
+        // presumably this won't fail. But if it does, we'll just use the
+        //  original version value. This might cut the value--10.12.11 will
+        //  come out to 10.9.9, for example--but it's better than nothing.
+    	if (Gestalt(gestaltSystemVersionMajor, &major) != noErr)
+            convert = true;
+    	if (Gestalt(gestaltSystemVersionMinor, &minor) != noErr)
+            convert = true;
+    	if (Gestalt(gestaltSystemVersionBugFix, &patch) != noErr)
+            convert = true;
+    } /* else */
+
+    if (convert)
+    {
+        major = ((ver & 0xFF00) >> 8);
+        major = (((major / 16) * 10) + (major % 16));
+        minor = ((ver & 0xF0) >> 4);
+        patch = (ver & 0xF);
+    } /* if */
+
+    len = snprintf(&dummy, sizeof (dummy), "%ld.%ld.%ld", major, minor, patch);
+    buf = (char *) xmalloc(len+1);
+    snprintf(buf, len+1, "%ld.%ld.%ld", major, minor, patch);
+    return buf;
+
 #else
     // This information may or may not actually MEAN anything. On BeOS, it's
     //  useful, but on other things, like Linux, it'll give you the kernel
