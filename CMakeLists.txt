@@ -12,7 +12,12 @@
 #  and even on the original test system, become incorrect over time.
 # Only choose options you want/need to squeeze every byte off the download.
 
-PROJECT(MojoSetup)
+
+IF(NOT BEOS)
+    PROJECT(MojoSetup C)
+ELSE(NOT BEOS)
+    PROJECT(MojoSetup CXX)
+ENDIF(NOT BEOS)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.4)
 
 EXECUTE_PROCESS(
