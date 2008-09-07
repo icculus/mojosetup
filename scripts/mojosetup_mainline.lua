@@ -544,7 +544,7 @@ local function permit_write(dest, entinfo, file)
 end
 
 
-local function install_archive_entity(dest, ent, archive, desc, manifestkey)
+local function install_archive_entity(dest, ent, archive, desc, manifestkey, perms)
     install_parent_dirs(dest, manifestkey)
     if ent.type == "file" then
         install_file_from_archive(dest, archive, perms, desc, manifestkey)
@@ -585,7 +585,7 @@ local function install_archive_entry(archive, ent, file, option)
         dest = MojoSetup.destination .. "/" .. dest
         if permit_write(dest, ent, file) then
             local desc = option.description
-            install_archive_entity(dest, ent, archive, desc, desc)
+            install_archive_entity(dest, ent, archive, desc, desc, perms)
         end
     end
 end
@@ -922,7 +922,7 @@ local function install_control_app(desc, key)
             dst = MojoSetup.controldir .. "/" .. ent.filename
             -- don't overwrite preexisting stuff.
             if not MojoSetup.platform.exists(dst) then
-                install_archive_entity(dst, ent, base, desc, key)
+                install_archive_entity(dst, ent, base, desc, key, perms)
             end
         end
 
