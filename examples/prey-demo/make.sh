@@ -4,8 +4,8 @@
 #  example, but invest effort in what it's trying to do, and what it produces.
 #  (make sure you don't build in features you don't need, etc).
 
-if [ ! -d data/prey-linux-data ]; then
-    echo "We don't see data/prey-linux-data ..."
+if [ ! -d data/prey-demo-linux-data ]; then
+    echo "We don't see data/prey-demo-linux-data ..."
     echo " Either you're in the wrong directory, or you didn't copy the"
     echo " install data into here (it's unreasonably big to store it in"
     echo " revision control for no good reason)."
