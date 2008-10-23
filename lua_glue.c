@@ -309,6 +309,7 @@ static int luahook_debugger(lua_State *L)
     logError("Lua debugger is disabled in this build (no parser).");
 #else
     int origtop;
+    const MojoSetupLogLevel origloglevel = MojoLog_logLevel;
 
     lua_pushcfunction(luaState, luahook_stackwalk);
     origtop = lua_gettop(L);
@@ -333,10 +334,15 @@ static int luahook_debugger(lua_State *L)
 
         if (strcmp(buf, "q") == 0)
             break;
+        else if (strcmp(buf, "quit") == 0)
+            break;
         else if (strcmp(buf, "exit") == 0)
             break;
         else if (strcmp(buf, "bt") == 0)
+        {
+            MojoLog_logLevel = MOJOSETUP_LOG_EVERYTHING;
             strcpy(buf, "MojoSetup.stackwalk()");
+        } // else if
 
         if ( (luaL_loadstring(L, buf) != 0) ||
              (lua_pcall(luaState, 0, LUA_MULTRET, -2) != 0) )
@@ -354,6 +360,8 @@ static int luahook_debugger(lua_State *L)
             } // while
             printf("\n");
         } // else
+
+        MojoLog_logLevel = origloglevel;
     } // while
 
     lua_pop(L, 1);
