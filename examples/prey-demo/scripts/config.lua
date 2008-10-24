@@ -83,7 +83,8 @@ Setup.Package
 
         Setup.Option
         {
-            value = false,
+            -- let command line toggle this to enabled by default for automation.
+            value = MojoSetup.cmdline("punkbuster"),
             required = false,
             disabled = false,
             bytes = PB_INSTALL_SIZE,
