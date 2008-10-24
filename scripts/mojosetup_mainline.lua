@@ -1122,6 +1122,7 @@ local function do_install(install)
 
     local skipeulas = MojoSetup.cmdline("i-agree-to-all-licenses")
     local skipreadmes = MojoSetup.cmdline("noreadme")
+    local skipoptions = MojoSetup.cmdline("nooptions")
 
     -- !!! FIXME: try to sanity check everything we can here
     -- !!! FIXME:  (unsupported URLs, bogus media IDs, etc.)
@@ -1259,10 +1260,12 @@ local function do_install(install)
     -- Next stage: let user choose install options.
     --  This may not produce a GUI stage if it decides that all options
     --  are either required or disabled.
-    -- (install) becomes an upvalue in this function.
-    stages[#stages+1] = function(thisstage, maxstage)
-        -- This does some complex stuff with a hierarchy of tables in C.
-        return MojoSetup.gui.options(install, thisstage, maxstage)
+    if not skipoptions then  -- (just take the defaults...)
+        -- (install) becomes an upvalue in this function.
+        stages[#stages+1] = function(thisstage, maxstage)
+            -- This does some complex stuff with a hierarchy of tables in C.
+            return MojoSetup.gui.options(install, thisstage, maxstage)
+        end
     end
 
 
