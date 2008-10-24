@@ -1120,6 +1120,9 @@ local function do_install(install)
     MojoSetup.install = install
     MojoSetup.installed_menu_items = false
 
+    local skipeulas = MojoSetup.cmdline("i-agree-to-all-licenses")
+    local skipreadmes = MojoSetup.cmdline("noreadme")
+
     -- !!! FIXME: try to sanity check everything we can here
     -- !!! FIXME:  (unsupported URLs, bogus media IDs, etc.)
     -- !!! FIXME:  I would like everything possible to fail here instead of
@@ -1180,7 +1183,7 @@ local function do_install(install)
     -- Next stage: accept all global EULAs. Rejection of any EULA is considered
     --  fatal. These are global EULAs for the install, per-option EULAs come
     --  later.
-    if (install.eulas ~= nil) and (not MojoSetup.cmdline("i-agree-to-all-licenses")) then
+    if (install.eulas ~= nil) and (not skipeulas) then
         for k,eula in pairs(install.eulas) do
             local desc = eula.description
             local fname = "data/" .. eula.source
@@ -1199,7 +1202,7 @@ local function do_install(install)
     end
 
     -- Next stage: show any READMEs.
-    if (install.readmes ~= nil) and (not MojoSetup.cmdline("noreadme")) then
+    if (install.readmes ~= nil) and (not skipreadmes) then
         for k,readme in pairs(install.readmes) do
             local desc = readme.description
             -- !!! FIXME: pull from archive?
@@ -1269,57 +1272,59 @@ local function do_install(install)
     --  fatal.
     -- This may not produce a GUI stage if there are no selected options with
     --  EULAs to accept.
-    stages[#stages+1] = function(thisstage, maxstage)
-        local option_eulas = {}
+    if not skipeulas then
+        stages[#stages+1] = function(thisstage, maxstage)
+            local option_eulas = {}
 
-        local function find_option_eulas(opts)
-            local options = opts['options']
-            if options ~= nil then
-                for k,v in pairs(options) do
-                    if v.value then
-                        if v.eulas ~= nil then
-                            for ek,ev in pairs(v.eulas) do
-                                option_eulas[#option_eulas+1] = ev
+            local function find_option_eulas(opts)
+                local options = opts['options']
+                if options ~= nil then
+                    for k,v in pairs(options) do
+                        if v.value then
+                            if v.eulas ~= nil then
+                                for ek,ev in pairs(v.eulas) do
+                                    option_eulas[#option_eulas+1] = ev
+                                end
                             end
+                            find_option_eulas(v)
                         end
-                        find_option_eulas(v)
+                    end
+                end
+
+                local optiongroups = opts['optiongroups']
+                if optiongroups ~= nil then
+                    for k,v in pairs(optiongroups) do
+                        if not v.disabled then
+                            find_option_eulas(v)
+                        end
                     end
                 end
             end
 
-            local optiongroups = opts['optiongroups']
-            if optiongroups ~= nil then
-                for k,v in pairs(optiongroups) do
-                    if not v.disabled then
-                        find_option_eulas(v)
+            find_option_eulas(install)
+
+            for k,eula in pairs(option_eulas) do
+                local desc = eula.description
+                local fname = "data/" .. eula.source
+                local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
+                if retval == 1 then
+                    if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
+                        -- can't go back? We have to die here instead.
+                        if thisstage == 1 then
+                            MojoSetup.fatal(_("You must accept the license before you may install"))
+                        else
+                            retval = -1  -- just step back a stage.
+                        end
                     end
                 end
+
+                if retval ~= 1 then
+                    return retval
+                end
             end
+
+            return 1   -- all licenses were agreed to. Go to the next stage.
         end
-
-        find_option_eulas(install)
-
-        for k,eula in pairs(option_eulas) do
-            local desc = eula.description
-            local fname = "data/" .. eula.source
-            local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
-            if retval == 1 then
-                if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
-                    -- can't go back? We have to die here instead.
-                    if thisstage == 1 then
-                        MojoSetup.fatal(_("You must accept the license before you may install"))
-                    else
-                        retval = -1  -- just step back a stage.
-                    end
-                end
-            end
-
-            if retval ~= 1 then
-                return retval
-            end
-        end
-
-        return 1   -- all licenses were agreed to. Go to the next stage.
     end
 
     -- Next stage: Make sure source list is sane.
