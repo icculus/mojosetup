@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version hg-574:47b2e3eb0672 ...
---  on 2008-08-08 10:32:29+0200
+-- This file was generated with po2localization.pl, version hg-595:431d794f0e3d ...
+--  on 2008-11-25 21:19:24-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,7 +15,7 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2008-08-08 08:16+0000
+-- X-Launchpad-Export-Date: 2008-11-26 01:21+0000
 -- X-Generator: Launchpad (build Unknown)
 
 MojoSetup.languages = {
@@ -75,13 +75,12 @@ MojoSetup.localization = {
         es = "error desconocido",
         et = "tundmatu viga",
         fa = "خطای نامعلوم",
-        fi = "tuntematon virhe",
+        fi = "Tuntematon virhe",
         fr = "Erreur inconnue",
         he = "שגיאה לא ידועה",
         hu = "ismeretlen hiba",
         id = "galat tidak dikenal",
         it = "errore sconosciuto",
-        ja = "不明なエラー",
         lb = "Onbekannten Fehler",
         nb = "ukjent feil",
         nds = "unbekannter Fehler",
@@ -115,13 +114,12 @@ MojoSetup.localization = {
         en_CA = "NOTICE: %0\n[hit enter]",
         en_GB = "NOTICE: %0\n[hit enter]",
         es = "AVISO: %0\n[presiona Intro]",
-        fi = "ILMOITUS: %0\n[paina enter]",
+        fi = "HUOMAUTUS: %0\n[paina enter]",
         fr = "INFORMATION : %0\n[pressez entrée]",
         he = "התראה: %0\n[לחץ enter]",
         hu = "FIGYELEM: %0\n[üss entert]",
         id = "CATATAN: %0\n[tekan enter]",
         it = "ATTENZIONE: %0",
-        ja = "通知：0％\n「エンターを打つ",
         nb = "Notis: %0\n[trykk enter]",
         nds = "HINWEIS: %0",
         nl = "OPMERKING: %0\n[Toets enter]",
@@ -130,7 +128,7 @@ MojoSetup.localization = {
         pt = "AVISO: %0\n[pressione enter]",
         pt_BR = "AVISO: %0",
         ro = "ATENŢIE: %0\n[apasă enter]",
-        ru = "УВЕДОМЛЕНИЕ: %0",
+        ru = "ВНИМАНИЕ: %0\n[нажмите enter]",
         sk = "Správa: %0",
         sl = "OPOZORILO: %0\n[pritisnite enter]",
         sv = "NOTERA: %0\n[tryck enter]",
@@ -165,7 +163,6 @@ MojoSetup.localization = {
         hu = "%0 [I/n]: ",
         id = "%0 [Y/t]: ",
         it = "%0 [S/n]: ",
-        ja = "%0「y/N」 ",
         nb = "%0 [J/n]: ",
         nds = "%0 [J/n] ",
         nl = "%0 [J/n]: ",
@@ -239,7 +236,6 @@ MojoSetup.localization = {
     --  runtime, the user's response is compared to those strings without
     --  case sensitivity.
     ["%0 [y/n/Always/Never]: "] = {
-        af = "%0 [y/n/Altyd/nooit]: ",
         ar = "%0 [نعم/لا/دائماً/ابداً]: ",
         cs = "%0 [a/n/Vždy/niKdy] ",
         da = "%0 [j/n/Alltid/Aldrig]: ",
@@ -255,7 +251,6 @@ MojoSetup.localization = {
         hu = "%0 [i/n/Mindig/Soha]: ",
         id = "%0 [y/t/Selalu/Tidak Pernah]: ",
         it = "%0 [s/n/Sempre/Mai]: ",
-        ja = "%0「Y/n/いつも/決して」 ",
         nb = "%0 [j/n/Alltid/Aldri]: ",
         nds = "%0 [j/n/Immer/Niemals] ",
         nl = "%0 [j/n/Altijd/Nooit]: ",
@@ -288,7 +283,6 @@ MojoSetup.localization = {
         en_CA = "Y",
         en_GB = "Y",
         es = "S",
-        et = "J",
         fa = "Y",
         fi = "K",
         fr = "O",
@@ -310,6 +304,7 @@ MojoSetup.localization = {
         sl = "D",
         sv = "J",
         tr = "E",
+        uk = "Т",
         zh_TW = "是"
     };
 
@@ -328,7 +323,6 @@ MojoSetup.localization = {
         en_CA = "N",
         en_GB = "N",
         es = "N",
-        et = "E",
         fa = "N",
         fi = "E",
         fr = "N",
@@ -350,6 +344,7 @@ MojoSetup.localization = {
         sl = "N",
         sv = "N",
         tr = "H",
+        uk = "Н",
         zh_TW = "否"
     };
 
@@ -376,7 +371,6 @@ MojoSetup.localization = {
         hu = "Mindig",
         id = "Selalu",
         it = "Sempre",
-        ja = "いつも",
         nb = "Alltid",
         nds = "Immer",
         nl = "Altijd",
@@ -391,6 +385,7 @@ MojoSetup.localization = {
         sv = "Alltid",
         te = "ఎల్లప్పుడూ",
         tr = "Daima",
+        uk = "Завжди",
         zh_TW = "總是"
     };
 
@@ -411,13 +406,12 @@ MojoSetup.localization = {
         es = "Nunca",
         et = "Mitte kunagi",
         fa = "Never",
-        fi = "ei Koskaan",
+        fi = "Ei koskaan",
         fr = "Jamais",
         he = "אף פעם",
         hu = "Soha",
         id = "Tidak Pernah",
         it = "Mai",
-        ja = "決して",
         nb = "Aldri",
         nds = "Niemals",
         nl = "Nooit",
@@ -431,6 +425,7 @@ MojoSetup.localization = {
         sl = "Nikoli",
         sv = "Aldrig",
         tr = "Asla",
+        uk = "Ніколи",
         zh_TW = "永不"
     };
 
@@ -438,7 +433,6 @@ MojoSetup.localization = {
     --  show what range of lines of text are being displayed (%0 is first
     --  line, %1 is last line, %2 is the total number of lines of text).
     ["(%0-%1 of %2 lines, see more?)"] = {
-        af = "(%0-%1 van %2 lyne, sien meer?)",
         ar = "(%0-%1 من %2 سطور، المزيد؟)",
         cs = "(%0-%1 z %2 řádků, zobrazit více?)",
         da = "(%0-%1 af %2 linie, vis flere?)",
@@ -466,7 +460,8 @@ MojoSetup.localization = {
         sk = "(%0-%1 of %2 riadkov, zobraziť ďalšie?)",
         sl = "(%0-%1 od %2 vrstic, pokaži več?)",
         sv = "(%0-%1 av %2 rader, visa fler?)",
-        tr = "(%2 satırdan %0-%1 satır, daha fazlasına bak?)",
+        tr = "(%2 satırın %0-%1 satırı, daha fazla göster?)",
+        uk = "(%0-%1 з %2 рядків, показати більше?)",
         zh_TW = "（%2 總行數中的第 %0-%1 行，瀏覽更多？）"
     };
 
@@ -474,7 +469,6 @@ MojoSetup.localization = {
     --  to return to a previous stage of installation (from the options
     --  section to the "choose installation destination" section, etc).
     ["Type '%0' to go back."] = {
-        af = "Tik '%0' on terug to gaan.",
         ar = "اكتب '%0' للرجوع خطوة",
         cs = "Napište '%0' pro návrat zpět.",
         da = "Skriv '%0' for at gå tillbage.",
@@ -483,13 +477,13 @@ MojoSetup.localization = {
         en_AU = "Type '%0' to go back.",
         en_CA = "Type '%0' to go back.",
         en_GB = "Type '%0' to go back.",
-        es = "Pulse '%0' para ir atrás.",
+        es = "Apriete '%0' para regresar.",
         fi = "Kirjoita '%0' palataksesi edelliseen osioon.",
         fr = "Tapez '%0' pour revenir en arrière.",
         he = "הקלד '%0' כדי לחזור חזרה.",
         hu = "Üss '%0'-t a visszalépéshez",
         id = "Ketik '%0' untuk kembali.",
-        it = "Digita %0 per andare indietro.",
+        it = "Digita %0 per tornare indietro.",
         lb = "Tippt '%0' an fir zereck",
         nb = "Skriv '%0' for å gå tilbake.",
         nds = "Drücken Sie '%0' um zurückzukehren",
@@ -503,7 +497,8 @@ MojoSetup.localization = {
         sk = "Zadajte '%0' pre návrat spať.",
         sl = "Pritisnite '%0' za korak nazaj.",
         sv = "Skriv '%0' för att gå tillbaka.",
-        tr = "Geri dönmek için '%0' yaz.",
+        tr = "Geri dönmek için '%0' yazın.",
+        uk = "Наберіть '%0' для повернення",
         zh_TW = "輸入 '%0' 以返回"
     };
 
@@ -521,7 +516,7 @@ MojoSetup.localization = {
         en_AU = "back",
         en_CA = "back",
         en_GB = "back",
-        es = "atrás",
+        es = "Atrás",
         et = "tagasi",
         fi = "takaisin",
         fr = "retour",
@@ -529,7 +524,6 @@ MojoSetup.localization = {
         hu = "vissza",
         id = "kembali",
         it = "indietro",
-        ja = "戻る",
         nb = "tilbake",
         nds = "Zurück",
         nl = "terug",
@@ -544,6 +538,7 @@ MojoSetup.localization = {
         sv = "tillbaka",
         te = "వెనక్కి",
         tr = "geri",
+        uk = "назад",
         zh_TW = "返回"
     };
 
@@ -580,6 +575,7 @@ MojoSetup.localization = {
         sv = "> ",
         te = "> ",
         tr = "> ",
+        uk = "> ",
         zh_TW = "> "
     };
 
@@ -613,14 +609,14 @@ MojoSetup.localization = {
         sk = "%0: %1%%",
         sl = "%0: %1%%",
         sv = "%0: %1%%",
-        tr = "%0: %1%%",
+        tr = "%0: %%%1",
+        uk = "%0: %1%%",
         zh_TW = "%0: %1%%"
     };
 
     -- The stdio UI uses this to show current status (%0),
     --  and overall progress as percentage of work complete (%1).
     ["%0 (total progress: %1%%)"] = {
-        af = "%0 (totale bevordering: %1%%)",
         ar = "‏%0 (باقي للانتهاء: %1%%)",
         cs = "%0 (celkový průběh: %1%%)",
         da = "%0 (totalt: %1%%)",
@@ -636,8 +632,7 @@ MojoSetup.localization = {
         hu = "%0 (%1%% kész)",
         id = "%0 (jumlah kemajuan: %1%%)",
         it = "%0 (progresso: %1%%))",
-        ja = "%0 (全体の全身: %1%%)",
-        nb = "%0 (totalt fremgang: %1%%)",
+        nb = "%0 (total fremgang: %1%%)",
         nds = "%0 (Fortschritt insgesamt: %1%%)",
         nl = "%0 (totale voortgang: %1%%)",
         nn = "%0 (total framgang: %1%%)",
@@ -649,7 +644,8 @@ MojoSetup.localization = {
         sk = "%0 (celkovo priebeh: %1%%)",
         sl = "%0 (celoten napredek: %1%%)",
         sv = "%0 (totalt: %1%%)",
-        tr = "%0 (toplam ilerleme: %1%%)",
+        tr = "%0 (toplam ilerleme: %%%1)",
+        uk = "%0 (загальний прогрес: %1%%)",
         zh_TW = "%0（所有進度：%1%%）"
     };
 
@@ -657,7 +653,6 @@ MojoSetup.localization = {
     --  has been displayed, asking them if the license text is acceptable to
     --  them. It's a yes/no question.
     ["Accept this license?"] = {
-        af = "Anvaar die lisensie?",
         ar = "هل تقبل بتلك الرخصة؟",
         cs = "Přijímáte podmínky licence?",
         da = "Accepter denne licens?",
@@ -673,20 +668,20 @@ MojoSetup.localization = {
         hu = "Elfogadja a liszenszt?",
         id = "Terima lisensi ini?",
         it = "Accetti questa licenza?",
-        ja = "このトウェアライセンスを認めるか。",
         nb = "Aksepterer du denne lisensen?",
         nds = "Diese Lizenz akzeptieren?",
         nl = "Accepteert u deze licentie?",
         nn = "Aksepterar du denne lisensen?",
         pl = "Akceptujesz licencję?",
         pt = "Aceita esta licença?",
-        pt_BR = "Aceitar essa licensa?",
+        pt_BR = "Aceitar esta licença?",
         ro = "Acceptaţi această licenţă?",
         ru = "Вы соглашаетесь?",
         sk = "Súhlasíte s licensiou?",
         sl = "Sprejmete to licenco?",
         sv = "Godkänn licensavtalet?",
-        tr = "Bu lisansı kabul ediyor musunuz?",
+        tr = "Bu lisansı kabul et?",
+        uk = "Погодитися з цими умовами?",
         zh_TW = "同意此許可證？"
     };
 
@@ -721,14 +716,14 @@ MojoSetup.localization = {
         sk = "_Vždy",
         sl = "_Vedno",
         sv = "_Alltid",
-        tr = "_Her zaman",
+        tr = "_Daima",
+        uk = "Зав_жди",
         zh_TW = "總是(_A)"
     };
 
     -- This is an error message reported when a .zip file (or whatever) that
     --  we need can't be located.
     ["Archive not found"] = {
-        af = "Argief nie gefind",
         ar = "الأرشيف غير موجود",
         cs = "Archiv nenalezen",
         da = "Arkiv ikke fundet",
@@ -757,13 +752,13 @@ MojoSetup.localization = {
         sl = "Arhiva ni možno najti",
         sv = "Hittade inte arkivet",
         tr = "Arşiv bulunamadı",
+        uk = "Архів не знайдено",
         zh_TW = "找不到檔案包"
     };
 
     -- This prompt is shown to the user when they click the "Cancel" button,
     --  to confirm they really want to stop. It's a yes/no question.
     ["Are you sure you want to cancel installation?"] = {
-        af = "Is jy seker jy will die instelasie kanseleer?",
         ar = "أألغي التنثبيت؟",
         cs = "Opravdu chcete zrušit instalaci?",
         da = "Vil du afbryde installationen?",
@@ -787,11 +782,12 @@ MojoSetup.localization = {
         pt = "Tem a certeza que quer cancelar a instalação?",
         pt_BR = "Você tem certeza que deseja cancelar a instalação?",
         ro = "Sunteţi sigur că doriţi anularea instalării?",
-        ru = "Вы уведены что вы хотите прекратить установку?",
+        ru = "Вы действительно хотите отменить установку?",
         sk = "Ste si istý že chcete prerušiť inštaláciu?",
         sl = "Ste prepričani da želite prekiniti namestitev?",
         sv = "Är du säker på att du vill avbryta installationen?",
         tr = "Kurulumu iptal etmek istediğinizden emin misiniz?",
+        uk = "Ви впевнені що хочете відмінити встановлення?",
         zh_TW = "確定取消安裝程序？"
     };
 
@@ -806,7 +802,7 @@ MojoSetup.localization = {
         en_AU = "Back",
         en_CA = "Back",
         en_GB = "Back",
-        es = "Anterior",
+        es = "Atrás",
         fi = "Takaisin",
         fr = "Retour",
         he = "הקודם",
@@ -826,6 +822,7 @@ MojoSetup.localization = {
         sl = "Nazaj",
         sv = "Tillbaka",
         tr = "Geri",
+        uk = "Назад",
         zh_TW = "返回"
     };
 
@@ -859,7 +856,8 @@ MojoSetup.localization = {
         sk = "P_rehliadať...",
         sl = "B_rskaj ...",
         sv = "B_läddra",
-        tr = "T_ara...",
+        tr = "G_özat...",
+        uk = "_Огляд...",
         zh_TW = "瀏覽(_B)"
     };
 
@@ -883,6 +881,7 @@ MojoSetup.localization = {
         es = "FALLO: id de medio duplicada",
         fi = "BUGI: kaksi identtistä media id:tä",
         fr = "BUG: Identifiant du media déjà utilisé",
+        he = "באג: מזהה מדיה כפול",
         hu = "BUG: duplikált média azonosító (media id)",
         id = "KUTU: id media salinan",
         it = "BUG: media id duplicato",
@@ -892,13 +891,13 @@ MojoSetup.localization = {
         nn = "Programfeil: duplisert media-id",
         pl = "BŁĄ",
         pt = "BUG: media id duplicada",
-        pt_BR = "BUG: id da mídia  duplicada",
+        pt_BR = "BUG: ID da mídia duplicado",
         ro = "EROARE: media id duplicat",
         ru = "Ошибка: дублирование media_id",
         sk = "CHYBA: duplicitné media id",
         sl = "NAPAKA: podvojen media id",
         sv = "FEL: dubblett av media id",
-        tr = "HATA: çifte medya id'si",
+        tr = "HATA: tekrarlanan ortam kimliği",
         zh_TW = "臭蟲：重複的媒體序號"
     };
 
@@ -915,8 +914,9 @@ MojoSetup.localization = {
         en_CA = "BUG: no options",
         en_GB = "BUG: no options",
         es = "FALLO: sin opciones",
-        fi = "BUGI: ei vaihtoehtoja",
+        fi = "OHJELMOINTIVIRHE: Ei valittavia kohtia saatavilla",
         fr = "BUG: Pas d'options",
+        he = "באג: אין אפשרויות",
         hu = "BUG: nincsenek opciók",
         id = "KUTU: tidak ada pilihan",
         it = "BUG: nessuna opzione disponibile",
@@ -944,16 +944,15 @@ MojoSetup.localization = {
     ["BUG: support_uninstall requires write_manifest"] = {
         ar = "بقة: support_uninstall يحتاج write_manifest",
         cs = "CHYBA: support_uninstall vyžaduje write_manifest",
-        da = "FEJL: support_uninstall har ikke et write_manifest",
         de = "FEHLER: support_uninstall benötigt write_manifest",
         el = "ΣΦΑΛΜΑ: το \"support_uninstall\" απαιτεί το \"write_manifest\"",
         en_AU = "BUG: support_uninstall requires write_manifest",
         en_CA = "BUG: support_uninstall requires write_manifest",
         en_GB = "BUG: support_uninstall requires write_manifest",
-        es = "FALLO: support_uninstall requiere write_manifest",
+        es = "ERROR: La desintalacion requiere write_manifest",
         fi = "BUGI: support_uninstall vaatii write_manifest:n",
         fr = "BOGUE: 'support_uninstall' exige 'write_manifest'",
-        hu = "BUG: support_uninstall igényli a write_manifest -et",
+        he = "באג: support_uninstall דורש את write_manifest",
         it = "BUG: support_uninstall richiede write_manifest",
         nb = "Programfeil: support_uninstall krever write_manifest",
         nds = "FEHLER: support_uninstall benötigt write_manifest",
@@ -980,15 +979,14 @@ MojoSetup.localization = {
     ["BUG: write_manifest requires Lua parser support"] = {
         ar = "بقة: write_manifest يحتاج دعم معالج Lua",
         cs = "CHYBA: write_manifest vyžaduje podporu Lua parseru",
-        da = "FEJL: write_manifest har ikke 'Lua parser' understøttelse",
         de = "FEHLER: write_manifest benötigt Lua Parser Unterstützung",
         el = "ΣΦΑΛΜΑ: το \"write_manifest\" απαιτεί να υπάρχει υποστήριξη από \"Lua parser\"",
         en_AU = "BUG: write_manifest requires Lua parser support",
         en_CA = "BUG: write_manifest requires Lua parser support",
         en_GB = "BUG: write_manifest requires Lua parser support",
-        es = "FALLO: write_manifest requiere el soporte de un intérprete Lua",
-        fi = "BUGI: write_manifest vaatii Lua parser -tuen",
+        es = "ERROR: write_manifest requiere un intérprete Lua",
         fr = "BOGUE: 'write_manifest' exige le support du parser Lua",
+        he = "באג: write_manifest דורש את התמיכה במפענח Lua",
         hu = "BUG: write_manifest igényli a Lua értelmező támogatást",
         it = "BUG: write_manifest richiede Lua parser support",
         nb = "Programfeil: write_manifest krever støtte for Lua-parser",
@@ -1003,7 +1001,7 @@ MojoSetup.localization = {
         sk = "CHYBA: write_manifest potrebuje zapnutú podporu Lua parsera (Lua parser support)",
         sl = "NAPAKA: write_manifest potrebuje podporo Lua parserja",
         sv = "FEL: write_manifest kräver Lua parser stöd",
-        tr = "HATA: write_manifest  Lua yorumlayıcı desteği gerektirir",
+        tr = "HATA: write_manifest  Lua derleyicisi desteği gerektirir",
         zh_TW = "臭蟲：write_manifest 需要 Lua 語法分析支援"
     };
 
@@ -1014,7 +1012,6 @@ MojoSetup.localization = {
     ["BUG: Setup.DesktopMenuItem requires support_uninstall"] = {
         ar = "بقة: Setup.DesktopMenuItem يحتاج support_uninstall",
         cs = "CHYBA: Setup.DesktopMenuItem vyžaduje support_uninstall",
-        da = "FEJL: Setup.DesktopMenuItem har ikke support_uninstall",
         de = "FEHLER: Setup.DesktopMenuItem benötigt support_uninstall",
         el = "ΣΦΑΛΜΑ: το Setup.DesktopMenuItem απαιτεί το \"support_uninstall\"",
         en_AU = "BUG: Setup.DesktopMenuItem requires support_uninstall",
@@ -1023,6 +1020,7 @@ MojoSetup.localization = {
         es = "FALLO: Setup.DesktopMenuItem requiere support_uninstall",
         fi = "BUGI: Setup.DesktopMenuItem vaatii support_uninstall:n",
         fr = "BOGUE: 'Setup.DesktopMenuItem' exige 'support_uninstall'",
+        he = "באג: Setup.DesktopMenuItem דורש את support_uninstall",
         hu = "BUG: Setup.DesktopMenuItem igényli a support_uninstall-t",
         it = "BUG: Setup.DesktopMenuItem richiede support_uninstall",
         nb = "Programfeil: Setup.DesktopMenuItem krever support_uninstall",
@@ -1031,7 +1029,7 @@ MojoSetup.localization = {
         nn = "Programfeil: Setup.DesktopMenuItem krevar support_uninstall",
         pl = "BŁĄD: Setup.DesktopMenuItem wymaga support_uninstall",
         pt = "BUG: Setup.DesktopMenuItem requer support_uninstall",
-        pt_BR = "BUG: Setup.DesktopMenuItem precisa do support_uninstall",
+        pt_BR = "BUG: Setup.DesktopMenuItem necessita do support_uninstall",
         ro = "EROARE: Setup.DesktopMenuItem necesită support_uninstall",
         ru = "Ошибка: Setup.DesktopMenuItem нуждается в support_uninstall",
         sk = "CHYBA: Setup.DesktopMenuItem potrebuje support_uninstall",
@@ -1055,8 +1053,9 @@ MojoSetup.localization = {
         en_CA = "BUG: '%0' is not a valid permission string",
         en_GB = "BUG: '%0' is not a valid permission string",
         es = "FALLO: '%0' no es una cadena de permisos válida",
-        fi = "BUGI: \"%0\" ei ole kelvollinen oikeuksia määrittävä merkkijono",
+        fi = "OHJELMOINTIVIRHE: \"%0\" ei ole kelvollinen oikeuksia määrittävä merkkijono",
         fr = "BUG \"%0\" n'est pas une chaîne de permission valide",
+        he = "באג: '%0' אינו מחרוזת הרשאה תקנית",
         hu = "BUG: '%0' nem érvényes jogosultság sztring",
         it = "BUG: '%0' non è una stringa valida di permessi",
         nb = "Programfeil: '%0' er ikke en gyldig rettighetsstreng",
@@ -1071,7 +1070,7 @@ MojoSetup.localization = {
         sk = "CHYBA: '%0' nieje správny spôsob zápisu práv",
         sl = "NAPAKA: '%0' ni velaven niz za dovoljenja",
         sv = "FEL: '%0' är inte en giltig rättighetssträng",
-        tr = "HATA: '%0' geçerli bir izin karakter dizisi değil",
+        tr = "HATA: '%0' geçerli bir izin dizgisi değil",
         zh_TW = "臭蟲：'%0' 並不是有效的檔案權限設定"
     };
 
@@ -1082,7 +1081,6 @@ MojoSetup.localization = {
     ["BUG: Invalid format() string"] = {
         ar = "بقة: format() غير صحيحة",
         cs = "CHYBA: Neplatný řetězec pro format()",
-        da = "FEJL: Forkert formatterings syntaks",
         de = "FEHLER: Unzulässige format() Zeichenkette",
         el = "ΣΦΑΛΜΑ: Λάθος format() αλφαριθμητικό",
         en_AU = "BUG: Invalid format() string",
@@ -1091,6 +1089,7 @@ MojoSetup.localization = {
         es = "FALLO: Cadena format() no válida",
         fi = "BUGI: Epäkelpo format()-merkkijono",
         fr = "BUG: Chaîne format() invalide",
+        he = "באג: מחרוזת format() שגויה",
         hu = "BUG: Helytelen format() sztring",
         id = "KUTU: Format() strik tidak cocok",
         it = "BUG: stringa format() non valida",
@@ -1106,7 +1105,7 @@ MojoSetup.localization = {
         sk = "CHYBA: nesprávny format() reťazec",
         sl = "NAPAKA: Neveljaven niz format()",
         sv = "FEL: Ogiltig format() sträng",
-        tr = "HATA: Geçersiz format() karakter dizisi",
+        tr = "HATA: Geçersiz format() dizgisi",
         zh_TW = "臭蟲：無效的 format() 字串"
     };
 
@@ -1117,15 +1116,14 @@ MojoSetup.localization = {
     ["BUG: stage returned wrong type"] = {
         ar = "بقة: المرحلة انهت بنوع خاطئ",
         cs = "CHYBA: instalační krok vrátil chybný datový typ",
-        da = "FEJL: Trin gav forkert type",
         de = "FEHLER: Abschnitt gab falschen Typ zurück",
         el = "ΣΦΑΛΜΑ: η φάση εγκατάστασης επέστρεψε λάθος τύπο δεδομένων",
         en_AU = "BUG: stage returned wrong type",
         en_CA = "BUG: stage returned wrong type",
         en_GB = "BUG: stage returned wrong type",
         es = "FALLO: la etapa ha devuelto tipo erróneo",
-        fi = "BUGI: vaihe palautti väärää tyyppiä",
         fr = "BUG: L'étape renvoie un mauvais type de données",
+        he = "באג: השלב החזיר סוג שגוי",
         hu = "BUG: az állomás rossz típussal tért vissza",
         it = "BUG: la fase attuale (stage) ha restituito un tipo non valido",
         nb = "Programfeil: nivå returnerte feil type",
@@ -1140,7 +1138,7 @@ MojoSetup.localization = {
         sk = "CHYBA: fáza vrátila nesprávny typ",
         sl = "NAPAKA: faza vrača napačen tip",
         sv = "FEL: nivå returnerade fel typ",
-        tr = "HATA: aşama yanlış tip getirdi",
+        tr = "HATA: aşama yanlış tip döndürdü",
         zh_TW = "臭蟲：此階段傳回錯誤類別"
     };
 
@@ -1151,15 +1149,14 @@ MojoSetup.localization = {
     ["BUG: stage returned wrong value"] = {
         ar = "بقة: المرحلة انهت بقيمة خاطئة",
         cs = "CHYBA: instalační krok vrátil chybnou hodnotu",
-        da = "FEJL: Trin gav forkert værdi",
         de = "FEHLER: Abschnitt gab falschen Wert zurück",
         el = "ΣΦΑΛΜΑ: η φάση εγκατάστασης επέστρεψε λάθος τιμή",
         en_AU = "BUG: stage returned wrong value",
         en_CA = "BUG: stage returned wrong value",
         en_GB = "BUG: stage returned wrong value",
         es = "FALLO: la etapa ha devuelto valor erróneo",
-        fi = "BUGI: vaihe palautti väärän arvon",
         fr = "BUG: L'étape renvoie une mauvaise valeur",
+        he = "באג: השלב החזיר ערך שגוי",
         hu = "BUG: az állomás rossz értékkel tért vissza",
         it = "BUG: la fase attuale (stage) ha restituito un valore non valido",
         nb = "Programfeil: nivå returnerte feil verdi",
@@ -1174,7 +1171,7 @@ MojoSetup.localization = {
         sk = "CHYBA: fáza vrátila nesprávnu hodnotu",
         sl = "NAPAKA: faza vrača napčno vrednost",
         sv = "FEL: nivå returnerade fel värde",
-        tr = "HATA: aşama yanlış değer getirdi",
+        tr = "HATA: aşama yanlış değer döndürdü",
         zh_TW = "臭蟲：此階段傳回錯誤值"
     };
 
@@ -1191,8 +1188,8 @@ MojoSetup.localization = {
         en_CA = "BUG: stepped back over start of stages",
         en_GB = "BUG: stepped back over start of stages",
         es = "FALLO: retroceso más atrás del inicio de las etapas",
-        fi = "BUGI: palattiin ensimmäisen vaiheen ohi",
         fr = "BUG: Revenu au début des étapes",
+        he = "באג: צעד אחורה אל מעבר לשלבי ההתחלה",
         hu = "BUG: visszalépés a kezdő állomás után",
         it = "BUG: ritornato all'inizio della fase (stage)",
         nb = "Programfeil: Gikk tilbake forbi startnivå",
@@ -1203,11 +1200,11 @@ MojoSetup.localization = {
         pt = "BUG: Retrocedeu na primeira etapa",
         pt_BR = "BUG: voltar na primeira etapa",
         ro = "EROARE: s-a făcut întoarcere înainte de începerea stadiilor",
-        ru = "Ошибка: первый этап содержит кнопку \"Назад\"",
+        ru = "БАГ: переход назад с начального этапа",
         sk = "CHYBA: vrátili ste sa pred začiatok počiatočnej fázy",
         sl = "NAPAKA: prestop nazaj preko začetka faz",
         sv = "FEL: Gick tillbaka förbi startnivå",
-        tr = "HATA: aşamaların başlangıcına geri adım atıldı",
+        tr = "HATA: başlangıç aşamasından geri dönüldü",
         zh_TW = "臭蟲：在起始階段進行返回"
     };
 
@@ -1222,8 +1219,8 @@ MojoSetup.localization = {
         en_CA = "BUG: Unhandled data type",
         en_GB = "BUG: Unhandled data type",
         es = "FALLO: Tipo de datos sin manipular",
-        fi = "BUGI: Käsittelemätön datatyyppi",
         fr = "BUG: Type de fichier inconnu",
+        he = "באג: סוג הנתונים בלתי מטופל",
         hu = "BUG: Lekezeletlen adattípus",
         id = "KUTU: Jenis data yang tidak ditangani",
         it = "BUG: tipo di dato non gestito",
@@ -1233,13 +1230,13 @@ MojoSetup.localization = {
         nn = "Programfeil: Uhåndtert datatype",
         pl = "BŁĄD: Nieobsługiwany typ danych",
         pt = "BUG: tipo sem tratamento",
-        pt_BR = "BUG: tipo de dados não suportado",
+        pt_BR = "BUG: tipo de dado não suportado",
         ro = "EROARE: Tip de date invalid",
         ru = "Ошибка: неподдерживаемый тип данных",
         sk = "CHYBA: Nespracovateľný typ dát",
         sl = "NAPAKA: Neuporaben tip podatkov",
         sv = "FEL: Ohanterad datatyp",
-        tr = "HATA: Ele alınmamış veri tipi",
+        tr = "HATA: Tanıtılmamış veri tipi",
         zh_TW = "臭蟲：未處理的資料類別"
     };
 
@@ -1255,8 +1252,8 @@ MojoSetup.localization = {
         en_CA = "BUG: Can't duplicate tar inputs",
         en_GB = "BUG: Can't duplicate tar inputs",
         es = "FALLO: No se pueden duplicar las entradas tar",
-        fi = "BUGI: tar-syötteitä ei voida kahdentaa",
         fr = "BUG: Impossible de dupliquer les entrées tar",
+        he = "באג: לא ניתן לשכפל פלט מסוג tar",
         hu = "BUG: tar bemenet nem duplikálható",
         id = "KUTU: Tidak dapat menyalin masukan tar",
         it = "BUG: impossibile duplicare il .tar di input",
@@ -1290,6 +1287,7 @@ MojoSetup.localization = {
         es = "FALLO: Valor inesperado",
         fi = "BUGI: Odottamaton arvo",
         fr = "BUG: Valeur inattendue",
+        he = "באג: ערך בלתי צפוי",
         hu = "BUG: váratlan érték",
         id = "KUTU: Nilai yang tidak diharapkan",
         it = "BUG: Valore inatteso",
@@ -1324,8 +1322,9 @@ MojoSetup.localization = {
         en_CA = "BUG: Config %0 %1",
         en_GB = "BUG: Config %0 %1",
         es = "FALLO: Configuración %0 %1",
-        fi = "BUGI: Config %0 %1",
+        fi = "OHJELMOINTIVIRHE: Asetus %0 %1",
         fr = "BUG: Config %0 %1",
+        he = "באג: תצורה %0 %1",
         hu = "BUG: Beállítás %0 %1",
         id = "KUTU: Atur %0 %1",
         it = "BUG: Config %0 %1",
@@ -1355,7 +1354,7 @@ MojoSetup.localization = {
         en_CA = "must be explicitly specified",
         en_GB = "must be explicitly specified",
         es = "debe ser especificado explícitamente",
-        fi = "täytyy määritellä täsmällisesti",
+        fi = "pitää tarkkaan määritellä",
         fr = "doit être spécifié explicitement",
         he = "עליו להיות מצויין במפורש",
         hu = "ezt explicit módon kell meghatározni",
@@ -1374,6 +1373,7 @@ MojoSetup.localization = {
         sl = "mora biti explicitno določena",
         sv = "måste vara ett specificerat uttryck",
         tr = "açıkça belirtilmeli",
+        uk = "повинно бути чітко вказано",
         zh_TW = "必須明確指定"
     };
 
@@ -1405,7 +1405,8 @@ MojoSetup.localization = {
         sk = "musí byť reťazec alebo tabuľka reťazcov",
         sl = "mora biti niz ali tabela nizov",
         sv = "måste vara en sträng eller en tabell av strängar",
-        tr = "bir karakter dizisi ya da karakter dizi tablosu olması gerekir",
+        tr = "bir dizgi ya da dizgi tablosu olmalı",
+        uk = "повинно бути рядком або таблицею рядків",
         zh_TW = "必須是字串或字串表格"
     };
 
@@ -1437,7 +1438,8 @@ MojoSetup.localization = {
         sk = "musí byť reťazec alebo číslo",
         sl = "mora biti niz ali število",
         sv = "måste vara en sträng eller ett nummer",
-        tr = "bir karakter dizisi ya da sayı olmalı",
+        tr = "bir dizgi ya da sayı olmalı",
+        uk = "повинно бути рядком або числом",
         zh_TW = "必須是字串或數字"
     };
 
@@ -1463,13 +1465,14 @@ MojoSetup.localization = {
         nn = "kan ikkje væra ein tom streng",
         pl = "nie może być pustym ciągiem",
         pt = "Não pode ser uma expressão vazia",
-        pt_BR = "não pode ser um texto em branco",
+        pt_BR = "não pode ser uma string vazia",
         ro = "nu poate fi un şir de caractere gol",
         ru = "не может быть пустой строкой",
         sk = "nemôže byť reťazec",
         sl = "ne mora biti prazen niz",
         sv = "kan inte vara en tom sträng",
-        tr = "boş bir karakter dizisi olamaz",
+        tr = "boş bir dizgi olamaz",
+        uk = "не може бути порожнім рядком",
         zh_TW = "不能是空字串"
     };
 
@@ -1483,8 +1486,7 @@ MojoSetup.localization = {
         en_AU = "URL doesn't have protocol",
         en_CA = "URL doesn't have protocol",
         en_GB = "URL doesn't have protocol",
-        es = "URL no especifica el protocolo",
-        fi = "URL ei sisällä protokollaa",
+        es = "URL sin protocolo",
         fr = "L'URL manque un protocole",
         he = "לכתובת אין פרוטוקול",
         hu = "URL-nek nincs protokollja",
@@ -1503,6 +1505,7 @@ MojoSetup.localization = {
         sl = "URL nima protokola",
         sv = "URL saknar protokoll",
         tr = "URL'nin protokolü yok",
+        uk = "В URL не вказано протокол",
         zh_TW = "URL 沒有通訊協定"
     };
 
@@ -1516,8 +1519,7 @@ MojoSetup.localization = {
         en_AU = "URL doesn't have host",
         en_CA = "URL doesn't have host",
         en_GB = "URL doesn't have host",
-        es = "URL no especifica un servidor",
-        fi = "URL ei sisällä palvelinta",
+        es = "No se encuentra el servidor",
         fr = "L'URL manque un nom d'hôte",
         he = "לכתובת אין מארח",
         hu = "URL-nek nincs hosztja",
@@ -1529,13 +1531,14 @@ MojoSetup.localization = {
         nn = "URL har ikke vert",
         pl = "URL nie ma hosta",
         pt = "O URL não tem servidor",
-        pt_BR = "Não existe o host na URL",
+        pt_BR = "Não existe host na URL",
         ro = "calea URL nu are gazdă",
         ru = "URL не содержит хост",
         sk = "URL neobsahuje hostiteľa",
         sl = "URL nima gostitelja",
         sv = "URL saknar värd",
-        tr = "URL'nin host u yok",
+        tr = "URL'de makine adı yok",
+        uk = "В URL не вказано хост",
         zh_TW = "URL 沒有主機"
     };
 
@@ -1549,8 +1552,7 @@ MojoSetup.localization = {
         en_AU = "URL doesn't have path",
         en_CA = "URL doesn't have path",
         en_GB = "URL doesn't have path",
-        es = "URL no especifica una ruta",
-        fi = "URL ei sisällä polkua",
+        es = "URL sin ruta de acceso",
         fr = "L'URL manque un chemin",
         he = "לכתובת אין נתיב",
         hu = "URL-nek nincs útvonala",
@@ -1562,13 +1564,14 @@ MojoSetup.localization = {
         nn = "URL har ikkje sti",
         pl = "URL nie ma ścieżki",
         pt = "O URL não tem recurso",
-        pt_BR = "Não existe o caminho na URL",
+        pt_BR = "Não existe caminho na URL",
         ro = "URL nu are cale",
         ru = "URL не содержит путь",
         sk = "URL neobsahuje cestu",
         sl = "URL nima poti",
         sv = "URL saknar sökväg",
-        tr = "URL'nin yol u yok",
+        tr = "URL'nin yolu yok",
+        uk = "В URL не вказано шлях",
         zh_TW = "URL 沒有路徑"
     };
 
@@ -1576,14 +1579,12 @@ MojoSetup.localization = {
     ["URL protocol is unsupported"] = {
         ar = "بروتوكول العنوان غير مدعوم",
         cs = "Protokol v URL není podporován",
-        da = "URL protokol er ikke understøttet",
         de = "URL Protokoll wird nicht unterstützt",
         el = "το προτόκολο που περιέχει το URL δεν υποστηρίζεται",
         en_AU = "URL protocol is unsupported",
         en_CA = "URL protocol is unsupported",
         en_GB = "URL protocol is unsupported",
         es = "Protocolo de URL no soportado",
-        fi = "URL:n protokollaa ei tueta",
         fr = "Le protocole de l'URL n'est pas supporté",
         he = "פרוטוקול הכתובת אינו נתמך",
         hu = "URL protokoll nem támogatott",
@@ -1602,6 +1603,7 @@ MojoSetup.localization = {
         sl = "URL protokol ni podprt",
         sv = "URL-protokollet har inget stöd",
         tr = "URL protokolü desteklenmiyor",
+        uk = "Протокол, вказаний в URL , не підтримується",
         zh_TW = "URL 通訊協定不支援"
     };
 
@@ -1618,7 +1620,6 @@ MojoSetup.localization = {
         en_CA = "Permission string is invalid",
         en_GB = "Permission string is invalid",
         es = "Cadena de permisos no válida",
-        fi = "oikeuksia määrittävä merkkijono ei ole kelvollinen",
         fr = "Chaine de permissions invalide",
         he = "מחרוזת ההרשאה הינה שגויה",
         hu = "Helytelen engedélysztring",
@@ -1630,13 +1631,14 @@ MojoSetup.localization = {
         nn = "Rettighetsstrengen er ugyldig",
         pl = "Ciąg uprawnień jest niepoprawny",
         pt = "A expressão de permissão não é válida",
-        pt_BR = "O texto de permissão é inválido",
+        pt_BR = "A string de permissão é inválida",
         ro = "Şirul de caractere nu desemnează permisiuni valide",
         ru = "Строка прав доступа некорректна",
         sk = "Reťazec práv je neplatný",
         sl = "Dovoljenje ni veljavne oblike",
         sv = "Rättighetssträngen är ogiltig",
-        tr = "İzin hakları dizesi geçersiz",
+        tr = "İzin dizgisi geçersiz",
+        uk = "Рядок із правами не є коректним",
         zh_TW = "無效的檔案權限設定"
     };
 
@@ -1645,14 +1647,12 @@ MojoSetup.localization = {
     ["is not a valid property"] = {
         ar = "خاصية غير صحيحة",
         cs = "není platnou vlastností",
-        da = "er ikke en korrekt egenskab",
         de = "ist keine gültige Eigenschaft",
         el = "δεν είναι έγγυρη ιδιότητα",
         en_AU = "is not a valid property",
         en_CA = "is not a valid property",
         en_GB = "is not a valid property",
         es = "no es un atributo válido",
-        fi = "ei ole kelvollinen määrite",
         fr = "n'est pas une propriété valide",
         he = "אינה בעלת ערך תקני",
         hu = "érvénytelen tulajdonság",
@@ -1671,6 +1671,7 @@ MojoSetup.localization = {
         sl = "ni veljavna nastavitev",
         sv = "är inte ett giltigt attribut",
         tr = "geçerli bir özellik değil",
+        uk = "не є коректним атрибутом",
         zh_TW = "並不是有效設定"
     };
 
@@ -1704,7 +1705,8 @@ MojoSetup.localization = {
         sk = "musí byť %0",
         sl = "mora biti %0",
         sv = "måste vara %0",
-        tr = "%0 olmalı",
+        tr = "%0 tipinde olmalı",
+        uk = "повинно бути %0",
         zh_TW = "必須是 %0"
     };
 
@@ -1731,13 +1733,14 @@ MojoSetup.localization = {
         nn = "streng",
         pl = "ciągiem",
         pt = "expressão",
-        pt_BR = "texto",
+        pt_BR = "string",
         ro = "şir de caractere",
         ru = "строкой",
         sk = "reťazec",
         sl = "niz",
         sv = "sträng",
-        tr = "karakter dizesi",
+        tr = "dizgi",
+        uk = "рядок",
         zh_TW = "字串"
     };
 
@@ -1771,6 +1774,7 @@ MojoSetup.localization = {
         sl = "boolova vrednost",
         sv = "boolskt värde",
         tr = "mantıksal değer",
+        uk = "булеве",
         zh_TW = "布林值"
     };
 
@@ -1804,6 +1808,7 @@ MojoSetup.localization = {
         sl = "število",
         sv = "nummer",
         tr = "sayı",
+        uk = "число",
         zh_TW = "數字"
     };
 
@@ -1837,6 +1842,7 @@ MojoSetup.localization = {
         sl = "funkcija",
         sv = "funktion",
         tr = "fonksiyon",
+        uk = "функція",
         zh_TW = "函式"
     };
 
@@ -1870,6 +1876,7 @@ MojoSetup.localization = {
         sl = "tabela",
         sv = "tabell",
         tr = "tablo",
+        uk = "таблиця",
         zh_TW = "表格"
     };
 
@@ -1885,7 +1892,6 @@ MojoSetup.localization = {
         en_CA = "bzlib triggered an internal error: %0",
         en_GB = "bzlib triggered an internal error: %0",
         es = "bzlib ha provocado un error interno: %0",
-        fi = "bzlib laukaisi sisäisen virheen: %0",
         fr = "bzlib a causé une erreur interne: %0",
         he = "bzlib העלה שגיאה פנימית: %0",
         hu = "bzlib belső hibát észlelt: %0",
@@ -1933,11 +1939,12 @@ MojoSetup.localization = {
         pt = "Cancelar",
         pt_BR = "Cancelar",
         ro = "Renunță",
-        ru = "Отменить",
+        ru = "Отмена",
         sk = "Zruš",
         sl = "Prekliči",
         sv = "Avbryt",
         tr = "İptal",
+        uk = "Скасувати",
         zh_TW = "取消"
     };
 
@@ -1972,6 +1979,7 @@ MojoSetup.localization = {
         sl = "Prekliči namestitev",
         sv = "Avbryt installationen",
         tr = "Kurulumu iptal et",
+        uk = "Скасувати встановлення",
         zh_TW = "取消安裝"
     };
 
@@ -1980,7 +1988,6 @@ MojoSetup.localization = {
     ["Couldn't enumerate archive"] = {
         ar = "لا يمكن ترقيم ملفات الأرشيف",
         cs = "Nemohu projít archiv",
-        da = "Kunne danne arkivets filliste",
         de = "Archiv kann nicht aufgelistet werden",
         el = "Δεν είναι δυνατή η απαρίθμηση του πακέτου αρχείων",
         en_AU = "Couldn't enumerate archive",
@@ -1999,13 +2006,14 @@ MojoSetup.localization = {
         nn = "Kunne ikkje lista filer i arkivet",
         pl = "nie można przetworzyć archiwum",
         pt = "Foi impossível enumerar o arquivo",
-        pt_BR = "Não foi possível enumerar o arquivo",
+        pt_BR = "Não é possível enumerar o arquivo",
         ro = "Nu se poate citi arhiva",
         ru = "Не могу прочитать архив",
         sk = "Nemôžem prelistovať archív",
         sl = "Branje arhiva ni uspelo",
         sv = "Kunde inte lista filen",
         tr = "Arşiv numaralandırılamadı",
+        uk = "Неможливо отримати список файлів з архіву",
         zh_TW = "無法列出檔案包的內容"
     };
 
@@ -2021,7 +2029,6 @@ MojoSetup.localization = {
         en_CA = "Couldn't open archive",
         en_GB = "Couldn't open archive",
         es = "No se puede abrir el archivo",
-        fi = "Paketin purkaminen epäonnistui",
         fr = "Impossible d'ouvrir l'archive.",
         he = "לא ניתן לפתוח ארכיון",
         hu = "Archív megnyitása sikertelen",
@@ -2033,13 +2040,14 @@ MojoSetup.localization = {
         nn = "Kunne ikkje opna arkivet",
         pl = "Nie można otworzyć archiwum",
         pt = "Foi impossível abrir o arquivo",
-        pt_BR = "Não foi possível abrir o arquivo",
+        pt_BR = "Não é possível abrir o arquivo",
         ro = "Nu s-a putut deschide arhiva",
         ru = "Не могу открыть архив",
         sk = "Nemôžem otvoriť archív",
         sl = "Arhiva ni bilo možno odpreti",
         sv = "Kunde inte öppna filen",
         tr = "Arşiv açılamadı",
+        uk = "Неможливо відкрити архів",
         zh_TW = "無法開啟檔案包"
     };
 
@@ -2051,14 +2059,12 @@ MojoSetup.localization = {
     ["Choose install destination by number (hit enter for #1), or enter your own."] = {
         ar = "اختر رقم مكان التثبيت (اضغط Enter لأختيار  #1) او أدخل المكان اللذي تريده.",
         cs = "Zvolte cíl instalace číslem (stiskněte enter pro #1) nebo zadejte vlastní cíl.",
-        da = "Vælg nummer for installations destination (tryk enter for #1), eller indtast specifik.",
         de = "Wählen Sie eine Nummer für das Installationsziel (drücken Sie Enter für #1), oder geben Sie ein eigenes an.",
         el = "Διαλέξτε προορισμό εγκατάστασης βάση αριθμού (πατήστε ENTER για #1), ή γραψτε τον δικό σας.",
         en_AU = "Choose install destination by number (hit enter for #1), or enter your own.",
         en_CA = "Choose install destination by number (hit enter for #1), or enter your own.",
         en_GB = "Choose install destination by number (hit enter for #1), or enter your own.",
         es = "Elige lugar de instalación con números (pulsa Intro para #1), o especifícalo",
-        fi = "Valitse asennuskohteen numero (enter valitsee kohteen 1) tai syötä oma kohde.",
         fr = "Choisissez la destination d'installation par un nombre (Appuyez sur Entrée pour le n°1), ou entrez votre propre choix.",
         he = "בחר את יעד ההתקנה על ידי מספר (לחיצה על enter עבור מס' 1), או הזן בעצמך.",
         hu = "Válassz telepítési célt szám szerint (üss entert az elsőhöz), vagy adj meg egyet.",
@@ -2077,6 +2083,7 @@ MojoSetup.localization = {
         sl = "Izberite mapo namestitve s številko (pritisnite enter za #1), ali vnesite lasten izbor.",
         sv = "Välj sökväg för installationen efter nummer (tryck enter för #1), eller skriv in din egen.",
         tr = "Kurulum yerini sayı yardımıyla seçiniz (#1 için girişe basınız), ya da kendiniz belirtiniz",
+        uk = "Оберіть призначення за номером (натисніть enter для вибору №1), або введіть власне.",
         zh_TW = "請依數字選擇欲安裝的目標位置（按 [Enter] 鍵可直接選取預設選項），或者自行輸入位置。"
     };
 
@@ -2094,7 +2101,6 @@ MojoSetup.localization = {
         en_CA = "Choose number to change.",
         en_GB = "Choose number to change.",
         es = "Elegir número para cambiar",
-        fi = "Valitse muutettavan numero.",
         fr = "Entrez le numéro de l'option à modifier.",
         he = "בחר מספר לשינוי.",
         hu = "Adj meg egy számot a változtatáshoz.",
@@ -2113,6 +2119,7 @@ MojoSetup.localization = {
         sl = "Izberite številko za spremembo.",
         sv = "Välj nummer som skall ändras.",
         tr = "Değiştirmek için bir sayı seçiniz",
+        uk = "Оберіть номер для зміни",
         zh_TW = "選擇數字以更改"
     };
 
@@ -2127,7 +2134,7 @@ MojoSetup.localization = {
         en_AU = "Conflict!",
         en_CA = "Conflict!",
         en_GB = "Conflict!",
-        es = "¡Conflicto!",
+        es = "PROBLEMA",
         fi = "Ristiriita!",
         fr = "Conflit !",
         he = "התנגשות!",
@@ -2147,6 +2154,7 @@ MojoSetup.localization = {
         sl = "Spor!",
         sv = "Konflikt!",
         tr = "Çakışma!",
+        uk = "Конфлікт!",
         zh_TW = "衝突！"
     };
 
@@ -2158,14 +2166,12 @@ MojoSetup.localization = {
     ["Couldn't backup file for rollback"] = {
         ar = "لم نستطع حفظ نسخة احتياطية",
         cs = "Nemohu zazálohovat soubor pro obnovu",
-        da = "Fil kopi for re-etablering kunne ikke dannes.",
         de = "Konnte Datei nicht zur Wiederherstellung sichern",
         el = "Δεν είναι δυνατή η αντιγραφή ασφαλείας για χρήση σε περίπτωση επαναφοράς",
         en_AU = "Couldn't backup file for rollback",
         en_CA = "Couldn't backup file for rollback",
         en_GB = "Couldn't backup file for rollback",
-        es = "No se pudo guardar el archivo para inversión",
-        fi = "Tiedoston varmuuskopionti ei onnistunut",
+        es = "No se puede guardar el archivo para revertir",
         fr = "Impossible de faire une copie de secours du fichier",
         he = "לא ניתן לגבות את הקובץ למטרות שיחזור",
         hu = "Fájllista biztonsági mentése nem lehetséges",
@@ -2183,6 +2189,7 @@ MojoSetup.localization = {
         sl = "Varnostna kopija za razveljavitev ni uspela",
         sv = "Kunde inte säkerhetskopiera filen för återställning",
         tr = "Dosya geri yükleme için yedeklenemedi",
+        uk = "Неможливо зарезервувати файл для відкату",
         zh_TW = "無法備份檔案以復原"
     };
 
@@ -2194,14 +2201,12 @@ MojoSetup.localization = {
     ["Couldn't create manifest"] = {
         ar = "لم يمكن كتابة قائمة ملفات التثبيت",
         cs = "Nemohu vytvořit manifest",
-        da = "Liste over installerede filer (Manifest)  kunne ikke dannes",
         de = "Konnte Manifest nicht erstellen",
         el = "Δεν μπόρεσε να δημιουργήσει το \"manifest\"",
         en_AU = "Couldn't create manifest",
         en_CA = "Couldn't create manifest",
         en_GB = "Couldn't create manifest",
-        es = "No se podía crear manifest",
-        fi = "Asennusluettelon luominen epäonnistui",
+        es = "No se puede crear manifiesto",
         fr = "Echec de création du fichier manifest",
         he = "לא ניתן ליצור מניפסט",
         hu = "Telepítendő fájlok listájának létrehozása sikertelen",
@@ -2215,11 +2220,12 @@ MojoSetup.localization = {
         pt = "Foi impossível criar o manifesto",
         pt_BR = "Não é possível criar o manifest",
         ro = "Nu s-a putut creea lista de fişiere instalate",
-        ru = "Не могу создать манифест",
+        ru = "Невозможно создать список установленных файлов",
         sk = "Nemôžem vytvoriť manifest",
         sl = "Ustvarjanje manifesta ni uspelo",
         sv = "Kunde inte skapa en fillista",
-        tr = "Manifesto oluşturulamadı",
+        tr = "Kurulum kaydı oluşturulamadı",
+        uk = "Неможливо створити файл manifest",
         zh_TW = "無法建立檔案清單"
     };
 
@@ -2233,7 +2239,6 @@ MojoSetup.localization = {
         en_CA = "Couldn't restore some files. Your existing installation is likely damaged.",
         en_GB = "Couldn't restore some files. Your existing installation is likely to be damaged.",
         es = "No se pudieron restaurar algunos archivos. Tu instalación posiblemente esté dañada",
-        fi = "Joidenkin tiedostojen palauttaminen epäonnistui. Asennuksesi on todennäköisesti rikki.",
         fr = "Impossible de restaurer certains fichiers. Votre installation existante est certainement endommagée.",
         he = "לא ניתן לשחזר כמה מהקבצים. ייתכן וההתקנה הנוכחית שלך פגומה.",
         hu = "Néhány fájlt nem lehet visszaállítani. A meglévő telepítés valószínűleg megsérült.",
@@ -2245,13 +2250,14 @@ MojoSetup.localization = {
         nn = "Nokon av filene kunne ikkje tilbakestillast. Den eksisterande installasjonen er sannsynlegvis skada.",
         pl = "Nie można odtworzyć niektórych plików. Twoja aktualna instalacja jest prawdopodobnie uszkodzona.",
         pt = "Foi impossível recuperar alguns ficheiros. Provavelmente, a sua instalação está danificada.",
-        pt_BR = "Não foi possível restaurar alguns arquivos. Sua instalação existente está, provavelmente, danificada.",
+        pt_BR = "Não foi possível restaurar alguns arquivos. Sua instalação provavelmente está danificada.",
         ro = "Nu s-au putut restaura anumite fişiere. Cel mai probabil instalarea actuală este stricată.",
         ru = "Не могу восстановить некоторые файлы. Ваша установка наверно повреждена.",
         sk = "Nemôžem obnoviť niektoré súbory. Vaša aktuálna inštalácia je zrejme poškodená.",
         sl = "Obnovitev nekaterih datotek ni uspela. Obstoječa namestitev je verjetno poškodovana.",
         sv = "Några filer kunde inte återskapas. Den existerande installationen är troligtvis skadad.",
         tr = "Bazı dosyalar onarılamadı. Varolan kurulumunuz büyük olasılıkla zarar görmüş",
+        uk = "Неможливо відновити деякі файли. Вашу існуючу копію скоріш за все пошкоджено.",
         zh_TW = "一些檔案無法復原，現有的安裝內容似乎已損毀。"
     };
 
@@ -2266,7 +2272,6 @@ MojoSetup.localization = {
         en_CA = "Deletion failed!",
         en_GB = "Deletion failed!",
         es = "¡Borrado fallido!",
-        fi = "Tiedoston poisto epäonnistui!",
         fr = "Suppression de fichier échouée!",
         he = "המחיקה נכשלה!",
         hu = "Törlés sikertelen!",
@@ -2285,6 +2290,7 @@ MojoSetup.localization = {
         sl = "Brisanje ni uspelo!",
         sv = "Radering misslyckades!",
         tr = "Silme işlemi başarılamadı!",
+        uk = "Видалення неможливо!",
         zh_TW = "刪除失敗"
     };
 
@@ -2313,13 +2319,14 @@ MojoSetup.localization = {
         nn = "Mappe:",
         pl = "Folder:",
         pt = "Directoria:",
-        pt_BR = "Pasta:",
+        pt_BR = "Diretório:",
         ro = "Dosar:",
         ru = "Папка:",
         sk = "Adresár:",
         sl = "Mapa:",
         sv = "Katalog:",
-        tr = "Dizin:",
+        tr = "Klasör:",
+        uk = "Тека:",
         zh_TW = "資料夾："
     };
 
@@ -2353,6 +2360,7 @@ MojoSetup.localization = {
         sl = "Cilj",
         sv = "Mål",
         tr = "Hedef",
+        uk = "Призначення",
         zh_TW = "目的地"
     };
 
@@ -2386,7 +2394,8 @@ MojoSetup.localization = {
         sk = "Sťahujem",
         sl = "Prenašanje",
         sv = "Hämtar",
-        tr = "İndiriyor",
+        tr = "İndiriliyor",
+        uk = "Завантаження",
         zh_TW = "下載中"
     };
 
@@ -2395,13 +2404,12 @@ MojoSetup.localization = {
     ["Enter path where files will be installed."] = {
         ar = "أدخل مكان تثبيت البرنامج",
         cs = "Zadejte cestu, kam mají být soubory nainstalovány.",
-        da = "Indtast sti, hvor filer skal installeres.",
         de = "Geben Sie den Pfad an, wohin die Dateien installiert werden sollen.",
         el = "Δώστε το μονοπάτι που θα εγκατασταθούν τα αρχεία.",
         en_AU = "Enter path where files will be installed.",
         en_CA = "Enter path where files will be installed.",
         en_GB = "Enter path where files will be installed.",
-        es = "Introduce la ruta donde los archivos serán instalados",
+        es = "Establece una ruta de instalacion.",
         fi = "Syötä polku, johon tiedostot asennetaan.",
         fr = "Entrez le chemin d'installation souhaité pour vos fichiers.",
         he = "הזן את הנתיב אליו הקבצים יותקנו.",
@@ -2414,13 +2422,14 @@ MojoSetup.localization = {
         nn = "Skriv inn sti for installasjonen.",
         pl = "Podaj ścieżkę gdzie pliki będą zainstalowane.",
         pt = "Introduza o caminho para os ficheiros que serão instalados.",
-        pt_BR = "Entre o caminho aonde os arquivos serão instalados.",
+        pt_BR = "Entre o caminho onde os arquivos serão instalados.",
         ro = "Introdu calea unde vor fi instalate fişierele.",
         ru = "Введите путь куда будет произведена установка.",
         sk = "Zadajte cestu kam chcete inštalovať",
         sl = "Vnesite pot kamor bodo datoteke nameščene.",
         sv = "Välj sökväg för installationen",
         tr = "Dosyaların kurulacağı yolu giriniz.",
+        uk = "Введіть шлях для встановлення файлів.",
         zh_TW = "輸入欲安裝檔案的路徑"
     };
 
@@ -2454,6 +2463,7 @@ MojoSetup.localization = {
         sl = "neuspešno nalaganje datoteke '%0'",
         sv = "Misslyckades med att läsa filen '%0'",
         tr = "'%0' dosyası yüklenemedi",
+        uk = "неможливо відкрити файл '%0'",
         zh_TW = "無法讀取檔案 '%0'"
     };
 
@@ -2468,12 +2478,11 @@ MojoSetup.localization = {
         en_CA = "Fatal error",
         en_GB = "Fatal error",
         es = "Error grave",
-        fi = "Ylitsepääsemätön virhe",
         fr = "Erreur fatale",
         he = "תקלה משמעותית",
         hu = "Végzetes hiba",
         id = "Galat yang mematikan",
-        it = "Errore fatale",
+        it = "Errore critico",
         nb = "Kritisk feil",
         nds = "Fataler Fehler",
         nl = "Fatale fout",
@@ -2486,7 +2495,8 @@ MojoSetup.localization = {
         sk = "ZÁVAŽNÁ CHYBA",
         sl = "Neodpravljiva napaka",
         sv = "Allvarligt fel",
-        tr = "Ölümcül hata",
+        tr = "Önemli hata",
+        uk = "Фатальна помилка",
         zh_TW = "嚴重錯誤"
     };
 
@@ -2494,7 +2504,6 @@ MojoSetup.localization = {
     ["File creation failed!"] = {
         ar = "كتابة الملف فشلت!",
         cs = "Nepodařilo se vytvořit soubor!",
-        da = "Fil kunne ikke oprettes!",
         de = "Dateierstellung fehlgeschlagen!",
         el = "Η δημιουργεία αρχείου απέτυχε!",
         en_AU = "File creation failed!",
@@ -2519,7 +2528,8 @@ MojoSetup.localization = {
         sk = "Nemôžem vytvoriť súbor!",
         sl = "Ustvarjanje datoteke ni uspelo!",
         sv = "Misslyckades med att skapa fil!",
-        tr = "Dosya oluşturumu başarılamadı!",
+        tr = "Dosya oluşturulamadı!",
+        uk = "Неможливо створити файл!",
         zh_TW = "無法建立檔案！"
     };
 
@@ -2552,7 +2562,8 @@ MojoSetup.localization = {
         sk = "Sťahovanie zlyhalo!",
         sl = "Prenos datoteke ni uspel!",
         sv = "Hämtning av fil misslyckades!",
-        tr = "Dosya indirimi başarılamadı!",
+        tr = "Dosya indirilemedi!",
+        uk = "Неможливо завантажити файл!",
         zh_TW = "檔案下載失敗"
     };
 
@@ -2586,6 +2597,7 @@ MojoSetup.localization = {
         sl = "Datoteka '%0' že obstaja! Zamenjam?",
         sv = "Filen '%0' existerar redan! Vill du ersätta den?",
         tr = "'%0' dosyası zaten var! Değiştirilsin mi?",
+        uk = "Файл '%0' вже існує! Замінити?",
         zh_TW = "檔案 '%0' 已經存在，是否取代？"
     };
 
@@ -2620,6 +2632,7 @@ MojoSetup.localization = {
         sl = "Končaj",
         sv = "Slutför",
         tr = "Bitir",
+        uk = "Завершити",
         zh_TW = "完成"
     };
 
@@ -2635,7 +2648,6 @@ MojoSetup.localization = {
         en_CA = "GUI failed to start",
         en_GB = "GUI failed to start",
         es = "El interfaz gráfico de usuario ha fallado al arrancar",
-        fi = "Graafinen käyttöliittymä ei käynnistynyt",
         fr = "Echec du démarrage de l'interface",
         he = "שגיאה בהפעלת ממשק המשתמש",
         hu = "Grafikus felület indítása sikertelen",
@@ -2654,6 +2666,7 @@ MojoSetup.localization = {
         sl = "GUI se ni uspel zagnati",
         sv = "Kunde inte starta grafisk gränssnitt",
         tr = "Grafik arabirimi başlatılamadı",
+        uk = "Неможливо запустити графічний інтерфейс",
         zh_TW = "無法啟動圖形使用者介面"
     };
 
@@ -2669,8 +2682,7 @@ MojoSetup.localization = {
         en_AU = "Incomplete installation. We will revert any changes we made.",
         en_CA = "Incomplete installation. We will revert any changes we made.",
         en_GB = "Incomplete installation. We will revert any changes we made.",
-        es = "Instalación incompleta. Vamos a deshacer cualquier cambio que hayamos hecho.",
-        fi = "Asennus jäi kesken. Tehdyt muutokset perutaan.",
+        es = "Instalación incompleta. Desharemos cualquier cambio que hayamos hecho.",
         fr = "Installation incomplète. Tous les changements effectués seront annulés.",
         he = "ההתקנה לא הושלמה. אנו נשיב את השינויים שביצענו.",
         hu = "Telepítés befejezetlen. Eredeti helyzet visszaállítása.",
@@ -2689,6 +2701,7 @@ MojoSetup.localization = {
         sl = "Namestitev ni uspela. Vse spremembe bodo razveljavljene.",
         sv = "Ofullständig installation. Återställning av alla gjorda ändringar utförs.",
         tr = "Eksik kurulum. Yaptığımız tüm değişiklikleri geri alacağız.",
+        uk = "Незавершене встановлення. Усі зміни буде відкачено.",
         zh_TW = "安裝程序未完成，任何更動將會被復原"
     };
 
@@ -2722,6 +2735,7 @@ MojoSetup.localization = {
         sl = "Namestitev je uspela.",
         sv = "Installationen lyckades.",
         tr = "Kurulum başarılı oldu.",
+        uk = "Встановлення успішне.",
         zh_TW = "安裝程序完成。"
     };
 
@@ -2756,6 +2770,7 @@ MojoSetup.localization = {
         sl = "nameščanje",
         sv = "Installerar",
         tr = "Kuruluyor",
+        uk = "Встановлення",
         zh_TW = "正在安裝"
     };
 
@@ -2790,6 +2805,7 @@ MojoSetup.localization = {
         sl = "Možnosti",
         sv = "Alternativ",
         tr = "Seçenekler",
+        uk = "Параметри",
         zh_TW = "選項"
     };
 
@@ -2799,7 +2815,6 @@ MojoSetup.localization = {
     ["(I want to specify a path.)"] = {
         ar = "(أنا أريد اختيار المسار)",
         cs = "(Chci určit cestu.)",
-        da = "(Indtast specifik sti.)",
         de = "(Ich möchte einen Pfad angeben.)",
         el = "(Θέλω να ορίσω μονοπάτι.)",
         en_AU = "(I want to specify a path.)",
@@ -2825,6 +2840,7 @@ MojoSetup.localization = {
         sl = "(Želim določiti pot)",
         sv = "(Jag vill skriva in en egen sökväg.)",
         tr = "(Bir yol belirtmek istiyorum.)",
+        uk = "(Я хочу вказати шлях.)",
         zh_TW = "（我想要指定路徑）"
     };
 
@@ -2858,6 +2874,7 @@ MojoSetup.localization = {
         sl = "KB/s",
         sv = "KB/s",
         tr = "KB/s",
+        uk = "КБ/c",
         zh_TW = "KB/秒"
     };
 
@@ -2890,7 +2907,8 @@ MojoSetup.localization = {
         sk = "B/s",
         sl = "B/s",
         sv = "B/s",
-        tr = "Byte/sn",
+        tr = "B/s",
+        uk = "Б/с",
         zh_TW = "位元組/秒"
     };
 
@@ -2959,7 +2977,8 @@ MojoSetup.localization = {
         sk = "%0 %1, %2:%3:%4 zostáva",
         sl = "%0 %1, %2:%3:%4 preostanka",
         sv = "%0 %1, %2:%3:%4 återstår",
-        tr = "%0 %1, %2:%3:%4 kalıyor",
+        tr = "%0 %1, %2:%3:%4 kaldı",
+        uk = "%0 %1, залишилося %2:%3:%4",
         zh_TW = "剩餘 %0 %1, %2:%3:%4"
     };
 
@@ -2967,14 +2986,12 @@ MojoSetup.localization = {
     ["stalled"] = {
         ar = "توقف",
         cs = "zaseknuté",
-        da = "venter",
         de = "wartend",
         el = "σταματημένο",
         en_AU = "stalled",
         en_CA = "stalled",
         en_GB = "stalled",
         es = "parado",
-        fi = "seisahtunut",
         fr = "bloqué",
         he = "נדחה",
         hu = "beragadt",
@@ -3025,7 +3042,7 @@ MojoSetup.localization = {
         sk = "%0: %1%% (%2)",
         sl = "%0: %1%% (%2)",
         sv = "%0: %1%% (%2)",
-        tr = "%0: %1%% (%2)",
+        tr = "%0: %%%1 (%2)",
         zh_TW = "%0: %1%% (%2)"
     };
 
@@ -3040,7 +3057,6 @@ MojoSetup.localization = {
         en_CA = "Media change",
         en_GB = "Media change",
         es = "Cambio de disco",
-        fi = "Median vaihto",
         fr = "Changement de média",
         he = "שינוי מדיה",
         hu = "Következő média",
@@ -3059,6 +3075,7 @@ MojoSetup.localization = {
         sl = "Manjava medija",
         sv = "Mediabyte",
         tr = "Medya değişimi",
+        uk = "Зміна носія",
         zh_TW = "媒體更改"
     };
 
@@ -3092,7 +3109,8 @@ MojoSetup.localization = {
         sk = "Nemôžem vytvoriť adresár",
         sl = "Ustvarjanje mape ni uspelo",
         sv = "Kunde inte skapa katalog",
-        tr = "Dizin oluşturumu başarılamadı",
+        tr = "Dizin oluşturulamadı",
+        uk = "Неможливо створити теку",
         zh_TW = "無法建立目錄"
     };
 
@@ -3126,7 +3144,8 @@ MojoSetup.localization = {
         sk = "N_ikdy",
         sl = "N_ikoli",
         sv = "Al_drig",
-        tr = "Asla",
+        tr = "A_sla",
+        uk = "Н_іколи",
         zh_TW = "永不(_N)"
     };
 
@@ -3160,7 +3179,8 @@ MojoSetup.localization = {
         sk = "Ďalej",
         sl = "Naprej",
         sv = "Nästa",
-        tr = "Sonraki",
+        tr = "İleri",
+        uk = "Далі",
         zh_TW = "下一個"
     };
 
@@ -3194,6 +3214,7 @@ MojoSetup.localization = {
         sl = "Ne",
         sv = "Nej",
         tr = "Hayır",
+        uk = "Ні",
         zh_TW = "否"
     };
 
@@ -3227,6 +3248,7 @@ MojoSetup.localization = {
         sl = "Da",
         sv = "Ja",
         tr = "Evet",
+        uk = "Так",
         zh_TW = "是"
     };
 
@@ -3261,6 +3283,7 @@ MojoSetup.localization = {
         sl = "Ni najdeno",
         sv = "Hittades inte",
         tr = "Bulunamadı",
+        uk = "Не знайдено",
         zh_TW = "找不到"
     };
 
@@ -3269,7 +3292,7 @@ MojoSetup.localization = {
     ["Nothing to do!"] = {
         ar = "لا يوجد شيء لنفعله",
         cs = "Není co instalovat!",
-        da = "Ingen aktivitet mulig",
+        da = "Ingen aktivitet mulig!",
         de = "Nichts zu tun!",
         el = "Δεν υπάρχει τίποτα για να γίνει!",
         en_AU = "Nothing to do!",
@@ -3295,6 +3318,7 @@ MojoSetup.localization = {
         sl = "Ničesar ni možno namestiti!",
         sv = "Ingenting att göra!",
         tr = "Yapılacak bir iş yok!",
+        uk = "Нема чого робити!",
         zh_TW = "沒有需要執行的程序"
     };
 
@@ -3309,7 +3333,6 @@ MojoSetup.localization = {
         en_CA = "OK",
         en_GB = "OK",
         es = "Aceptar",
-        fi = "Hyväksy",
         fr = "OK",
         he = "אישור",
         hu = "OK",
@@ -3328,6 +3351,7 @@ MojoSetup.localization = {
         sl = "V redu",
         sv = "OK",
         tr = "Tamam",
+        uk = "Гаразд",
         zh_TW = "確定"
     };
 
@@ -3346,7 +3370,6 @@ MojoSetup.localization = {
         en_CA = "PANIC",
         en_GB = "PANIC",
         es = "PÁNICO",
-        fi = "HÄTÄTILA",
         fr = "PANIC",
         he = "בהלה",
         hu = "PÁNIK",
@@ -3365,6 +3388,7 @@ MojoSetup.localization = {
         sl = "PANIKA",
         sv = "PANIK",
         tr = "PANİK",
+        uk = "ПАНІКА!!!",
         zh_TW = "嚴重錯誤"
     };
 
@@ -3372,7 +3396,6 @@ MojoSetup.localization = {
     ["Please insert '%0'"] = {
         ar = "من فضلك أدخِل '%0'",
         cs = "Prosím vložte '%0'",
-        da = "Ilæg / indsæt '%0'",
         de = "Bitte legen Sie '%0' ein",
         el = "Παρακαλώ εισάγεται '%0'",
         en_AU = "Please insert '%0'",
@@ -3397,7 +3420,8 @@ MojoSetup.localization = {
         sk = "Prosím vložte '%0'",
         sl = "Prosim vstavite '%0'",
         sv = "Sätt in '%0'",
-        tr = "Lütfen takınız '%0'",
+        tr = "Lütfen '%0' adlı diski takınız",
+        uk = "Будьте ласкаві, вставте '%0'",
         zh_TW = "請插入 '%0'"
     };
 
@@ -3433,6 +3457,7 @@ MojoSetup.localization = {
         sl = "Za nadaljevanje pritisnite enter.",
         sv = "Tryck enter för att fortsätta.",
         tr = "Devam etmek için giriş tuşuna basınız.",
+        uk = "Для продовження натисніть Enter.",
         zh_TW = "請按 [Enter] 鍵繼續。"
     };
 
@@ -3468,6 +3493,7 @@ MojoSetup.localization = {
         sl = "Pomembna napaka",
         sv = "Allvarligt problem",
         tr = "Ciddi problem",
+        uk = "Серйозна проблема",
         zh_TW = "嚴重問題"
     };
 
@@ -3482,7 +3508,6 @@ MojoSetup.localization = {
         en_CA = "Shutting down...",
         en_GB = "Shutting down...",
         es = "Cerrando ...",
-        fi = "Ajetaan alas...",
         fr = "Fermeture en cours...",
         he = "מכבה...",
         hu = "Leállítás...",
@@ -3501,6 +3526,7 @@ MojoSetup.localization = {
         sl = "Izklaplanje...",
         sv = "Avslutar...",
         tr = "Kapatılıyor...",
+        uk = "Завершення роботи...",
         zh_TW = "關閉……"
     };
 
@@ -3515,7 +3541,6 @@ MojoSetup.localization = {
         en_CA = "You can close this browser now.",
         en_GB = "You can close this browser now.",
         es = "Puedes cerrar este navegador ahora.",
-        fi = "Voit sulkea tämän selaimen.",
         fr = "Vous pouvez maintenant fermer ce navigateur",
         he = "תוכל לסגור דפדפן זה כעת.",
         hu = "Most már bezárhatod ezt az ablakot.",
@@ -3534,6 +3559,7 @@ MojoSetup.localization = {
         sl = "Sedaj lahko zaprete brskalnik.",
         sv = "Du kan stänga denna webbläsare nu.",
         tr = "Bu tarayıcı penceresini şimdi kapatabilirsiniz.",
+        uk = "Тепер можна зачинити цей оглядач.",
         zh_TW = "你現在已可以關閉瀏覽器"
     };
 
@@ -3542,13 +3568,12 @@ MojoSetup.localization = {
     ["Symlink creation failed!"] = {
         ar = "فشل في إنشاء الوصلة الرمزية",
         cs = "Selhalo vytváření symbolického odkazu!",
-        da = "Kunne ikke oprette symbolsk genvej",
         de = "Erzeugung einer Verknüpfung fehlgeschlagen!",
         el = "Απέτυχε η δημιουργεία ενός symlink!",
         en_AU = "Symlink creation failed!",
         en_CA = "Symlink creation failed!",
         en_GB = "Symlink creation failed!",
-        es = "¡Creación de enlace simbólico ha fallado!",
+        es = "Error al crear acceso directo.",
         fi = "Symbolisen linkin luominen epäonnistui!",
         fr = "Création de lien symbolique échouée!",
         he = "יצירת הקישורית נכשלה!",
@@ -3568,6 +3593,7 @@ MojoSetup.localization = {
         sl = "Ustvarjanje symlinka ni uspelo!",
         sv = "Kunde inte skapa symbolisk länk!",
         tr = "Sembolik bağ oluşturulamadı!",
+        uk = "Неможливо створити символьне посилання!",
         zh_TW = "無法建立連結"
     };
 
@@ -3602,6 +3628,7 @@ MojoSetup.localization = {
         sl = "Namestitveni program je bil zaustavljen od operacijskega sistema.",
         sv = "Installationsprogrammet blev stoppat av systemet.",
         tr = "Kurulum programı sistem tarafından durduruldu.",
+        uk = "Інсталятор зупинено системою.",
         zh_TW = "安裝程式已被系統終止"
     };
 
@@ -3610,13 +3637,12 @@ MojoSetup.localization = {
     ["The installer has crashed due to a bug."] = {
         ar = "فشل التركيب بسبب بقة",
         cs = "Instalátor zhavaroval vinou vlastní chyby.",
-        da = "En eksekveringsfejl har afbrudt Installationen.",
         de = "Das Installationsprogramm ist aufgrund eines Fehlers abgestürzt.",
         el = "Το πρόγραμμα εγκατάστασης έσκασε λόγω κάποιου σφάλματος.",
         en_AU = "The installer has crashed due to a bug.",
         en_CA = "The installer has crashed due to a bug.",
         en_GB = "The installer has crashed due to a bug.",
-        es = "El instalador se ha bloqueado por un fallo de memoria.",
+        es = "El instalador se ha bloqueado por un fallo.",
         fi = "Bugi kaatoi asennusohjelman.",
         fr = "L'installateur a quitté inopinément à cause d'un bogue.",
         he = "תוכנית ההתקנה קרה עקב שגיאת תוכנה.",
@@ -3629,13 +3655,14 @@ MojoSetup.localization = {
         nn = "Installasjonsprogrammet kræsja på grunn av ein programfeil.",
         pl = "Instalator przerwał działanie z powodu błędu.",
         pt = "O instalador terminou acidentalmente devido a um erro.",
-        pt_BR = "O instalador quebrou devido a um bug.",
+        pt_BR = "O instalador travou devido a um bug.",
         ro = "Programul de instalare s-a oprit din cauza unei erori.",
         ru = "Программа установки завершилась из-за ошибки.",
         sk = "Inštalátor havaroval kôli chybe.",
         sl = "Namestitveni program se je zrušil zaradi napake.",
         sv = "Installationsprogrammet kraschade pga. ett fel.",
         tr = "Kurulum bir hata yüzünden çöktü.",
+        uk = "Інсталятор завершив роботу через помилку.",
         zh_TW = "安裝程式因臭蟲而終止"
     };
 
@@ -3649,14 +3676,13 @@ MojoSetup.localization = {
         en_AU = "Toggle",
         en_CA = "Toggle",
         en_GB = "Toggle",
-        es = "Conmutar",
-        fi = "Vipu",
+        fi = "Vaihda",
         fr = "Basculer",
         he = "הפוך מצב",
         hu = "Kapcsoló",
         id = "Toggle",
         it = "Attiva/Disattiva",
-        nb = "Inverter valg",
+        nb = "Velg",
         nds = "Umschalten",
         nl = "Aan/Uit",
         nn = "Slå av/på",
@@ -3669,6 +3695,7 @@ MojoSetup.localization = {
         sl = "Preklopi",
         sv = "Växla",
         tr = "Değiştir",
+        uk = "Переключити",
         zh_TW = "切換"
     };
 
@@ -3684,7 +3711,7 @@ MojoSetup.localization = {
         en_AU = "Unknown file type in archive",
         en_CA = "Unknown file type in archive",
         en_GB = "Unknown file type in archive",
-        es = "Tipo de fichero desconocido en el archivo",
+        es = "Tipo de archivo desconocido",
         fi = "Paketissa on tiedosto, jonka tyyppiä ei tunneta.",
         fr = "Type de fichier inconnu dans cette archive.",
         he = "סוג קובץ לא ידוע בארכיון",
@@ -3704,6 +3731,7 @@ MojoSetup.localization = {
         sl = "Naznana vrsta datoteke v arhivu",
         sv = "Okänd filtyp påträffad i arkivet",
         tr = "Arşivde bilinmeyen dosya tipi",
+        uk = "Невідомий тип файлу в архіві",
         zh_TW = "檔案包中有未知的檔案類別"
     };
 
@@ -3712,7 +3740,6 @@ MojoSetup.localization = {
     ["You must accept the license before you may install"] = {
         ar = "يجب أن توافق على الرخصة قبل التثبيت",
         cs = "Před instalací je nutné odsouhlasit licenci",
-        da = "Godkendelse af licensen er nødvendig for installation.",
         de = "Sie müssen den Lizenzbedingungen zustimmen, bevor sie installieren können",
         el = "Πρέπει να συμφωνήσετε με την άδεια χρήσης πριν συνεχίσετε με την εγκατάσταση",
         en_AU = "You must accept the license before you may install",
@@ -3731,13 +3758,14 @@ MojoSetup.localization = {
         nn = "Du må godkjenna lisensen før du får installera",
         pl = "Musisz zaakceptować licencję przed instalacją",
         pt = "Tem que aceitar a licença antes de prosseguir com a instalação",
-        pt_BR = "Você precisa aceitar essa licensa antes de poder instalar",
+        pt_BR = "Você precisa aceitar esta licença antes de poder instalar",
         ro = "Trebuie să acceptaţi licenţa înainte de a instala",
-        ru = "Вы должны согласиться с лицензионным соглашением чтобы продолжить установку",
+        ru = "Для установки вы должны принять лицензионное соглашение",
         sk = "Musíte súhlasiť s licenciou pokiaľ chcete pokračovať v inštalácii",
         sl = "Za namestitev se morate strinjati z licenco",
         sv = "Du måste acceptera licensavtalet innan du kan fortsätta med installationen",
         tr = "Kuruluma başlamadan önce lisansı kabul etmelisiniz",
+        uk = "Ви маєте погодитися з умовами використання для початку встановлення",
         zh_TW = "你必須同意該許可證以繼續安裝程序"
     };
 
@@ -3769,13 +3797,14 @@ MojoSetup.localization = {
         nn = "Metadata",
         pl = "Metadane",
         pt = "Meta-Informação",
-        pt_BR = "Meta-dados",
+        pt_BR = "Metadado",
         ro = "Metadata",
         ru = "Метаданные",
         sk = "Metadáta",
         sl = "Metapodatki",
         sv = "Metadata",
-        tr = "Temel bilgi",
+        tr = "Bilgi",
+        uk = "Метадані",
         zh_TW = "中繼資料"
     };
 
@@ -3783,7 +3812,6 @@ MojoSetup.localization = {
     ["Invalid command line"] = {
         ar = "أمر غير صحيح",
         cs = "Neplatné argumenty",
-        da = "Forkert kommando eller syntaks",
         de = "Ungültige Kommandozeile",
         el = "Λάθος γραμμή εντολών",
         en_AU = "Invalid command line",
@@ -3809,6 +3837,7 @@ MojoSetup.localization = {
         sl = "Neveljaven ukaz",
         sv = "Ogiltigt kommando",
         tr = "Geçersiz komut satırı",
+        uk = "Некоректні параметри у командному рядку",
         zh_TW = "無效的命令"
     };
 
@@ -3818,7 +3847,6 @@ MojoSetup.localization = {
     ["Couldn't load manifest file for '%0'"] = {
         ar = "لم يمكن تحميل قائمة الملفات لـ'%0'",
         cs = "Nemohu načíst soubor s manifestem pro '%0'",
-        da = "Liste over installerede filer (Manifest) kunne ikke indlæses for '%0'",
         de = "Konnte Manifestdatei für '%0' nicht laden",
         el = "Δεν μπόρεσε να φορτώσει το αρχείο \"manifest\" για '%0'",
         en_AU = "Couldn't load manifest file for '%0'",
@@ -3839,11 +3867,12 @@ MojoSetup.localization = {
         pt = "Foi impossível carregar o ficheiro de manifesto para '%0'",
         pt_BR = "Não é possível carregar o arquivo manifest de '%0'",
         ro = "Nu s-a putut încărca lista de fişiere de instalat pentru '%0'",
-        ru = "Не могу загрузить файл манифеста '%0'",
+        ru = "Невозможно загрузить список установленных файлов для '%0'",
         sk = "Nemôžem nahrať manifest súbor pre '%0'",
         sl = "Neuspešno nalaganje datoteke manifesta za '%0'",
         sv = "Kunde inte ladda fillistan för '%0'",
-        tr = "'%0' için manifesto dosyası yüklenemedi",
+        tr = "'%0' için kurulum kaydı yüklenemedi",
+        uk = "Неможливо відкрити файл маніфесту для '%0'",
         zh_TW = "無法讀取來自 '%0' 的檔案清單"
     };
 
@@ -3878,6 +3907,7 @@ MojoSetup.localization = {
         sl = "Datoteke %0 ni možno najti",
         sv = "Filen '%0' hittades inte",
         tr = "%0 dosyası bulunamadı",
+        uk = "Неможливо знаяти файл %0",
         zh_TW = "找不到檔案 %0"
     };
 
@@ -3913,6 +3943,7 @@ MojoSetup.localization = {
         sl = "Odstrani",
         sv = "Avinstallera",
         tr = "Kaldır",
+        uk = "Деінсталювати",
         zh_TW = "移除"
     };
 
@@ -3921,13 +3952,13 @@ MojoSetup.localization = {
     ["Are you sure you want to uninstall '%0'?"] = {
         ar = "هل تريد فعلاً إزالة '%0' ؟",
         cs = "Opravdu chcete odinstalovat '%0'?",
-        da = "Vil du afinstallere  '%0'?",
+        da = "Er du sikker på at du vil afinstallere '%0'?",
         de = "Sind Sie sicher, dass Sie '%0' deinstallieren wollen?",
         el = "Είστε σίγουροι θέλετε να απεγκαταστήσετε το '%0'?",
         en_AU = "Are you sure you want to uninstall '%0'?",
         en_CA = "Are you sure you want to uninstall '%0'?",
         en_GB = "Are you sure you want to uninstall '%0'?",
-        es = "¿Estás seguro de que quieres desinstalar '%0'?",
+        es = "¿Está seguro de que quiere desinstalar '%0'?",
         fi = "Haluatko varmasti poistaa asennuksen \"%0\"?",
         fr = "Êtes-vous sûr de vouloir désinstaller '%0' ?",
         he = "האם אתה בטוח שברצונך להסיר את '%0'?",
@@ -3947,6 +3978,7 @@ MojoSetup.localization = {
         sl = "Ali ste prepričani, da želite odstraniti '%0'?",
         sv = "Är du säker på att du vill avinstallera '%0'?",
         tr = "'%0' paketini kaldırmak istediğinizden emin misiniz?",
+        uk = "Ви впевнені що хочете деінсталювати '%0'?",
         zh_TW = "你確定要移除 '%0'"
     };
 
@@ -3981,6 +4013,7 @@ MojoSetup.localization = {
         sl = "Odstranjevanje",
         sv = "Avinstallerar",
         tr = "Kaldırılıyor",
+        uk = "Прибирання",
         zh_TW = "正在移除"
     };
 
@@ -4007,13 +4040,14 @@ MojoSetup.localization = {
         nn = "Avinstallasjonen er ferdig",
         pl = "Odinstalowanie zakończone",
         pt = "A desinstalação foi bem sucedida",
-        pt_BR = "Desinstalação completa",
+        pt_BR = "Desinstalação completada",
         ro = "Dezinstalare completă",
         ru = "Удаление завершено",
         sk = "Odinštalácia dokončená",
         sl = "Odstranitev končana",
         sv = "Avinstallation slutförd",
-        tr = "Tamamen kaldır",
+        tr = "Kaldırma tamamlandı",
+        uk = "Прибирання завершено",
         zh_TW = "移除完成"
     };
 
@@ -4052,7 +4086,8 @@ MojoSetup.localization = {
         sk = "[Roztiahnite okno do šírky!]",
         sl = "[Razširi to okno!]",
         sv = "[Gör fönstret bredare!]",
-        tr = "[Pencereyi daha geniş yap!]",
+        tr = "[Pencereyi genişlet!]",
+        uk = "[Зробіть вікно ширше!]",
         zh_TW = "[使視窗更寬]"
     };
 
@@ -4091,7 +4126,8 @@ MojoSetup.localization = {
         sk = "[Roztiahnite okno do výšky!]",
         sl = "[Povišaj to okno!]",
         sv = "[Gör fönstret högre!]",
-        tr = "[Pencereyi daha uzun yap!]",
+        tr = "[Pencereyi uzat!]",
+        uk = "[Зробіть вікно вище!]",
         zh_TW = "[使視窗更長]"
     };
 
@@ -4119,13 +4155,14 @@ MojoSetup.localization = {
         nn = "Klarte ikkje å installera snarveg",
         pl = "Nie udało się utworzyć elementu menu",
         pt = "A instalação do menu no desktop falhou",
-        pt_BR = "Falha ao instalar o item do menu",
+        pt_BR = "Falha ao instalar o item no menu",
         ro = "Nu s-a putut instala itemul din meniu",
         ru = "Не удалось установить элемент меню",
         sk = "Nepodarilo sa mi nainštalovať odkaz na plochu",
         sl = "Namestitev menija na namizju ni uspela",
         sv = "Misslycklades med att lägga till genväg i programmenyn",
-        tr = "Masaüstü menü elemanı kurma eylemi başarısız oldu",
+        tr = "Masaüstü menü öğesi kurulamadı",
+        uk = "Неможливо створити запис у меню",
         zh_TW = "安裝桌面選單項目失敗"
     };
 
@@ -4159,7 +4196,8 @@ MojoSetup.localization = {
         sk = "Nepodarilo sa mi odinštalovať odkaz z plochy",
         sl = "Odstranitev menija na namizju ni uspela",
         sv = "Misslyckades med att ta bort genväg i programmenyn",
-        tr = "Masaüstü menü elemanını kaldırma eylemi başarısız oldu",
+        tr = "Masaüstü menü öğesi kaldırılamadı",
+        uk = "Неможливо прибрати запис у меню",
         zh_TW = "移除桌面選單項目失敗"
     };
 };
