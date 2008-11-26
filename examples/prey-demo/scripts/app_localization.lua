@@ -7,16 +7,19 @@ MojoSetup.applocalization = {
     --  version of the software" in this case.
     ["Prey Demo"] = {
         de = "Prey-Demo",
+        es = "Prey (demo)",
     };
 
     ["Uninstall complete"] = {
         en = "Uninstall complete. You may also delete '.prey-demo' in your home directory to remove personal savegames and settings.",
         de = "Deinstallation komplett. Du kannst auch '.prey-demo' in deinem Heimverzeichnis löschen, um eigene Spielstände und Einstellungen zu entfernen.",
+        es = "Desinstalación completa. Puedes borrar '.prey-demo' en tu directorio home para borrar configuraciones personales y tus juegos grabados.",
     };
 
     -- Change this to a unique filename if you translate the file.
     ["prey_demo_readme.txt"] = {
         de = "prey_demo_readme_de.txt",
+        es = "prey_demo_readme_es.txt",
     };
 
     -- don't change this; we only have four translations of this text file.
@@ -36,31 +39,37 @@ MojoSetup.applocalization = {
     };
 
     ["Initial language and keyboard layout"] = {
-        de = "Vorgegebene Sprache und Tastaturbelegung.",
+        de = "Vorgegebene Sprache und Tastaturbelegung",
+        es = "Configuración inicial de idioma y teclado",
     };
 
     ["Demo of first-person shooter from Human Head and 3D Realms"] = {
         de = "Demo des Ego-Shooters von Human Head und 3D Realms",
+        es = "Demo del juego de acción en primera persona de Human Head y 3D Realms",
     };
 
     ["Prey README"] = {
         de = "Prey-README",
+        es = "LEEME",
     };
 
     ["Prey License"] = {
         en_GB = "Prey Licence",
         en_CA = "Prey Licence",
         de = "Prey-Lizenz",
+        es = "Licencia de uso de Prey",
     };
 
     ["PunkBuster(TM) support"] = {
         de = "PunkBuster(TM)-Unterstützung",
+        es = "Soporte para PunkBuster(R)",
     };
 
     ["PunkBuster(TM) License"] = {
         en_GB = "PunkBuster(TM) Licence",
         en_CA = "PunkBuster(TM) Licence",
         de = "PunkBuster(TM)-Lizenz",
+        es = "Licencia de uso de PunkBuster(R)",
     };
 
     ["English"] = {
