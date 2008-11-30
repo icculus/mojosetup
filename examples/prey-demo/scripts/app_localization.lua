@@ -8,18 +8,21 @@ MojoSetup.applocalization = {
     ["Prey Demo"] = {
         de = "Prey-Demo",
         es = "Prey (demo)",
+        pl = "Prey Demo",
     };
 
     ["Uninstall complete"] = {
         en = "Uninstall complete. You may also delete '.prey-demo' in your home directory to remove personal savegames and settings.",
         de = "Deinstallation komplett. Du kannst auch '.prey-demo' in deinem Heimverzeichnis löschen, um eigene Spielstände und Einstellungen zu entfernen.",
         es = "Desinstalación completa. Puedes borrar '.prey-demo' en tu directorio home para borrar configuraciones personales y tus juegos grabados.",
+        pl = "Usuwanie zakończone. By usunąć zapisane stany gry i ustawienia, można również usunąć ".prey-demo" z domowego katalogu.",
     };
 
     -- Change this to a unique filename if you translate the file.
     ["prey_demo_readme.txt"] = {
         de = "prey_demo_readme_de.txt",
         es = "prey_demo_readme_es.txt",
+        pl = "prey_demo_readme_pl.txt",
     };
 
     -- don't change this; we only have four translations of this text file.
@@ -41,16 +44,19 @@ MojoSetup.applocalization = {
     ["Initial language and keyboard layout"] = {
         de = "Vorgegebene Sprache und Tastaturbelegung",
         es = "Configuración inicial de idioma y teclado",
+        pl = "Domyślny język i układ klawiatury",
     };
 
     ["Demo of first-person shooter from Human Head and 3D Realms"] = {
         de = "Demo des Ego-Shooters von Human Head und 3D Realms",
         es = "Demo del juego de acción en primera persona de Human Head y 3D Realms",
+        pl = "Demo gry akcji (FPS) studia Human Head and 3DRealms",
     };
 
     ["Prey README"] = {
         de = "Prey-README",
         es = "LEEME",
+        pl = "Prey README",
     };
 
     ["Prey License"] = {
@@ -58,11 +64,13 @@ MojoSetup.applocalization = {
         en_CA = "Prey Licence",
         de = "Prey-Lizenz",
         es = "Licencia de uso de Prey",
+        pl = "Licencja Prey",
     };
 
     ["PunkBuster(TM) support"] = {
         de = "PunkBuster(TM)-Unterstützung",
         es = "Soporte para PunkBuster(R)",
+        pl = "Informacje o PunkBuster(TM)",
     };
 
     ["PunkBuster(TM) License"] = {
@@ -70,6 +78,7 @@ MojoSetup.applocalization = {
         en_CA = "PunkBuster(TM) Licence",
         de = "PunkBuster(TM)-Lizenz",
         es = "Licencia de uso de PunkBuster(R)",
+        pl = "Licencja PunkBuster(TM)",
     };
 
     ["English"] = {
@@ -83,6 +92,7 @@ MojoSetup.applocalization = {
         pt = "Inglês",
         ru = "Английский",
         es = "Inglés",
+        pl = "Angielski",
     };
 
     ["French"] = {
@@ -96,6 +106,7 @@ MojoSetup.applocalization = {
         pt = "Francês",
         ru = "Французский",
         es = "Francés",
+        pl = "Francuski",
     };
 
     ["German"] = {
@@ -109,6 +120,7 @@ MojoSetup.applocalization = {
         pt = "Alemão",
         ru = "Немецкий",
         es = "Alemán",
+        pl = "Niemiecki",
     };
 
     ["Italian"] = {
@@ -122,6 +134,7 @@ MojoSetup.applocalization = {
         pt = "Italiano",
         ru = "Итальянский",
         es = "Italiano",
+        pl = "Włoski",
     };
 
     ["Spanish"] = {
@@ -135,11 +148,9 @@ MojoSetup.applocalization = {
         pt = "Espanhol",
         ru = "Испанский",
         es = "Español",
+        pl = "Hiszpański",
     };
 };
 
 -- end of app_localization.lua ...
-
-
-
 
