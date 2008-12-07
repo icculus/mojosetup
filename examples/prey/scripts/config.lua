@@ -20,7 +20,11 @@ end
 -- Please note this returns a filter function, and isn't the filter itself!
 local function make_pakfile_filter(pakregexp)
     -- Upvalue!
-    local regexp = "^" .. string.lower(media_path) .. "/(" .. pakregexp .. ")$"
+    local mpath = string.lower(media_path)
+    if mpath ~= "" then
+        mpath = mpath .. "/"
+    end
+    local regexp = "^" .. mpath .. "(" .. pakregexp .. ")$"
     return function(dest)
         local str, matches
         str, matches = string.gsub(string.lower(dest), regexp, "base/%1", 1)
