@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version hg-595:431d794f0e3d ...
---  on 2008-11-25 21:19:24-0500
+-- This file was generated with po2localization.pl, version hg-599:f63e7749f74f ...
+--  on 2008-12-07 04:25:00-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,7 +15,7 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2008-11-26 01:21+0000
+-- X-Launchpad-Export-Date: 2008-12-07 09:08+0000
 -- X-Generator: Launchpad (build Unknown)
 
 MojoSetup.languages = {
@@ -677,7 +677,7 @@ MojoSetup.localization = {
         pt_BR = "Aceitar esta licença?",
         ro = "Acceptaţi această licenţă?",
         ru = "Вы соглашаетесь?",
-        sk = "Súhlasíte s licensiou?",
+        sk = "Súhlasíte s licenciou?",
         sl = "Sprejmete to licenco?",
         sv = "Godkänn licensavtalet?",
         tr = "Bu lisansı kabul et?",
@@ -783,7 +783,7 @@ MojoSetup.localization = {
         pt_BR = "Você tem certeza que deseja cancelar a instalação?",
         ro = "Sunteţi sigur că doriţi anularea instalării?",
         ru = "Вы действительно хотите отменить установку?",
-        sk = "Ste si istý že chcete prerušiť inštaláciu?",
+        sk = "Ste si istí, že chcete prerušiť inštaláciu?",
         sl = "Ste prepričani da želite prekiniti namestitev?",
         sv = "Är du säker på att du vill avbryta installationen?",
         tr = "Kurulumu iptal etmek istediğinizden emin misiniz?",
@@ -889,12 +889,12 @@ MojoSetup.localization = {
         nds = "FEHLER: Doppelte Medien-ID",
         nl = "BUG: dubbele media id",
         nn = "Programfeil: duplisert media-id",
-        pl = "BŁĄ",
+        pl = "BŁĄD: zduplikowany identyfikator medium",
         pt = "BUG: media id duplicada",
         pt_BR = "BUG: ID da mídia duplicado",
         ro = "EROARE: media id duplicat",
         ru = "Ошибка: дублирование media_id",
-        sk = "CHYBA: duplicitné media id",
+        sk = "CHYBA: duplicitné médiá id",
         sl = "NAPAKA: podvojen media id",
         sv = "FEL: dubblett av media id",
         tr = "HATA: tekrarlanan ortam kimliği",
@@ -1067,7 +1067,7 @@ MojoSetup.localization = {
         pt_BR = "BUG: '%0' não é um texto de permissão válido",
         ro = "EROARE: '%0' nu este un şir de caractere ce desemnează permisiuni valide",
         ru = "Ошибка: '%0' неправильное значение для прав.",
-        sk = "CHYBA: '%0' nieje správny spôsob zápisu práv",
+        sk = "CHYBA: '%0' nie je správny spôsob zápisu práv",
         sl = "NAPAKA: '%0' ni velaven niz za dovoljenja",
         sv = "FEL: '%0' är inte en giltig rättighetssträng",
         tr = "HATA: '%0' geçerli bir izin dizgisi değil",
@@ -1599,7 +1599,7 @@ MojoSetup.localization = {
         pt_BR = "O protocolo da URL não é suportado",
         ro = "protocolul URL nu este suportat",
         ru = "Протокол URL не поддерживается",
-        sk = "URL protokol nieje podporovaný",
+        sk = "URL protokol nie je podporovaný",
         sl = "URL protokol ni podprt",
         sv = "URL-protokollet har inget stöd",
         tr = "URL protokolü desteklenmiyor",
@@ -1667,7 +1667,7 @@ MojoSetup.localization = {
         pt_BR = "não é uma propriedade válida",
         ro = "nu este un atribut valid",
         ru = "недопустимое значение",
-        sk = "nieje správnym atribútom",
+        sk = "nie je správnym atribútom",
         sl = "ni veljavna nastavitev",
         sv = "är inte ett giltigt attribut",
         tr = "geçerli bir özellik değil",
@@ -1940,7 +1940,7 @@ MojoSetup.localization = {
         pt_BR = "Cancelar",
         ro = "Renunță",
         ru = "Отмена",
-        sk = "Zruš",
+        sk = "Zrušiť",
         sl = "Prekliči",
         sv = "Avbryt",
         tr = "İptal",
@@ -1975,7 +1975,7 @@ MojoSetup.localization = {
         pt_BR = "Cancelar instalação",
         ro = "Anulează instalarea",
         ru = "Отменить установку",
-        sk = "Zruš inštaláciu",
+        sk = "Zrušiť inštaláciu",
         sl = "Prekliči namestitev",
         sv = "Avbryt installationen",
         tr = "Kurulumu iptal et",
@@ -2079,7 +2079,7 @@ MojoSetup.localization = {
         pt_BR = "Escolha um destino de instalação pelo número (pressione enter para 1), ou informe o seu própio.",
         ro = "Alege destinaţia de instalare printr-un număr (apasă enter pentru 1), sau introdu-o pe cea dorită.",
         ru = "Выберите путь установки (нажмите Enter для номера 1), или введите свой.",
-        sk = "Vyberte cieľ inštalácie pomocou čísla (stlačte enter pre prvú možnosť).",
+        sk = "Vyberte cieľ inštalácie pomocou čísla zo zoznamu (stlačte enter pre prvú možnosť), alebo zadajte svoju vlastnú možnosť.",
         sl = "Izberite mapo namestitve s številko (pritisnite enter za #1), ali vnesite lasten izbor.",
         sv = "Välj sökväg för installationen efter nummer (tryck enter för #1), eller skriv in din egen.",
         tr = "Kurulum yerini sayı yardımıyla seçiniz (#1 için girişe basınız), ya da kendiniz belirtiniz",
@@ -2115,7 +2115,7 @@ MojoSetup.localization = {
         pt_BR = "Escolha o número para alterar",
         ro = "Alege numărul ce se va schimba.",
         ru = "Выберите число для изменения",
-        sk = "Vyberte pomocou čísla ak chcete zmeniť nastavenie",
+        sk = "Vyberte pomocou čísla, ak chcete zmeniť nastavenie",
         sl = "Izberite številko za spremembo.",
         sv = "Välj nummer som skall ändras.",
         tr = "Değiştirmek için bir sayı seçiniz",
@@ -2425,7 +2425,7 @@ MojoSetup.localization = {
         pt_BR = "Entre o caminho onde os arquivos serão instalados.",
         ro = "Introdu calea unde vor fi instalate fişierele.",
         ru = "Введите путь куда будет произведена установка.",
-        sk = "Zadajte cestu kam chcete inštalovať",
+        sk = "Zadajte cestu, kam chcete súbory inštalovať.",
         sl = "Vnesite pot kamor bodo datoteke nameščene.",
         sv = "Välj sökväg för installationen",
         tr = "Dosyaların kurulacağı yolu giriniz.",
@@ -2662,7 +2662,7 @@ MojoSetup.localization = {
         pt_BR = "Falha ao iniciar a GUI",
         ro = "Interfaţa grafică nu a putut porni",
         ru = "Ошибка запуска графического интерфейса",
-        sk = "Nieje možné spustiť GUI",
+        sk = "Nie je možné spustiť GUI",
         sl = "GUI se ni uspel zagnati",
         sv = "Kunde inte starta grafisk gränssnitt",
         tr = "Grafik arabirimi başlatılamadı",
@@ -2697,7 +2697,7 @@ MojoSetup.localization = {
         pt_BR = "Instalação incompleta. As alterações feitas serão revertidas.",
         ro = "Proces de instalare incomplet. Se vor restaura toate modificările făcute.",
         ru = "Ошибка установки. Все изменения будут отменены.",
-        sk = "Neúplná inštalácia. Vraciam spať vykonané zmeny.",
+        sk = "Neúplná inštalácia. Vraciam späť vykonané zmeny.",
         sl = "Namestitev ni uspela. Vse spremembe bodo razveljavljene.",
         sv = "Ofullständig installation. Återställning av alla gjorda ändringar utförs.",
         tr = "Eksik kurulum. Yaptığımız tüm değişiklikleri geri alacağız.",
@@ -2836,7 +2836,7 @@ MojoSetup.localization = {
         pt_BR = "(Eu quero especificar um caminho.)",
         ro = "(Doresc să specific o cale.)",
         ru = "(указать путь.)",
-        sk = "(Chcem zadať cestu ručne)",
+        sk = "(Chcem zadať cestu ručne.)",
         sl = "(Želim določiti pot)",
         sv = "(Jag vill skriva in en egen sökväg.)",
         tr = "(Bir yol belirtmek istiyorum.)",
@@ -3005,7 +3005,7 @@ MojoSetup.localization = {
         pt_BR = "parado",
         ro = "întârziat",
         ru = "застряло",
-        sk = "zastavený",
+        sk = "zastavené",
         sl = "prekinjeno",
         sv = "avstannad",
         tr = "duraksadı",
@@ -3555,7 +3555,7 @@ MojoSetup.localization = {
         pt_BR = "Você não pode fechar esse navegador agora.",
         ro = "Se poate închide navigatorul web acum.",
         ru = "Можете закрыть браузер.",
-        sk = "Môžete zavreť tento prehliadač.",
+        sk = "Tento prehliadač môžete zavrieť.",
         sl = "Sedaj lahko zaprete brskalnik.",
         sv = "Du kan stänga denna webbläsare nu.",
         tr = "Bu tarayıcı penceresini şimdi kapatabilirsiniz.",
@@ -3658,7 +3658,7 @@ MojoSetup.localization = {
         pt_BR = "O instalador travou devido a um bug.",
         ro = "Programul de instalare s-a oprit din cauza unei erori.",
         ru = "Программа установки завершилась из-за ошибки.",
-        sk = "Inštalátor havaroval kôli chybe.",
+        sk = "Inštalátor havaroval kvôli chybe.",
         sl = "Namestitveni program se je zrušil zaradi napake.",
         sv = "Installationsprogrammet kraschade pga. ett fel.",
         tr = "Kurulum bir hata yüzünden çöktü.",
@@ -3761,7 +3761,7 @@ MojoSetup.localization = {
         pt_BR = "Você precisa aceitar esta licença antes de poder instalar",
         ro = "Trebuie să acceptaţi licenţa înainte de a instala",
         ru = "Для установки вы должны принять лицензионное соглашение",
-        sk = "Musíte súhlasiť s licenciou pokiaľ chcete pokračovať v inštalácii",
+        sk = "Pokiaľ chcete pokračovať v inštalácii, musíte súhlasiť s licenciou",
         sl = "Za namestitev se morate strinjati z licenco",
         sv = "Du måste acceptera licensavtalet innan du kan fortsätta med installationen",
         tr = "Kuruluma başlamadan önce lisansı kabul etmelisiniz",
@@ -3974,7 +3974,7 @@ MojoSetup.localization = {
         pt_BR = "Você tem certeza que deseja desinstalar '%0'?",
         ro = "Sunteţi sigur că doriţi dezinstalarea '%0'?",
         ru = "Вы уверены, что хотите удалить '%0'?",
-        sk = "Ste si istý že chcete odinštalovať '%0'?",
+        sk = "Ste si istí, že chcete odinštalovať '%0'?",
         sl = "Ali ste prepričani, da želite odstraniti '%0'?",
         sv = "Är du säker på att du vill avinstallera '%0'?",
         tr = "'%0' paketini kaldırmak istediğinizden emin misiniz?",
