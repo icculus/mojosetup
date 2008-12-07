@@ -9,7 +9,7 @@ MojoSetup.applocalization = {
         en = "Uninstall complete. You may also delete '.prey' in your home directory to remove personal savegames and settings.",
         de = "Deinstallation komplett. Du kannst auch '.prey' in deinem Heimverzeichnis löschen, um eigene Spielstände und Einstellungen zu entfernen.",
         es = "Desinstalación completa. Puedes borrar '.prey' en tu directorio home para borrar configuraciones personales y tus juegos grabados.",
-        pl = "Usuwanie zakończone. By usunąć zapisane stany gry i ustawienia, można również usunąć ".prey" z domowego katalogu.",
+        pl = "Usuwanie zakończone. By usunąć zapisane stany gry i ustawienia, można również usunąć '.prey' z domowego katalogu.",
     };
 
     -- Change this to a unique filename if you translate the file.
