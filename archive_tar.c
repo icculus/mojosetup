@@ -579,12 +579,15 @@ static boolean is_ustar(const uint8 *block)
              (memcmp(&block[TAR_MAGIC], "ustar\0", TAR_MAGICLEN) == 0) );
 } // is_ustar
 
-static int64 octal_convert(const uint8 *str)
+static int64 octal_convert(const uint8 *str, const size_t len)
 {
     int64 retval = 0;
     int64 multiplier = 1;
-    const uint8 *ptr = str;
-    while ((*ptr >= '0') && (*ptr <= '7'))
+    const uint8 *end = str + len;
+    const uint8 *ptr;
+
+    ptr = str;
+    while ((ptr != end) && (*ptr >= '0') && (*ptr <= '7'))
         ptr++;
 
     while (--ptr >= str)
@@ -631,8 +634,8 @@ static const MojoArchiveEntry *MojoArchive_tar_enumNext(MojoArchive *ar)
 
     ustar = is_ustar(block);
 
-    ar->prevEnum.perms = (uint16) octal_convert(&block[TAR_MODE]);
-    ar->prevEnum.filesize = octal_convert(&block[TAR_SIZE]);
+    ar->prevEnum.perms = (uint16) octal_convert(&block[TAR_MODE], TAR_MODELEN);
+    ar->prevEnum.filesize = octal_convert(&block[TAR_SIZE], TAR_SIZELEN);
     info->curFileStart = info->nextEnumPos + 512;
     info->nextEnumPos += 512 + ar->prevEnum.filesize;
     if (ar->prevEnum.filesize % 512)
