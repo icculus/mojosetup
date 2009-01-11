@@ -6,6 +6,9 @@
  *  This file written by Ryan C. Gordon.
  */
 
+// Specs for the tar format can be found here...
+//   http://www.gnu.org/software/tar/manual/html_section/Standard.html
+
 #include "fileio.h"
 
 #if !SUPPORT_TAR
