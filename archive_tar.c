@@ -586,6 +586,9 @@ static int64 octal_convert(const uint8 *str, const size_t len)
     const uint8 *end = str + len;
     const uint8 *ptr;
 
+    while ((*str == ' ') && (str != end))
+        str++;
+
     ptr = str;
     while ((ptr != end) && (*ptr >= '0') && (*ptr <= '7'))
         ptr++;
