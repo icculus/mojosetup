@@ -1129,7 +1129,7 @@ local function do_install(install)
     -- !!! FIXME:  I would like everything possible to fail here instead of
     -- !!! FIXME:  when a user happens to pick an option no one tested...
 
-    if install.options ~= nil and install.optiongroups ~= nil then
+    if (install.options == nil) and (install.optiongroups == nil) then
         MojoSetup.fatal(_("BUG: no options"))
     end
 
