@@ -148,10 +148,12 @@ local function do_delete(fname)
     if fname == nil then
         retval = true
     else
-        if not MojoSetup.platform.exists(fname) then
-            retval = true
-        elseif MojoSetup.platform.unlink(fname) then
+        -- Try to unlink() first, so we'll catch broken symlinks, then try
+        --  exists(): if it really wasn't there, we'll call it success anyhow.
+        if MojoSetup.platform.unlink(fname) then
             MojoSetup.loginfo("Deleted '" .. fname .. "'")
+            retval = true
+        elseif not MojoSetup.platform.exists(fname) then
             retval = true
         end
     end
