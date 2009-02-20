@@ -9,6 +9,7 @@ MojoSetup.applocalization = {
         de = "Prey-Demo",
         es = "Prey (demo)",
         pl = "Prey Demo",
+        it = "Versione dimostrativa di Prey",
     };
 
     ["Uninstall complete"] = {
@@ -16,6 +17,7 @@ MojoSetup.applocalization = {
         de = "Deinstallation komplett. Du kannst auch '.prey-demo' in deinem Heimverzeichnis löschen, um eigene Spielstände und Einstellungen zu entfernen.",
         es = "Desinstalación completa. Puedes borrar '.prey-demo' en tu directorio home para borrar configuraciones personales y tus juegos grabados.",
         pl = "Usuwanie zakończone. By usunąć zapisane stany gry i ustawienia, można również usunąć '.prey-demo' z domowego katalogu.",
+        it = "Disinstallazione completata. Se desideri cancellare i salvataggi e le impostazione cancella '.prey-demo' nella tua directory home.",
     };
 
     -- Change this to a unique filename if you translate the file.
@@ -45,18 +47,21 @@ MojoSetup.applocalization = {
         de = "Vorgegebene Sprache und Tastaturbelegung",
         es = "Configuración inicial de idioma y teclado",
         pl = "Domyślny język i układ klawiatury",
+        it = "Linguaggio predefinito e impostazioni tastiera.",
     };
 
     ["Demo of first-person shooter from Human Head and 3D Realms"] = {
         de = "Demo des Ego-Shooters von Human Head und 3D Realms",
         es = "Demo del juego de acción en primera persona de Human Head y 3D Realms",
         pl = "Demo gry akcji (FPS) studia Human Head and 3DRealms",
+        it = "Versione dimostrativa dello sparatutto in prima persona di Human Head e 3DRealms",
     };
 
     ["Prey README"] = {
         de = "Prey-README",
         es = "LEEME",
         pl = "Prey README",
+        it = "Informazioni su Prey",
     };
 
     ["Prey License"] = {
@@ -65,12 +70,14 @@ MojoSetup.applocalization = {
         de = "Prey-Lizenz",
         es = "Licencia de uso de Prey",
         pl = "Licencja Prey",
+        it = "Licenza di Prey",
     };
 
     ["PunkBuster(TM) support"] = {
         de = "PunkBuster(TM)-Unterstützung",
         es = "Soporte para PunkBuster(R)",
         pl = "Informacje o PunkBuster(TM)",
+        it = "Supporto PunkBuster(TM)",
     };
 
     ["PunkBuster(TM) License"] = {
@@ -79,6 +86,7 @@ MojoSetup.applocalization = {
         de = "PunkBuster(TM)-Lizenz",
         es = "Licencia de uso de PunkBuster(R)",
         pl = "Licencja PunkBuster(TM)",
+        it = "Licenza di PunkBuster(TM)",
     };
 
     ["English"] = {
