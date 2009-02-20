@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version hg-599:f63e7749f74f ...
---  on 2008-12-07 04:25:00-0500
+-- This file was generated with po2localization.pl, version hg-619:fc9dad6cff85 ...
+--  on 2009-02-19 21:12:48-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,7 +15,7 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2008-12-07 09:08+0000
+-- X-Launchpad-Export-Date: 2009-02-20 01:36+0000
 -- X-Generator: Launchpad (build Unknown)
 
 MojoSetup.languages = {
@@ -105,6 +105,7 @@ MojoSetup.localization = {
     --  key that is normally used to complete a line of text at a terminal's
     --  prompt.
     ["NOTICE: %0\n[hit enter]"] = {
+        af = "KENNIS: %0",
         ar = "ملحوظة:%0\n[اضغط enter]",
         cs = "UPOZORNĚNÍ: %0\n[stiskněte enter]",
         da = "NB: %0\n[tryk enter]",
@@ -124,7 +125,6 @@ MojoSetup.localization = {
         nds = "HINWEIS: %0",
         nl = "OPMERKING: %0\n[Toets enter]",
         nn = "Notis: %0\n[trykk enter]",
-        pl = "UWAGA: %0\n[hit enter]",
         pt = "AVISO: %0\n[pressione enter]",
         pt_BR = "AVISO: %0",
         ro = "ATENŢIE: %0\n[apasă enter]",
@@ -167,7 +167,6 @@ MojoSetup.localization = {
         nds = "%0 [J/n] ",
         nl = "%0 [J/n]: ",
         nn = "%0 [J/n]: ",
-        pl = "%0 [T/n]: ",
         pt = "%0 [S/n] ",
         pt_BR = "%0 [S/n]: ",
         ro = "%0 [D/n]: ",
@@ -190,7 +189,7 @@ MojoSetup.localization = {
     --  and "N", elsewhere, to match what you enter here! At runtime, the
     --  user's response is compared to those strings without case sensitivity.
     ["%0 [y/N]: "] = {
-        af = "%0 [N/y]: ",
+        af = "%0 [y/N]: ",
         ar = "%0 [نعم/لا]: ",
         cs = "%0 [a/N] ",
         da = "%0 [j/N]: ",
@@ -236,6 +235,7 @@ MojoSetup.localization = {
     --  runtime, the user's response is compared to those strings without
     --  case sensitivity.
     ["%0 [y/n/Always/Never]: "] = {
+        af = "%0 [y / n / Altyd / Nooit]: ",
         ar = "%0 [نعم/لا/دائماً/ابداً]: ",
         cs = "%0 [a/n/Vždy/niKdy] ",
         da = "%0 [j/n/Alltid/Aldrig]: ",
@@ -433,6 +433,7 @@ MojoSetup.localization = {
     --  show what range of lines of text are being displayed (%0 is first
     --  line, %1 is last line, %2 is the total number of lines of text).
     ["(%0-%1 of %2 lines, see more?)"] = {
+        af = "(%0-%1 van %2 lyne, sien meer?)",
         ar = "(%0-%1 من %2 سطور، المزيد؟)",
         cs = "(%0-%1 z %2 řádků, zobrazit více?)",
         da = "(%0-%1 af %2 linie, vis flere?)",
@@ -452,7 +453,7 @@ MojoSetup.localization = {
         nds = "%0-%1 von %2 Zeilen, mehr sehen?",
         nl = "(%0-%1 van %2 regels, meer zien?)",
         nn = "(%0-%1 av %2 linjer, sjå meir?)",
-        pl = "(%0-%1 z %2 linii, więcej?)",
+        pl = "(%0-%1 z %2 linii, pokazać więcej?",
         pt = "(%0-%1 de %2 linhas, ver mais?)",
         pt_BR = "(%0-%1 de %2 linhas, ver mais?)",
         ro = "(%0-%1 din %2 linii, vizualizează mai mult?)",
@@ -460,7 +461,7 @@ MojoSetup.localization = {
         sk = "(%0-%1 of %2 riadkov, zobraziť ďalšie?)",
         sl = "(%0-%1 od %2 vrstic, pokaži več?)",
         sv = "(%0-%1 av %2 rader, visa fler?)",
-        tr = "(%2 satırın %0-%1 satırı, daha fazla göster?)",
+        tr = "(%2 satırın %0-%1 aralığı, daha fazlası gösterilsin mi?)",
         uk = "(%0-%1 з %2 рядків, показати більше?)",
         zh_TW = "（%2 總行數中的第 %0-%1 行，瀏覽更多？）"
     };
@@ -469,6 +470,7 @@ MojoSetup.localization = {
     --  to return to a previous stage of installation (from the options
     --  section to the "choose installation destination" section, etc).
     ["Type '%0' to go back."] = {
+        af = "Tik '%0' om terug to gaan.",
         ar = "اكتب '%0' للرجوع خطوة",
         cs = "Napište '%0' pro návrat zpět.",
         da = "Skriv '%0' for at gå tillbage.",
@@ -477,7 +479,7 @@ MojoSetup.localization = {
         en_AU = "Type '%0' to go back.",
         en_CA = "Type '%0' to go back.",
         en_GB = "Type '%0' to go back.",
-        es = "Apriete '%0' para regresar.",
+        es = "Presiona %0 para volver.",
         fi = "Kirjoita '%0' palataksesi edelliseen osioon.",
         fr = "Tapez '%0' pour revenir en arrière.",
         he = "הקלד '%0' כדי לחזור חזרה.",
@@ -581,6 +583,7 @@ MojoSetup.localization = {
 
     -- That's meant to be the name of an item (%0) and the percent done (%1).
     ["%0: %1%%"] = {
+        af = "%0: %1%%",
         ar = "‏%0: %1%%",
         cs = "%0: %1%%",
         da = "%0: %1%%",
@@ -617,6 +620,7 @@ MojoSetup.localization = {
     -- The stdio UI uses this to show current status (%0),
     --  and overall progress as percentage of work complete (%1).
     ["%0 (total progress: %1%%)"] = {
+        af = "%0 (totale bevordering: %1%%)",
         ar = "‏%0 (باقي للانتهاء: %1%%)",
         cs = "%0 (celkový průběh: %1%%)",
         da = "%0 (totalt: %1%%)",
@@ -653,10 +657,11 @@ MojoSetup.localization = {
     --  has been displayed, asking them if the license text is acceptable to
     --  them. It's a yes/no question.
     ["Accept this license?"] = {
+        af = "Anvaar die lisensie?",
         ar = "هل تقبل بتلك الرخصة؟",
         cs = "Přijímáte podmínky licence?",
         da = "Accepter denne licens?",
-        de = "Nehmen Sie die Lizenzbedingungen an?",
+        de = "Lizenz akzeptieren?",
         el = "Δέχεστε αυτή την άδεια χρήσης?",
         en_AU = "Accept this license?",
         en_CA = "Accept this licence?",
@@ -724,6 +729,7 @@ MojoSetup.localization = {
     -- This is an error message reported when a .zip file (or whatever) that
     --  we need can't be located.
     ["Archive not found"] = {
+        af = "Argief nie gevind",
         ar = "الأرشيف غير موجود",
         cs = "Archiv nenalezen",
         da = "Arkiv ikke fundet",
@@ -759,6 +765,7 @@ MojoSetup.localization = {
     -- This prompt is shown to the user when they click the "Cancel" button,
     --  to confirm they really want to stop. It's a yes/no question.
     ["Are you sure you want to cancel installation?"] = {
+        af = "Is jy seker jy will die installasie kanseleer?",
         ar = "أألغي التنثبيت؟",
         cs = "Opravdu chcete zrušit instalaci?",
         da = "Vil du afbryde installationen?",
@@ -830,6 +837,7 @@ MojoSetup.localization = {
     --  "Back" might be using 'B' in English. This button brings up a file
     --  dialog where the end-user can navigate to and select files.
     ["B_rowse..."] = {
+        af = "T_erug",
         ar = "ت_صفح",
         cs = "_Procházet...",
         da = "_Gennemse...",
@@ -870,6 +878,7 @@ MojoSetup.localization = {
     --  "media id" refers to Setup.Media.id in the config file. It's not meant
     --  to be a proper name, in this case.
     ["BUG: duplicate media id"] = {
+        af = "Kewer: gedupliseerde media id",
         ar = "بقة: media id مكرر",
         cs = "CHYBA: duplicitní id média",
         da = "FEJL: dobbelt forekomst af 'media id'",
@@ -889,7 +898,7 @@ MojoSetup.localization = {
         nds = "FEHLER: Doppelte Medien-ID",
         nl = "BUG: dubbele media id",
         nn = "Programfeil: duplisert media-id",
-        pl = "BŁĄD: zduplikowany identyfikator medium",
+        pl = "BŁĄD: zduplikowany identyfikator media",
         pt = "BUG: media id duplicada",
         pt_BR = "BUG: ID da mídia duplicado",
         ro = "EROARE: media id duplicat",
@@ -905,6 +914,7 @@ MojoSetup.localization = {
     --  either because none are listed or they've all become disabled, which
     --  is a bug the developer must fix before shipping her installer.
     ["BUG: no options"] = {
+        af = "Kewer: geen opsies",
         ar = "بقة: لا يوجد  options",
         cs = "CHYBA: nejsou dostupné žádné volby",
         da = "FEJL: ingen muligheder",
@@ -942,6 +952,7 @@ MojoSetup.localization = {
     --  the manifest support the installer needs. This is a bug the developer
     --  must fix before shipping her installer.
     ["BUG: support_uninstall requires write_manifest"] = {
+        af = "Kewer: support_uninstall vereis write_manifest",
         ar = "بقة: support_uninstall يحتاج write_manifest",
         cs = "CHYBA: support_uninstall vyžaduje write_manifest",
         de = "FEHLER: support_uninstall benötigt write_manifest",
@@ -977,6 +988,7 @@ MojoSetup.localization = {
     --  ultimately just an uncompiled Lua program that the installer generates.
     --  This is a bug the developer must fix before shipping her installer.
     ["BUG: write_manifest requires Lua parser support"] = {
+        af = "Kewer: write_manifest vereis Lua omskakelaar ondersteuning",
         ar = "بقة: write_manifest يحتاج دعم معالج Lua",
         cs = "CHYBA: write_manifest vyžaduje podporu Lua parseru",
         de = "FEHLER: write_manifest benötigt Lua Parser Unterstützung",
@@ -1010,6 +1022,7 @@ MojoSetup.localization = {
     --  to add system menu items without a way to remove them. This is
     --  a bug the developer must fix before shipping her installer.
     ["BUG: Setup.DesktopMenuItem requires support_uninstall"] = {
+        af = "Kewer: Setup.DesktopMenuItem vereis support_uninstall",
         ar = "بقة: Setup.DesktopMenuItem يحتاج support_uninstall",
         cs = "CHYBA: Setup.DesktopMenuItem vyžaduje support_uninstall",
         de = "FEHLER: Setup.DesktopMenuItem benötigt support_uninstall",
@@ -1044,6 +1057,7 @@ MojoSetup.localization = {
     --  might specify "0600" as a valid string, but "sdfksjdfk" wouldn't be
     --  valid and would cause this error.
     ["BUG: '%0' is not a valid permission string"] = {
+        af = "Kewer: '%0' is nie 'n geldige toestemming string nie",
         ar = "بقة: '%0' تعريف إذن غير صحيح",
         cs = "CHYBA: '%0' není platným řetězcem vyjadřujícím oprávnění",
         da = "FEJL: '%0' er ikke en korrekt rettigheds syntaks",
@@ -1079,6 +1093,7 @@ MojoSetup.localization = {
     --  error pops up to inform the programmer/translator.
     --  "format()" is a proper name in this case (program function name)
     ["BUG: Invalid format() string"] = {
+        af = "Kewer: Ongeldige format() string",
         ar = "بقة: format() غير صحيحة",
         cs = "CHYBA: Neplatný řetězec pro format()",
         de = "FEHLER: Unzulässige format() Zeichenkette",
@@ -1114,6 +1129,7 @@ MojoSetup.localization = {
     --  stage. A programming bug may cause unexpected type of data to be
     --  reported, causing this error to pop up.
     ["BUG: stage returned wrong type"] = {
+        af = "Kewer: stage het 'n verkeerde tipe terug gevoer",
         ar = "بقة: المرحلة انهت بنوع خاطئ",
         cs = "CHYBA: instalační krok vrátil chybný datový typ",
         de = "FEHLER: Abschnitt gab falschen Typ zurück",
@@ -1147,6 +1163,7 @@ MojoSetup.localization = {
     --  stage. A programming bug may cause unexpected information to be
     --  reported, causing this error to pop up.
     ["BUG: stage returned wrong value"] = {
+        af = "Kewer: Fase het 'n verkeerde waarde terug gevoer",
         ar = "بقة: المرحلة انهت بقيمة خاطئة",
         cs = "CHYBA: instalační krok vrátil chybnou hodnotu",
         de = "FEHLER: Abschnitt gab falschen Wert zurück",
@@ -1180,6 +1197,7 @@ MojoSetup.localization = {
     --  that allows the user to click "Back" on the initial stage, this
     --  error pops up.
     ["BUG: stepped back over start of stages"] = {
+        af = "Kewer: terug gestap verby die begin van die fases",
         ar = "بقة: عودة للوراء في اول خطوة",
         cs = "CHYBA: pokus o krok zpět před začátek instalace",
         de = "FEHLER: Über den Startabschnitt hinaus zurückgegangen",
@@ -1211,6 +1229,7 @@ MojoSetup.localization = {
     -- This happens if there's an unusual case when writing out Lua scripts
     --  to disk. This should never be seen by an end-user.
     ["BUG: Unhandled data type"] = {
+        af = "BUG: Ongehanteerde data tipe",
         ar = "بقة: نوع بيانات لا يمكن التعامل معه",
         cs = "CHYBA: Datový typ není obsluhován",
         de = "FEHLER: Unbehandelter Datentyp",
@@ -1244,6 +1263,7 @@ MojoSetup.localization = {
     --  This should never be seen by an end-user.
     --  "tar" is a proper name in this case (it's a file format).
     ["BUG: Can't duplicate tar inputs"] = {
+        af = "Kewer: Kan nie tar toevoere dupliseer nie",
         ar = "بقة: لا يمكن تكرار مدخلات tar",
         cs = "CHYBA: Nemohu zduplikovat vstupy z taru",
         de = "FEHLER: Tar-Eingaben können nicht dupliziert werden",
@@ -1277,6 +1297,7 @@ MojoSetup.localization = {
     --  result we weren't expecting (a negative number when we expected
     --  positive, etc...)
     ["BUG: Unexpected value"] = {
+        af = "Kewer: Onverwagte waarde",
         ar = "بقة: قيمة غير متوقعة",
         cs = "CHYBA: Neočekávaná hodnota",
         de = "FEHLER: Unerwarteter Wert",
@@ -1314,6 +1335,7 @@ MojoSetup.localization = {
     --  The grammar can be imperfect here; this is a developer error, not an
     --  end-user error, so we haven't made this very flexible.
     ["BUG: Config %0 %1"] = {
+        af = "Kewer: Konfigurasie %0 %1",
         ar = "بقة: الإعداد %0 %1",
         cs = "CHYBA: Konfigurační hodnota %0 %1",
         de = "FEHLER: Konfiguration %0 %1",
@@ -1340,12 +1362,13 @@ MojoSetup.localization = {
         sk = "CHYBA: Config %0 %1",
         sl = "NAPAKA: Nastavitev %0 %1",
         sv = "FEL: Konfiguration %0 %1",
-        tr = "HATA: Ayar %0 %1",
+        tr = "HATA: Yapılandırma %0 için sorun %1",
         zh_TW = "臭蟲：設定 %0 %1"
     };
 
     -- This is an error string for a buggy config element. See notes above.
     ["must be explicitly specified"] = {
+        af = "moet uitdruklik gespesifiseer word",
         ar = "يجب تحديده",
         cs = "musí být explicitně určena",
         de = "muss explizit angegeben werden",
@@ -1379,6 +1402,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["must be string or table of strings"] = {
+        af = "moet 'n string of tabel van stringe wees",
         ar = "يجب ان يكون سلسلة حرفية او جدول من السلاسل الحرفية",
         cs = "musí být řetězcem nebo tabulkou řetězců",
         de = "muss eine Zeichenkette oder eine Tabelle mit Zeichenketten sein",
@@ -1412,6 +1436,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["must be a string or number"] = {
+        af = "moet 'n string of 'n nommer wees",
         ar = "يجب ان يكون سلسلة حرفية او رقم",
         cs = "musí být řetězcem nebo číslem",
         de = "muss eine Zeichenkette oder Zahl sein",
@@ -1445,6 +1470,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["can't be empty string"] = {
+        af = "kan nie 'n lee string wees nie",
         ar = "لا يمكن ان يكون سلسلة حرفية خالية",
         cs = "nemůže být prázdným řetězcem",
         de = "darf keine leere Zeichenkette sein",
@@ -1478,6 +1504,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["URL doesn't have protocol"] = {
+        af = "URL het nie 'n protokol gespesifiseer nie",
         ar = "العنوان لم يحدد البروتوكول",
         cs = "URL nemá určený protokol",
         da = "URL har ikke en protekol",
@@ -1511,6 +1538,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["URL doesn't have host"] = {
+        af = "URL het nie 'n masjien naam gespesifiseer nie",
         ar = "العنوان لم يحدد الخادم",
         cs = "URL neobsahuje hostitele",
         da = "URL mangler vært",
@@ -1544,6 +1572,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["URL doesn't have path"] = {
+        af = "URL het nie 'n destinasie nie",
         ar = "العنوان لا يحدد المسار",
         cs = "URL neobsahuje cestu",
         da = "URL mangler sti",
@@ -1577,6 +1606,7 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["URL protocol is unsupported"] = {
+        af = "URL se protokol is nie ondersteun nie",
         ar = "بروتوكول العنوان غير مدعوم",
         cs = "Protokol v URL není podporován",
         de = "URL Protokoll wird nicht unterstützt",
@@ -1611,6 +1641,7 @@ MojoSetup.localization = {
     --  "Permission string" is text representing a file's permissions,
     --  such as "0644" on Unix.
     ["Permission string is invalid"] = {
+        af = "Toestemming string is ongeldig",
         ar = "تعريف إذن غير صحيح",
         cs = "Řetězec s oprávněními je neplatný",
         da = "Rettigheds syntaks er ikke korrekt",
@@ -1645,6 +1676,7 @@ MojoSetup.localization = {
     -- This is an error string for a buggy config element. See notes above.
     --  "property" means attribute, not something owned, in this case.
     ["is not a valid property"] = {
+        af = "is nie 'n geldige waarde",
         ar = "خاصية غير صحيحة",
         cs = "není platnou vlastností",
         de = "ist keine gültige Eigenschaft",
@@ -1678,6 +1710,7 @@ MojoSetup.localization = {
     -- This is an error string for a buggy config element. See notes above.
     --  %0 is a data type name (string, number, table, etc).
     ["must be %0"] = {
+        af = "moet %0 wees",
         ar = "يجب أن يكون %0",
         cs = "musí být %0",
         da = "skal være %0",
@@ -1712,6 +1745,7 @@ MojoSetup.localization = {
 
     -- Data type for "must be %0" above...
     ["string"] = {
+        af = "string",
         ar = "سلسلة حرفية",
         cs = "řetězec",
         da = "streng",
@@ -1746,6 +1780,7 @@ MojoSetup.localization = {
 
     -- Data type for "must be %0" above...
     ["boolean"] = {
+        af = "bool",
         ar = "منطقي",
         cs = "booleovská hodnota",
         da = "boolsk",
@@ -1780,6 +1815,7 @@ MojoSetup.localization = {
 
     -- Data type for "must be %0" above...
     ["number"] = {
+        af = "numeries",
         ar = "عدد",
         cs = "číslo",
         da = "nummer",
@@ -1814,6 +1850,7 @@ MojoSetup.localization = {
 
     -- Data type for "must be %0" above...
     ["function"] = {
+        af = "funksie",
         ar = "دالة",
         cs = "funkce",
         da = "funktion",
@@ -1848,6 +1885,7 @@ MojoSetup.localization = {
 
     -- Data type for "must be %0" above...
     ["table"] = {
+        af = "tabel",
         ar = "جدول",
         cs = "tabulka",
         da = "tabel",
@@ -1883,6 +1921,7 @@ MojoSetup.localization = {
     -- bzlib is a proper name. The error message (%0) may not be localized,
     --  it's meant to be a developer error and not an end-user message.
     ["bzlib triggered an internal error: %0"] = {
+        af = "bzlib het 'n interne fout ge-initieer",
         ar = "bzlib تسبب في خطأ: %0",
         cs = "bzlib vyvolala vnitřní chybu: %0",
         da = "bzlib forårsagede en intern fejl:",
@@ -1916,6 +1955,7 @@ MojoSetup.localization = {
     -- This is a UI button label, usually paired with "OK", but also usually
     --  present as a generic "stop the program" button.
     ["Cancel"] = {
+        af = "Staak",
         ar = "ألغِ",
         cs = "Zrušit",
         da = "Annuller",
@@ -1951,6 +1991,7 @@ MojoSetup.localization = {
     -- This is a message box title when prompting for confirmation when the
     --  the user clicks the Cancel button.
     ["Cancel installation"] = {
+        af = "Staak die installasie",
         ar = "ألغ التثبيت",
         cs = "Zrušit instalaci",
         da = "Afbryd installation",
@@ -1986,6 +2027,7 @@ MojoSetup.localization = {
     -- This error is reported for i/o failures while listing files contained
     --  in a .zip (or whatever) file.
     ["Couldn't enumerate archive"] = {
+        af = "Kon nie die argief se inhoud lys nie",
         ar = "لا يمكن ترقيم ملفات الأرشيف",
         cs = "Nemohu projít archiv",
         de = "Archiv kann nicht aufgelistet werden",
@@ -2020,6 +2062,7 @@ MojoSetup.localization = {
     -- This error is reported for i/o failures while opening a .zip
     --  (or whatever) file.
     ["Couldn't open archive"] = {
+        af = "Kon nie argief oopmaak nie",
         ar = "لا يمكن فتح الأرشيف",
         cs = "Nemohu otevřít archiv",
         da = "Kunne ikke åbne arkiv",
@@ -2057,6 +2100,7 @@ MojoSetup.localization = {
     --  choosing a default. This string is the instructions printed for the
     --  user before the prompt.
     ["Choose install destination by number (hit enter for #1), or enter your own."] = {
+        af = "Kies installasie destinasie by nommer (druk enter vir #1), of kies U eie.",
         ar = "اختر رقم مكان التثبيت (اضغط Enter لأختيار  #1) او أدخل المكان اللذي تريده.",
         cs = "Zvolte cíl instalace číslem (stiskněte enter pro #1) nebo zadejte vlastní cíl.",
         de = "Wählen Sie eine Nummer für das Installationsziel (drücken Sie Enter für #1), oder geben Sie ein eigenes an.",
@@ -2064,7 +2108,7 @@ MojoSetup.localization = {
         en_AU = "Choose install destination by number (hit enter for #1), or enter your own.",
         en_CA = "Choose install destination by number (hit enter for #1), or enter your own.",
         en_GB = "Choose install destination by number (hit enter for #1), or enter your own.",
-        es = "Elige lugar de instalación con números (pulsa Intro para #1), o especifícalo",
+        es = "Elige el lugar de instalación con números (pulsa Intro para #1), o especifícalo",
         fr = "Choisissez la destination d'installation par un nombre (Appuyez sur Entrée pour le n°1), ou entrez votre propre choix.",
         he = "בחר את יעד ההתקנה על ידי מספר (לחיצה על enter עבור מס' 1), או הזן בעצמך.",
         hu = "Válassz telepítési célt szám szerint (üss entert az elsőhöz), vagy adj meg egyet.",
@@ -2092,6 +2136,7 @@ MojoSetup.localization = {
     --  option on or off. This string is the instructions printed for the
     --  user before the prompt.
     ["Choose number to change."] = {
+        af = "Kies nommer om te verander",
         ar = "اختر الرقم للتغيير",
         cs = "Zadejte číslo pro změnu.",
         da = "Vælg nummer som skal ændres.",
@@ -2126,6 +2171,7 @@ MojoSetup.localization = {
     -- As in "two different files want to use the same name." This is a title
     --  on a message box.
     ["Conflict!"] = {
+        af = "Konflik!",
         ar = "تعارض!",
         cs = "Konflikt!",
         da = "Konflikt!",
@@ -2134,7 +2180,7 @@ MojoSetup.localization = {
         en_AU = "Conflict!",
         en_CA = "Conflict!",
         en_GB = "Conflict!",
-        es = "PROBLEMA",
+        es = "¡Conflicto!",
         fi = "Ristiriita!",
         fr = "Conflit !",
         he = "התנגשות!",
@@ -2164,6 +2210,7 @@ MojoSetup.localization = {
     --  an installation that fails halfway through reverse any changes it made.
     --  This error is shown if we can't move a file out of the way.
     ["Couldn't backup file for rollback"] = {
+        af = "Konnie leer rugsteen vir terugrol nie",
         ar = "لم نستطع حفظ نسخة احتياطية",
         cs = "Nemohu zazálohovat soubor pro obnovu",
         de = "Konnte Datei nicht zur Wiederherstellung sichern",
@@ -2199,6 +2246,7 @@ MojoSetup.localization = {
     --  important that this word maps directly for end-users, as long as the
     --  general concept is explained.
     ["Couldn't create manifest"] = {
+        af = "Kon nie manifesto skep nie",
         ar = "لم يمكن كتابة قائمة ملفات التثبيت",
         cs = "Nemohu vytvořit manifest",
         de = "Konnte Manifest nicht erstellen",
@@ -2231,6 +2279,7 @@ MojoSetup.localization = {
 
     -- This is an error message. It speaks for itself.   :)
     ["Couldn't restore some files. Your existing installation is likely damaged."] = {
+        af = "Kon nie alle lêers herstel nie. Jou huidege installasie is waarskynlik beskadig.",
         ar = "لم بمكن استرجاع بعض الملفات، التثبيت السابق يحتوي على أخطاء",
         cs = "Nepodařilo se obnovit některé soubory. Vaše existující instalace je pravděpodobně poškozená.",
         de = "Konnte einige Dateien nicht wiederherstellen. Ihre Installation ist wahrscheinlich beschädigt.",
@@ -2263,6 +2312,7 @@ MojoSetup.localization = {
 
     -- Error message when deleting a file fails.
     ["Deletion failed!"] = {
+        af = "Uitvee het misluk!",
         ar = "المسح فشل!",
         cs = "Odstranění selhalo!",
         da = "Kunne ikke slette!",
@@ -2298,6 +2348,7 @@ MojoSetup.localization = {
     --  the user specifies the installation destination (folder/directory) in
     --  the filesystem.
     ["Folder:"] = {
+        af = "Lêer",
         ar = "مجلد:",
         cs = "Složka:",
         da = "Mappe:",
@@ -2332,6 +2383,7 @@ MojoSetup.localization = {
 
     -- This is a window title when user is selecting a path to install files.
     ["Destination"] = {
+        af = "Bestemming",
         ar = "الوِجهة",
         cs = "Cíl",
         da = "Destination",
@@ -2367,6 +2419,7 @@ MojoSetup.localization = {
     -- This is a window title while the program is downloading external files
     --  it needs from the network.
     ["Downloading"] = {
+        af = "Besig om af te laai",
         ar = "يجري التنزيل",
         cs = "Stahuji",
         da = "Henter",
@@ -2390,7 +2443,7 @@ MojoSetup.localization = {
         pt = "A descarregar",
         pt_BR = "Baixando",
         ro = "Descărcare",
-        ru = "Скачивание данных",
+        ru = "Скачиваем",
         sk = "Sťahujem",
         sl = "Prenašanje",
         sv = "Hämtar",
@@ -2402,6 +2455,7 @@ MojoSetup.localization = {
     -- Several UIs use this string as a prompt to the end-user when selecting
     --  a destination for newly-installed files.
     ["Enter path where files will be installed."] = {
+        af = "Verskaf die pad waar die lêers na toe sal geinstaleer word",
         ar = "أدخل مكان تثبيت البرنامج",
         cs = "Zadejte cestu, kam mají být soubory nainstalovány.",
         de = "Geben Sie den Pfad an, wohin die Dateien installiert werden sollen.",
@@ -2409,7 +2463,7 @@ MojoSetup.localization = {
         en_AU = "Enter path where files will be installed.",
         en_CA = "Enter path where files will be installed.",
         en_GB = "Enter path where files will be installed.",
-        es = "Establece una ruta de instalacion.",
+        es = "Introduce una ruta de instalacion.",
         fi = "Syötä polku, johon tiedostot asennetaan.",
         fr = "Entrez le chemin d'installation souhaité pour vos fichiers.",
         he = "הזן את הנתיב אליו הקבצים יותקנו.",
@@ -2435,6 +2489,7 @@ MojoSetup.localization = {
 
     -- Error message when a file we expect to load can't be read from disk.
     ["failed to load file '%0'"] = {
+        af = "misluk om lêer '%0' te laai",
         ar = "فشل في تحميل الملف '%0'",
         cs = "nepodařilo se načíst soubor '%0'",
         da = "Kunne ikke indlæse fil '%0'",
@@ -2469,6 +2524,7 @@ MojoSetup.localization = {
 
     -- This is a window title when something goes very wrong.
     ["Fatal error"] = {
+        af = "Noodlottige fout",
         ar = "خطأ فادح",
         cs = "Kritická chyba",
         da = "Alvorlig fejl",
@@ -2502,6 +2558,7 @@ MojoSetup.localization = {
 
     -- This is an error message when failing to write a file to disk.
     ["File creation failed!"] = {
+        af = "Lêer skepping het misluk!",
         ar = "كتابة الملف فشلت!",
         cs = "Nepodařilo se vytvořit soubor!",
         de = "Dateierstellung fehlgeschlagen!",
@@ -2535,6 +2592,7 @@ MojoSetup.localization = {
 
     -- This is an error message when failing to get a file from the network.
     ["File download failed!"] = {
+        af = "Aflaai van die lêer het misluk",
         ar = "تنزيل الملف فشل!",
         cs = "Nepodařilo se stáhnout soubor!",
         da = "Download af fil mislykkedes!",
@@ -2570,6 +2628,7 @@ MojoSetup.localization = {
     -- This prompt is shown to users when we may overwrite an existing file.
     --  "%0" is the filename.
     ["File '%0' already exists! Replace?"] = {
+        af = "Lêer '%0' bestaan al! Vervang?",
         ar = "الملف '%0' موجود من قبل! أأستبدل؟",
         cs = "Soubor '%0' již existuje! Přepsat?",
         de = "Datei '%0' existiert bereits! Ersetzen?",
@@ -2604,6 +2663,7 @@ MojoSetup.localization = {
     -- This is a button in the UI. It replaces "Next" when there are no more
     --  stages to move forward to.
     ["Finish"] = {
+        af = "Voltooi",
         ar = "أنهِ",
         cs = "Dokončit",
         da = "Udfør",
@@ -2639,6 +2699,7 @@ MojoSetup.localization = {
     -- This error message is (hopefully) shown to the user if the UI
     --  subsystem can't create the main application window.
     ["GUI failed to start"] = {
+        af = "GUI het misluk om te laai",
         ar = "الواجهة الرسومية فشلت في البدء",
         cs = "Nepodařilo se spustit GUI",
         da = "Grafisk brugerflade kunne ikke startes",
@@ -2674,6 +2735,7 @@ MojoSetup.localization = {
     --  problem (or the user clicked "cancel"), telling them that we'll try
     --  to put everything back how it was before we started.
     ["Incomplete installation. We will revert any changes we made."] = {
+        af = "Onvoltooide installasie. Ons sal enige veranderinge terugrol.",
         ar = "لم يكتمل التثبيت. سيتم إزالة اي تغييرات.",
         cs = "Instalace nebyla dokončena. Vše bude uvedeno do původního stavu.",
         da = "Installation kunne ikke fuldendes. Ændringer tilbageføres.",
@@ -2707,6 +2769,7 @@ MojoSetup.localization = {
 
     -- Reported to the user if everything worked out.
     ["Installation was successful."] = {
+        af = "Installasie was suksesvol.",
         ar = "نجح التثبيت",
         cs = "Instalace byla úspěšná.",
         da = "Installationen var succesfuld.",
@@ -2742,6 +2805,7 @@ MojoSetup.localization = {
     -- This is a window title, shown while the actual installation to disk
     --  is in process and a progress meter is being shown.
     ["Installing"] = {
+        af = "Besig om te installeer",
         ar = "عملية التثبيت",
         cs = "Instaluji",
         da = "Installerer",
@@ -2777,6 +2841,7 @@ MojoSetup.localization = {
     -- This is a window title, shown while the user is choosing
     --  installation-specific options.
     ["Options"] = {
+        af = "Opsies",
         ar = "الخيارات",
         cs = "Volby",
         da = "Indstillinger",
@@ -2813,6 +2878,7 @@ MojoSetup.localization = {
     --  default filesystem paths where a user may install files. They can
     --  choose this to enter a filesystem path manually.
     ["(I want to specify a path.)"] = {
+        af = "(Ek wil 'n pad aanwys)",
         ar = "(أنا أريد اختيار المسار)",
         cs = "(Chci určit cestu.)",
         de = "(Ich möchte einen Pfad angeben.)",
@@ -2846,6 +2912,7 @@ MojoSetup.localization = {
 
     -- "kilobytes per second" ... download rate.
     ["KB/s"] = {
+        af = "KB/s",
         ar = "ك.بايت/ث",
         cs = "KB/s",
         da = "KB/s",
@@ -2880,6 +2947,7 @@ MojoSetup.localization = {
 
     -- "bytes per second" ... download rate.
     ["B/s"] = {
+        af = "B/s",
         ar = "بايت/ثانية",
         cs = "B/s",
         da = "B/s",
@@ -2915,6 +2983,7 @@ MojoSetup.localization = {
     -- Download rate when we don't know the goal (can't report time left).
     --  This is a number (%0) followed by the localized "KB/s" or "B/s" (%1).
     ["%0 %1"] = {
+        af = "%0 %1",
         ar = "‏%0 %1",
         cs = "%0 %1",
         da = "%0 %1",
@@ -2950,6 +3019,7 @@ MojoSetup.localization = {
     --  This is a number (%0) followed by the localized "KB/s" or "B/s" (%1),
     --  then the hours (%2), minutes (%3), and seconds (%4) remaining
     ["%0 %1, %2:%3:%4 remaining"] = {
+        af = "%0 %1, %2:%3:%4 oorblywend",
         ar = "‏%0 %1, %2:%3:%4 متبقية",
         cs = "%0 %1, %2:%3:%4 zbývá",
         da = "%0 %1, %2:%3:%4 tilbage",
@@ -2984,6 +3054,7 @@ MojoSetup.localization = {
 
     -- download rate when download isn't progressing at all.
     ["stalled"] = {
+        af = "hang",
         ar = "توقف",
         cs = "zaseknuté",
         de = "wartend",
@@ -3015,6 +3086,7 @@ MojoSetup.localization = {
     -- Download progress string: filename (%0), percent downloaded (%1),
     --  download rate determined in one of the above strings (%2).
     ["%0: %1%% (%2)"] = {
+        af = "%0: %1%% (%2)",
         ar = "‏%0: %1%% (%2)",
         cs = "%0: %1%% (%2)",
         da = "%0: %1%% (%2)",
@@ -3048,6 +3120,7 @@ MojoSetup.localization = {
 
     -- This is a window title when prompting the user to insert a new disc.
     ["Media change"] = {
+        af = "Media verander",
         ar = "تغيير القرص",
         cs = "Výměna média",
         da = "Skift medie",
@@ -3082,6 +3155,7 @@ MojoSetup.localization = {
     -- This error message is shown to the end-user when we can't make a new
     --  folder/directory in the filesystem.
     ["Directory creation failed"] = {
+        af = "Lêer skepping het misluk",
         ar = "فشل في إنشاء المجلد",
         cs = "Selhalo vytváření adresáře",
         da = "Kunne ikke oprette katalog",
@@ -3117,6 +3191,7 @@ MojoSetup.localization = {
     -- This is a GTK+ button label. The '_' comes before the hotkey character.
     --  "No" would take the 'N' hotkey in English.
     ["N_ever"] = {
+        af = "N_ooit",
         ar = "أب_داً",
         cs = "Ni_kdy",
         da = "Al_drig",
@@ -3152,6 +3227,7 @@ MojoSetup.localization = {
     -- This is a GUI button label, to move forward to the next stage of
     --  installation. It's opposite is "Back" in this case.
     ["Next"] = {
+        af = "Volgende",
         ar = "التالي",
         cs = "Další",
         da = "Næste",
@@ -3186,6 +3262,7 @@ MojoSetup.localization = {
 
     -- This is a GUI button label, indicating a negative response.
     ["No"] = {
+        af = "Nee",
         ar = "لا",
         cs = "Ne",
         da = "Nej",
@@ -3220,6 +3297,7 @@ MojoSetup.localization = {
 
     -- This is a GUI button label, indicating a positive response.
     ["Yes"] = {
+        af = "Ja",
         ar = "نعم",
         cs = "Ano",
         da = "Ja",
@@ -3255,6 +3333,7 @@ MojoSetup.localization = {
     -- HTTP error message in the www UI, as in "404 Not Found" ... requested
     --  file is missing.
     ["Not Found"] = {
+        af = "Nie gevind nie",
         ar = "لا يوجد",
         cs = "Nenalezeno",
         da = "Ikke fundet",
@@ -3290,6 +3369,7 @@ MojoSetup.localization = {
     -- This is reported to the user when there are no files to install, and
     --  thus no installation to go forward.
     ["Nothing to do!"] = {
+        af = "Niks om te doen nie!",
         ar = "لا يوجد شيء لنفعله",
         cs = "Není co instalovat!",
         da = "Ingen aktivitet mulig!",
@@ -3324,6 +3404,7 @@ MojoSetup.localization = {
 
     -- This is a GUI button label, sometimes paired with "Cancel"
     ["OK"] = {
+        af = "Regso",
         ar = "موافق",
         cs = "OK",
         da = "OK",
@@ -3361,6 +3442,7 @@ MojoSetup.localization = {
     --  to stdout, or whatever, but it's basically meant to be a title or
     --  header, with more information to follow later.
     ["PANIC"] = {
+        af = "PANIEK",
         ar = "خطأ مهم",
         cs = "SELHÁNÍ",
         da = "PANIK",
@@ -3394,6 +3476,7 @@ MojoSetup.localization = {
 
     -- Prompt shown to user when we need her to insert a new disc.
     ["Please insert '%0'"] = {
+        af = "Verskaf asseblief '%0'",
         ar = "من فضلك أدخِل '%0'",
         cs = "Prosím vložte '%0'",
         de = "Bitte legen Sie '%0' ein",
@@ -3429,6 +3512,7 @@ MojoSetup.localization = {
     --  continuing, usually to let them read the outputted text that is
     --  scrolling by.
     ["Press enter to continue."] = {
+        af = "Druk enter sleutel om voort te gaan.",
         ar = "اضغط مفتاح الإدخال للاستمرار.",
         cs = "Pro pokračování stiskněte enter.",
         da = "Tryk retur for at fortsætte.",
@@ -3465,6 +3549,7 @@ MojoSetup.localization = {
     --  important has gone wrong (such as being unable to revert changes
     --  during a rollback).
     ["Serious problem"] = {
+        af = "Ernstige probleem",
         ar = "مشكلة كبيرة",
         cs = "Závažný problém",
         da = "Seriøst problem",
@@ -3499,6 +3584,7 @@ MojoSetup.localization = {
 
     -- The www UI uses this as a page title when the program is terminating.
     ["Shutting down..."] = {
+        af = "Besig om af te skakel...",
         ar = "يجري الإغلاق...",
         cs = "Ukončuji se...",
         da = "Lukker ned...",
@@ -3532,6 +3618,7 @@ MojoSetup.localization = {
 
     -- The www UI uses this as page text when the program is terminating.
     ["You can close this browser now."] = {
+        af = "U kan die blaaier nou toemaak.",
         ar = "يمكنك إغلاق هذا المتصفح",
         cs = "Nyní můžete ukončit tento prohlížeč.",
         da = "Du kan lukke browseren nu.",
@@ -3540,7 +3627,7 @@ MojoSetup.localization = {
         en_AU = "You can close this browser now.",
         en_CA = "You can close this browser now.",
         en_GB = "You can close this browser now.",
-        es = "Puedes cerrar este navegador ahora.",
+        es = "Ya puedes cerrar el navegador.",
         fr = "Vous pouvez maintenant fermer ce navigateur",
         he = "תוכל לסגור דפדפן זה כעת.",
         hu = "Most már bezárhatod ezt az ablakot.",
@@ -3566,6 +3653,7 @@ MojoSetup.localization = {
     -- Error message shown to end-user when we can't write a symbolic link
     --  to the filesystem.
     ["Symlink creation failed!"] = {
+        af = "Simboliese skakel skepping het misluk!",
         ar = "فشل في إنشاء الوصلة الرمزية",
         cs = "Selhalo vytváření symbolického odkazu!",
         de = "Erzeugung einer Verknüpfung fehlgeschlagen!",
@@ -3573,7 +3661,7 @@ MojoSetup.localization = {
         en_AU = "Symlink creation failed!",
         en_CA = "Symlink creation failed!",
         en_GB = "Symlink creation failed!",
-        es = "Error al crear acceso directo.",
+        es = "¡Error al crear enlace simbólico!",
         fi = "Symbolisen linkin luominen epäonnistui!",
         fr = "Création de lien symbolique échouée!",
         he = "יצירת הקישורית נכשלה!",
@@ -3600,6 +3688,7 @@ MojoSetup.localization = {
     -- Error message shown to the end-user when the OS has requested
     --  termination of the program (SIGINT/ctrl-c on Unix, etc).
     ["The installer has been stopped by the system."] = {
+        af = "Die instaleerder is gestop deur die stelsel.",
         ar = "أوقف نظام التشغيل التثبيت",
         cs = "Instalátor byl zastaven signálem ze systému.",
         da = "Installation stoppes af operativsystemet.",
@@ -3635,6 +3724,7 @@ MojoSetup.localization = {
     -- Error message shown to the end-user when the program crashes with a
     --  bad memory access (segfault on Unix, GPF on Windows, etc).
     ["The installer has crashed due to a bug."] = {
+        af = "Die instaleerder het gefou asgevolg van 'n kewer.",
         ar = "فشل التركيب بسبب بقة",
         cs = "Instalátor zhavaroval vinou vlastní chyby.",
         de = "Das Installationsprogramm ist aufgrund eines Fehlers abgestürzt.",
@@ -3668,6 +3758,7 @@ MojoSetup.localization = {
 
     -- This is a button label in the ncurses ui to flip an option on/off.
     ["Toggle"] = {
+        af = "Wisselaar",
         ar = "بدّل",
         cs = "Přepnout",
         da = "Skift",
@@ -3676,6 +3767,7 @@ MojoSetup.localization = {
         en_AU = "Toggle",
         en_CA = "Toggle",
         en_GB = "Toggle",
+        es = "Alternar",
         fi = "Vaihda",
         fr = "Basculer",
         he = "הפוך מצב",
@@ -3703,6 +3795,7 @@ MojoSetup.localization = {
     --  unexpected entry in a .zip (or whatever) file that we didn't know
     --  how to handle.
     ["Unknown file type in archive"] = {
+        af = "Onbekende lêer tipe in argief",
         ar = "نوع ملفات غير معروف في الأرشيف",
         cs = "Neznámý typ souboru v archivu.",
         da = "Ukendt filtype i arkiv",
@@ -3738,6 +3831,7 @@ MojoSetup.localization = {
     -- This is an error message shown to the end-user if they refuse to
     --  agree to the license of the software they are try to install.
     ["You must accept the license before you may install"] = {
+        af = "U moet die lisensie aanvaar voor U mag installeer",
         ar = "يجب أن توافق على الرخصة قبل التثبيت",
         cs = "Před instalací je nutné odsouhlasit licenci",
         de = "Sie müssen den Lizenzbedingungen zustimmen, bevor sie installieren können",
@@ -3776,6 +3870,7 @@ MojoSetup.localization = {
     --  support application, etc. It's a catch-all category: data about the
     --  actual data, basically.
     ["Metadata"] = {
+        af = "Metadata",
         ar = "البيانات الإضافية",
         cs = "Metadata",
         da = "Metadata",
@@ -3810,6 +3905,7 @@ MojoSetup.localization = {
 
     -- This error is shown if incorrect command line arguments are used.
     ["Invalid command line"] = {
+        af = "Ongeldige bevel argumente",
         ar = "أمر غير صحيح",
         cs = "Neplatné argumenty",
         de = "Ungültige Kommandozeile",
@@ -3817,7 +3913,7 @@ MojoSetup.localization = {
         en_AU = "Invalid command line",
         en_CA = "Invalid command line",
         en_GB = "Invalid command line",
-        es = "Parámetros de comando incorrectos",
+        es = "Orden incorrecta",
         fi = "Virheellinen komentorivi",
         fr = "Ligne de commande invalide",
         he = "פקודת שורה שגויה",
@@ -3845,6 +3941,7 @@ MojoSetup.localization = {
     --  we installed), if it can't load the file for some reason. '%0' is the
     --  manifest's package name.
     ["Couldn't load manifest file for '%0'"] = {
+        af = "Kon nie die manifesto lêer laai vir '%0' nie.",
         ar = "لم يمكن تحميل قائمة الملفات لـ'%0'",
         cs = "Nemohu načíst soubor s manifestem pro '%0'",
         de = "Konnte Manifestdatei für '%0' nicht laden",
@@ -3879,6 +3976,7 @@ MojoSetup.localization = {
     -- This error is shown when the user prompted the app to read a filename
     --  (%0) that doesn't exist.
     ["File %0 not found"] = {
+        af = "Lêer %0 nie gevind nie",
         ar = "الملف %0 غير موجود",
         cs = "Soubor '%0' nebyl nalezen",
         da = "Filen '%0' ikke fundet",
@@ -3914,6 +4012,7 @@ MojoSetup.localization = {
     -- This is a window title on the message box when asking if user is sure
     --  they want to uninstall a package.
     ["Uninstall"] = {
+        af = "Verwyder",
         ar = "إزالة التثبيت",
         cs = "Odinstalovat",
         da = "Afinstallér",
@@ -3950,6 +4049,7 @@ MojoSetup.localization = {
     -- This is the text when asking the user if they want to uninstall
     --  the package named '%0'.
     ["Are you sure you want to uninstall '%0'?"] = {
+        af = "Is U seker U wil '%0' verwyder?",
         ar = "هل تريد فعلاً إزالة '%0' ؟",
         cs = "Opravdu chcete odinstalovat '%0'?",
         da = "Er du sikker på at du vil afinstallere '%0'?",
@@ -3985,6 +4085,7 @@ MojoSetup.localization = {
     -- This is a window title, shown while the actual uninstall is in process
     --  and a progress meter is being shown.
     ["Uninstalling"] = {
+        af = "In die proses van verwydering",
         ar = "يجري الإزالة",
         cs = "Odinstalovávám",
         da = "Afinstallerer",
@@ -4019,6 +4120,7 @@ MojoSetup.localization = {
 
     -- This is shown to the user in a message box when uninstallation is done.
     ["Uninstall complete"] = {
+        af = "Verwydering voltooi",
         ar = "انتهت الإزالة",
         cs = "Odinstalace dokončena",
         da = "Afinstallation er gennemført",
@@ -4059,6 +4161,7 @@ MojoSetup.localization = {
     --  is a system problem outside the scope of the application, but they
     --  aren't required.
     ["[Make the window wider!]"] = {
+        af = "[Maak die venster weier!]",
         ar = "[كبّر النافذة!]",
         cs = "[Zvětšit šířku okna!]",
         da = "[Gør vinduet bredere!]",
@@ -4067,7 +4170,7 @@ MojoSetup.localization = {
         en_AU = "[Make the window wider!]",
         en_CA = "[Make the window wider!]",
         en_GB = "[Make the window wider!]",
-        es = "[¡Ensancha la ventana!]",
+        es = "[¡Ensanchar la ventana!]",
         fi = "[Levennä ikkunaa!]",
         fr = "[Élargissez la fenêtre!]",
         he = "[הרחב את החלון!]",
@@ -4099,6 +4202,7 @@ MojoSetup.localization = {
     --  is a system problem outside the scope of the application, but they
     --  aren't required.
     ["[Make the window taller!]"] = {
+        af = "[Maak die venster langer!]",
         ar = "[اجعل النافذة أطول!]",
         cs = "[Zvětšit výšku okna!]",
         da = "[Gør vinduet højere!]",
@@ -4107,7 +4211,7 @@ MojoSetup.localization = {
         en_AU = "[Make the window taller!]",
         en_CA = "[Make the window taller!]",
         en_GB = "[Make the window taller!]",
-        es = "[¡Estira la ventana!]",
+        es = "[¡Hacer la ventana más alta!]",
         fi = "[Tee ikkunasta korkeampi!]",
         fr = "[Agrandissez la fenêtre!]",
         he = "[הגבה את החלון!]",
@@ -4135,6 +4239,7 @@ MojoSetup.localization = {
     --  application menu (or "Start" bar on Windows, or maybe the Dock on
     --  Mac OS X, etc).
     ["Failed to install desktop menu item"] = {
+        af = "Mislukking tydens die installasie van die werkskerm kieslys item",
         ar = "فشل في التثبيت لقائمة سطح المكتب",
         cs = "Nepodařilo se nainstalovat položku do menu",
         da = "Kunne ikke oprette menupunkt i skrivebordets menu",
@@ -4170,6 +4275,7 @@ MojoSetup.localization = {
     --  application menu (or "Start" bar on Windows, or maybe the Dock on
     --  Mac OS X, etc).
     ["Failed to uninstall desktop menu item"] = {
+        af = "Mislukking tydens die verwydering van die werkskerm kieslys item",
         ar = "فشل في الإزالة من قائمة سطح المكتب",
         cs = "Nepodařilo se odstranit položku z menu",
         da = "Kunne ikke fjerne menupunkt i skrivebordets menu",
