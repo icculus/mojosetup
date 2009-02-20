@@ -1,4 +1,4 @@
-local GAME_INSTALL_SIZE = 1738442626;
+local GAME_INSTALL_SIZE = 1738443237;
 local PB_INSTALL_SIZE = 3738916;
 local ENCFG_INSTALL_SIZE = 1689;
 local FRCFG_INSTALL_SIZE = 1739;
@@ -16,6 +16,8 @@ if MojoSetup.cmdline("from-install") then
     media_path = ""
 end
 
+local already_saw_preykey = false
+
 -- do a filter to catch filename case differences.
 -- Please note this returns a filter function, and isn't the filter itself!
 local function make_pakfile_filter(pakregexp)
@@ -25,12 +27,23 @@ local function make_pakfile_filter(pakregexp)
         mpath = mpath .. "/"
     end
     local regexp = "^" .. mpath .. "(" .. pakregexp .. ")$"
+    local preykey = mpath .. "preykey"
     return function(dest)
         local str, matches
         str, matches = string.gsub(string.lower(dest), regexp, "base/%1", 1)
         if matches == 1 then
             return str, nil
         end
+
+        -- If we see one in an existing install, grab it, so user won't be
+        --  prompted for CD key on first run. This is necessary for Steam
+        --  installs, since the stored key loses some checksum data, so you
+        --  can't read the file and then enter it by hand in the UI.
+        if (string.lower(dest) == preykey) and (not already_saw_preykey) then
+            already_saw_preykey = true
+            return "base/preykey", nil
+        end
+
         return nil, nil  -- don't install anything else here.
     end
 end
