@@ -1,4 +1,4 @@
-local TOTAL_INSTALL_SIZE = 327467549;
+local TOTAL_INSTALL_SIZE = 416815228;
 local _ = MojoSetup.translate
 
 Setup.Package
@@ -6,7 +6,7 @@ Setup.Package
     vendor = "epicgames.com",
     id = "ut3-dedicated",
     description = "Unreal Tournament 3 Dedicated Server",
-    version = "1.3",
+    version = "1.4",
     write_manifest = false,     -- don't want to update...
     support_uninstall = false,  -- ...or uninstall. This is just a fancy unzip.
 
@@ -22,7 +22,7 @@ Setup.Package
     Setup.Readme
     {
         description = _("README"),
-        source = _("README-ut3-patch3.txt")
+        source = _("README-ut3-patch4.txt")
     },
 
     Setup.Eula
