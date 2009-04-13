@@ -31,6 +31,10 @@
 #   define VERSTR2(x) #x
 #   define VERSTR(x) VERSTR2(x)
 #   define COMPILERVER " " VERSTR(__GNUC__) "." VERSTR(__GNUC_MINOR__) "." VERSTR(__GNUC_PATCHLEVEL__)
+#elif (defined __SUNPRO_C)
+#   define VERSTR2(x) #x
+#   define VERSTR(x) VERSTR2(x)
+#   define COMPILERVER " " VERSTR(__SUNPRO_C)
 #elif (defined __VERSION__)
 #   define COMPILERVER " " __VERSION__
 #else
@@ -50,6 +54,8 @@
     #define COMPILER "GCC"
   #elif (defined _MSC_VER)
     #define COMPILER "Visual Studio"
+  #elif (defined __SUNPRO_C)
+    #define COMPILER "Sun Studio"
   #else
     #error Please define your platform.
   #endif
