@@ -32,7 +32,9 @@
 
 #if SUPPORT_URL_HTTP || SUPPORT_URL_HTTPS
 
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <sys/cdefs.h>
+#endif
 __FBSDID("$FreeBSD: src/lib/libfetch/http.c,v 1.77 2005/08/24 12:28:05 des Exp $");
 
 /*
@@ -71,7 +73,9 @@ __FBSDID("$FreeBSD: src/lib/libfetch/http.c,v 1.77 2005/08/24 12:28:05 des Exp $
 #include <sys/socket.h>
 
 #include <ctype.h>
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <err.h>
+#endif
 #include <errno.h>
 #include <locale.h>
 #include <netdb.h>
@@ -322,7 +326,11 @@ _http_readfn(void *v, char *buf, int len)
 		l = io->buflen - io->bufpos;
 		if (len < l)
 			l = len;
+#if __MOJOSETUP__
+		memmove(buf + pos, io->buf + io->bufpos, l);
+#else
 		bcopy(io->buf + io->bufpos, buf + pos, l);
+#endif
 		io->bufpos += l;
 #if __MOJOSETUP__
 		io->bytes_read += l;
@@ -813,7 +821,11 @@ _http_connect(struct url *URL, struct url *purl, const char *flags)
 	}
 
 	val = 1;
+
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 	setsockopt(conn->sd, IPPROTO_TCP, TCP_NOPUSH, &val, sizeof(val));
+#endif
+
 	return (conn);
 }
 
@@ -1047,9 +1059,11 @@ _http_request(struct url *URL, const char *op, struct url_stat *us,
 		 * be compatible with such configurations, fiddle with socket
 		 * options to force the pending data to be written.
 		 */
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 		val = 0;
 		setsockopt(conn->sd, IPPROTO_TCP, TCP_NOPUSH, &val,
 			   sizeof(val));
+#endif
 		val = 1;
 		setsockopt(conn->sd, IPPROTO_TCP, TCP_NODELAY, &val,
 			   sizeof(val));

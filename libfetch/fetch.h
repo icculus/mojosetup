@@ -35,6 +35,15 @@
 #define _LIBFETCH_VER3(ver) "libfetch/2.0 (MojoSetup " #ver ")"
 #define _LIBFETCH_VER2(ver) _LIBFETCH_VER3(ver)
 #define _LIBFETCH_VER _LIBFETCH_VER2(APPREV)
+#ifndef MAXHOSTNAMELEN
+#define MAXHOSTNAMELEN 256
+#endif
+#ifndef __BEGIN_DECLS
+#define __BEGIN_DECLS
+#endif
+#ifndef __END_DECLS
+#define __END_DECLS
+#endif
 #else
 #define _LIBFETCH_VER "libfetch/2.0"
 #endif

@@ -30,7 +30,10 @@
 #include "mojosetup_libfetch.h"
 #endif
 
+
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <sys/cdefs.h>
+#endif
 __FBSDID("$FreeBSD: src/lib/libfetch/fetch.c,v 1.38 2004/09/21 18:35:20 des Exp $");
 
 #include <sys/param.h>

@@ -6,7 +6,16 @@
 #include "../fileio.h"
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <time.h>
+#include <limits.h>
+
+#if sun
+#ifdef u_int32_t
+#undef u_int32_t
+#endif
+#define u_int32_t uint32_t
+#endif
 
 int MOJOSETUP_vasprintf(char **strp, const char *fmt, va_list ap);
 #define vasprintf MOJOSETUP_vasprintf
@@ -66,6 +75,12 @@ boolean ishexnumber(char ch);
 char *strptime(const char *s, const char *format, struct tm *tm);
 #endif
 #endif
+
+time_t timegm_portable(struct tm *tm);
+#ifdef timegm
+#undef timegm
+#endif
+#define timegm timegm_portable
 
 #endif
 

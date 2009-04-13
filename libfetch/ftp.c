@@ -30,7 +30,9 @@
 
 #if SUPPORT_URL_FTP
 
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <sys/cdefs.h>
+#endif
 __FBSDID("$FreeBSD: src/lib/libfetch/ftp.c,v 1.96 2007/04/22 22:33:29 njl Exp $");
 
 /*
@@ -65,7 +67,9 @@ __FBSDID("$FreeBSD: src/lib/libfetch/ftp.c,v 1.96 2007/04/22 22:33:29 njl Exp $"
 #include <netinet/in.h>
 
 #include <ctype.h>
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <err.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -870,8 +874,13 @@ _ftp_transfer(conn_t *conn, const char *oper, const char *file,
 			if (e == FTP_EPASSIVE_MODE)
 				sin6->sin6_port = htons(port);
 			else {
+#if __MOJOSETUP__
+				memmove((char *)&sin6->sin6_addr, addr + 2, 16);
+				memmove((char *)&sin6->sin6_port, addr + 19, 2);
+#else
 				bcopy(addr + 2, (char *)&sin6->sin6_addr, 16);
 				bcopy(addr + 19, (char *)&sin6->sin6_port, 2);
+#endif
 			}
 			break;
 		case AF_INET:
@@ -879,8 +888,13 @@ _ftp_transfer(conn_t *conn, const char *oper, const char *file,
 			if (e == FTP_EPASSIVE_MODE)
 				sin4->sin_port = htons(port);
 			else {
+#if __MOJOSETUP__
+				memmove((char *)&sin4->sin_addr, addr, 4);
+				memmove((char *)&sin4->sin_port, addr + 4, 2);
+#else
 				bcopy(addr, (char *)&sin4->sin_addr, 4);
 				bcopy(addr + 4, (char *)&sin4->sin_port, 2);
+#endif
 			}
 			break;
 		default:

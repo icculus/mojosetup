@@ -31,7 +31,9 @@
 #include <pthread.h>
 #endif
 
+#if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <sys/cdefs.h>
+#endif
 __FBSDID("$FreeBSD: src/lib/libfetch/common.c,v 1.50 2005/02/16 12:46:46 des Exp $");
 
 #include <sys/param.h>
@@ -646,7 +648,12 @@ _fetch_add_entry(struct url_ent **p, int *size, int *len,
 
 	tmp = *p + *len;
 	snprintf(tmp->name, PATH_MAX, "%s", name);
+
+#if __MOJOSETUP__
+	memmove(&tmp->stat, us, sizeof(*us));
+#else
 	bcopy(us, &tmp->stat, sizeof(*us));
+#endif
 
 	(*len)++;
 	(++tmp)->name[0] = 0;
@@ -771,6 +778,21 @@ int MOJOSETUP_asprintf(char **strp, const char *fmt, ...)
     va_end(ap);
     return len;
 } // MOJOSETUP_asprintf
+
+time_t timegm_portable(struct tm *tm)
+{
+    char *envr = getenv("TZ");
+    time_t retval;
+    setenv("TZ", "", 1);
+    tzset();
+    retval = mktime(tm);
+    if (envr)
+        setenv("TZ", envr, 1);
+    else
+        unsetenv("TZ");
+    tzset();
+    return retval;
+} // timegm_portable
 
 boolean ishexnumber(char ch)
 {
