@@ -20,6 +20,7 @@
 #include <sys/param.h>
 #include <sys/utsname.h>
 #include <sys/mount.h>
+#include <stdio.h>
 #include <time.h>
 #include <unistd.h>
 #include <signal.h>
@@ -43,6 +44,10 @@
 
 #if MOJOSETUP_HAVE_MNTENT_H
 #  include <mntent.h>
+#endif
+
+#if MOJOSETUP_HAVE_SYS_MNTTAB_H
+#  include <sys/mnttab.h>
 #endif
 
 #if PLATFORM_BEOS
@@ -861,6 +866,23 @@ char *MojoPlatform_findMedia(const char *uniquefile)
             } // if
         } // while
         endmntent(mounts);
+    } // if
+
+#elif MOJOSETUP_HAVE_SYS_MNTTAB_H
+    FILE *mounts = fopen(MNTTAB, "r");
+    if (mounts != NULL)
+    {
+        struct mnttab ent;
+        while (getmntent(mounts, &ent) == 0)
+        {
+            const char *mnt = ent.mnt_mountp;
+            if (MojoPlatform_exists(mnt, uniquefile))
+            {
+                fclose(mounts);
+                return xstrdup(mnt);
+            } // if
+        } // while
+        fclose(mounts);
     } // if
 
 #else

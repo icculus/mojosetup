@@ -629,6 +629,19 @@ IF(UNIX)
         ADD_DEFINITIONS(-DMOJOSETUP_HAVE_MNTENT_H=1)
     ENDIF(HAVE_MNTENT_H)
 
+    # !!! FIXME: Solaris fails this, because mnttab.h implicitly
+    # !!! FIXME:  depends on other system headers.  :(
+    #CHECK_INCLUDE_FILE(sys/mnttab.h HAVE_SYS_MNTTAB_H)
+    CHECK_C_SOURCE_COMPILES("
+        #include <stdio.h>
+        #include <sys/mnttab.h>
+        int main(int argc, char **argv) { return 0; }
+    " HAVE_SYS_MNTTAB_H)
+
+    IF(HAVE_SYS_MNTTAB_H)
+        ADD_DEFINITIONS(-DMOJOSETUP_HAVE_SYS_MNTTAB_H=1)
+    ENDIF(HAVE_SYS_MNTTAB_H)
+
     IF(NOT MACOSX)
         CHECK_LIBRARY_EXISTS("dl" "dlopen" "" HAVE_LIBDL)
         IF(HAVE_LIBDL)
