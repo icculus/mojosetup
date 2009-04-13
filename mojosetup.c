@@ -328,12 +328,12 @@ boolean wildcardMatch(const char *str, const char *pattern)
             if (pch != sch)
                 return false;
             else if (pch == '\0')
-                return true;
+                break;
             sch = *(str++);
         } // else
     } // while
 
-    return true;   // shouldn't hit this.
+    return true;
 } // wildcardMatch
 
 

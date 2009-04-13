@@ -111,7 +111,7 @@ char *MojoPlatform_readlink(const char *linkname)
     size_t alloclen = 16;
     char *retval = NULL;
     char *buf = NULL;
-    size_t len = -1;
+    ssize_t len = -1;
 
     do
     {
@@ -121,7 +121,7 @@ char *MojoPlatform_readlink(const char *linkname)
         if ( (len != -1) && (len < (alloclen-1)) )  // !error && !overflow
         {
             buf[len] = '\0';  // readlink() doesn't null-terminate!
-            retval = xrealloc(buf, len+1);  // shrink it down.
+            retval = xrealloc(buf, (size_t) (len+1));  // shrink it down.
         } // if
     } while (len >= (alloclen-1));  // loop if we need a bigger buffer.
 
@@ -452,9 +452,8 @@ char *MojoPlatform_osType(void)
     return xstrdup("solaris");
 #else
 #   error Please define your platform.
-#endif
-
     return NULL;
+#endif
 } // MojoPlatform_ostype
 
 

@@ -33,8 +33,8 @@
 
 #if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <sys/cdefs.h>
-#endif
 __FBSDID("$FreeBSD: src/lib/libfetch/common.c,v 1.50 2005/02/16 12:46:46 des Exp $");
+#endif
 
 #include <sys/param.h>
 #include <sys/socket.h>

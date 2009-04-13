@@ -333,8 +333,6 @@ static const char *zlib_error_string(int rc)
         case Z_VERSION_ERROR: return(ERR_ZLIB_VERSION_ERROR);
         default: return(ERR_ZLIB_UNKNOWN_ERROR);
     } /* switch */
-
-    return(NULL);
 } /* zlib_error_string */
 
 

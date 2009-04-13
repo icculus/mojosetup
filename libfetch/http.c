@@ -34,8 +34,8 @@
 
 #if !sun  /* __MOJOSETUP__  Solaris support... */
 #include <sys/cdefs.h>
-#endif
 __FBSDID("$FreeBSD: src/lib/libfetch/http.c,v 1.77 2005/08/24 12:28:05 des Exp $");
+#endif
 
 /*
  * The following copyright applies to the base64 code:
@@ -327,7 +327,7 @@ _http_readfn(void *v, char *buf, int len)
 		if (len < l)
 			l = len;
 #if __MOJOSETUP__
-		memmove(buf + pos, io->buf + io->bufpos, l);
+		memmove(((char *)buf) + pos, io->buf + io->bufpos, l);
 #else
 		bcopy(io->buf + io->bufpos, buf + pos, l);
 #endif

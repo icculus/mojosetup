@@ -1545,8 +1545,6 @@ static const char *logLevelString(void)
         case MOJOSETUP_LOG_DEBUG: return "debug";
         case MOJOSETUP_LOG_EVERYTHING: default: return "everything";
     } // switch
-
-    return NULL;  // shouldn't ever hit this.
 } // logLevelString
 
 
