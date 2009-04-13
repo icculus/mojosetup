@@ -19,7 +19,16 @@ if [ "$OSTYPE" = "Linux" ]; then
     let NCPU=$NCPU+1
 elif [ "$OSTYPE" = "Darwin" ]; then
     NCPU=`sysctl -n hw.ncpu`
+elif [ "$OSTYPE" = "SunOS" ]; then
+    NCPU=`/usr/sbin/prtconf| grep "cpu " |wc -l |sed -e 's/^ *//g;s/ *$//g'`
 else
+    NCPU=1
+fi
+
+if [ "x$NCPU" = "x" ]; then
+    NCPU=1
+fi
+if [ "x$NCPU" = "x0" ]; then
     NCPU=1
 fi
 
