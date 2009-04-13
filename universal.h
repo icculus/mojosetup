@@ -37,6 +37,7 @@
 extern "C" {
 #endif
 
+// !!! FIXME: bad.
 typedef char int8;
 typedef unsigned char uint8;
 typedef short int16;
