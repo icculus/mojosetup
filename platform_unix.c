@@ -27,6 +27,12 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <limits.h>
+
+// !!! FIXME: just remove the one alloca() call in here.
+#if sun
+#include <alloca.h>
+#endif
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
@@ -442,6 +448,8 @@ char *MojoPlatform_osType(void)
     return xstrdup("hpux");
 #elif defined(sgi) || defined(__sgi) || defined(__sgi__) || defined(_SGI_SOURCE)
     return xstrdup("irix");
+#elif defined(sun)
+    return xstrdup("solaris");
 #else
 #   error Please define your platform.
 #endif
