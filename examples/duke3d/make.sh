@@ -20,7 +20,7 @@ if [ "$OSTYPE" = "Linux" ]; then
 elif [ "$OSTYPE" = "Darwin" ]; then
     NCPU=`sysctl -n hw.ncpu`
 elif [ "$OSTYPE" = "SunOS" ]; then
-    NCPU=`/usr/sbin/prtconf| grep "cpu " |wc -l |sed -e 's/^ *//g;s/ *$//g'`
+    NCPU=`/usr/sbin/psrinfo |wc -l |sed -e 's/^ *//g;s/ *$//g'`
 else
     NCPU=1
 fi
