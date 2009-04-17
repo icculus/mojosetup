@@ -187,6 +187,10 @@
 #define LUAI_FUNC	__attribute__((visibility("hidden"))) extern
 #define LUAI_DATA	LUAI_FUNC
 
+#elif (defined SUNPRO_C)
+#define LUAI_FUNC   __global
+#define LUAI_DATA	LUAI_FUNC
+
 #else
 #define LUAI_FUNC	extern
 #define LUAI_DATA	extern

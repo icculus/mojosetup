@@ -371,6 +371,8 @@ extern MojoSetupEntryPoints GEntryPoints;
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
 #if ((defined _MSC_VER) || (PLATFORM_BEOS))
 #define __EXPORT__ __declspec(dllexport)
+#elif (defined SUNPRO_C)
+#define __EXPORT__ __global
 #elif (__GNUC__ >= 3)
 #define __EXPORT__ __attribute__((visibility("default")))
 #else
