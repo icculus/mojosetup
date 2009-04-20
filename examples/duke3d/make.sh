@@ -116,8 +116,16 @@ cp meta/* image/meta/
 
 # Need these scripts to do things like install menu items, etc, on Unix.
 if [ "$OSTYPE" = "Linux" ]; then
+    USE_XDG_UTILS=1
+fi
+if [ "$OSTYPE" = "SunOS" ]; then
+    USE_XDG_UTILS=1
+fi
+
+if [ "x$USE_XDG_UTILS" = "x1" ]; then
     mkdir image/meta/xdg-utils
-    cp -av ../../meta/xdg-utils/* image/meta/xdg-utils/
+    cp ../../meta/xdg-utils/* image/meta/xdg-utils/
+    chmod a+rx image/meta/xdg-utils/*
 fi
 
 # Make a .zip archive of the Base Archive dirs and nuke the originals...
