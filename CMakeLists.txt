@@ -109,9 +109,9 @@ IF(CMAKE_COMPILER_IS_GNUCC)
     " MOJOSETUP_IS_GCC4)
 
     IF(MOJOSETUP_IS_GCC4)
-        IF((NOT OS2) AND (NOT SOLARIS)) # Not supported on OS/2 or Solaris.
+        IF(NOT OS2 AND NOT SOLARIS) # Not supported on OS/2 or Solaris.
             ADD_DEFINITIONS(-fvisibility=hidden)
-        ENDIF((NOT OS2) AND (NOT SOLARIS))
+        ENDIF(NOT OS2 AND NOT SOLARIS)
     ENDIF(MOJOSETUP_IS_GCC4)
 
     # See if -fno-stack-protector is available to us.
