@@ -30,11 +30,6 @@
 #include <sys/wait.h>
 #include <limits.h>
 
-// !!! FIXME: just remove the one alloca() call in here.
-#if sun
-#include <alloca.h>
-#endif
-
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
 #    undef MOJOSETUP_HAVE_MNTENT_H /* don't do both... */
@@ -312,8 +307,7 @@ static char *findBinaryInPath(const char *bin)
     if ((_envr == NULL) || (bin == NULL))
         return NULL;
 
-    envr = (char *) alloca(strlen(_envr) + 1);
-    strcpy(envr, _envr);
+    envr = xstrdup(_envr);
     start = envr;
 
     do
@@ -340,6 +334,7 @@ static char *findBinaryInPath(const char *bin)
         if (access(exe, X_OK) == 0)  // Exists as executable? We're done.
         {
             strcpy(exe, start);  // i'm lazy. piss off.
+            free(envr)
             return(exe);
         } // if
 
@@ -348,6 +343,8 @@ static char *findBinaryInPath(const char *bin)
 
     if (exe != NULL)
         free(exe);
+
+    free(envr);
 
     return(NULL);  // doesn't exist in path.
 } // findBinaryInPath
