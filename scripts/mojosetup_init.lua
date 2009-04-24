@@ -267,7 +267,7 @@ function Setup.Package(tab)
         { "category", "Games", mustBeString, cantBeEmpty },
         { "promptoverwrite", true, mustBeBool },
         { "binarypath", nil, mustBeString, cantBeEmpty },
-        { "updateurl", nil, mustBeString, mustBeUrl },
+        { "updateurl", nil, mustBeUrl },
         { "superuser", false, mustBeBool },
         { "write_manifest", true, mustBeBool },
         { "support_uninstall", true, mustBeBool },
