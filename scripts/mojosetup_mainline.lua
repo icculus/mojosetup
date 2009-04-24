@@ -1191,7 +1191,7 @@ local function do_install(install)
             local desc = eula.description
             local fname = "data/" .. eula.source
 
-            -- (desc) and (fname) become an upvalues in this function.
+            -- (desc) and (fname) become upvalues in this function.
             stages[#stages+1] = function (thisstage, maxstage)
                 local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
                 if retval == 1 then
