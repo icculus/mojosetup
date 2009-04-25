@@ -72,7 +72,7 @@ static volatile enum
 
 static void prepare_wizard(const char *name, WizardPages page,
                            boolean can_back, boolean can_fwd,
-                           boolean can_cancel)
+                           boolean can_cancel, boolean fwd_at_start)
 {
     char *markup = g_markup_printf_escaped(
                         "<span size='large' weight='bold'>%s</span>",
@@ -85,7 +85,7 @@ static void prepare_wizard(const char *name, WizardPages page,
     g_free(markup);
 
     gtk_widget_set_sensitive(back, can_back);
-    gtk_widget_set_sensitive(next, can_fwd);
+    gtk_widget_set_sensitive(next, fwd_at_start);
     gtk_widget_set_sensitive(cancel, can_cancel);
     gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), (gint) page);
 
@@ -128,10 +128,11 @@ static int pump_events(void)
 
 
 static int run_wizard(const char *name, WizardPages page,
-                      boolean can_back, boolean can_fwd, boolean can_cancel)
+                      boolean can_back, boolean can_fwd, boolean can_cancel,
+                      boolean fwd_at_start)
 {
     int retval = CLICK_NONE;
-    prepare_wizard(name, page, can_back, can_fwd, can_cancel);
+    prepare_wizard(name, page, can_back, can_fwd, can_cancel, fwd_at_start);
     while (retval == ((int) CLICK_NONE))
         retval = wait_event();
 
@@ -631,7 +632,7 @@ static int MojoGui_gtkplus2_readme(const char *name, const uint8 *data,
 {
     GtkTextBuffer *textbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(readme));
     gtk_text_buffer_set_text(textbuf, (const gchar *) data, datalen);
-    return run_wizard(name, PAGE_README, can_back, can_fwd, true);
+    return run_wizard(name, PAGE_README, can_back, can_fwd, true, can_fwd);
 } // MojoGui_gtkplus2_readme
 
 
@@ -776,7 +777,8 @@ static int MojoGui_gtkplus2_options(MojoGuiSetupOptions *opts,
     gtk_box_pack_start(GTK_BOX(page), box, FALSE, FALSE, 0);
 
     build_options(opts, box, TRUE);
-    retval = run_wizard(_("Options"), PAGE_OPTIONS, can_back, can_fwd, true);
+    retval = run_wizard(_("Options"), PAGE_OPTIONS,
+                        can_back, can_fwd, true, can_fwd);
     gtk_widget_destroy(box);
     return retval;
 } // MojoGui_gtkplus2_options
@@ -787,6 +789,7 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
                                           boolean can_fwd)
 {
     GtkComboBox *combo = GTK_COMBO_BOX(destination);
+    const boolean fwd_at_start = ( (recnum > 0) && (*(recommends[0])) );
     gchar *str = NULL;
     char *retval = NULL;
     int i;
@@ -795,7 +798,8 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
         gtk_combo_box_append_text(combo, recommends[i]);
     gtk_combo_box_set_active (combo, 0);
 
-    *command = run_wizard(_("Destination"),PAGE_DEST,can_back,can_fwd,true);
+    *command = run_wizard(_("Destination"), PAGE_DEST,
+                          can_back, can_fwd, true, fwd_at_start);
 
     str = gtk_combo_box_get_active_text(combo);
 
@@ -818,16 +822,17 @@ static int MojoGui_gtkplus2_productkey(const char *desc, const char *fmt,
 {
     gchar *str = NULL;
     int retval = 0;
+    const boolean fwd_at_start = isValidProductKey(fmt, buf);
 
     gtk_entry_set_max_length(GTK_ENTRY(productkey), buflen - 1);
     gtk_entry_set_width_chars(GTK_ENTRY(productkey), buflen - 1);
     gtk_entry_set_text(GTK_ENTRY(productkey), (gchar *) buf);
-    signal_productkey_changed(GTK_EDITABLE(productkey), (void *) fmt);
 
     const guint connid = gtk_signal_connect(GTK_OBJECT(productkey), "changed",
                                     GTK_SIGNAL_FUNC(signal_productkey_changed),
                                     (void *) fmt);
-    retval = run_wizard(desc, PAGE_PRODUCTKEY, can_back, can_fwd, true);
+    retval = run_wizard(desc, PAGE_PRODUCTKEY,
+                        can_back, can_fwd, true, fwd_at_start);
     gtk_signal_disconnect(GTK_OBJECT(productkey), connid);
 
     str = gtk_editable_get_chars(GTK_EDITABLE(productkey), 0, -1);
@@ -887,7 +892,7 @@ static boolean MojoGui_gtkplus2_progress(const char *type, const char *component
         lastTicks = ticks;
     } // if
 
-    prepare_wizard(type, PAGE_PROGRESS, false, false, can_cancel);
+    prepare_wizard(type, PAGE_PROGRESS, false, false, can_cancel, false);
     rc = pump_events();
     assert( (rc == ((int) CLICK_CANCEL)) || (rc == ((int) CLICK_NONE)) );
     return (rc != CLICK_CANCEL);
@@ -899,7 +904,7 @@ static void MojoGui_gtkplus2_final(const char *msg)
     gtk_widget_hide(next);
     gtk_widget_show(finish);
     gtk_label_set_text(GTK_LABEL(finallabel), msg);
-    run_wizard(_("Finish"), PAGE_FINAL, false, true, false);
+    run_wizard(_("Finish"), PAGE_FINAL, false, true, false, true);
 } // MojoGui_gtkplus2_final
 
 // end of gui_gtkplus2.c ...
