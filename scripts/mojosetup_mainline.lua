@@ -962,10 +962,11 @@ local function install_product_keys(productkeys)
     for desc,prodkey in pairs(productkeys) do
         local dest = prodkey.destination
         local productkey = prodkey.productkey
+        local component = prodkey.component
         -- !!! FIXME: Windows registry support.
         -- !!! FIXME: file permissions for product keys?
         install_parent_dirs(dest, component)
-        install_file_from_string(dest, productkey, "0755", desc, desc)
+        install_file_from_string(dest, productkey, "0755", desc, component)
     end
 end
 
@@ -1106,7 +1107,7 @@ local function install_desktop_menu_items(pkg)
 end
 
 
-local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest)
+local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest, manifestkey)
     local key = nil
     local defval = nil
 
@@ -1144,7 +1145,11 @@ local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest)
         end
     end
 
-    MojoSetup.productkeys[desc] = { destination = dest, productkey = key }
+    MojoSetup.productkeys[desc] = {
+        destination = dest,
+        productkey = key,
+        component = manifestkey
+    }
 
     return 1
 end
@@ -1270,7 +1275,8 @@ local function do_install(install)
             stages[#stages+1] = function(thisstage, maxstage)
                 return get_productkey(thisstage, maxstage, prodkey.description,
                                       prodkey.format, prodkey.verify,
-                                      prodkey.destination)
+                                      prodkey.destination,
+                                      MojoSetup.metadatakey)
             end
         end
     end
@@ -1407,19 +1413,17 @@ local function do_install(install)
     -- This may not produce a GUI stage if there are no selected options with
     --  product keys. Many installers will use a single global key instead.
     stages[#stages+1] = function(thisstage, maxstage)
-        local option_keys = {}
+        local options_with_keys = {}
 
-        local function find_option_keys(opts)
+        local function find_options_with_keys(opts)
             local options = opts['options']
             if options ~= nil then
                 for k,v in pairs(options) do
                     if v.value then
                         if v.productkeys ~= nil then
-                            for ek,ev in pairs(v.productkeys) do
-                                option_keys[#option_keys+1] = ev
-                            end
+                            options_with_keys[#options_with_keys+1] = v;
                         end
-                        find_option_keys(v)
+                        find_options_with_keys(v)
                     end
                 end
             end
@@ -1428,20 +1432,24 @@ local function do_install(install)
             if optiongroups ~= nil then
                 for k,v in pairs(optiongroups) do
                     if not v.disabled then
-                        find_option_keys(v)
+                        find_options_with_keys(v)
                     end
                 end
             end
         end
 
-        find_option_keys(install)
+        find_options_with_keys(install)
 
-        for k,prodkey in pairs(option_keys) do
-            local retval = get_productkey(thisstage, maxstage,
-                                          prodkey.description, prodkey.format,
-                                          prodkey.verify, prodkey.destination)
-            if retval ~= 1 then
-                return retval
+        for optk,option in ipairs(options_with_keys) do
+            for k,prodkey in ipairs(option.productkeys) do
+                local retval = get_productkey(thisstage, maxstage,
+                                              prodkey.description,
+                                              prodkey.format, prodkey.verify,
+                                              prodkey.destination,
+                                              option.description)
+                if retval ~= 1 then
+                    return retval
+                end
             end
         end
 
