@@ -1109,24 +1109,25 @@ end
 
 local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest, manifestkey)
     local key = nil
-    local defval = nil
+    local userkey = nil
+    local retval = nil
 
     -- Retrieve the previous entry, in case we're stepping back over a stage.
     --  This lets the user edit it or jsut move forward without typing the
     --  whole thing again.
     if MojoSetup.productkeys[desc] ~= nil then
-        defval = MojoSetup.productkeys[desc].productkey
+        userkey = MojoSetup.productkeys[desc].user_productkey
     end
 
     while key == nil do
-        local retval
-        retval, key = MojoSetup.gui.productkey(desc, fmt, defval, thisstage, maxstage)
+        retval, userkey = MojoSetup.gui.productkey(desc, fmt, userkey, thisstage, maxstage)
         if retval ~= 1 then
             return retval  -- user hit back or cancel.
         end
 
+        key = userkey
         if verify ~= nil then
-            local ok, newkey = verify(key)
+            local ok, newkey = verify(userkey)
             if not ok then
                 MojoSetup.msgbox(
                     _("Invalid product key"),
@@ -1148,6 +1149,7 @@ local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest, mani
     MojoSetup.productkeys[desc] = {
         destination = dest,
         productkey = key,
+        user_productkey = userkey,
         component = manifestkey
     }
 
