@@ -273,7 +273,7 @@ const MojoGui *MOJOGUI_ENTRY_POINT(int rev, const MojoSetupEntryPoints *e) \
 #ifdef isValidProductKey
 #undef isValidProductKey
 #endif
-#define isValidProductKey(x,y,z) entry->isValidProductKey(x,y,z)
+#define isValidProductKey(x,y) entry->isValidProductKey(x,y)
 
 #endif
 

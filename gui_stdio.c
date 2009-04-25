@@ -536,7 +536,7 @@ static int MojoGui_stdio_productkey(const char *desc, const char *fmt,
             if ((len == 0) && (defval != NULL))
                 strcpy(buf, defval);
 
-            if (isValidProductKey(fmt, buf, true))
+            if (isValidProductKey(fmt, buf))
             {
                 retval = 1;
                 getout = true;

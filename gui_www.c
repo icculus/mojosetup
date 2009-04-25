@@ -1050,7 +1050,7 @@ static int MojoGui_www_productkey(const char *desc, const char *fmt,
         else
         {
             snprintf(buf, buflen, "%s", keyval);
-            if (isValidProductKey(fmt, buf, true))
+            if (isValidProductKey(fmt, buf))
                 retval = 1;
             // !!! FIXME: must try again if invalid key.
         } // else

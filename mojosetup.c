@@ -951,7 +951,7 @@ uint8 *decodeImage(const uint8 *data, uint32 size, uint32 *w, uint32 *h)
 } // decodeImage
 
 
-boolean isValidProductKey(const char *fmt, const char *key, const int complete)
+boolean isValidProductKey(const char *fmt, const char *key)
 {
     if (fmt == NULL)
         return true;
@@ -999,7 +999,7 @@ boolean isValidProductKey(const char *fmt, const char *key, const int complete)
         } // switch
     } // while
 
-    return ((*key == '\0') || (!complete));  // valid, or valid so far.
+    return (*key == '\0');
 } // isValidProductKey
 
 

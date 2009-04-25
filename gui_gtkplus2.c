@@ -219,7 +219,7 @@ static void signal_productkey_changed(GtkEditable *edit, gpointer user_data)
     {
         const char *fmt = (const char *) user_data;
         char *key = (char *) gtk_editable_get_chars(edit, 0, -1);
-        const gboolean okay = isValidProductKey(fmt, key, false);
+        const gboolean okay = isValidProductKey(fmt, key);
         g_free(key);
         gtk_widget_set_sensitive(next, okay);
     } // if
@@ -829,7 +829,7 @@ static int MojoGui_gtkplus2_productkey(const char *desc, const char *fmt,
 
     str = gtk_editable_get_chars(GTK_EDITABLE(productkey), 0, -1);
     // should never be invalid ("next" should be disabled in that case).
-    assert( (retval <= 0) || ((str) && (isValidProductKey(fmt, str, true))) );
+    assert( (retval <= 0) || ((str) && (isValidProductKey(fmt, str))) );
     assert(strlen(str) < buflen);
     strcpy(buf, (char *) str);
     g_free(str);
