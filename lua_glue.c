@@ -1545,7 +1545,7 @@ static int luahook_gui_productkey(lua_State *L)
     const int maxstage = luaL_checkinteger(L, 5);
     const boolean can_go_back = canGoBack(thisstage);
     const boolean can_go_fwd = canGoForward(thisstage, maxstage);
-    const int fmtlen = fmt ? ((int) strlen(fmt) + 1) : 128;
+    const int fmtlen = fmt ? ((int) strlen(fmt) + 1) : 32;
     char *buf = (char *) xmalloc(fmtlen);
     int cmd = 0;
 
