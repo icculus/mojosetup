@@ -1056,7 +1056,8 @@ static int MojoGui_ncurses_options(MojoGuiSetupOptions *opts,
 } // MojoGui_ncurses_options
 
 
-static char *inputBox(const char *prompt, int *command, boolean can_back)
+static char *inputBox(const char *prompt, int *command, boolean can_back,
+                      const char *defval)
 {
     char *text = NULL;
     int w, h;
@@ -1066,13 +1067,25 @@ static char *inputBox(const char *prompt, int *command, boolean can_back)
     MojoBox *mojobox = NULL;
     size_t retvalalloc = 64;
     size_t retvallen = 0;
-    char *retval = (char *) xmalloc(retvalalloc);
+    char *retval = NULL;
     char *buttons[3] = { NULL, NULL, NULL };
     int drawpos = 0;
     int drawlen = 0;
     int bcount = 0;
     int backbutton = -1;
     int cancelbutton = -1;
+
+    if (defval == NULL)
+        retval = (char *) xmalloc(retvalalloc);
+    else
+    {
+        const size_t defvallen = strlen(defval);
+        if ((defvallen * 2) > retvalalloc)
+            retvalalloc = defvallen * 2;
+        retval = (char *) xmalloc(retvalalloc);
+        retvallen = defvallen;
+        strcpy(retval, defval);
+    } // else
 
     buttons[bcount++] = xstrdup(_("OK"));
 
@@ -1245,7 +1258,7 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
 
         localized = _("Enter path where files will be installed.");
         title = xstrdup(localized);
-        retval = inputBox(title, &rc, (can_back) || (recnum > 0));
+        retval = inputBox(title, &rc, (can_back) || (recnum > 0), NULL);
         free(title);
 
         // user cancelled or entered text, or hit back and we aren't falling
