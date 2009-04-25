@@ -615,6 +615,23 @@ static int luahook_launchbrowser(lua_State *L)
 } // luahook_launchbrowser
 
 
+static int luahook_verifyproductkey(lua_State *L)
+{
+    boolean retval = false;
+
+    // ATTENTION: you can use this function to do your CD key verification
+    //  in C code. Just remove the #if 0, and then process the ASCII string
+    //  in (key), setting (retval) to (true) if the key is valid, and (false)
+    //  if it isn't. Then when filling in a Setup.ProductKey in your
+    //  config.lua, set (verify) to "MojoSetup.verifyproductkey".
+    #if 0
+    const char *key = luaL_checkstring(L, 1);
+    #endif
+
+    return retvalBoolean(L, retval);
+} // luahook_verifyproductkey
+
+
 static int luahook_msgbox(lua_State *L)
 {
     if (GGui != NULL)
@@ -1500,6 +1517,56 @@ static int luahook_gui_destination(lua_State *L)
 } // luahook_gui_destination
 
 
+// make sure spaces and dashes make it into the string.
+//  this counts on (buf) being correctly allocated!
+static void sanitize_productkey(const char *fmt, char *buf)
+{
+    char fmtch;
+    while ((fmtch = *(fmt++)) != '\0')
+    {
+        if ((fmtch == ' ') || (fmtch == '-'))
+        {
+            const char bufch = *buf;
+            if ((bufch != ' ') && (bufch != '-'))
+                memmove(buf + 1, buf, strlen(buf) + 1);
+            *buf = fmtch;
+        } // else if
+        buf++;
+    } // while
+} // sanitize_productkey
+
+
+static int luahook_gui_productkey(lua_State *L)
+{
+    const char *desc = luaL_checkstring(L, 1);
+    const char *fmt = lua_tostring(L, 2);
+    const char *defval = lua_tostring(L, 3);
+    const int thisstage = luaL_checkinteger(L, 4);
+    const int maxstage = luaL_checkinteger(L, 5);
+    const boolean can_go_back = canGoBack(thisstage);
+    const boolean can_go_fwd = canGoForward(thisstage, maxstage);
+    const int fmtlen = fmt ? ((int) strlen(fmt) + 1) : 128;
+    char *buf = (char *) xmalloc(fmtlen);
+    int cmd = 0;
+
+    assert((defval == NULL) || (strlen(defval) < fmtlen));
+    strcpy(buf, (defval == NULL) ? "" : defval);
+
+    cmd = GGui->productkey(desc, fmt, buf, fmtlen, can_go_back, can_go_fwd);
+    if (cmd == 1)
+        sanitize_productkey(fmt, buf);
+    else
+    {
+        free(buf);
+        buf = NULL;
+    } // else
+    lua_pushinteger(L, cmd);
+    lua_pushstring(L, buf);  // may be NULL
+    free(buf);
+    return 2;
+} // luahook_gui_productkey
+
+
 static int luahook_gui_insertmedia(lua_State *L)
 {
     const char *unique = luaL_checkstring(L, 1);
@@ -1634,6 +1701,7 @@ boolean MojoLua_initLua(void)
         set_cfunc(luaState, luahook_format, "format");
         set_cfunc(luaState, luahook_fatal, "fatal");
         set_cfunc(luaState, luahook_launchbrowser, "launchbrowser");
+        set_cfunc(luaState, luahook_verifyproductkey, "verifyproductkey");
         set_cfunc(luaState, luahook_msgbox, "msgbox");
         set_cfunc(luaState, luahook_promptyn, "promptyn");
         set_cfunc(luaState, luahook_promptynan, "promptynan");
@@ -1714,6 +1782,7 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_gui_readme, "readme");
             set_cfunc(luaState, luahook_gui_options, "options");
             set_cfunc(luaState, luahook_gui_destination, "destination");
+            set_cfunc(luaState, luahook_gui_productkey, "productkey");
             set_cfunc(luaState, luahook_gui_insertmedia, "insertmedia");
             set_cfunc(luaState, luahook_gui_progressitem, "progressitem");
             set_cfunc(luaState, luahook_gui_progress, "progress");

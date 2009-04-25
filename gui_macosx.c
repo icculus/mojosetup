@@ -176,15 +176,25 @@ static int MojoGui_macosx_options(MojoGuiSetupOptions *opts,
     return 1;
 } // MojoGui_macosx_options
 
-static char *MojoGui_macosx_destination(const char **recommends, int recnum,
-                                        int *command, boolean can_back,
-                                        boolean can_fwd)
+char *MojoGui_macosx_destination(const char **recommendations, int recnum,
+                                 int *command, boolean can_back,
+                                 boolean can_fwd)
 {
     // !!! FIXME: write me.
     STUBBED("macosx destination");
     *command = 1;
     return xstrdup("/Applications");
 } // MojoGui_macosx_destination
+
+
+static int MojoGui_macosx_productkey(const char *desc, const char *fmt,
+                                     char *buf, const int buflen,
+                                     boolean can_back, boolean can_fwd)
+{
+    // !!! FIXME: write me.
+    STUBBED("macosx productkey");
+    return 0;
+} // MojoGui_macosx_productkey
 
 
 static boolean MojoGui_macosx_insertmedia(const char *medianame)

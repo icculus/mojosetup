@@ -958,6 +958,18 @@ local function install_unix_uninstaller(desc, key)
 end
 
 
+local function install_product_keys(productkeys)
+    for desc,prodkey in pairs(productkeys) do
+        local dest = prodkey.destination
+        local productkey = prodkey.productkey
+        -- !!! FIXME: Windows registry support.
+        -- !!! FIXME: file permissions for product keys?
+        install_parent_dirs(dest, component)
+        install_file_from_string(dest, productkey, "0755", desc, desc)
+    end
+end
+
+
 local function install_manifests(desc, key)
     -- We write out a Lua script as a data definition language, a
     --  loki_setup-compatible XML manifest, and a straight text file of
@@ -1094,6 +1106,50 @@ local function install_desktop_menu_items(pkg)
 end
 
 
+local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest)
+    local key = nil
+    local defval = nil
+
+    -- Retrieve the previous entry, in case we're stepping back over a stage.
+    --  This lets the user edit it or jsut move forward without typing the
+    --  whole thing again.
+    if MojoSetup.productkeys[desc] ~= nil then
+        defval = MojoSetup.productkeys[desc].productkey
+    end
+
+    while key == nil do
+        local retval
+        retval, key = MojoSetup.gui.productkey(desc, fmt, defval, thisstage, maxstage)
+        if retval ~= 1 then
+            return retval  -- user hit back or cancel.
+        end
+
+        if verify ~= nil then
+            local ok, newkey = verify(key)
+            if not ok then
+                MojoSetup.msgbox(
+                    _("Invalid product key"),
+                    _("That key appears to be invalid. Please try again."))
+                key = nil
+            elseif newkey ~= nil then
+                key = newkey
+            end
+        end
+    end
+
+    for desckey,prodkey in pairs(MojoSetup.productkeys) do
+        if (prodkey.destination == dest) and (desckey ~= desc) then
+            MojoSetup.logwarning("More than one product key with same destination!")
+            break
+        end
+    end
+
+    MojoSetup.productkeys[desc] = { destination = dest, productkey = key }
+
+    return 1
+end
+
+
 local function start_gui(desc, splashfname)
     if splashfname ~= nil then
         splashfname = 'meta/' .. splashfname
@@ -1122,6 +1178,7 @@ local function do_install(install)
     MojoSetup.install = install
     MojoSetup.installed_menu_items = false
 
+    -- !!! FIXME: need a cmdline to automate cdkey entry?
     local skipeulas = MojoSetup.cmdline("i-agree-to-all-licenses")
     local skipreadmes = MojoSetup.cmdline("noreadme")
     local skipoptions = MojoSetup.cmdline("nooptions")
@@ -1200,6 +1257,20 @@ local function do_install(install)
                     end
                 end
                 return retval
+            end
+        end
+    end
+
+    -- Next stage: enter all global products keys. These are global keys
+    --  for the install, per-option keys come later.
+    MojoSetup.productkeys = {}
+    if install.productkeys ~= nil then
+        for k,prodkey in pairs(install.productkeys) do
+            -- (prodkey) becomes an upvalue in this function.
+            stages[#stages+1] = function(thisstage, maxstage)
+                return get_productkey(thisstage, maxstage, prodkey.description,
+                                      prodkey.format, prodkey.verify,
+                                      prodkey.destination)
             end
         end
     end
@@ -1330,6 +1401,51 @@ local function do_install(install)
 
             return 1   -- all licenses were agreed to. Go to the next stage.
         end
+    end
+
+    -- Next stage: enter all option-specific product keys.
+    -- This may not produce a GUI stage if there are no selected options with
+    --  product keys. Many installers will use a single global key instead.
+    stages[#stages+1] = function(thisstage, maxstage)
+        local option_keys = {}
+
+        local function find_option_keys(opts)
+            local options = opts['options']
+            if options ~= nil then
+                for k,v in pairs(options) do
+                    if v.value then
+                        if v.productkeys ~= nil then
+                            for ek,ev in pairs(v.productkeys) do
+                                option_keys[#option_keys+1] = ev
+                            end
+                        end
+                        find_option_keys(v)
+                    end
+                end
+            end
+
+            local optiongroups = opts['optiongroups']
+            if optiongroups ~= nil then
+                for k,v in pairs(optiongroups) do
+                    if not v.disabled then
+                        find_option_keys(v)
+                    end
+                end
+            end
+        end
+
+        find_option_keys(install)
+
+        for k,prodkey in pairs(option_keys) do
+            local retval = get_productkey(thisstage, maxstage,
+                                          prodkey.description, prodkey.format,
+                                          prodkey.verify, prodkey.destination)
+            if retval ~= 1 then
+                return retval
+            end
+        end
+
+        return 1   -- all product keys are entered. Go to the next stage.
     end
 
     -- Next stage: Make sure source list is sane.
@@ -1566,6 +1682,8 @@ local function do_install(install)
             end
         end
 
+        install_product_keys(MojoSetup.productkeys)
+
         run_config_defined_hook(install.postinstall, install)
 
         if install.write_manifest then
@@ -1643,6 +1761,7 @@ local function do_install(install)
     MojoSetup.installed_menu_items = nil
     MojoSetup.stages = nil
     MojoSetup.files = nil
+    MojoSetup.productkeys = nil
     MojoSetup.media = nil
     MojoSetup.written = 0
     MojoSetup.totalwrite = 0

@@ -1278,6 +1278,24 @@ static char *MojoGui_ncurses_destination(const char **recommends, int recnum,
 } // MojoGui_ncurses_destination
 
 
+static int MojoGui_ncurses_productkey(const char *desc, const char *fmt,
+                                      char *buf, const int buflen,
+                                      boolean can_back, boolean can_fwd)
+{
+    // !!! FIXME: need text option for (desc).
+    const char *prompt = xstrdup(_("Please enter your product key"));
+    int retval = 0;
+    char *text = inputBox(prompt, &retval, can_back, buf);
+    free(prompt);
+
+    if (retval == 1)
+        snprintf(buf, buflen, "%s", text);
+
+    free(text);
+    return retval;
+} // MojoGui_ncurses_productkey
+
+
 static boolean MojoGui_ncurses_insertmedia(const char *medianame)
 {
     char *fmt = xstrdup(_("Please insert '%0'"));

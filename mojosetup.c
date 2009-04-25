@@ -42,6 +42,7 @@ MojoSetupEntryPoints GEntryPoints =
     utf8codepoint,
     utf8len,
     splitText,
+    isValidProductKey,
 };
 
 int GArgc = 0;
@@ -948,6 +949,58 @@ uint8 *decodeImage(const uint8 *data, uint32 size, uint32 *w, uint32 *h)
 
     return retval;
 } // decodeImage
+
+
+boolean isValidProductKey(const char *fmt, const char *key, const int complete)
+{
+    if (fmt == NULL)
+        return true;
+    else if (key == NULL)
+        return false;
+
+    while (*fmt)
+    {
+        const char fmtch = *(fmt++);
+        const char keych = *(key++);
+        switch (fmtch)
+        {
+            case '-':
+            case ' ':
+                if ((keych == ' ') || (keych == '-'))
+                    break;
+                key--;  // user didn't type this, roll back.
+                break;
+
+            case '#':
+                if ((keych >= '0') && (keych <= '9'))
+                    break;
+                return false;
+
+            case 'X':
+                if ( ((keych >= 'A') && (keych <= 'Z')) ||
+                     ((keych >= 'a') && (keych <= 'z')) )
+                    break;
+                return false;
+
+            case '?':
+                if ( ((keych >= 'A') && (keych <= 'Z')) ||
+                     ((keych >= 'a') && (keych <= 'z')) ||
+                     ((keych >= '0') && (keych <= '9')) )
+                    break;
+                return false;
+
+            case '*':
+                break;
+
+            default:
+                // this should have been caught by schema sanitize.
+                assert(false && "Invalid product key format.");
+                return false;
+        } // switch
+    } // while
+
+    return ((*key == '\0') || (!complete));  // valid, or valid so far.
+} // isValidProductKey
 
 
 // This is called from main()/WinMain()/whatever.

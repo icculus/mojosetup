@@ -80,7 +80,7 @@ struct MojoGuiSplash
 #define MOJOGUI_ENTRY_POINT_STR DEFINE_TO_STR(MOJOGUI_ENTRY_POINT)
 
 // Increment this value when MojoGui's structure changes.
-#define MOJOGUI_INTERFACE_REVISION 5
+#define MOJOGUI_INTERFACE_REVISION 6
 
 typedef struct MojoGui MojoGui;
 struct MojoGui
@@ -100,6 +100,8 @@ struct MojoGui
                    boolean can_back, boolean can_fwd);
     char * (*destination)(const char **recommendations, int recnum,
                           int *command, boolean can_back, boolean can_fwd);
+    int (*productkey)(const char *desc, const char *fmt, char *buf,
+                      const int buflen, boolean can_back, boolean can_fwd);
     boolean (*insertmedia)(const char *medianame);
     void (*progressitem)(void);
     boolean (*progress)(const char *type, const char *component,
@@ -145,6 +147,9 @@ static int MojoGui_##module##_options(MojoGuiSetupOptions *opts, \
                               boolean can_back, boolean can_fwd); \
 static char *MojoGui_##module##_destination(const char **r, int recnum, \
                             int *command, boolean can_back, boolean can_fwd); \
+static int MojoGui_##module##_productkey(const char *desc, const char *fmt, \
+                            char *buf, const int buflen, boolean can_back, \
+                            boolean can_fwd); \
 static boolean MojoGui_##module##_insertmedia(const char *medianame); \
 static void MojoGui_##module##_progressitem(void); \
 static boolean MojoGui_##module##_progress(const char *typ, const char *comp, \
@@ -167,6 +172,7 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_readme, \
             MojoGui_##module##_options, \
             MojoGui_##module##_destination, \
+            MojoGui_##module##_productkey, \
             MojoGui_##module##_insertmedia, \
             MojoGui_##module##_progressitem, \
             MojoGui_##module##_progress, \
@@ -263,6 +269,11 @@ const MojoGui *MOJOGUI_ENTRY_POINT(int rev, const MojoSetupEntryPoints *e) \
 #undef splitText
 #endif
 #define splitText(w,x,y,z) entry->splitText(w,x,y,z)
+
+#ifdef isValidProductKey
+#undef isValidProductKey
+#endif
+#define isValidProductKey(x,y,z) entry->isValidProductKey(x,y,z)
 
 #endif
 

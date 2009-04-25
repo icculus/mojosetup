@@ -171,6 +171,16 @@ local function mustBePerms(fnname, elem, val)
     schema_assert(valid, fnname, elem, _("Permission string is invalid"))
 end
 
+local function mustBeValidProductKeyFormat(fnname, elem, val)
+    -- Can be nil...please use mustExist if this is a problem!
+    if val ~= nil then
+        mustBeString(fnname, elem, val)
+        cantBeEmpty(fnname, elem, val)
+        local valid = (string.match(val, "^[X#%*%? %-]*$") ~= nil)
+        schema_assert(valid, fnname, elem, _("invalid string"))
+    end
+end
+
 local function sanitize(fnname, tab, elems)
     mustBeTable(fnname, "", tab)
     tab._type_ = string.lower(fnname) .. "s"   -- "Eula" becomes "eulas".
@@ -342,6 +352,16 @@ function Setup.Readme(tab)
     {
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
         { "source", nil, mustExist, mustBeString, cantBeEmpty },
+    })
+end
+
+function Setup.ProductKey(tab)
+    return sanitize("ProductKey", tab,
+    {
+        { "description", nil, mustExist, mustBeString, cantBeEmpty },
+        { "format", nil, mustBeValidProductKeyFormat },
+        { "verify", nil, mustBeFunction },
+        { "destination", nil, mustBeString, cantBeEmpty },
     })
 end
 

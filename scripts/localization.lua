@@ -1367,6 +1367,10 @@ MojoSetup.localization = {
     };
 
     -- This is an error string for a buggy config element. See notes above.
+    ["invalid string"] = {
+    };
+
+    -- This is an error string for a buggy config element. See notes above.
     ["must be explicitly specified"] = {
         af = "moet uitdruklik gespesifiseer word",
         ar = "يجب تحديده",
@@ -4305,6 +4309,31 @@ MojoSetup.localization = {
         tr = "Masaüstü menü öğesi kaldırılamadı",
         uk = "Неможливо прибрати запис у меню",
         zh_TW = "移除桌面選單項目失敗"
+    };
+
+    -- This is a prompt to the user to type in their product key (CD key,
+    --  authorization code, etc).
+    ["Please enter your product key"] = {
+    };
+
+    -- The stdio GUI uses this string when we have a default value that can
+    --  be chosen instead of the user pressing a potentially-lengthy string
+    --  of keys. "%0" is the default string that will be used if they just
+    --  press the enter key on their keyboard. This is a parenthetical phrase,
+    --  as it won't be shown if there's no default available.
+    ["(just press enter to use '%0')"] = {
+    };
+
+    -- This is a message box title when informing the user that their product
+    --  key (CD key, authorization code, etc) is incorrect, mistyped, or
+    --  invalid in some way.
+    ["Invalid product key"] = {
+    };
+
+    -- This is the text of a message box informing the user that their product
+    --  key (CD key, authorization code, etc) is incorrect, mistyped, or
+    --  invalid in some way, and they should try to type the key again.
+    ["That key appears to be invalid. Please try again."] = {
     };
 };
 

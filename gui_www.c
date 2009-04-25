@@ -975,6 +975,91 @@ static char *MojoGui_www_destination(const char **recommends, int recnum,
 } // MojoGui_www_destination
 
 
+static int MojoGui_www_productkey(const char *desc, const char *fmt,
+                                  char *buf, const int buflen,
+                                  boolean can_back, boolean can_fwd)
+{
+    const char *prompt = xstrdup(_("Please enter your product key"));
+    char *retval = NULL;
+    char *html = NULL;
+    size_t len = 0, alloc = 0;
+    boolean checked = true;
+    int cancelbutton = -1;
+    int backbutton = -1;
+    int fwdbutton = -1;
+    int bcount = 0;
+    int rc = 0;
+    int i = 0;
+    const char *buttons[4] = { NULL, NULL, NULL, NULL };
+    const char *locButtons[4] = { NULL, NULL, NULL, NULL };
+    assert(STATICARRAYLEN(buttons) == STATICARRAYLEN(locButtons));
+
+    cancelbutton = bcount++;
+    buttons[cancelbutton] = "cancel";
+    locButtons[cancelbutton] = xstrdup(_("Cancel"));
+
+    if (can_back)
+    {
+        backbutton = bcount++;
+        buttons[backbutton] = "back";
+        locButtons[backbutton] = xstrdup(_("Back"));
+    } // if
+
+    if (can_fwd)
+    {
+        fwdbutton = bcount++;
+        buttons[fwdbutton] = "next";
+        locButtons[fwdbutton] = xstrdup(_("Next"));
+    } // if
+
+    strAdd(&html, &len, &alloc,
+        "<form name='form_productkey' method='get'>"
+          "%s<br/>"
+          "<input type='text' name='productkey' value='%s'>"
+         "</form>", prompt, ((*buf) ? buf : ""));
+
+    free(prompt);
+
+    rc = doPromptPage(desc, html, true, "productkey",
+                      buttons, locButtons, bcount);
+
+    free(html);
+    for (i = 0; i < STATICARRAYLEN(locButtons); i++)
+        free((void *) locButtons[i]);
+
+    if (rc == backbutton)
+        retval = -1;
+    else if (rc == cancelbutton)
+        retval = 0;
+    else
+    {
+        WebRequest *req = webRequest;
+        const char *keyval = NULL;
+        while (req != NULL)
+        {
+            const char *k = req->key;
+            const char *v = req->value;
+            if (strcmp(k, "productkey") == 0)
+                keyval = v;
+
+            req = req->next;
+        } // while
+
+        if (keyval == NULL)
+            retval = 0;   // !!! FIXME: maybe loop with doPromptPage again.
+        else
+        {
+            snprintf(buf, buflen, "%s", keyval);
+            if (isValidProductKey(fmt, buf, true))
+                retval = 1;
+            // !!! FIXME: must try again if invalid key.
+        } // else
+    } // else
+
+    return retval;
+} // MojoGui_www_productkey
+
+
 static boolean MojoGui_www_insertmedia(const char *medianame)
 {
     char *htmltext = NULL;

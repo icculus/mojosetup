@@ -37,6 +37,7 @@ typedef enum
     PAGE_README,
     PAGE_OPTIONS,
     PAGE_DEST,
+    PAGE_PRODUCTKEY,
     PAGE_PROGRESS,
     PAGE_FINAL
 } WizardPages;
@@ -53,6 +54,7 @@ static GtkWidget *next = NULL;
 static GtkWidget *finish = NULL;
 static GtkWidget *msgbox = NULL;
 static GtkWidget *destination = NULL;
+static GtkWidget *productkey = NULL;
 static GtkWidget *progressbar = NULL;
 static GtkWidget *progresslabel = NULL;
 static GtkWidget *finallabel = NULL;
@@ -208,6 +210,20 @@ static void signal_dest_changed(GtkComboBox *combo, gpointer user_data)
         gtk_widget_set_sensitive(next, filled_in);
     } // if
 } // signal_dest_changed
+
+
+static void signal_productkey_changed(GtkEditable *edit, gpointer user_data)
+{
+    // Disable the forward button when the entry is blank.
+    if ((currentpage == PAGE_PRODUCTKEY) && (canfwd))
+    {
+        const char *fmt = (const char *) user_data;
+        char *key = (char *) gtk_editable_get_chars(edit, 0, -1);
+        const gboolean okay = isValidProductKey(fmt, key);
+        g_free(key);
+        gtk_widget_set_sensitive(next, okay);
+    } // if
+} // signal_productkey_changed
 
 
 static uint8 MojoGui_gtkplus2_priority(boolean istty)
@@ -522,6 +538,24 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, FALSE, 0);
     gtk_container_add(GTK_CONTAINER(notebook), box);    
 
+    // Product key page
+    box = gtk_vbox_new(FALSE, 0);
+    gtk_widget_show(box);
+
+    widget = gtk_label_new(_("Please enter your product key"));
+    gtk_label_set_justify(GTK_LABEL(widget), GTK_JUSTIFY_CENTER);
+    gtk_label_set_line_wrap(GTK_LABEL(widget), TRUE);
+    gtk_widget_show(widget);
+    gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
+
+    productkey = gtk_entry_new();
+    gtk_entry_set_editable(GTK_ENTRY(productkey), TRUE);
+    gtk_entry_set_visibility(GTK_ENTRY(productkey), TRUE);
+    gtk_widget_show(productkey);
+    gtk_box_pack_start(GTK_BOX(box), productkey, FALSE, TRUE, 0);
+
+    gtk_container_add(GTK_CONTAINER(notebook), box);    
+
     // Progress page
     box = gtk_vbox_new(FALSE, 6);
     gtk_widget_show(box);
@@ -577,6 +611,7 @@ static void MojoGui_gtkplus2_stop(void)
     progresslabel = NULL;
     progressbar = NULL;
     destination = NULL;
+    productkey = NULL;
     notebook = NULL;
     readme = NULL;
     cancel = NULL;
@@ -772,6 +807,36 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
 
     return retval;
 } // MojoGui_gtkplus2_destination
+
+
+static int MojoGui_gtkplus_productkey(const char *desc, const char *fmt,
+                                      char *buf, const int buflen,
+                                      boolean can_back, boolean can_fwd)
+{
+    gchar *str = NULL;
+    int retval = 0;
+
+    gtk_entry_set_max_length(GTK_ENTRY(productkey), buflen - 1);
+    gtk_entry_set_width_chars(GTK_ENTRY(productkey), buflen - 1);
+    gtk_entry_set_text(GTK_ENTRY(productkey), (gchar *) buf);
+    signal_productkey_changed(GTK_EDITABLE(productkey), fmt);
+
+    const guint connid = gtk_signal_connect(GTK_OBJECT(productkey), "changed",
+                                    GTK_SIGNAL_FUNC(signal_productkey_changed),
+                                    fmt);
+    retval = run_wizard(desc, PAGE_PRODUCTKEY, can_back, can_fwd, true);
+    gtk_signal_disconnect(GTK_OBJECT(productkey), connid);
+
+    str = gtk_editable_get_chars(GTK_EDITABLE(productkey), 0, -1);
+    // should never be invalid ("next" should be disabled in that case).
+    assert( (retval <= 0) || ((str) && (isValidProductKey(fmt, key))) );
+    assert(strlen(str) < buflen);
+    strcpy(buf, (char *) str);
+    g_free(str);
+    gtk_entry_set_text(GTK_ENTRY(productkey), "");
+
+    return retval;
+} // MojoGui_gtkplus_productkey
 
 
 static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)

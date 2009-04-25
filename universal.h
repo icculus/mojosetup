@@ -234,6 +234,14 @@ uint32 profile(const char *what, uint32 start_time);
 //  uncompressed data on success. Caller must free() the returned pointer!
 uint8 *decodeImage(const uint8 *data, uint32 size, uint32 *w, uint32 *h);
 
+// See if a given string is in a valid product key format.
+// (fmt) points to a string that would be a Setup.ProductKey.format.
+// (key) is the key as it currently stands. It might be partially entered.
+// (complete) is false if the key is still being typed in, true if this is
+//  the final key the user is entering.
+// Returns true if the key is valid for the format, false otherwise.
+boolean isValidProductKey(const char *fmt, const char *key, const int complete);
+
 // See if a given flag was on the command line
 //
 // cmdline("nosound") will return true if "-nosound", "--nosound",
@@ -364,6 +372,7 @@ typedef struct MojoSetupEntryPoints
     uint32 (*utf8codepoint)(const char **_str);
     int (*utf8len)(const char *str);
     char **(*splitText)(const char *text, int scrw, int *_count, int *_w);
+    boolean (*isValidProductKey)(const char *f, const char *k, const int comp);
 } MojoSetupEntryPoints;
 extern MojoSetupEntryPoints GEntryPoints;
 

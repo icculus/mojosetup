@@ -439,6 +439,107 @@ Here are the elements, and the attributes they can possess.
     the readme text. Currently this must be a text file in UTF-8 encoding.
 
 
+ Setup.ProductKey:
+
+  This element can be a child of Setup.Package or Setup.Option. It can be
+  used to prompt the user for a "CD key" or some other sort of code that
+  is required to install the product. If they can't enter a valid key,
+  the installer terminates without installing anything (or, in the
+  Setup.Option case, steps back in the installation to let them change options,
+  so they can disable the installation of whatever they don't have keys for).
+  There can be multiple Setup.ProductKey elements listed, in which case the
+  end user will be asked to enter each key individually before installation
+  may proceed. The Setup.Package keys are requested after any global EULAs are
+  agreed to, and the Setup.Option keys are requested after any per-option
+  EULAs.
+
+  Setup.ProductKey attributes:
+
+   description (no default, mustExist, mustBeString, cantBeEmpty)
+
+    This is a brief description of the key being requested, used for
+    title bars and such.
+
+
+   format (no default, mustBeString, cantBeEmpty)
+
+    This specifies the exact format a key must be. This is a string of
+    characters. The GUI will not allow the user to continue until they either
+    enter a string that matches this format or abort entry.
+
+    The following characters are acceptable in a format string:
+     'X', '#', ' ', '-', '?', '*'
+
+    'X' means "any letter."
+    '#' means "any number."
+    '?' means "any letter or number."
+    '*' means "any character."
+    ' ' and '-' specify new blocks of text.
+
+    Obviously, these are not regular expressions, or filename-style wildcards.
+
+    For example, if you expect a valid product key to be four segments of
+    four numbers, followed by two letters, your format would be this:
+
+      ####-####-####-#### XX
+
+    '-' and ' ' are optional. The GUI may be able to optimize for these cases,
+    such as splitting input into separate text boxes. Users won't have to
+    enter these characters; MojoSetup will fill them in if they are missing.
+
+    If no format is specified, the user may enter any string.
+
+
+   verify (no default, nil, mustBeFunction)
+
+    This function is called after the user finishes typing in their key. It
+    allows the installer to verify that the key is valid before continuing.
+    The function returns true or false, and maybe optionally return a second
+    value that transforms the key, perhaps to encrypt it before writing it
+    to disk.
+
+    Here is a very basic example function in Lua:
+
+      local function verify_cdkey(key)
+          if key == "this-is-a-valid-cdkey" then
+              -- You could just "return true" too, to not change the key.
+              return true, key .. "-some-extra-junk-on-the-end"
+          end
+          return false
+      end
+
+    One could also call into a C function, which can be handy to reuse the
+    same key validation routines that your installed application would use.
+    MojoSetup's license allows for you to statically link such code without
+    releasing the source code to it. To do so, please see the function
+    luahook_verifyproductkey() in lua_glue.c, and change it to fit your needs.
+
+    If no verify function is specified, no verification occurs; MojoSetup
+    assumes that whatever the user entered is okay, only making sure it
+    matched the specified format.
+
+    In the case of a successful verification, MojoSetup will quietly continue
+    on. If you wish to say something to the user here, such as: "don't tell
+    anyone your CD key, we will never ask you for it," then you should call
+    MojoSetup.msgbox() before returning from your verify function (or, in C
+    code: GGui->msgbox("window title", "message to show").
+
+
+   destination (no default, nil, mustBeString, cantBeEmpty)
+
+    This is where MojoSetup should write the product key. It will be a text
+    file with the final ASCII key string.
+
+    If no destination is specified, the product key is not written to disk.
+    This may be desirable if the installer just needs to make sure a key is
+    available and valid.
+
+    On Windows, the destination is allowed to use a magic format for targeting
+    a specific key in the Windows Registry instead of a file, such as:
+
+     "$WINDOWSREGISTRY/HKEY_LOCAL_MACHINE/Software/MyApp/ProductKey"
+
+
  Setup.Media:
 
   This element is required if you need to install data from removable media,
