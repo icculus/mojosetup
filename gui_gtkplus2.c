@@ -219,7 +219,7 @@ static void signal_productkey_changed(GtkEditable *edit, gpointer user_data)
     {
         const char *fmt = (const char *) user_data;
         char *key = (char *) gtk_editable_get_chars(edit, 0, -1);
-        const gboolean okay = isValidProductKey(fmt, key);
+        const gboolean okay = isValidProductKey(fmt, key, false);
         g_free(key);
         gtk_widget_set_sensitive(next, okay);
     } // if
@@ -809,9 +809,9 @@ static char *MojoGui_gtkplus2_destination(const char **recommends, int recnum,
 } // MojoGui_gtkplus2_destination
 
 
-static int MojoGui_gtkplus_productkey(const char *desc, const char *fmt,
-                                      char *buf, const int buflen,
-                                      boolean can_back, boolean can_fwd)
+static int MojoGui_gtkplus2_productkey(const char *desc, const char *fmt,
+                                       char *buf, const int buflen,
+                                       boolean can_back, boolean can_fwd)
 {
     gchar *str = NULL;
     int retval = 0;
@@ -819,24 +819,24 @@ static int MojoGui_gtkplus_productkey(const char *desc, const char *fmt,
     gtk_entry_set_max_length(GTK_ENTRY(productkey), buflen - 1);
     gtk_entry_set_width_chars(GTK_ENTRY(productkey), buflen - 1);
     gtk_entry_set_text(GTK_ENTRY(productkey), (gchar *) buf);
-    signal_productkey_changed(GTK_EDITABLE(productkey), fmt);
+    signal_productkey_changed(GTK_EDITABLE(productkey), (void *) fmt);
 
     const guint connid = gtk_signal_connect(GTK_OBJECT(productkey), "changed",
                                     GTK_SIGNAL_FUNC(signal_productkey_changed),
-                                    fmt);
+                                    (void *) fmt);
     retval = run_wizard(desc, PAGE_PRODUCTKEY, can_back, can_fwd, true);
     gtk_signal_disconnect(GTK_OBJECT(productkey), connid);
 
     str = gtk_editable_get_chars(GTK_EDITABLE(productkey), 0, -1);
     // should never be invalid ("next" should be disabled in that case).
-    assert( (retval <= 0) || ((str) && (isValidProductKey(fmt, key))) );
+    assert( (retval <= 0) || ((str) && (isValidProductKey(fmt, str, true))) );
     assert(strlen(str) < buflen);
     strcpy(buf, (char *) str);
     g_free(str);
     gtk_entry_set_text(GTK_ENTRY(productkey), "");
 
     return retval;
-} // MojoGui_gtkplus_productkey
+} // MojoGui_gtkplus2_productkey
 
 
 static boolean MojoGui_gtkplus2_insertmedia(const char *medianame)
