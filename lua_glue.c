@@ -1528,14 +1528,16 @@ static void sanitize_productkey(const char *fmt, char *buf)
 
     while ((fmtch = *(fmt++)) != '\0')
     {
+        const char bufch = *buf;
         if ((fmtch == ' ') || (fmtch == '-'))
         {
-            const char bufch = *buf;
             if ((bufch != ' ') && (bufch != '-'))
                 memmove(buf + 1, buf, strlen(buf) + 1);
             *buf = fmtch;
         } // else if
-        buf++;
+
+        if (bufch != '\0')
+            buf++;
     } // while
 } // sanitize_productkey
 
