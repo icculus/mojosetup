@@ -548,11 +548,14 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_widget_show(widget);
     gtk_box_pack_start(GTK_BOX(box), widget, FALSE, TRUE, 0);
 
+    hbox = gtk_hbox_new(FALSE, 0);
+    gtk_widget_show(hbox);
     productkey = gtk_entry_new();
     gtk_entry_set_editable(GTK_ENTRY(productkey), TRUE);
     gtk_entry_set_visibility(GTK_ENTRY(productkey), TRUE);
     gtk_widget_show(productkey);
-    gtk_box_pack_start(GTK_BOX(box), productkey, FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), productkey, TRUE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, TRUE, 0);
 
     gtk_container_add(GTK_CONTAINER(notebook), box);    
 
