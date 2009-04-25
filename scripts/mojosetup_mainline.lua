@@ -960,7 +960,7 @@ end
 
 local function install_product_keys(productkeys)
     for desc,prodkey in pairs(productkeys) do
-        local dest = prodkey.destination
+        local dest = MojoSetup.destination .. "/" .. prodkey.destination
         local productkey = prodkey.productkey
         local component = prodkey.component
         -- !!! FIXME: Windows registry support.
