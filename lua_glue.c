@@ -1522,6 +1522,10 @@ static int luahook_gui_destination(lua_State *L)
 static void sanitize_productkey(const char *fmt, char *buf)
 {
     char fmtch;
+
+    if (fmt == NULL)
+        return;
+
     while ((fmtch = *(fmt++)) != '\0')
     {
         if ((fmtch == ' ') || (fmtch == '-'))
