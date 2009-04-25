@@ -334,7 +334,7 @@ static char *findBinaryInPath(const char *bin)
         if (access(exe, X_OK) == 0)  // Exists as executable? We're done.
         {
             strcpy(exe, start);  // i'm lazy. piss off.
-            free(envr)
+            free(envr);
             return(exe);
         } // if
 
