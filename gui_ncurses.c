@@ -1283,15 +1283,40 @@ static int MojoGui_ncurses_productkey(const char *desc, const char *fmt,
                                       boolean can_back, boolean can_fwd)
 {
     // !!! FIXME: need text option for (desc).
+    // !!! FIXME: need max text entry of (buflen)
+    // !!! FIXME: need to disable "next" button if code is invalid.
     char *prompt = xstrdup(_("Please enter your product key"));
+    boolean getout = false;
     int retval = 0;
-    char *text = inputBox(prompt, &retval, can_back, buf);
+
+    while (!getout)
+    {
+        char *text = inputBox(prompt, &retval, can_back, buf);
+
+        if (retval != 1)
+            getout = true;
+        else
+        {
+            snprintf(buf, buflen, "%s", text);
+            if (isValidProductKey(fmt, text))
+                getout = true;
+            else
+            {
+                // !!! FIXME: just improve inputBox.
+                // We can't check the input character-by-character, so reuse
+                //  the failed-verification localized string.
+                char *failtitle = xstrdup(_("Invalid product key"));
+                char *failstr = xstrdup(_("That key appears to be invalid. Please try again."));
+                MojoGui_ncurses_msgbox(failtitle, failstr);
+                free(failstr);
+                free(failtitle);
+            } // else
+        } // else
+        free(text);
+    } // while
+
     free(prompt);
 
-    if (retval == 1)
-        snprintf(buf, buflen, "%s", text);
-
-    free(text);
     return retval;
 } // MojoGui_ncurses_productkey
 
