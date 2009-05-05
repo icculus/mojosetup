@@ -679,7 +679,6 @@ MojoArchive *MojoArchive_initBaseArchive(void)
 
             // !!! FIXME: failing this, maybe default.mojosetup?
         } // if
-
     } // else
 
     if (GBaseArchive == NULL)
