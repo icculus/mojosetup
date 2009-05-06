@@ -288,9 +288,9 @@ const MojoGui *MojoGuiPlugin_stdio(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_ncurses(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_gtkplus2(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_www(int rev, const MojoSetupEntryPoints *e);
-const MojoGui *MojoGuiPlugin_macosx(int rev, const MojoSetupEntryPoints *e);
+const MojoGui *MojoGuiPlugin_cocoa(int rev, const MojoSetupEntryPoints *e);
 
-// !!! FIXME: Qt? KDE? Gnome? Console? Cocoa?
+// !!! FIXME: Qt? KDE? Gnome? Console? wxWidgets?
 
 #ifdef __cplusplus
 }

@@ -13,11 +13,17 @@
 # Only choose options you want/need to squeeze every byte off the download.
 
 
+# !!! FIXME: this is stupid.
 IF(NOT BEOS)
-    PROJECT(MojoSetup C)
+    IF(APPLE)
+        PROJECT(MojoSetup)
+    ELSE(APPLE)
+        PROJECT(MojoSetup C)
+    ENDIF(APPLE)
 ELSE(NOT BEOS)
     PROJECT(MojoSetup CXX)
 ENDIF(NOT BEOS)
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.4)
 
 EXECUTE_PROCESS(
@@ -389,20 +395,21 @@ ENDIF(NOT BEOS)
 ENDIF(UNIX)
 
 IF(MACOSX)
-    OPTION(MOJOSETUP_GUI_MACOSX "Enable Mac OS X GUI" TRUE)
-    IF(MOJOSETUP_GUI_MACOSX)
-        ADD_DEFINITIONS(-DSUPPORT_GUI_MACOSX=1)
-        OPTION(MOJOSETUP_GUI_MACOSX_STATIC "Statically link Mac OS X GUI" TRUE)
-        IF(MOJOSETUP_GUI_MACOSX_STATIC)
-            ADD_DEFINITIONS(-DGUI_STATIC_LINK_MACOSX=1)
-            SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_macosx.c)
-        ELSE(MOJOSETUP_GUI_MACOSX_STATIC)
-            MOJOSETUP_ADD_LIBRARY(mojosetupgui_macosx gui_macosx.c)
-            TARGET_LINK_LIBRARIES(mojosetupgui_macosx
-                "-framework Carbon -mmacosx-version-min=10.2"
+    OPTION(MOJOSETUP_GUI_COCOA "Enable Cocoa GUI" TRUE)
+    IF(MOJOSETUP_GUI_COCOA)
+        ADD_DEFINITIONS(-DSUPPORT_GUI_COCOA=1)
+        OPTION(MOJOSETUP_GUI_COCOA_STATIC "Statically link Cocoa GUI" TRUE)
+        IF(MOJOSETUP_GUI_COCOA_STATIC)
+            ADD_DEFINITIONS(-DGUI_STATIC_LINK_COCOA=1)
+            SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_cocoa.m)
+            SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "-framework Cocoa")
+        ELSE(MOJOSETUP_GUI_COCOA_STATIC)
+            MOJOSETUP_ADD_LIBRARY(mojosetupgui_cocoa gui_cocoa.m)
+            TARGET_LINK_LIBRARIES(mojosetupgui_cocoa
+                "-framework Carbon -framework Cocoa -mmacosx-version-min=10.2"
             )
-        ENDIF(MOJOSETUP_GUI_MACOSX_STATIC)
-    ENDIF(MOJOSETUP_GUI_MACOSX)
+        ENDIF(MOJOSETUP_GUI_COCOA_STATIC)
+    ENDIF(MOJOSETUP_GUI_COCOA)
 ENDIF(MACOSX)
 
 IF(UNIX)

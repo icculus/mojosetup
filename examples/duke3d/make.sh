@@ -4,6 +4,8 @@
 #  example, but invest effort in what it's trying to do, and what it produces.
 #  (make sure you don't build in features you don't need, etc).
 
+APPNAME="Duke Nukem 3D Installer"
+
 # Stop if anything produces an error.
 set -e
 
@@ -128,15 +130,26 @@ if [ "x$USE_XDG_UTILS" = "x1" ]; then
     chmod a+rx image/meta/xdg-utils/*
 fi
 
-# Make a .zip archive of the Base Archive dirs and nuke the originals...
-cd image
-zip -9r ../pdata.zip *
-cd ..
-rm -rf image
-
-# Append the .zip archive to the mojosetup binary, so it's "self-extracting."
-cat pdata.zip >> ./duke3d-installer
-rm -f pdata.zip
+if [ "$OSTYPE" = "Darwin" ]; then
+    # Build up the application bundle for Mac OS X...
+    APPBUNDLE="$APPNAME.app"
+    rm -rf "$APPBUNDLE"
+    cp -Rv ../../misc/MacAppBundleSkeleton "$APPBUNDLE"
+	perl -w -pi -e 's/YOUR_APPLICATION_NAME_HERE/'"$APPNAME"'/g;' "${APPBUNDLE}/Contents/Info.plist"
+    mv duke3d-installer "${APPBUNDLE}/Contents/MacOS/mojosetup"
+    mv image/* "${APPBUNDLE}/Contents/MacOS/"
+    rmdir image
+    ibtool --compile "${APPBUNDLE}/Contents/Resources/MojoSetup.nib" ../../misc/MojoSetup.xib
+else
+    # Make a .zip archive of the Base Archive dirs and nuke the originals...
+    cd image
+    zip -9r ../pdata.zip *
+    cd ..
+    rm -rf image
+    # Append the .zip archive to the mojosetup binary, so it's "self-extracting."
+    cat pdata.zip >> ./duke3d-installer
+    rm -f pdata.zip
+fi
 
 # ...and that's that.
 set +e
