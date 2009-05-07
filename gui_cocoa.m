@@ -34,7 +34,7 @@ typedef enum
 } ClickValue;
 
 // This nasty hack is because we appear to need to be under
-//  [NSApp run] when calling things like NSRunAlertPanel().
+//  -[NSApp run] when calling things like NSRunAlertPanel().
 // So we push a custom event, call -[NSApp run], catch it, do
 //  the panel, then call -[NSApp stop]. Yuck.
 typedef enum
