@@ -6,8 +6,6 @@
  *  This file written by Ryan C. Gordon.
  */
 
-// !!! FIXME: needs to catch Apple-Q.
-
 #if !SUPPORT_GUI_COCOA
 #error Something is wrong in the build system.
 #endif
@@ -53,19 +51,21 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 {
     IBOutlet NSButton *BackButton;
     IBOutlet NSButton *CancelButton;
-    IBOutlet NSButton *NextButton;
-    IBOutlet NSWindow *MainWindow;
     IBOutlet NSComboBox *DestinationCombo;
     IBOutlet NSTextField *FinalText;
+    IBOutlet NSWindow *MainWindow;
+    IBOutlet NSButton *NextButton;
+    IBOutlet NSProgressIndicator *ProgressBar;
+    IBOutlet NSTextField *ProgressComponentLabel;
+    IBOutlet NSTextField *ProgressItemLabel;
     IBOutlet NSTextView *ReadmeText;
     IBOutlet NSTabView *TabView;
     IBOutlet NSTextField *TitleLabel;
-    IBOutlet NSTextField *ProgressComponentLabel;
-    IBOutlet NSTextField *ProgressItemLabel;
-    IBOutlet NSProgressIndicator *ProgressBar;
+    IBOutlet NSMenuItem *QuitMenuItem;
     ClickValue clickValue;
     boolean canForward;
     boolean needToBreakEventLoop;
+    boolean finalPage;
     MojoGuiYNAN answerYNAN;
 }
 - (void)awakeFromNib;
@@ -83,6 +83,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 - (IBAction)cancelClicked:(NSButton *)sender;
 - (IBAction)nextClicked:(NSButton *)sender;
 - (IBAction)browseClicked:(NSButton *)sender;
+- (IBAction)menuQuit:(NSMenuItem *)sender;
 - (int)doPage:(NSString *)pageId title:(const char *)_title canBack:(boolean)canBack canFwd:(boolean)canFwd canCancel:(boolean)canCancel canFwdAtStart:(boolean)canFwdAtStart shouldBlock:(BOOL)shouldBlock;
 - (int)doReadme:(const char *)title text:(NSString *)text canBack:(boolean)canBack canFwd:(boolean)canFwd;
 - (int)doOptions:(MojoGuiSetupOptions *)opts canBack:(boolean)canBack canFwd:(boolean)canFwd;
@@ -99,6 +100,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         canForward = false;
         answerYNAN = MOJOGUI_NO;
         needToBreakEventLoop = false;
+        finalPage = false;
     } // awakeFromNib
 
     - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -286,6 +288,14 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         STUBBED("browseClicked");
     } // nextClicked
 
+    - (IBAction)menuQuit:(NSMenuItem *)sender
+    {
+        if (finalPage)  // make this work like you clicked "finished".
+            [self nextClicked:nil];
+        else  // make this work like you clicked "cancel".
+            [self cancelClicked:nil];
+    } // menuQuit
+
     - (int)doPage:(NSString *)pageId title:(const char *)_title canBack:(boolean)canBack canFwd:(boolean)canFwd canCancel:(boolean)canCancel canFwdAtStart:(boolean)canFwdAtStart shouldBlock:(BOOL)shouldBlock
     {
         [TitleLabel setStringValue:[NSString stringWithUTF8String:_title]];
@@ -294,6 +304,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         [BackButton setEnabled:canBack ? YES : NO];
         [NextButton setEnabled:canFwdAtStart ? YES : NO];
         [CancelButton setEnabled:canCancel ? YES : NO];
+        [QuitMenuItem setEnabled:canCancel ? YES : NO];
         [TabView selectTabViewItemWithIdentifier:pageId];
         if (shouldBlock == NO)
             [self fireCustomEvent:CUSTOMEVENT_RUNQUEUE data1:0 data2:0 atStart:NO];
@@ -346,6 +357,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 
     - (void)doFinal:(const char *)msg
     {
+        finalPage = true;
         [FinalText setStringValue:[NSString stringWithUTF8String:msg]];
         [NextButton setTitle:[NSString stringWithUTF8String:_("Finish")]];
         [self doPage:@"Final" title:_("Finish") canBack:false canFwd:true canCancel:false canFwdAtStart:true shouldBlock:YES];
