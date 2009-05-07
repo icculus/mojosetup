@@ -335,20 +335,12 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 
     - (int)doProgress:(const char *)type component:(const char *)component percent:(int)percent item:(const char *)item canCancel:(boolean)canCancel
     {
-        //static uint32 lastTicks = 0;
-        //const uint32 ticks = ticks();
-
-        //if ((ticks - lastTicks) > 50)  // just not to spam this...
-        {
-            const BOOL indeterminate = (percent < 0) ? YES : NO;
-            [ProgressComponentLabel setStringValue:[NSString stringWithUTF8String:component]];
-            [ProgressItemLabel setStringValue:[NSString stringWithUTF8String:item]];
-            [ProgressBar setIndeterminate:indeterminate];
-            if (!indeterminate)
-                [ProgressBar setDoubleValue:(double)percent];
-            //lastTicks = ticks;
-        } // if
-
+        const BOOL indeterminate = (percent < 0) ? YES : NO;
+        [ProgressComponentLabel setStringValue:[NSString stringWithUTF8String:component]];
+        [ProgressItemLabel setStringValue:[NSString stringWithUTF8String:item]];
+        [ProgressBar setIndeterminate:indeterminate];
+        if (!indeterminate)
+            [ProgressBar setDoubleValue:(double)percent];
         return [self doPage:@"Progress" title:type canBack:false canFwd:false canCancel:canCancel canFwdAtStart:false shouldBlock:NO];
     } // doProgress
 
