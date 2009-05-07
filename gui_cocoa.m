@@ -356,8 +356,22 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     {
         // !!! FIXME: write me!
         const boolean fwdAtStart = ( (recnum > 0) && (*(recommends[0])) );
+        int i;
+
+        [DestinationCombo removeAllItems];
+        for (i = 0; i < recnum; i++)
+            [DestinationCombo addItemWithObjectValue:[NSString stringWithUTF8String:recommends[i]]];
+
+        if (recnum > 0)
+            [DestinationCombo setStringValue:[NSString stringWithUTF8String:recommends[0]]];
+        else
+            [DestinationCombo setStringValue:@""];
+
         *command = [self doPage:@"Destination" title:_("Destination") canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:fwdAtStart shouldBlock:YES];
-        return xstrdup("/Applications");
+        char *retval = xstrdup([[DestinationCombo stringValue] UTF8String]);
+        [DestinationCombo removeAllItems];
+        [DestinationCombo setStringValue:@""];
+        return retval;
     } // doDestination
 
     - (int)doProductKey:(const char *)desc fmt:(const char *)fmt buf:(char *)buf buflen:(const int)buflen canBack:(boolean)canBack canFwd:(boolean)canFwd
