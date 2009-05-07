@@ -6,6 +6,9 @@
  *  This file written by Ryan C. Gordon.
  */
 
+// !!! FIXME: needs to catch Apple-Q.
+// !!! FIXME: cancel during progress is wanged.
+
 #if !SUPPORT_GUI_COCOA
 #error Something is wrong in the build system.
 #endif
@@ -31,6 +34,20 @@ typedef enum
     CLICK_NONE
 } ClickValue;
 
+// This nasty hack is because we appear to need to be under
+//  [NSApp run] when calling things like NSRunAlertPanel().
+// So we push a custom event, call -[NSApp run], catch it, do
+//  the panel, then call -[NSApp stop]. Yuck.
+typedef enum
+{
+    CUSTOMEVENT_RUNQUEUE,
+    CUSTOMEVENT_MSGBOX,
+    CUSTOMEVENT_PROMPTYN,
+    CUSTOMEVENT_PROMPTYNAN,
+    CUSTOMEVENT_INSERTMEDIA,
+} CustomEvent;
+
+
 static NSAutoreleasePool *GAutoreleasePool = nil;
 
 @interface MojoSetupController : NSView
@@ -44,17 +61,29 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     IBOutlet NSTextView *ReadmeText;
     IBOutlet NSTabView *TabView;
     IBOutlet NSTextField *TitleLabel;
+    IBOutlet NSTextField *ProgressComponentLabel;
+    IBOutlet NSTextField *ProgressItemLabel;
+    IBOutlet NSProgressIndicator *ProgressBar;
     ClickValue clickValue;
     boolean canForward;
+    MojoGuiYNAN answerYNAN;
 }
+- (void)awakeFromNib;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 - (void)prepareWidgets:(const char*)winTitle;
 - (void)unprepareWidgets;
+- (void)fireCustomEvent:(CustomEvent)eventType data1:(NSInteger)data1 data2:(NSInteger)data2 atStart:(BOOL)atStart;
+- (void)doCustomEvent:(NSEvent *)event;
+- (void)doMsgBox:(const char *)title text:(const char *)text;
+- (void)doPromptYN:(const char *)title text:(const char *)text;
+- (void)doPromptYNAN:(const char *)title text:(const char *)text;
+- (void)doInsertMedia:(const char *)medianame;
+- (MojoGuiYNAN)getAnswerYNAN;
 - (IBAction)backClicked:(NSButton *)sender;
 - (IBAction)cancelClicked:(NSButton *)sender;
 - (IBAction)nextClicked:(NSButton *)sender;
 - (IBAction)browseClicked:(NSButton *)sender;
-- (int)runPage:(NSString *)pageId title:(const char *)_title canBack:(boolean)canBack canFwd:(boolean)canFwd canCancel:(boolean)canCancel canFwdAtStart:(boolean)canFwdAtStart;
+- (int)doPage:(NSString *)pageId title:(const char *)_title canBack:(boolean)canBack canFwd:(boolean)canFwd canCancel:(boolean)canCancel canFwdAtStart:(boolean)canFwdAtStart shouldBlock:(BOOL)shouldBlock;
 - (int)doReadme:(const char *)title text:(NSString *)text canBack:(boolean)canBack canFwd:(boolean)canFwd;
 - (int)doOptions:(MojoGuiSetupOptions *)opts canBack:(boolean)canBack canFwd:(boolean)canFwd;
 - (char *)doDestination:(const char **)recommends recnum:(int)recnum command:(int *)command canBack:(boolean)canBack canFwd:(boolean)canFwd;
@@ -64,6 +93,13 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 @end // interface MojoSetupController
 
 @implementation MojoSetupController
+    - (void)awakeFromNib
+    {
+        clickValue = CLICK_NONE;
+        canForward = false;
+        answerYNAN = MOJOGUI_NO;
+    } // awakeFromNib
+
     - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
     {
         printf("didfinishlaunching\n");
@@ -72,9 +108,42 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 
     - (void)prepareWidgets:(const char*)winTitle
     {
+        #if 1
         [BackButton setTitle:[NSString stringWithUTF8String:_("Back")]];
         [NextButton setTitle:[NSString stringWithUTF8String:_("Next")]];
         [CancelButton setTitle:[NSString stringWithUTF8String:_("Cancel")]];
+        #else
+        // !!! FIXME: there's probably a better way to do this.
+        // Set the correct localization for the buttons, then resize them so
+        //  the new text fits perfectly. After that, we need to reposition
+        //  them so they don't look scattered.
+        NSRect frameBack = [BackButton frame];
+        NSRect frameNext = [NextButton frame];
+        NSRect frameCancel = [CancelButton frame];
+        const float startX = frameCancel.origin.x + frameCancel.size.width;
+        const float spacing = (frameBack.origin.x + frameBack.size.width) - frameNext.origin.x;
+        [BackButton setTitle:[NSString stringWithUTF8String:_("Back")]];
+        [NextButton setTitle:[NSString stringWithUTF8String:_("Next")]];
+        [CancelButton setTitle:[NSString stringWithUTF8String:_("Cancel")]];
+        [BackButton sizeToFit];
+        [NextButton sizeToFit];
+        [CancelButton sizeToFit];
+        frameBack = [BackButton frame];
+        frameNext = [NextButton frame];
+        frameCancel = [CancelButton frame];
+        frameCancel.origin.x = startX - frameCancel.size.width;
+        frameNext.origin.x = (frameCancel.origin.x - frameNext.size.width) - spacing;
+        frameBack.origin.x = (frameNext.origin.x - frameBack.size.width) - spacing;
+        [CancelButton setFrame:frameCancel];
+        [CancelButton setNeedsDisplay:YES];
+        [NextButton setFrame:frameNext];
+        [NextButton setNeedsDisplay:YES];
+        [BackButton setFrame:frameBack];
+        [BackButton setNeedsDisplay:YES];
+        #endif
+
+        [ProgressBar setUsesThreadedAnimation:YES];  // we don't pump fast enough.
+        [ProgressBar startAnimation:self];
         [MainWindow setTitle:[NSString stringWithUTF8String:winTitle]];
         [MainWindow center];
         [MainWindow makeKeyAndOrderFront:self];
@@ -84,6 +153,83 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     {
         [MainWindow orderOut:self];
     } // unprepareWidgets
+
+    - (void)fireCustomEvent:(CustomEvent)eventType data1:(NSInteger)data1 data2:(NSInteger)data2 atStart:(BOOL)atStart
+    {
+        NSEvent *event = [NSEvent otherEventWithType:NSApplicationDefined location:NSZeroPoint modifierFlags:0 timestamp:0 windowNumber:0 context:nil subtype:(short)eventType data1:data1 data2:data2];
+        [NSApp postEvent:event atStart:atStart];
+        [NSApp run];  // event handler _must_ call -[NSApp stop], or you block here forever.
+    } // fireCustomEvent
+
+    - (void)doCustomEvent:(NSEvent*)event
+    {
+        printf("custom event!\n");
+        switch ((CustomEvent) [event subtype])
+        {
+            case CUSTOMEVENT_RUNQUEUE:
+                break;  // we just need the -[NSApp stop] call.
+            case CUSTOMEVENT_MSGBOX:
+                [self doMsgBox:(const char *)[event data1] text:(const char *)[event data2]];
+                break;
+            case CUSTOMEVENT_PROMPTYN:
+                [self doPromptYN:(const char *)[event data1] text:(const char *)[event data2]];
+                break;
+            case CUSTOMEVENT_PROMPTYNAN:
+                [self doPromptYNAN:(const char *)[event data1] text:(const char *)[event data2]];
+                break;
+            case CUSTOMEVENT_INSERTMEDIA:
+                [self doInsertMedia:(const char *)[event data1]];
+                break;
+            default:
+                assert(false && "Cocoa: Unexpected custom event");
+                return;  // let it go without breaking the event loop.
+        } // switch
+
+        [NSApp stop:self];  // break the event loop.
+    } // doCustomEvent
+
+    - (void)doMsgBox:(const char *)title text:(const char *)text
+    {
+        NSString *titlestr = [NSString stringWithUTF8String:title];
+        NSString *textstr = [NSString stringWithUTF8String:text];
+        NSString *okstr = [NSString stringWithUTF8String:_("OK")];
+        NSRunInformationalAlertPanel(titlestr, textstr, okstr, nil, nil);
+    } // doMsgBox
+
+    - (void)doPromptYN:(const char *)title text:(const char *)text
+    {
+        NSString *titlestr = [NSString stringWithUTF8String:title];
+        NSString *textstr = [NSString stringWithUTF8String:text];
+        NSString *yesstr = [NSString stringWithUTF8String:_("Yes")];
+        NSString *nostr = [NSString stringWithUTF8String:_("No")];
+        const NSInteger rc = NSRunAlertPanel(titlestr, textstr, yesstr, nostr, nil);
+        answerYNAN = ((rc == NSAlertDefaultReturn) ? MOJOGUI_YES : MOJOGUI_NO);
+    } // doPromptYN
+
+    - (void)doPromptYNAN:(const char *)title text:(const char *)text
+    {
+        // !!! FIXME
+        [self doPromptYN:title text:text];
+    } // doPromptYN
+
+    - (void)doInsertMedia:(const char *)medianame
+    {
+        NSString *title = [NSString stringWithUTF8String:_("Media change")];
+        char *fmt = xstrdup(_("Please insert '%0'"));
+        char *_text = format(fmt, medianame);
+        NSString *text = [NSString stringWithUTF8String:_text];
+        free(_text);
+        free(fmt);
+        NSString *okstr = [NSString stringWithUTF8String:_("OK")];
+        NSString *cancelstr = [NSString stringWithUTF8String:_("Cancel")];
+        const NSInteger rc = NSRunAlertPanel(title, text, okstr, cancelstr, nil);
+        answerYNAN = ((rc == NSAlertDefaultReturn) ? MOJOGUI_YES : MOJOGUI_NO);
+    } // doInsertMedia
+
+    - (MojoGuiYNAN)getAnswerYNAN
+    {
+        return answerYNAN;
+    } // getAnswerYNAN
 
     - (IBAction)backClicked:(NSButton *)sender
     {
@@ -95,10 +241,10 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     {
         char *title = xstrdup(_("Cancel installation"));
         char *text = xstrdup(_("Are you sure you want to cancel installation?"));
-        const boolean rc = MojoGui_cocoa_promptyn(title, text, false);
+        [self doPromptYN:title text:text];
         free(title);
         free(text);
-        if (rc)
+        if (answerYNAN == MOJOGUI_YES)
         {
             clickValue = CLICK_CANCEL;
             [NSApp stop:self];
@@ -117,7 +263,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         STUBBED("browseClicked");
     } // nextClicked
 
-    - (int)runPage:(NSString *)pageId title:(const char *)_title canBack:(boolean)canBack canFwd:(boolean)canFwd canCancel:(boolean)canCancel canFwdAtStart:(boolean)canFwdAtStart
+    - (int)doPage:(NSString *)pageId title:(const char *)_title canBack:(boolean)canBack canFwd:(boolean)canFwd canCancel:(boolean)canCancel canFwdAtStart:(boolean)canFwdAtStart shouldBlock:(BOOL)shouldBlock
     {
         [TitleLabel setStringValue:[NSString stringWithUTF8String:_title]];
         clickValue = CLICK_NONE;
@@ -126,52 +272,86 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         [NextButton setEnabled:canFwdAtStart ? YES : NO];
         [CancelButton setEnabled:canCancel ? YES : NO];
         [TabView selectTabViewItemWithIdentifier:pageId];
-        [NSApp run];
-        assert(clickValue < CLICK_NONE);
+        if (shouldBlock == NO)
+            [self fireCustomEvent:CUSTOMEVENT_RUNQUEUE data1:0 data2:0 atStart:NO];
+        else
+        {
+            [NSApp run];
+            assert(clickValue < CLICK_NONE);
+        } // else
         return (int) clickValue;
-    } // runPage
+    } // doPage
 
     - (int)doReadme:(const char *)title text:(NSString *)text canBack:(boolean)canBack canFwd:(boolean)canFwd
     {
         NSRange range = {0, 1};  // reset scrolling to start of text.
         [ReadmeText setString:text];
         [ReadmeText scrollRangeToVisible:range];
-        return [self runPage:@"Readme" title:title canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd];
+        return [self doPage:@"Readme" title:title canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd shouldBlock:YES];
     } // doReadme
 
     - (int)doOptions:(MojoGuiSetupOptions *)opts canBack:(boolean)canBack canFwd:(boolean)canFwd
     {
         // !!! FIXME: write me!
-        return [self runPage:@"Options" title:_("Options") canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd];
+        return [self doPage:@"Options" title:_("Options") canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd shouldBlock:YES];
     } // doOptions
 
     - (char *)doDestination:(const char **)recommends recnum:(int)recnum command:(int *)command canBack:(boolean)canBack canFwd:(boolean)canFwd
     {
         // !!! FIXME: write me!
         const boolean fwdAtStart = ( (recnum > 0) && (*(recommends[0])) );
-        *command = [self runPage:@"Destination" title:_("Destination") canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:fwdAtStart];
+        *command = [self doPage:@"Destination" title:_("Destination") canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:fwdAtStart shouldBlock:YES];
         return xstrdup("/Applications");
     } // doDestination
 
     - (int)doProductKey:(const char *)desc fmt:(const char *)fmt buf:(char *)buf buflen:(const int)buflen canBack:(boolean)canBack canFwd:(boolean)canFwd
     {
         // !!! FIXME: write me!
-        return [self runPage:@"ProductKey" title:desc canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd];
+        return [self doPage:@"ProductKey" title:desc canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd shouldBlock:YES];
     } // doProductKey
 
     - (int)doProgress:(const char *)type component:(const char *)component percent:(int)percent item:(const char *)item canCancel:(boolean)canCancel
     {
-        // !!! FIXME: write me!
-        return [self runPage:@"Progress" title:type canBack:false canFwd:false canCancel:canCancel canFwdAtStart:false];
+        //static uint32 lastTicks = 0;
+        //const uint32 ticks = ticks();
+
+        //if ((ticks - lastTicks) > 50)  // just not to spam this...
+        {
+            const BOOL indeterminate = (percent < 0) ? YES : NO;
+            [ProgressComponentLabel setStringValue:[NSString stringWithUTF8String:component]];
+            [ProgressItemLabel setStringValue:[NSString stringWithUTF8String:item]];
+            [ProgressBar setIndeterminate:indeterminate];
+            if (!indeterminate)
+                [ProgressBar setDoubleValue:(double)percent];
+            //lastTicks = ticks;
+        } // if
+
+        return [self doPage:@"Progress" title:type canBack:false canFwd:false canCancel:canCancel canFwdAtStart:false shouldBlock:NO];
     } // doProgress
 
     - (void)doFinal:(const char *)msg
     {
         [FinalText setStringValue:[NSString stringWithUTF8String:msg]];
         [NextButton setTitle:[NSString stringWithUTF8String:_("Finish")]];
-        [self runPage:@"Final" title:_("Finish") canBack:false canFwd:true canCancel:false canFwdAtStart:true];
+        [self doPage:@"Final" title:_("Finish") canBack:false canFwd:true canCancel:false canFwdAtStart:true shouldBlock:YES];
     } // doFinal
 @end // implementation MojoSetupController
+
+// Override [NSApplication sendEvent], so we can catch custom events.
+@interface MojoSetupApplication : NSApplication
+{
+}
+- (void)sendEvent:(NSEvent *)event;
+@end // interface MojoSetupApplication
+
+@implementation MojoSetupApplication
+    - (void)sendEvent:(NSEvent *)event
+    {
+        if ([event type] == NSApplicationDefined)
+            [((MojoSetupController *)[self delegate]) doCustomEvent:event];
+        [super sendEvent:event];
+    } // sendEvent
+@end // implementation MojoSetupApplication
 
 
 static uint8 MojoGui_cocoa_priority(boolean istty)
@@ -199,7 +379,9 @@ static boolean MojoGui_cocoa_init(void)
     // !!! FIXME: make sure we have access to the desktop...may be ssh'd in
     // !!! FIXME:  as another user that doesn't have the Finder loaded or
     // !!! FIXME:  something.
-    [NSApplication sharedApplication];
+
+    // For NSApp to be our subclass, instead of default NSApplication.
+    [MojoSetupApplication sharedApplication];
     if ([NSBundle loadNibNamed:@"MojoSetup" owner:NSApp] == NO)
         return false;
 
@@ -220,24 +402,19 @@ static void MojoGui_cocoa_deinit(void)
 } // MojoGui_cocoa_deinit
 
 
-static void MojoGui_cocoa_msgbox(const char *_title, const char *_text)
+static void MojoGui_cocoa_msgbox(const char *title, const char *text)
 {
-    NSString *title = [NSString stringWithUTF8String:_title];
-    NSString *text = [NSString stringWithUTF8String:_text];
-    NSString *ok = [NSString stringWithUTF8String:_("OK")];
-    NSRunInformationalAlertPanel(title, text, ok, nil, nil);
+    [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_MSGBOX data1:(NSInteger)title data2:(NSInteger)text atStart:YES];
 } // MojoGui_cocoa_msgbox
 
 
-static boolean MojoGui_cocoa_promptyn(const char *_title, const char *_text,
+static boolean MojoGui_cocoa_promptyn(const char *title, const char *text,
                                       boolean defval)
 {
-    NSString *title = [NSString stringWithUTF8String:_title];
-    NSString *text = [NSString stringWithUTF8String:_text];
-    NSString *yesstr = [NSString stringWithUTF8String:_("Yes")];
-    NSString *nostr = [NSString stringWithUTF8String:_("No")];
-    const NSInteger rc = NSRunAlertPanel(title, text, yesstr, nostr, nil);
-    return (rc == NSAlertDefaultReturn);
+    [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_PROMPTYN data1:(NSInteger)title data2:(NSInteger)text atStart:YES];
+    const MojoGuiYNAN ynan = [[NSApp delegate] getAnswerYNAN];
+    assert((ynan == MOJOGUI_YES) || (ynan == MOJOGUI_NO));
+    return (ynan == MOJOGUI_YES);
 } // MojoGui_cocoa_promptyn
 
 
@@ -245,8 +422,8 @@ static MojoGuiYNAN MojoGui_cocoa_promptynan(const char *title,
                                             const char *text,
                                             boolean defval)
 {
-    STUBBED("ynan");
-    return MojoGui_cocoa_promptyn(title, text, defval);  // !!! FIXME
+    [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_PROMPTYNAN data1:(NSInteger)title data2:(NSInteger)text atStart:YES];
+    return [[NSApp delegate] getAnswerYNAN];
 } // MojoGui_cocoa_promptynan
 
 
@@ -306,16 +483,10 @@ printf("productkey\n");
 static boolean MojoGui_cocoa_insertmedia(const char *medianame)
 {
 printf("insertmedia\n");
-    NSString *title = [NSString stringWithUTF8String:_("Media change")];
-    char *fmt = xstrdup(_("Please insert '%0'"));
-    char *_text = format(fmt, medianame);
-    NSString *text = [NSString stringWithUTF8String:_text];
-    free(_text);
-    free(fmt);
-    NSString *okstr = [NSString stringWithUTF8String:_("OK")];
-    NSString *cancelstr = [NSString stringWithUTF8String:_("Cancel")];
-    const NSInteger rc = NSRunAlertPanel(title, text, okstr, cancelstr, nil);
-    return (rc == NSAlertDefaultReturn);
+    [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_INSERTMEDIA data1:(NSInteger)medianame data2:0 atStart:YES];
+    const MojoGuiYNAN ynan = [[NSApp delegate] getAnswerYNAN];
+    assert((ynan == MOJOGUI_YES) || (ynan == MOJOGUI_NO));
+    return (ynan == MOJOGUI_YES);
 } // MojoGui_cocoa_insertmedia
 
 
