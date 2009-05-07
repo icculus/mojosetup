@@ -292,7 +292,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     {
         if (finalPage)  // make this work like you clicked "finished".
             [self nextClicked:nil];
-        else  // make this work like you clicked "cancel".
+        else if ([CancelButton isEnabled])  // make this work like you clicked "cancel".
             [self cancelClicked:nil];
     } // menuQuit
 
@@ -304,7 +304,6 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         [BackButton setEnabled:canBack ? YES : NO];
         [NextButton setEnabled:canFwdAtStart ? YES : NO];
         [CancelButton setEnabled:canCancel ? YES : NO];
-        [QuitMenuItem setEnabled:canCancel ? YES : NO];
         [TabView selectTabViewItemWithIdentifier:pageId];
         if (shouldBlock == NO)
             [self fireCustomEvent:CUSTOMEVENT_RUNQUEUE data1:0 data2:0 atStart:NO];
