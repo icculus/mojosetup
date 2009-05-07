@@ -7,7 +7,6 @@
  */
 
 // !!! FIXME: needs to catch Apple-Q.
-// !!! FIXME: cancel during progress is wanged.
 
 #if !SUPPORT_GUI_COCOA
 #error Something is wrong in the build system.
@@ -66,6 +65,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     IBOutlet NSProgressIndicator *ProgressBar;
     ClickValue clickValue;
     boolean canForward;
+    boolean needToBreakEventLoop;
     MojoGuiYNAN answerYNAN;
 }
 - (void)awakeFromNib;
@@ -98,6 +98,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         clickValue = CLICK_NONE;
         canForward = false;
         answerYNAN = MOJOGUI_NO;
+        needToBreakEventLoop = false;
     } // awakeFromNib
 
     - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -167,6 +168,13 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         switch ((CustomEvent) [event subtype])
         {
             case CUSTOMEVENT_RUNQUEUE:
+                if ([NSApp modalWindow] != nil)
+                {
+                    // If we're in a modal thing, so don't break the event loop.
+                    //  Just make a note to break it later.
+                    needToBreakEventLoop = true;
+                    return;
+                } // if
                 break;  // we just need the -[NSApp stop] call.
             case CUSTOMEVENT_MSGBOX:
                 [self doMsgBox:(const char *)[event data1] text:(const char *)[event data2]];
@@ -194,6 +202,11 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         NSString *textstr = [NSString stringWithUTF8String:text];
         NSString *okstr = [NSString stringWithUTF8String:_("OK")];
         NSRunInformationalAlertPanel(titlestr, textstr, okstr, nil, nil);
+        if (needToBreakEventLoop)
+        {
+            needToBreakEventLoop = false;
+            [self fireCustomEvent:CUSTOMEVENT_RUNQUEUE data1:0 data2:0 atStart:NO];
+        } // if
     } // doMsgBox
 
     - (void)doPromptYN:(const char *)title text:(const char *)text
@@ -204,6 +217,11 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         NSString *nostr = [NSString stringWithUTF8String:_("No")];
         const NSInteger rc = NSRunAlertPanel(titlestr, textstr, yesstr, nostr, nil);
         answerYNAN = ((rc == NSAlertDefaultReturn) ? MOJOGUI_YES : MOJOGUI_NO);
+        if (needToBreakEventLoop)
+        {
+            needToBreakEventLoop = false;
+            [self fireCustomEvent:CUSTOMEVENT_RUNQUEUE data1:0 data2:0 atStart:NO];
+        } // if
     } // doPromptYN
 
     - (void)doPromptYNAN:(const char *)title text:(const char *)text
@@ -224,6 +242,11 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         NSString *cancelstr = [NSString stringWithUTF8String:_("Cancel")];
         const NSInteger rc = NSRunAlertPanel(title, text, okstr, cancelstr, nil);
         answerYNAN = ((rc == NSAlertDefaultReturn) ? MOJOGUI_YES : MOJOGUI_NO);
+        if (needToBreakEventLoop)
+        {
+            needToBreakEventLoop = false;
+            [self fireCustomEvent:CUSTOMEVENT_RUNQUEUE data1:0 data2:0 atStart:NO];
+        } // if
     } // doInsertMedia
 
     - (MojoGuiYNAN)getAnswerYNAN
