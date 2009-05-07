@@ -4335,6 +4335,29 @@ MojoSetup.localization = {
     --  invalid in some way, and they should try to type the key again.
     ["That key appears to be invalid. Please try again."] = {
     };
+
+    -- This is the text of the "About" menu item, on Mac OS X.
+    --  "%0" is the name of the application ("MyGame Installer" or whatnot),
+    --  which will be replaced at runtime.
+    ["About %0"] = {
+        zh_TW = "關於 %0",
+        zh_CN = "关于 %0",
+        sv = "Om %0",
+        es = "Acerca de %0",
+        ru = "О программе %0",
+        pt_PT = "Acerca do %0",
+        pt = "Sobre o %0",
+        pl = "O programie %0…",
+        no = "Om %0",
+        ko = "%0에 관하여",
+        jp = "%0 について",
+        it = "Informazioni su %0",
+        de = "Über %0",
+        fr = "À propos d’%0",
+        fi = "Tietoja: %0",
+        nl = "Over %0",
+        da = "Om %0",
+    };
 };
 
 -- end of localization.lua ...
