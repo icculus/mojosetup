@@ -37,6 +37,7 @@ typedef enum
 //  the panel, then call -[NSApp stop]. Yuck.
 typedef enum
 {
+    CUSTOMEVENT_BASEVALUE=3234,
     CUSTOMEVENT_RUNQUEUE,
     CUSTOMEVENT_MSGBOX,
     CUSTOMEVENT_PROMPTYN,
@@ -214,7 +215,6 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
                 [self doInsertMedia:(const char *)[event data1]];
                 break;
             default:
-                assert(false && "Cocoa: Unexpected custom event");
                 return;  // let it go without breaking the event loop.
         } // switch
 
