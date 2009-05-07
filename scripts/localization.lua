@@ -4337,6 +4337,7 @@ MojoSetup.localization = {
     };
 
     -- This is the text of the "About" menu item, on Mac OS X.
+    --  This menu item creates a window with basic application information.
     --  "%0" is the name of the application ("MyGame Installer" or whatnot),
     --  which will be replaced at runtime.
     ["About %0"] = {
@@ -4357,6 +4358,20 @@ MojoSetup.localization = {
         fi = "Tietoja: %0",
         nl = "Over %0",
         da = "Om %0",
+    };
+
+    -- This is the text of the "Hide" menu item, on Mac OS X.
+    --  This menu item makes MojoSetup's windows disappear.
+    --  "%0" is the name of the application ("MyGame Installer" or whatnot),
+    --  which will be replaced at runtime.
+    ["Hide %0"] = {
+    };
+
+    -- This is the text of the "Quit" menu item, on Mac OS X.
+    --  This menu item requests that the MojoSetup application terminate.
+    --  "%0" is the name of the application ("MyGame Installer" or whatnot),
+    --  which will be replaced at runtime.
+    ["Quit %0"] = {
     };
 };
 

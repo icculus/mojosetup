@@ -62,6 +62,8 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     IBOutlet NSTabView *TabView;
     IBOutlet NSTextField *TitleLabel;
     IBOutlet NSMenuItem *QuitMenuItem;
+    IBOutlet NSMenuItem *AboutMenuItem;
+    IBOutlet NSMenuItem *HideMenuItem;
     ClickValue clickValue;
     boolean canForward;
     boolean needToBreakEventLoop;
@@ -147,6 +149,27 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 
         [ProgressBar setUsesThreadedAnimation:YES];  // we don't pump fast enough.
         [ProgressBar startAnimation:self];
+
+        NSString *appName;
+        appName = (NSString *) [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+        if (appName == nil)
+            appName = [[NSProcessInfo processInfo] processName];
+
+        const char *utf8AppName = [appName UTF8String];
+        char *text;
+
+        text = format(_("About %0"), utf8AppName);
+        [AboutMenuItem setTitle:[NSString stringWithUTF8String:text]];
+        free(text);
+
+        text = format(_("Hide %0"), utf8AppName);
+        [HideMenuItem setTitle:[NSString stringWithUTF8String:text]];
+        free(text);
+
+        text = format(_("Quit %0"), utf8AppName);
+        [QuitMenuItem setTitle:[NSString stringWithUTF8String:text]];
+        free(text);
+
         [MainWindow setTitle:[NSString stringWithUTF8String:winTitle]];
         [MainWindow center];
         [MainWindow makeKeyAndOrderFront:self];
