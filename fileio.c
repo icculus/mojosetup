@@ -40,7 +40,7 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
 
     if (origfname != NULL)
     {
-        ext = strchr(origfname, '/');
+        ext = strrchr(origfname, '/');
         if (ext == NULL)
             ext = strchr(origfname, '.');
         else
