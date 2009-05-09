@@ -886,7 +886,6 @@ static void outOfMemory(void)
 } // outOfMemory
 
 
-#undef malloc
 #undef calloc
 void *xmalloc(size_t bytes)
 {
@@ -895,6 +894,7 @@ void *xmalloc(size_t bytes)
         outOfMemory();
     return retval;
 } // xmalloc
+#define calloc(x,y) DO_NOT_CALL_CALLOC__USE_XMALLOC_INSTEAD
 
 #undef realloc
 void *xrealloc(void *ptr, size_t bytes)
@@ -904,8 +904,8 @@ void *xrealloc(void *ptr, size_t bytes)
         outOfMemory();
     return retval;
 } // xrealloc
+#define realloc(x,y) DO_NOT_CALL_REALLOC__USE_XREALLOC_INSTEAD
 
-#undef strdup
 char *xstrdup(const char *str)
 {
     char *retval = (char *) xmalloc(strlen(str) + 1);
