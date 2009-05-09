@@ -48,16 +48,18 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
             ext = strchr(ext+1, '.');
     } // if
 
-    if (ext != NULL)
+    while (ext != NULL)
     {
-        // Try for an exact match.
+        // Try for an exact match by filename extension.
         ext++;  // skip that '.'
         for (i = 0; i < STATICARRAYLEN(archives); i++)
         {
-            if (strcasecmp(ext, archives[i].ext) == 0)
-                return archives[i].create(io);
+            const MojoArchiveType *arc = &archives[i];
+            if (strcasecmp(ext, arc->ext) == 0)
+                return arc->create(io);
         } // for
-    } // if
+        ext = strchr(ext, '.');
+    } // while
 
     // Try any that could be determined without the file extension...
     for (i = 0; i < STATICARRAYLEN(archives); i++)
