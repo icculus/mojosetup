@@ -225,6 +225,7 @@ SET(MOJOSETUP_SRCS
     fileio.c
     archive_zip.c
     archive_tar.c
+    archive_uz2.c
     checksum_crc32.c
     checksum_md5.c
     checksum_sha1.c
@@ -493,6 +494,12 @@ IF(MOJOSETUP_ARCHIVE_TAR)
         SET(MOJOSETUP_NEED_BZLIB TRUE)
     ENDIF(MOJOSETUP_ARCHIVE_TAR_BZ2)
 ENDIF(MOJOSETUP_ARCHIVE_TAR)
+
+OPTION(MOJOSETUP_ARCHIVE_UZ2 "Enable UZ2 support" FALSE)
+IF(MOJOSETUP_ARCHIVE_UZ2)
+    ADD_DEFINITIONS(-DSUPPORT_UZ2=1)
+    SET(MOJOSETUP_NEED_ZLIB TRUE)
+ENDIF(MOJOSETUP_ARCHIVE_UZ2)
 
 
 # Image decoders for GUIs...

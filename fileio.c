@@ -13,6 +13,7 @@ typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
 MojoArchive *MojoArchive_createZIP(MojoInput *io);
 MojoArchive *MojoArchive_createTAR(MojoInput *io);
+MojoArchive *MojoArchive_createUZ2(MojoInput *io);
 
 typedef struct
 {
@@ -31,6 +32,7 @@ static const MojoArchiveType archives[] =
     { "tbz2", MojoArchive_createTAR, true },
     { "tb2", MojoArchive_createTAR, true },
     { "tbz", MojoArchive_createTAR, true },
+    { "uz2", MojoArchive_createUZ2, false },
 };
 
 MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
