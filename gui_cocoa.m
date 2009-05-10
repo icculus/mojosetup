@@ -322,9 +322,15 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 
     - (IBAction)browseClicked:(NSButton *)sender
     {
-        // !!! FIXME: write me!
-        STUBBED("browseClicked");
-    } // nextClicked
+        NSOpenPanel *panel = [NSOpenPanel openPanel];
+        [panel setTitle:[NSString stringWithUTF8String:_("Destination")]];
+        [panel setAllowsMultipleSelection:NO];
+        [panel setCanCreateDirectories:YES];
+        [panel setCanChooseDirectories:YES];
+        [panel setCanChooseFiles:NO];
+        if ([panel runModal] == NSOKButton)
+            [DestinationCombo setStringValue:[panel filename]];
+    } // browseClicked
 
     - (IBAction)menuQuit:(NSMenuItem *)sender
     {
@@ -369,7 +375,6 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 
     - (char *)doDestination:(const char **)recommends recnum:(int)recnum command:(int *)command canBack:(boolean)canBack canFwd:(boolean)canFwd
     {
-        // !!! FIXME: write me!
         const boolean fwdAtStart = ( (recnum > 0) && (*(recommends[0])) );
         int i;
 
