@@ -65,6 +65,13 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     IBOutlet NSMenuItem *QuitMenuItem;
     IBOutlet NSMenuItem *AboutMenuItem;
     IBOutlet NSMenuItem *HideMenuItem;
+    IBOutlet NSMenuItem *WindowMenuItem;
+    IBOutlet NSMenuItem *HideOthersMenuItem;
+    IBOutlet NSMenuItem *ShowAllMenuItem;
+    IBOutlet NSMenuItem *ServicesMenuItem;
+    IBOutlet NSMenuItem *MinimizeMenuItem;
+    IBOutlet NSMenuItem *ZoomMenuItem;
+    IBOutlet NSMenuItem *BringAllToFrontMenuItem;
     ClickValue clickValue;
     boolean canForward;
     boolean needToBreakEventLoop;
@@ -150,6 +157,14 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 
         [ProgressBar setUsesThreadedAnimation:YES];  // we don't pump fast enough.
         [ProgressBar startAnimation:self];
+
+        [WindowMenuItem setTitle:[NSString stringWithUTF8String:_("Window")]];
+        [HideOthersMenuItem setTitle:[NSString stringWithUTF8String:_("Hide Others")]];
+        [ShowAllMenuItem setTitle:[NSString stringWithUTF8String:_("Show All")]];
+        [ServicesMenuItem setTitle:[NSString stringWithUTF8String:_("Services")]];
+        [MinimizeMenuItem setTitle:[NSString stringWithUTF8String:_("Minimize")]];
+        [ZoomMenuItem setTitle:[NSString stringWithUTF8String:_("Zoom")]];
+        [BringAllToFrontMenuItem setTitle:[NSString stringWithUTF8String:_("Bring All to Front")]];
 
         NSString *appName;
         appName = (NSString *) [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
