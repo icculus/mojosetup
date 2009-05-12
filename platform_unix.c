@@ -417,6 +417,12 @@ char *MojoPlatform_locale(void)
                     CFStringGetCString(locale, ptr, len, kCFStringEncodingUTF8);
                     CFRelease(locale);
                     retval = xrealloc(ptr, strlen(ptr) + 1);
+                    // !!! FIXME: this may not be 100% right, but change
+                    // !!! FIXME:  xx-YY to xx_YY (lang_country).
+                    if (retval[2] == '-')
+                        retval[2] = '_';
+                    if (retval[3] == '-')
+                        retval[3] = '_';
                 } // if
             } // if
             CFRelease(languages);
