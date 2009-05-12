@@ -457,7 +457,7 @@ static boolean MojoGui_cocoa_init(void)
         SetFrontProcess(&psn);
     } // if
 
-	GAutoreleasePool = [[NSAutoreleasePool alloc] init];
+    GAutoreleasePool = [[NSAutoreleasePool alloc] init];
 
     // !!! FIXME: make sure we have access to the desktop...may be ssh'd in
     // !!! FIXME:  as another user that doesn't have the Finder loaded or
@@ -487,15 +487,19 @@ static void MojoGui_cocoa_deinit(void)
 
 static void MojoGui_cocoa_msgbox(const char *title, const char *text)
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_MSGBOX data1:(NSInteger)title data2:(NSInteger)text atStart:YES];
+    [pool release];
 } // MojoGui_cocoa_msgbox
 
 
 static boolean MojoGui_cocoa_promptyn(const char *title, const char *text,
                                       boolean defval)
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_PROMPTYN data1:(NSInteger)title data2:(NSInteger)text atStart:YES];
     const MojoGuiYNAN ynan = [[NSApp delegate] getAnswerYNAN];
+    [pool release];
     assert((ynan == MOJOGUI_YES) || (ynan == MOJOGUI_NO));
     return (ynan == MOJOGUI_YES);
 } // MojoGui_cocoa_promptyn
@@ -505,8 +509,11 @@ static MojoGuiYNAN MojoGui_cocoa_promptynan(const char *title,
                                             const char *text,
                                             boolean defval)
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_PROMPTYNAN data1:(NSInteger)title data2:(NSInteger)text atStart:YES];
-    return [[NSApp delegate] getAnswerYNAN];
+    const MojoGuiYNAN retval = [[NSApp delegate] getAnswerYNAN];
+    [pool release];
+    return retval;
 } // MojoGui_cocoa_promptynan
 
 
@@ -514,8 +521,10 @@ static boolean MojoGui_cocoa_start(const char *title,
                                    const MojoGuiSplash *splash)
 {
 printf("start\n");
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     // !!! FIXME: deal with (splash).
     [[NSApp delegate] prepareWidgets:title];
+    [pool release];
     return true;
 } // MojoGui_cocoa_start
 
@@ -523,7 +532,9 @@ printf("start\n");
 static void MojoGui_cocoa_stop(void)
 {
 printf("stop\n");
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [[NSApp delegate] unprepareWidgets];
+    [pool release];
 } // MojoGui_cocoa_stop
 
 
@@ -532,8 +543,11 @@ static int MojoGui_cocoa_readme(const char *name, const uint8 *data,
                                     boolean can_fwd)
 {
 printf("readme\n");
-    NSString *str = [[NSString alloc] initWithBytes:data length:len encoding:NSUTF8StringEncoding];
-    return [[NSApp delegate] doReadme:name text:str canBack:can_back canFwd:can_fwd];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSString *str = [[[NSString alloc] initWithBytes:data length:len encoding:NSUTF8StringEncoding] autorelease];
+    const int retval = [[NSApp delegate] doReadme:name text:str canBack:can_back canFwd:can_fwd];
+    [pool release];
+    return retval;
 } // MojoGui_cocoa_readme
 
 
@@ -541,7 +555,10 @@ static int MojoGui_cocoa_options(MojoGuiSetupOptions *opts,
                        boolean can_back, boolean can_fwd)
 {
 printf("options\n");
-    return [[NSApp delegate] doOptions:opts canBack:can_back canFwd:can_fwd];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    const int retval = [[NSApp delegate] doOptions:opts canBack:can_back canFwd:can_fwd];
+    [pool release];
+    return retval;
 } // MojoGui_cocoa_options
 
 
@@ -550,7 +567,10 @@ static char *MojoGui_cocoa_destination(const char **recommends, int recnum,
                                        boolean can_fwd)
 {
 printf("destination\n");
-    return [[NSApp delegate] doDestination:recommends recnum:recnum command:command canBack:can_back canFwd:can_fwd];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    char *retval = [[NSApp delegate] doDestination:recommends recnum:recnum command:command canBack:can_back canFwd:can_fwd];
+    [pool release];
+    return retval;
 } // MojoGui_cocoa_destination
 
 
@@ -559,16 +579,21 @@ static int MojoGui_cocoa_productkey(const char *desc, const char *fmt,
                                     boolean can_back, boolean can_fwd)
 {
 printf("productkey\n");
-    return [[NSApp delegate] doProductKey:desc fmt:fmt buf:buf buflen:buflen canBack:can_back canFwd:can_fwd];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    const int retval = [[NSApp delegate] doProductKey:desc fmt:fmt buf:buf buflen:buflen canBack:can_back canFwd:can_fwd];
+    [pool release];
+    return retval;
 } // MojoGui_cocoa_productkey
 
 
 static boolean MojoGui_cocoa_insertmedia(const char *medianame)
 {
 printf("insertmedia\n");
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [[NSApp delegate] fireCustomEvent:CUSTOMEVENT_INSERTMEDIA data1:(NSInteger)medianame data2:0 atStart:YES];
     const MojoGuiYNAN ynan = [[NSApp delegate] getAnswerYNAN];
     assert((ynan == MOJOGUI_YES) || (ynan == MOJOGUI_NO));
+    [pool release];
     return (ynan == MOJOGUI_YES);
 } // MojoGui_cocoa_insertmedia
 
@@ -585,14 +610,19 @@ static int MojoGui_cocoa_progress(const char *type, const char *component,
                                   boolean can_cancel)
 {
 printf("progress\n");
-    return [[NSApp delegate] doProgress:type component:component percent:percent item:item canCancel:can_cancel];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    const int retval = [[NSApp delegate] doProgress:type component:component percent:percent item:item canCancel:can_cancel];
+    [pool release];
+    return retval;
 } // MojoGui_cocoa_progress
 
 
 static void MojoGui_cocoa_final(const char *msg)
 {
 printf("final\n");
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [[NSApp delegate] doFinal:msg];
+    [pool release];
 } // MojoGui_cocoa_final
 
 // end of gui_cocoa.m ...
