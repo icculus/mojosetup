@@ -72,11 +72,13 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
     IBOutlet NSMenuItem *MinimizeMenuItem;
     IBOutlet NSMenuItem *ZoomMenuItem;
     IBOutlet NSMenuItem *BringAllToFrontMenuItem;
+    IBOutlet NSView *OptionsView;
     ClickValue clickValue;
     boolean canForward;
     boolean needToBreakEventLoop;
     boolean finalPage;
     MojoGuiYNAN answerYNAN;
+    MojoGuiSetupOptions *mojoOpts;
 }
 - (void)awakeFromNib;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
@@ -96,6 +98,10 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
 - (IBAction)menuQuit:(NSMenuItem *)sender;
 - (int)doPage:(NSString *)pageId title:(const char *)_title canBack:(boolean)canBack canFwd:(boolean)canFwd canCancel:(boolean)canCancel canFwdAtStart:(boolean)canFwdAtStart shouldBlock:(BOOL)shouldBlock;
 - (int)doReadme:(const char *)title text:(NSString *)text canBack:(boolean)canBack canFwd:(boolean)canFwd;
+- (void)setOptionTreeSensitivity:(MojoGuiSetupOptions *)opts enabled:(boolean)val;
+- (void)optionToggled:(id)toggle;
+- (NSView *)newOptionLevel:(NSView *)box;
+- (void)buildOptions:(MojoGuiSetupOptions *)opts view:(NSView *)box sensitive:(boolean)sensitive;
 - (int)doOptions:(MojoGuiSetupOptions *)opts canBack:(boolean)canBack canFwd:(boolean)canFwd;
 - (char *)doDestination:(const char **)recommends recnum:(int)recnum command:(int *)command canBack:(boolean)canBack canFwd:(boolean)canFwd;
 - (int)doProductKey:(const char *)desc fmt:(const char *)fmt buf:(char *)buf buflen:(const int)buflen canBack:(boolean)canBack canFwd:(boolean)canFwd;
@@ -111,6 +117,7 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         answerYNAN = MOJOGUI_NO;
         needToBreakEventLoop = false;
         finalPage = false;
+        mojoOpts = nil;
     } // awakeFromNib
 
     - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -367,10 +374,174 @@ static NSAutoreleasePool *GAutoreleasePool = nil;
         return [self doPage:@"Readme" title:title canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd shouldBlock:YES];
     } // doReadme
 
+    - (void)setOptionTreeSensitivity:(MojoGuiSetupOptions *)opts enabled:(boolean)val
+    {
+        if (opts != nil)
+        {
+            [((id) opts->guiopaque) setEnabled:(val ? YES : NO)];
+            [self setOptionTreeSensitivity:opts->next_sibling enabled:val];
+            [self setOptionTreeSensitivity:opts->child enabled:(val && opts->value)];
+        } // if
+    } // setOptionTreeSensitivity
+
+    - (MojoGuiSetupOptions *)findMojoOption:(id)obj opt:(MojoGuiSetupOptions *)opt
+    {
+        // !!! FIXME: this is not ideal. How can we attach this pointer to
+        // !!! FIXME:  the objects themselves so we don't have to walk a tree
+        // !!! FIXME:  to find it on each action? The objects are controls
+        // !!! FIXME:  and cells (distinct classes), and I don't control the
+        // !!! FIXME:  creation of all of them (radio buttons).
+        // !!! FIXME: Alternately, let's just hold a hashtable to map
+        // !!! FIXME:  objects to options without walking this tree.
+        if (opt == nil)
+            return nil;
+
+        MojoGuiSetupOptions *i;
+        for (i = opt; i != nil; i = i->next_sibling)
+        {
+            if (i->guiopaque == ((void *) obj))
+                return i;
+            MojoGuiSetupOptions *rc = [self findMojoOption:obj opt:i->child];
+            if (rc != nil)
+                return rc;
+        } // for
+
+        return [self findMojoOption:obj opt:opt->child];
+    } // findMojoOption
+
+    - (void)optionToggled:(id)toggle
+    {
+        MojoGuiSetupOptions *opts = [self findMojoOption:toggle opt:mojoOpts];
+        assert(opts != nil);
+        // !!! FIXME: cast is wrong. use a selector?
+        const boolean enabled = ([((NSControl*)toggle) isEnabled] == YES);
+        opts->value = enabled;
+        [self setOptionTreeSensitivity:opts->child enabled:enabled];
+    } // optionToggled
+
+    - (NSView *)newOptionLevel:(NSView *)box
+    {
+        NSRect frame = NSMakeRect(10, 10, 10, 10);
+        NSView *widget = [[NSView alloc] initWithFrame:frame];
+        [box addSubview:widget positioned:NSWindowBelow relativeTo:nil];
+        [widget release];  // (box) owns it now.
+        return widget;
+    } // newOptionLevel
+
+    // !!! FIXME: most of this mess is cut, pasted, and Cocoaized from the
+    // !!! FIXME:  GTK+ GUI. Can we abstract this in the high level and just
+    // !!! FIXME:  implement the target-specific bits in the plugins?
+    - (void)buildOptions:(MojoGuiSetupOptions *)opts view:(NSView *)box sensitive:(boolean)sensitive
+    {
+        NSRect frame = NSMakeRect(10, 10, 10, 10);
+        if (opts != nil)
+        {
+            if (opts->is_group_parent)
+            {
+                MojoGuiSetupOptions *kids = opts->child;
+                NSView *childbox = nil;
+                //GtkWidget *alignment = gtk_alignment_new(0.0, 0.5, 0, 0);
+                //gtk_widget_show(alignment);
+
+                // !!! FIXME: disable line wrap?
+                // !!! FIXME: resize on superview resize?
+                NSTextField *widget = [[NSTextField alloc] initWithFrame:frame];
+                [widget setStringValue:[NSString stringWithUTF8String:opts->description]];
+                [widget setEnabled:(sensitive ? YES : NO)];
+                [widget setEditable:NO];
+                [widget setSelectable:NO];
+                [widget setBordered:NO];
+                [widget setBezeled:NO];
+                [widget setAlignment:NSLeftTextAlignment];
+                [widget sizeToFit];
+                if (opts->tooltip != nil)
+                    [widget setToolTip:[NSString stringWithUTF8String:opts->tooltip]];
+                [box addSubview:widget positioned:NSWindowBelow relativeTo:nil];
+                [widget release];  // (box) owns it now.
+                //!!! FIXME[box sizeToFit];
+
+                childbox = [self newOptionLevel:box];
+                NSButtonCell *prototype = [[NSButtonCell alloc] init];
+                [prototype setButtonType:NSRadioButton];
+                [prototype setAllowsMixedState:NO];
+                NSMatrix *matrix = [[NSMatrix alloc] initWithFrame:frame mode:NSRadioModeMatrix prototype:(NSCell *)prototype numberOfRows:0 numberOfColumns:1];
+                int row = 0;
+                while (kids)
+                {
+                    [matrix addRow];
+                    NSButtonCell *cell = (NSButtonCell *) [matrix cellAtRow:row column:0];
+                    kids->guiopaque = cell;
+                    [cell setTitle:[NSString stringWithUTF8String:kids->description]];
+                    [matrix setState:(kids->value ? NSOnState : NSOffState) atRow:row column:0];
+                    [cell setEnabled:(kids->value ? YES : NO)];
+                    [cell setTarget:self];
+                    [cell setAction:@selector(optionToggled:)];
+
+                    if (kids->tooltip != nil)
+                        [matrix setToolTip:[NSString stringWithUTF8String:kids->tooltip] forCell:cell];
+
+                    if (kids->child != nil)
+                        [self buildOptions:kids->child view:[self newOptionLevel:childbox] sensitive:sensitive];
+
+                    kids = kids->next_sibling;
+                    row++;
+                } // while
+
+                [matrix sizeToCells];
+                [childbox addSubview:matrix positioned:NSWindowBelow relativeTo:nil];
+                [matrix release];  // childbox owns it now.
+                //!!! FIXME: [childbox sizeToFit];
+                //!!! FIXME: [[childbox superview] sizeToFit];
+            } // if
+
+            else
+            {
+                NSButton *widget = [[NSButton alloc] initWithFrame:frame];
+                opts->guiopaque = widget;
+                [widget setAllowsMixedState:NO];
+                [widget setTitle:[NSString stringWithUTF8String:opts->description]];
+                [widget setState:(opts->value ? NSOnState : NSOffState)];
+                [widget setEnabled:(sensitive ? YES : NO)];
+                [widget setTarget:self];
+                [widget setAction:@selector(optionToggled:)];
+                [box addSubview:widget positioned:NSWindowBelow relativeTo:nil];
+                [widget release];  // (box) owns it now.
+                //!!!FIXME:[box sizeToFit];
+
+                if (opts->tooltip != nil)
+                    [widget setToolTip:[NSString stringWithUTF8String:opts->tooltip]];
+
+                if (opts->child != nil)
+                    [self buildOptions:opts->child view:[self newOptionLevel:box] sensitive:((sensitive) && (opts->value))];
+            } // else
+
+            [self buildOptions:opts->next_sibling view:box sensitive:sensitive];
+        } // if
+
+        //!!! FIXME:[box sizeToFit];
+    } // buildOptions
+
     - (int)doOptions:(MojoGuiSetupOptions *)opts canBack:(boolean)canBack canFwd:(boolean)canFwd
     {
-        // !!! FIXME: write me!
-        return [self doPage:@"Options" title:_("Options") canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd shouldBlock:YES];
+        // add all the option widgets to the page's view.
+        [self buildOptions:opts view:OptionsView sensitive:true];
+
+        // run the page.
+        mojoOpts = opts;
+        int retval = [self doPage:@"Options" title:_("Options") canBack:canBack canFwd:canFwd canCancel:true canFwdAtStart:canFwd shouldBlock:YES];
+        mojoOpts = nil;
+
+        // we're done, so nuke everything from the view.
+        NSArray *array = [[OptionsView subviews] copy];
+        NSEnumerator *enumerator = [array objectEnumerator];
+        NSView *obj;
+        while ((obj = (NSView *) [enumerator nextObject]) != nil)
+            [obj removeFromSuperviewWithoutNeedingDisplay];
+        [OptionsView setNeedsDisplay:YES];
+        [enumerator release];
+        [array release];
+
+        return retval;
     } // doOptions
 
     - (char *)doDestination:(const char **)recommends recnum:(int)recnum command:(int *)command canBack:(boolean)canBack canFwd:(boolean)canFwd
