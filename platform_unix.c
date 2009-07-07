@@ -1146,6 +1146,7 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
         rc = system(cmd);
         logDebug("system( %0 ) returned %1", cmd, numstr(rc));
         free(cmd);
+        free(path);
     } // if
 
     else  // try our fallback copy of xdg-utils in GBaseArchive?
