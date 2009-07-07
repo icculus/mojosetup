@@ -1126,6 +1126,9 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
     char *path = findBinaryInPath(util);
     int rc = 0;
 
+    // !!! FIXME: do I really need to be using system() and
+    // !!! FIXME:  suffering with shell escaping?
+
     if (path != NULL)  // it's installed on the system; use that.
     {
         char *cmd = xstrdup(util);
