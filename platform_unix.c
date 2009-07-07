@@ -1131,6 +1131,12 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
         char *cmd = xstrdup(util);
         char *tmp = NULL;
         int i;
+
+        // just in case there's a space in the $PATH entry...
+        tmp = shellEscape(path);
+        free(path);
+        path = tmp;
+
         for (i = 0; argv[i]; i++)
         {
             char *escaped = shellEscape(argv[i]);
