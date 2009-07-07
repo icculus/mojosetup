@@ -1131,7 +1131,7 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
 
     if (path != NULL)  // it's installed on the system; use that.
     {
-        char *cmd = xstrdup(util);
+        char *cmd = shellEscape(util);
         char *tmp = NULL;
         int i;
 
