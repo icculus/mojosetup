@@ -898,7 +898,8 @@ local function serialize(obj, prefix, postfix)
                 _serialize(v, indent+1)
                 addstr(",\n")
             end
-            retval = retval .. string.rep("\t", indent-1) .. "}"
+            addstr(string.rep("\t", indent-1))
+            addstr("}")
         else
             MojoSetup.logerror("unexpected object to serialize (" ..
                                  objtype .. "): '" .. tostring(obj) .. "'")
