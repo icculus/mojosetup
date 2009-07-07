@@ -440,7 +440,7 @@ end
 
 local function install_file_from_string(dest, str, perms, desc, manifestkey)
     local fn = function(callback)
-        return MojoSetup.stringtofile(t, dest, perms, nil, callback)
+        return MojoSetup.stringtofile(str, dest, perms, nil, callback)
     end
     return install_file(dest, perms, fn, desc, manifestkey)
 end
