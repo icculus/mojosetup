@@ -1123,8 +1123,8 @@ static char *shellEscape(const char *str)
 
 static boolean unix_launchXdgUtil(const char *util, const char **argv)
 {
-    boolean retval = false;
     char *path = findBinaryInPath(util);
+    int rc = 0;
 
     if (path != NULL)  // it's installed on the system; use that.
     {
@@ -1143,18 +1143,20 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
         tmp = format("%0/%1 >/dev/null 2>&1", path, cmd);
         free(cmd);
         cmd = tmp;
-        retval = (system(cmd) == 0);
+        rc = system(cmd);
+        logDebug("system( %0 ) returned %1", cmd, numstr(rc));
         free(cmd);
     } // if
 
     else  // try our fallback copy of xdg-utils in GBaseArchive?
     {
         char *script = format("meta/xdg-utils/%0", util);
-        retval = (runScript(script, true, argv) == 0);
+        rc = runScript(script, true, argv);
+        logDebug("internal script '%0' returned %1", script, numstr(rc));
         free(script);
     } // if
 
-    return retval;
+    return (rc == 0);
 } // unix_launchXdgUtil
 
 
