@@ -27,6 +27,14 @@ function MojoSetup.spliturl(url)
 end
 
 
+-- This is MojoSetup.stringtofile() for string tables.
+function MojoSetup.stringtabletofile(t, dest, perms, len, callback)
+    -- !!! FIXME: We could do this entirely in C to avoid a concatenated
+    -- !!! FIXME:  string on the Lua heap.
+    return MojoSetup.stringtofile(table.concat(t), dest, perms, len, callback)
+end
+
+
 -- This is handy for debugging.
 function MojoSetup.dumptable(tabname, tab, depth)
     if depth == nil then  -- first call, before any recursion?

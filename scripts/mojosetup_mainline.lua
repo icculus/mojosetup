@@ -128,16 +128,16 @@ end
 local function flatten_list(list)
     local retval = list
     if type(list) == "table" then
-        retval = ''
-        local first = true
+        retval = {}
         for i,v in ipairs(list) do
-            if first then
-                retval = v
-                first = false
+            if #retval == 0 then
+                retval[1] = v
             else
-                retval = retval .. ';' .. v
+                retval[#retval+1] = ';'
+                retval[#retval+1] = v
             end
         end
+        retval = table.concat(retval)
     end
     return retval
 end
@@ -430,9 +430,17 @@ local function install_file_from_archive(dest, archive, perms, desc, manifestkey
 end
 
 
-local function install_file_from_string(dest, string, perms, desc, manifestkey)
+local function install_file_from_stringtable(dest, t, perms, desc, manifestkey)
     local fn = function(callback)
-        return MojoSetup.stringtofile(string, dest, perms, nil, callback)
+        return MojoSetup.stringtabletofile(t, dest, perms, nil, callback)
+    end
+    return install_file(dest, perms, fn, desc, manifestkey)
+end
+
+
+local function install_file_from_string(dest, str, perms, desc, manifestkey)
+    local fn = function(callback)
+        return MojoSetup.stringtofile(t, dest, perms, nil, callback)
     end
     return install_file(dest, perms, fn, desc, manifestkey)
 end
@@ -747,20 +755,29 @@ end
 --  so if you want, you can just drop in MojoSetup to replace loki_setup and
 --  use the Loki tools for everything else.
 local function build_xml_manifest(package)
-    local updateurl = package.update_url
-    if updateurl ~= nil then
-        updateurl = 'update_url="' .. updateurl .. '"'
-    else
-        updateurl = ''
+    local retval = {};
+
+    local function addstr(str)
+        retval[#retval+1] = str
     end
 
-    local retval =
-        '<?xml version="1.0" encoding="UTF-8"?>\n' ..
-        '<product name="' .. package.id .. '" desc="' ..
-        package.description .. '" xmlversion="1.6" root="' ..
-        package.root .. '" ' .. updateurl .. '>\n' ..
-        '\t<component name="Default" version="' .. package.version ..
-        '" default="yes">\n'
+    addstr('<?xml version="1.0" encoding="UTF-8"?>\n')
+    addstr('<product name="')
+    addstr(package.id)
+    addstr('" desc="')
+    addstr(package.description)
+    addstr('" xmlversion="1.6" root="')
+    addstr(package.root)
+    addstr('" ')
+    if package.update_url ~= nil then
+        addstr('update_url="')
+        addstr(package.update_url)
+        addstr('"')
+    end
+    addstr('>\n')
+    addstr('\t<component name="Default" version="')
+    addstr(package.version)
+    addstr('" default="yes">\n')
 
     -- Need to group these by options.
     local grouped = {}
@@ -775,7 +792,9 @@ local function build_xml_manifest(package)
     end
 
     for desc,items in pairs(grouped) do
-        retval = retval .. '\t\t<option name="' .. desc .. '">\n'
+        addstr('\t\t<option name="')
+        addstr(desc)
+        addstr('">\n')
         for i,item in ipairs(items) do
             local type = item.type
             if type == "dir" then
@@ -794,57 +813,89 @@ local function build_xml_manifest(package)
             local path = item.path
             item.path = nil  -- we added this when grouping. Remove it now.
 
-            retval = retval .. '\t\t\t<' .. type
+            addstr('\t\t\t<')
+            addstr(type)
 
             if type == "file" then
                 if item.checksums ~= nil then
                     for k,v in pairs(item.checksums) do
-                        retval = retval .. ' ' .. k .. '="' .. v .. '"'
+                        addstr(' ')
+                        addstr(k)
+                        addstr('="')
+                        addstr(v)
+                        addstr('"')
                     end
                 end
-                retval = retval .. ' mode="' .. mode .. '"'
+                addstr(' mode="')
+                addstr(mode)
+                addstr('"')
             elseif type == "directory" then
-                retval = retval .. ' mode="' .. mode .. '"'
+                addstr(' mode="')
+                addstr(mode)
+                addstr('"')
             elseif type == "symlink" then
-                retval = retval .. ' dest="' .. item.linkdest .. '" mode="0777"'
+                addstr(' dest="')
+                addstr(item.linkdest)
+                addstr('" mode="0777"')
             end
 
-            retval = retval .. '>' .. path .. "</" .. type .. ">\n"
+            addstr('>')
+            addstr(path)
+            addstr('</')
+            addstr(type)
+            addstr('>\n')
         end
-        retval = retval .. '\t\t</option>\n'
+        addstr('\t\t</option>\n');
     end
 
-    retval = retval .. '\t</component>\n'
-    retval = retval .. '</product>\n\n'
+    addstr('\t</component>\n</product>\n\n')
 
     return retval
 end
 
 
-local function serialize(obj)
+local function serialize(obj, prefix, postfix)
+    local retval = {}
+    local function addstr(str)
+        retval[#retval+1] = str
+    end
+
+    if prefix ~= nil then
+        addstr(prefix)
+    end
+
     local function _serialize(obj, indent)
-        local retval = ''
         local objtype = type(obj)
         if objtype == "nil" then
-            retval = "nil"
+            addstr("nil")
         elseif (objtype == "number") or (objtype == "boolean") then
-            retval = tostring(obj)
+            addstr(tostring(obj))
         elseif objtype == "string" then
-            retval = string.format("%q", obj)
+            addstr(string.format("%q", obj))
         elseif objtype == "function" then
-            retval = "loadstring(" .. string.format("%q", string.dump(obj)) .. ")"
+            addstr("loadstring(")
+            addstr(string.format("%q", string.dump(obj)))
+            addstr(")")
         elseif objtype == "table" then
-            retval = "{\n"
+            addstr("{\n")
             local tab = string.rep("\t", indent)
             for k,v in pairs(obj) do
                 local key = k
+                addstr(tab)
                 if type(key) == "number" then
-                    key = '[' .. key .. ']'
+                    addstr('[')
+                    addstr(key)
+                    addstr(']')
                 elseif not string.match(key, "^[_a-zA-Z][_a-zA-Z0-9]*$") then
-                    key = '[' .. string.format("%q", key) .. ']'
+                    addstr('[')
+                    addstr(string.format("%q", key))
+                    addstr(']')
+                else
+                    addstr(key)
                 end
-                retval = retval .. tab .. key .. " = " ..
-                         _serialize(v, indent+1) .. ",\n"
+                addstr(" = ")
+                _serialize(v, indent+1)
+                addstr(",\n")
             end
             retval = retval .. string.rep("\t", indent-1) .. "}"
         else
@@ -852,22 +903,29 @@ local function serialize(obj)
                                  objtype .. "): '" .. tostring(obj) .. "'")
             MojoSetup.fatal(_("BUG: Unhandled data type"))
         end
-        return retval
     end
 
-    return _serialize(obj, 1)
+    _serialize(obj, 1)
+
+    if postfix ~= nil then
+        addstr(postfix)
+    end
+
+    return retval
 end
 
 
 local function build_lua_manifest(package)
-    return 'MojoSetup.package = ' .. serialize(package) .. "\n\n"
+    return serialize(package, 'MojoSetup.package = ', '\n\n')
 end
 
 
 local function build_txt_manifest(package)
-    local retval = ''
-    for i,path in ipairs(flatten_manifest(package.manifest)) do
-        retval = retval .. path .. "\n"
+    local flat = flatten_manifest(package.manifest)
+    local retval = {}
+    for i,v in pairs(flat) do
+        retval[#retval+1] = v
+        retval[#retval+1] = "\n"
     end
     return retval
 end
@@ -1009,9 +1067,9 @@ local function install_manifests(desc, key)
 
     -- now build these things...
     install_parent_dirs(lua_fname, key)
-    install_file_from_string(lua_fname, build_lua_manifest(package), perms, desc, nil)
-    install_file_from_string(xml_fname, build_xml_manifest(package), perms, desc, nil)
-    install_file_from_string(txt_fname, build_txt_manifest(package), perms, desc, nil)
+    install_file_from_stringtable(lua_fname, build_lua_manifest(package), perms, desc, nil)
+    install_file_from_stringtable(xml_fname, build_xml_manifest(package), perms, desc, nil)
+    install_file_from_stringtable(txt_fname, build_txt_manifest(package), perms, desc, nil)
 end
 
 
@@ -1054,22 +1112,29 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
 
     local cmdline = MojoSetup.format(item.commandline, dest)
 
-    local str = "[Desktop Entry]\n" ..
-                "Encoding=UTF-8\n" ..
-                "Value=1.0\n" ..
-                "Type=Application\n" ..
-                "Name=" .. item.name .. "\n" ..
-                "GenericName=" .. item.genericname .. "\n" ..
-                "Comment=" .. item.tooltip .. "\n" ..
-                "Icon=" .. icon .. "\n" ..
-                "Exec=" .. cmdline .. "\n" ..
-                "Categories=" .. flatten_list(item.category) .. "\n"
-
-    if item.mimetype ~= nil then
-        str = str .. "MimeType=" .. flatten_list(item.mimetype) .. "\n"
+    local t = { "[Desktop Entry]\n" }
+    local function addpair(key, val)
+        t[#t+1] = key
+        t[#t+1] = '='
+        t[#t+1] = val
+        t[#t+1] = '\n'
     end
 
-    str = str .. "\n"
+    addpair("Encoding", "UTF-8")
+    addpair("Value", "1.0")
+    addpair("Type", "Application")
+    addpair("Name", item.name)
+    addpair("GenericName", item.genericname)
+    addpair("Comment", item.tooltip)
+    addpair("Icon", icon)
+    addpair("Exec", cmdline)
+    addpair("Categories", flatten_list(item.category))
+
+    if item.mimetype ~= nil then
+        addpair("MimeType", flatten_list(item.mimetype))
+    end
+
+    t[#t+1] = '\n'
 
     local fname = freedesktop_menuitem_filename(pkg, idx)
     local perms = "0644"  -- !!! FIXME
@@ -1080,7 +1145,7 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
     --MojoSetup.logdebug(fname)
     --MojoSetup.logdebug(str)
     install_parent_dirs(fname, key)
-    install_file_from_string(fname, str, perms, desc, key)
+    install_file_from_stringtable(fname, t, perms, desc, key)
     if not MojoSetup.platform.installdesktopmenuitem(fname) then
         MojoSetup.fatal(_("Failed to install desktop menu item"))
     end
@@ -1923,9 +1988,9 @@ local function manifest_management()
 
     -- !!! FIXME: rollback!
     delete_files({lua_fname, xml_fname, txt_fname}, nil, false)
-    MojoSetup.stringtofile(build_lua_manifest(package), lua_fname, perms, nil, nil)
-    MojoSetup.stringtofile(build_xml_manifest(package), xml_fname, perms, nil, nil)
-    MojoSetup.stringtofile(build_txt_manifest(package), txt_fname, perms, nil, nil)
+    MojoSetup.stringtabletofile(build_lua_manifest(package), lua_fname, perms, nil, nil)
+    MojoSetup.stringtabletofile(build_xml_manifest(package), xml_fname, perms, nil, nil)
+    MojoSetup.stringtabletofile(build_txt_manifest(package), txt_fname, perms, nil, nil)
 
     MojoSetup.loginfo("manifests rebuilt!")
 end
