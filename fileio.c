@@ -13,23 +13,26 @@ typedef MojoArchive* (*MojoArchiveCreateEntryPoint)(MojoInput *io);
 
 MojoArchive *MojoArchive_createZIP(MojoInput *io);
 MojoArchive *MojoArchive_createTAR(MojoInput *io);
+MojoArchive *MojoArchive_createUZ2(MojoInput *io);
 
 typedef struct
 {
     const char *ext;
     MojoArchiveCreateEntryPoint create;
+    boolean hasMagic;  // can determine file type from contents?
 } MojoArchiveType;
 
 static const MojoArchiveType archives[] =
 {
-    { "zip", MojoArchive_createZIP },
-    { "tar", MojoArchive_createTAR },
-    { "tar.gz", MojoArchive_createTAR },
-    { "tar.bz2", MojoArchive_createTAR },
-    { "tgz", MojoArchive_createTAR },
-    { "tbz2", MojoArchive_createTAR },
-    { "tb2", MojoArchive_createTAR },
-    { "tbz", MojoArchive_createTAR },
+    { "zip", MojoArchive_createZIP, true },
+    { "tar", MojoArchive_createTAR, true },
+    { "tar.gz", MojoArchive_createTAR, true },
+    { "tar.bz2", MojoArchive_createTAR, true },
+    { "tgz", MojoArchive_createTAR, true },
+    { "tbz2", MojoArchive_createTAR, true },
+    { "tb2", MojoArchive_createTAR, true },
+    { "tbz", MojoArchive_createTAR, true },
+    { "uz2", MojoArchive_createUZ2, false },
 };
 
 MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
@@ -40,28 +43,31 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname)
 
     if (origfname != NULL)
     {
-        ext = strchr(origfname, '/');
+        ext = strrchr(origfname, '/');
         if (ext == NULL)
             ext = strchr(origfname, '.');
         else
             ext = strchr(ext+1, '.');
     } // if
 
-    if (ext != NULL)
+    while (ext != NULL)
     {
-        // Try for an exact match.
+        // Try for an exact match by filename extension.
         ext++;  // skip that '.'
         for (i = 0; i < STATICARRAYLEN(archives); i++)
         {
-            if (strcasecmp(ext, archives[i].ext) == 0)
-                return archives[i].create(io);
+            const MojoArchiveType *arc = &archives[i];
+            if (strcasecmp(ext, arc->ext) == 0)
+                return arc->create(io);
         } // for
-    } // if
+        ext = strchr(ext, '.');
+    } // while
 
-    // Try them all...
+    // Try any that could be determined without the file extension...
     for (i = 0; i < STATICARRAYLEN(archives); i++)
     {
-        if ((retval = archives[i].create(io)) != NULL)
+        const MojoArchiveType *arc = &archives[i];
+        if ((arc->hasMagic) && ((retval = arc->create(io)) != NULL))
             return retval;
     } // for
 
@@ -679,7 +685,6 @@ MojoArchive *MojoArchive_initBaseArchive(void)
 
             // !!! FIXME: failing this, maybe default.mojosetup?
         } // if
-
     } // else
 
     if (GBaseArchive == NULL)

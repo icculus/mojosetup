@@ -475,6 +475,11 @@ void MojoLua_collectGarbage(void)
     int pre = 0;
     int post = 0;
 
+    lua_getglobal(L, MOJOSETUP_NAMESPACE);
+    if (lua_istable(L, -1))  // namespace is sane?
+        set_integer(L, 0, "garbagecounter");
+    lua_pop(L, 1);
+
     pre = (lua_gc(L, LUA_GCCOUNT, 0) * 1024) + lua_gc(L, LUA_GCCOUNTB, 0);
     logDebug("Collecting garbage (currently using %0 bytes).", numstr(pre));
     ticks = MojoPlatform_ticks();
@@ -487,7 +492,8 @@ void MojoLua_collectGarbage(void)
 
 
 // You can trigger the garbage collector with more control in the standard
-//  Lua runtime, but this notes profiling and statistics via logDebug().
+//  Lua runtime, but this notes profiling and statistics via logDebug(),
+//  and resets MojoSetup.garbagecounter to zero.
 static int luahook_collectgarbage(lua_State *L)
 {
     MojoLua_collectGarbage();

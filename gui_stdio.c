@@ -62,11 +62,11 @@ static int readstr(const char *prompt, char *buf, int len,
 
     if (fwd)
     {
-        printf(_("Press enter to continue."));
+        printf("%s", _("Press enter to continue."));
         printf("\n");
     } // if
 
-    printf(_("> "));
+    printf("%s",_("> "));
     fflush(stdout);
 
     if ((retval = read_stdin(buf, len)) >= 0)
@@ -417,7 +417,7 @@ static int MojoGui_stdio_options(MojoGuiSetupOptions *opts,
         int line = 0;
 
         printf("\n\n");
-        printf(inst_opts_str);
+        printf("%s", inst_opts_str);
         printf("\n");
         print_options(opts, &line, 1);
         printf("\n");

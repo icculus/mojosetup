@@ -1685,7 +1685,7 @@ const PHYSFS_Archiver __PHYSFS_Archiver_ZIP =
 
 static boolean MojoInput_zip_ready(MojoInput *io)
 {
-    return true;
+    return true;  // !!! FIXME: ready if there are bytes uncompressed.
 } // MojoInput_zip_ready
 
 static int64 MojoInput_zip_read(MojoInput *io, void *buf, uint32 bufsize)

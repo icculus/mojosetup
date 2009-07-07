@@ -51,7 +51,7 @@ static void initializeZStream(z_stream *pstr)
 
 static boolean MojoInput_gzip_ready(MojoInput *io)
 {
-    return true;
+    return true;  // !!! FIXME: ready if there are bytes uncompressed.
 } // MojoInput_gzip_ready
 
 static boolean MojoInput_gzip_seek(MojoInput *io, uint64 offset)
@@ -252,7 +252,7 @@ static void initializeBZ2Stream(bz_stream *pstr)
 
 static boolean MojoInput_bzip2_ready(MojoInput *io)
 {
-    return true;
+    return true;  // !!! FIXME: ready if there are bytes uncompressed.
 } // MojoInput_bzip2_ready
 
 static boolean MojoInput_bzip2_seek(MojoInput *io, uint64 offset)
@@ -451,7 +451,7 @@ typedef struct TARinfo
 
 static boolean MojoInput_tar_ready(MojoInput *io)
 {
-    return true;
+    return true;  // !!! FIXME: ready if there are bytes uncompressed.
 } // MojoInput_tar_ready
 
 static int64 MojoInput_tar_read(MojoInput *io, void *buf, uint32 bufsize)

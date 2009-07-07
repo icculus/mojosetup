@@ -4335,6 +4335,171 @@ MojoSetup.localization = {
     --  invalid in some way, and they should try to type the key again.
     ["That key appears to be invalid. Please try again."] = {
     };
+
+    -- This is the text of the "Window" menu item, on Mac OS X.
+    --  This is a standard top-level menu item that contains subitems like 
+    --  "Minimize," "Zoom," and "Bring All to Front."
+    ["Window"] = {
+        zh_CN = "窗口",
+        zh_TW = "視窗",
+        sv = "Fönster",
+        es = "Ventana",
+        ru = "Окно",
+        pt = "Janela",
+        pl = "Okno",
+        no = "Vindu",
+        ko = "윈도우",
+        jp = "ウインドウ",
+        it = "Finestra",
+        de = "Fenster",
+        fr = "Fenêtre",
+        fi = "Ikkuna",
+        nl = "Venster",
+        da = "Vindue",
+    };
+
+    -- This is the text of the "About" menu item, on Mac OS X.
+    --  This menu item creates a window with basic application information.
+    --  "%0" is the name of the application ("MyGame Installer" or whatnot),
+    --  which will be replaced at runtime.
+    ["About %0"] = {
+        zh_TW = "關於 %0",
+        zh_CN = "关于 %0",
+        sv = "Om %0",
+        es = "Acerca de %0",
+        ru = "О программе %0",
+        pt_PT = "Acerca do %0",
+        pt = "Sobre o %0",
+        pl = "O programie %0…",
+        no = "Om %0",
+        ko = "%0에 관하여",
+        jp = "%0 について",
+        it = "Informazioni su %0",
+        de = "Über %0",
+        fr = "À propos d’%0",
+        fi = "Tietoja: %0",
+        nl = "Over %0",
+        da = "Om %0",
+    };
+
+    -- This is the text of the "Hide" menu item, on Mac OS X.
+    --  This menu item makes MojoSetup's windows disappear.
+    --  "%0" is the name of the application ("MyGame Installer" or whatnot),
+    --  which will be replaced at runtime.
+    ["Hide %0"] = {
+    };
+
+    -- This is the text of the "Hide Others" menu item, on Mac OS X.
+    --  This menu item makes every application window except MojoSetup's
+    --  disappear.
+    ["Hide Others"] = {
+    };
+
+    -- This is the text of the "Quit" menu item, on Mac OS X.
+    --  This menu item requests that the MojoSetup application terminate.
+    --  "%0" is the name of the application ("MyGame Installer" or whatnot),
+    --  which will be replaced at runtime.
+    ["Quit %0"] = {
+    };
+
+    -- This is the text of the "Show All" menu item, on Mac OS X.
+    --  This is a standard menu item that means "redisplay all previously
+    --  hidden windows".
+    ["Show All"] = {
+        es = "Mostrar todo",
+        zh_TW = "顯示全部",
+        zh_CN = "全部显示",
+        sv = "Visa alla",
+        ru = "Показать все",
+        pt_PT = "Mostrar tudo",
+        pt = "Mostrar Tudo",
+        pl = "Pokaż wszystkie",
+        no = "Vis alle",
+        ko = "모두 보기",
+        jp = "すべてを表示",
+        it = "Mostra tutte",
+        de = "Alle einblenden",
+        fr = "Tout afficher",
+        fi = "Näytä kaikki",
+        nl = "Toon alles",
+        da = "Vis alle",
+    };
+
+    -- This is the text of the "Services" menu item, on Mac OS X.
+    --  This is a standard menu item that has submenus for other applications
+    --  to hook into the current app (for example, Mail.app might appear under
+    --  this menu item with a means to add a email address, copied to the
+    --  clipboard, to the user's address book).
+    ["Services"] = {
+    };
+
+    -- This is the text of the "Minimize" menu item, on Mac OS X.
+    --  This is a standard menu item that shrinks the current window so it's
+    --  not on the desktop any more.
+    ["Minimize"] = {
+        zh_TW = "縮到最小",
+        zh_CN = "最小化",
+        sv = "Minimera",
+        es = "Minimizar",
+        ru = "Убрать в Dock",
+        pt = "Minimizar",
+        pl = "Miniaturka",
+        no = "Minimer",
+        ko = "윈도우 축소",
+        jp = "しまう",
+        it = "Contrai",
+        de = "Im Dock ablegen",
+        fr = "Placer dans le Dock",
+        fi = "Pienennä",
+        nl = "Minimaliseer",
+        da = "Minimer",
+    };
+
+    -- This is the text of the "Zoom" menu item, on Mac OS X.
+    --  This is a standard menu item that means "Maximize" on most platforms;
+    --  make the application's current window as large as reasonably possible.
+    ["Zoom"] = {
+        zh_TW = "縮放",
+        zh_CN = "缩放",
+        sv = "Zooma",
+        es = "Zoom",
+        ru = "Изменить масштаб",
+        pt_PT = "Zoom",
+        pt = "Ampliar/Reduzir",
+        pl = "Powiększ",
+        no = "Zoom",
+        ko = "확대/축소",
+        jp = "拡大／縮小",
+        it = "Ridimensiona",
+        de = "Zoomen",
+        fr = "Réduire/agrandir",
+        fi = "Suurenna tai pienennä",
+        nl = "##Vergroot/verklein venster",
+        da = "Zoom",
+    };
+
+    -- This is the text of the "Bring All to Front" menu item, on Mac OS X.
+    --  This is a standard menu item that brings all MojoSetup application
+    --  windows to the top of the desktop's window stack.
+    ["Bring All to Front"] = {
+        zh_TW = "將此程式所有視窗移至最前",
+        zh_CN = "前置全部窗口",
+        sv = "Lägg alla överst",
+        es = "Traer todo al frente",
+        ru = "Все окна - на передний план",
+        pt_PT = "Passar tudo para a frente",
+        pt = "Trazer Todas para Frente",
+        pl = "Umieść wszystko na wierzchu",
+        no = "Legg alle øverst",
+        ko = "모두 앞으로 가져오기",
+        jp = "すべてを手前に移動",
+        it = "Porta tutto in primo piano",
+        de = "Alle nach vorne bringen",
+        fr = "Tout ramener au premier plan",
+        fi = "Tuo kaikki eteen",
+        nl = "Alles op voorgrond",
+        da = "Anbring alle forrest",
+    };
 };
 
 -- end of localization.lua ...
