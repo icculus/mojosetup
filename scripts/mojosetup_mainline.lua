@@ -1002,7 +1002,7 @@ local function install_unix_uninstaller(desc, key)
                   "uninstall-" .. MojoSetup.install.id .. ".sh"
 
     -- Man, I hate escaping shell strings...
-    local bin = "\"`dirname $0`\"'/" .. MojoSetup.metadatadirname .. "/" ..
+    local bin = "\"`dirname \"$0\"`\"'/" .. MojoSetup.metadatadirname .. "/" ..
                 MojoSetup.controlappname .. "'"
     string.gsub(bin, "'", "'\\''")  -- !!! FIXME: no-op!-- Escape single quotes for shell.
 
@@ -1113,6 +1113,9 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
     end
 
     local cmdline = MojoSetup.format(item.commandline, dest)
+
+    -- Try to escape some characters...
+    cmdline = '"' .. string.gsub(string.gsub(cmdline, "\"","\\\""), "%%", "%%%%") .. '"'
 
     local t = { "[Desktop Entry]\n" }
     local function addpair(key, val)
