@@ -1026,7 +1026,7 @@ local function install_product_keys(productkeys)
         -- !!! FIXME: Windows registry support.
         -- !!! FIXME: file permissions for product keys?
         install_parent_dirs(dest, component)
-        install_file_from_string(dest, productkey, "0755", desc, component)
+        install_file_from_string(dest, productkey, "0644", desc, component)
     end
 end
 
