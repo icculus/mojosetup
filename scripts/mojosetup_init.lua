@@ -21,6 +21,24 @@
 
 local _ = MojoSetup.translate
 
+-- Set up the garbage counter. Things that are done in possibly long-running
+--  loops that create a lot of junk can optionally set a threshold and call
+--  MojoSetup.incrementgarbagecounter() on each iteration. Whenever you hit
+--  the threshold, garbage collection runs and resets the counter. This keeps
+--  memory usage from spiraling out of control for pathological cases.
+-- Note that the counter resets in MojoSetup.collectgarbage() itself, so you
+--  don't have to worry about the counter accumulating and firing off extra
+--  unnecessary collections if you happen to hit a loop at the wrong time.
+MojoSetup.garbagecounter = 0
+MojoSetup.garbagethreshold = 500
+
+function MojoSetup.incrementgarbagecount()
+    MojoSetup.garbagecounter = MojoSetup.garbagecounter + 1
+    if MojoSetup.garbagecounter >= MojoSetup.garbagethreshold then
+        MojoSetup.collectgarbage()
+    end
+end
+
 -- Returns three elements: protocol, host, path
 function MojoSetup.spliturl(url)
     return string.match(url, "^(.+://)(.-)/(.*)")

@@ -419,6 +419,7 @@ local function install_file(dest, perms, writefn, desc, manifestkey)
     end
 
     MojoSetup.loginfo("Created file '" .. dest .. "'")
+    MojoSetup.incrementgarbagecount()
 end
 
 
