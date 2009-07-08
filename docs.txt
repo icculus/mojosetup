@@ -1200,7 +1200,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     This is a string (not a function!) of the current locale, in the format
     xx_YY, where "xx" is the language code (en for english, de for German, etc)
     and "YY" is the country code: "en_US" for American English, fr_CA for
-    French Canadian, etc.
+    Canadian French, etc.
 
     If MojoSetup can't determine the user's locale, this string is "???".
 
