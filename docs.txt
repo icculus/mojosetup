@@ -1226,7 +1226,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
 
     This is a string (not a function!) of the current platform's operating
     system. This is currently one of "macosx", "beos", "linux", "freebsd",
-    "netbsd", "openbsd", "bsdi", "aix", "hpux", or "irix".
+    "netbsd", "openbsd", "bsdi", "aix", "hpux", "irix", or "solaris".
 
     Please note that this is the OS target of the installer binary...you can
     run a Linux binary on FreeBSD through the binary compatibility layer,
