@@ -1366,7 +1366,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
 
       if item.type == "file" then
           print("file created at " .. item.path)
-          print("with permissions" ... item.mode)  -- This is a string!
+          print("with permissions" .. item.mode)  -- This is a string!
 
           -- Checksums may or may not exist in this table, depending on how
           --  MojoSetup was compiled. You can iterate to find out what's there:
@@ -1380,7 +1380,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
 
       if item.type == "dir" then
           print("directory created at " .. item.path)
-          print("with permissions" ... item.mode)  -- This is a string!
+          print("with permissions" .. item.mode)  -- This is a string!
       end
 
       if item.type == "symlink" then
