@@ -1175,6 +1175,38 @@ static boolean unix_launchBrowser(const char *url)
     const char *argv[] = { url, NULL };
     return unix_launchXdgUtil("xdg-open", argv);
 } // unix_launchBrowser
+
+
+boolean xdgDesktopMenuItem(const char *action, const char *data)
+{
+    // xdg-utils, being shell scripts, don't do well with paths containing
+    //  spaces. We attempt to mitigate this by chdir()'ing to the directory
+    //  with the file to install.
+    const char *ptr = strrchr(data, '/');
+    boolean retval = false;
+    if (ptr == NULL)
+    {
+        const char *argv[] = { action, data, NULL };
+        retval = unix_launchXdgUtil("xdg-desktop-menu", argv);
+    }
+    else
+    {
+        char *working_dir = MojoPlatform_currentWorkingDir();
+        if (working_dir != NULL)
+        {
+            char *cpy = xstrdup(data);
+            char *fname = cpy + ((size_t)(ptr-data));
+            const char *argv[] = { action, fname+1, NULL };
+            *(fname++) = '\0';
+            chdir(cpy);
+            retval = unix_launchXdgUtil("xdg-desktop-menu", argv);
+            chdir(working_dir);
+            free(cpy);
+            free(working_dir);
+        } // if
+    } // else
+    return retval;
+} // xdgDesktopMenuItem
 #endif
 
 
@@ -1202,8 +1234,7 @@ boolean MojoPlatform_installDesktopMenuItem(const char *data)
     STUBBED("desktop menu support");
     return false;
 #else
-    const char *argv[] = { "install", data, NULL };
-    return unix_launchXdgUtil("xdg-desktop-menu", argv);
+    return xdgDesktopMenuItem("install", data);
 #endif
 } // MojoPlatform_installDesktopMenuItem
 
@@ -1215,8 +1246,7 @@ boolean MojoPlatform_uninstallDesktopMenuItem(const char *data)
     STUBBED("desktop menu support");
     return false;
 #else
-    const char *argv[] = { "uninstall", data, NULL };
-    return unix_launchXdgUtil("xdg-desktop-menu", argv);
+    return xdgDesktopMenuItem("uninstall", data);
 #endif
 } // MojoPlatform_uninstallDesktopMenuItem
 
