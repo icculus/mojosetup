@@ -922,9 +922,9 @@ Here are the elements, and the attributes they can possess.
 Add any localized strings:
 
 If you added strings to the installer or your config file that you want
- translated at runtime, you need to add them to app_localization.lua. This is
- a Lua script, too, of course, but you really should treat it like a basic
- config file.
+ translated at runtime, you need to add them to scripts/app_localization.lua.
+ This is a Lua script, too, of course, but you really should treat it like a
+ basic config file.
 
 The format looks something like this:
 
