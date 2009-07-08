@@ -319,8 +319,12 @@ Here are the elements, and the attributes they can possess.
 
    splash (no default, mustBeString, cantBeEmpty)
 
-    (!!! FIXME) This attribute is for future expansion.
-
+    This is the filename of an image file that will be used in the GUI.
+    The file should be placed in the "meta" directory (but you should omit
+    "meta" from this string). Please note that not all GUIs can show graphics,
+    and you must build MojoSetup with support for whatever image format you
+    used for the file.
+    
 
    url (no default, mustBeString, cantBeEmpty)
 
