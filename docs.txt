@@ -922,12 +922,9 @@ Here are the elements, and the attributes they can possess.
 Add any localized strings:
 
 If you added strings to the installer or your config file that you want
- translated at runtime, you need to add them to localization.lua. This is
+ translated at runtime, you need to add them to app_localization.lua. This is
  a Lua script, too, of course, but you really should treat it like a basic
  config file.
-
-Don't remove strings that are already in the file...MojoSetup uses these
- internally. Just add your own strings.
 
 The format looks something like this:
 
@@ -935,7 +932,6 @@ The format looks something like this:
         es = "Si";
         fr = "Oui";
     };
-
 
 As you can see, the ["Yes"] is a string to translate. These are always English
  by convention, but this is whatever the string you wish to translate. Please
@@ -970,6 +966,24 @@ We recommend making a convenience function like this at the top of your
         -- ...etc...
     }
 
+A detailed example of how to do this is scripts/localization.lua, which you
+ should ship with your installer. You probably shouldn't add your strings to
+ localization.lua directly, though. MojoSetup uses this file for text it uses
+ internally, and the file changes a lot. Using app_localization.lua allows
+ your translations to live separately from MojoSetup's, which has two benefits.
+ First, you don't have to merge your translation work with MojoSetup's every
+ time you upgrade. Second, you can override default translations, like this:
+
+    ["Uninstall complete"] = {
+        en = "Uninstall complete. You may also delete '.MyGame' in your home directory to remove personal savegames and settings.",
+        it = "Disinstallazione completata. Se desideri cancellare i salvataggi e le impostazione cancella '.MyGame' nella tua directory home.",
+        -- ...other languages here...
+    };
+
+app_localization.lua's translations will be favored over localization.lua's.
+ In the above example, a language that doesn't have an override may still get
+ a correctly translated "Uninstall complete" without the extras from the base
+ file.
 
 
 Package up the final file for distribution:
