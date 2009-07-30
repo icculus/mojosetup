@@ -499,6 +499,22 @@ boolean MojoPlatform_launchBrowser(const char *url)
 } // MojoPlatform_launchBrowser
 
 
+boolean MojoPlatform_installDesktopMenuItem(const char *data)
+{
+    // !!! FIXME: write me.
+    STUBBED("desktop menu support");
+    return false;
+} // MojoPlatform_installDesktopMenuItem
+
+
+boolean MojoPlatform_uninstallDesktopMenuItem(const char *data)
+{
+    // !!! FIXME: write me.
+    STUBBED("desktop menu support");
+    return false;
+} // MojoPlatform_uninstallDesktopMenuItem
+
+
 void MojoPlatform_spawnTerminal(void)
 {
     // unsupported.
