@@ -35,7 +35,7 @@ typedef struct UZ2input
 {
     MojoInput *io;
     int64 fsize;
-    int64 position;
+    uint64 position;
     uint32 compsize;
     uint8 compbuf[MAXCOMPSIZE];
     uint32 uncompsize;
@@ -99,6 +99,7 @@ static int64 MojoInput_uz2_read(MojoInput *io, void *_buf, uint32 bufsize)
     while (bufsize > 0)
     {
         const uint32 available = input->uncompsize - input->uncompindex;
+        const uint32 cpy = (available < bufsize) ? available : bufsize;
         if (available == 0)
         {
             if (input->position == input->fsize)
@@ -112,7 +113,6 @@ static int64 MojoInput_uz2_read(MojoInput *io, void *_buf, uint32 bufsize)
             continue;  // try again.
         } // if
 
-        const uint32 cpy = (available < bufsize) ? available : bufsize;
         memcpy(buf, input->uncompbuf + input->uncompindex, cpy);
         buf += cpy;
         bufsize -= cpy;
@@ -156,7 +156,7 @@ static boolean MojoInput_uz2_seek(MojoInput *io, uint64 pos)
         return false;
 
     input->position -= input->uncompsize;
-    input->uncompindex = pos - input->position;
+    input->uncompindex = (uint32) (pos - input->position);
     input->position += input->uncompindex;
 
     return true;
@@ -164,7 +164,7 @@ static boolean MojoInput_uz2_seek(MojoInput *io, uint64 pos)
 
 static int64 MojoInput_uz2_tell(MojoInput *io)
 {
-    return ((UZ2input *) io->opaque)->position;
+    return (int64) (((UZ2input *) io->opaque)->position);
 } // MojoInput_uz2_tell
 
 static int64 MojoInput_uz2_length(MojoInput *io)
