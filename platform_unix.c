@@ -584,7 +584,7 @@ boolean MojoPlatform_exists(const char *dir, const char *fname)
     else
     {
         const size_t len = strlen(dir) + strlen(fname) + 2;
-        char *buf = (char *) xmalloc(strlen(dir) + strlen(fname) + 2);
+        char *buf = (char *) xmalloc(len);
         snprintf(buf, len, "%s/%s", dir, fname);
         retval = (access(buf, F_OK) != -1);
         free(buf);
