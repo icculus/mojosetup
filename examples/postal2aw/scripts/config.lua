@@ -43,10 +43,10 @@ Setup.Package
     {
         MojoSetup.info.homedir .. "/postal2",
         "/opt/games/postal2",
-        "/usr/local/games/postal2"
+        "/usr/local/games/postal2",
         MojoSetup.info.homedir .. "/postal_10th_anniversary/postal2game",
         "/opt/games/postal_10th_anniversary/postal2game",
-        "/usr/local/games/postal_10th_anniversary/postal2game"
+        "/usr/local/games/postal_10th_anniversary/postal2game",
         MojoSetup.info.homedir .. "/postal_fudge_pack/postal2game",
         "/opt/games/postal_fudge_pack/postal2game",
         "/usr/local/games/postal_fudge_pack/postal2game"
