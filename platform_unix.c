@@ -954,7 +954,7 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
 
     for (i = 0; (i < STATICARRAYLEN(dirs)) && (retval == NULL); i++)
     {
-        if (testTmpDir(dirs[i], fname, len, tmpl))
+        if (testTmpDir(dirs[i], fname, sizeof (fname), tmpl))
         {
             const int fd = mkstemp(fname);
             if (fd != -1)
