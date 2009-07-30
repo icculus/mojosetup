@@ -20,7 +20,7 @@ MojoSetup.gui.destination = function(recommend, thisstage, maxstage)
 
         -- Some versions (Postal 10th Anniversary disc) have several titles
         --  installed in one base dir.
-        if MojoSetup.platform.exists(dst .. "postal2game/System/Postal2Game.u") then
+        if MojoSetup.platform.exists(dst .. "/postal2game/System/Postal2Game.u") then
             dst = dst .. "/postal2game"
             return rc, dst
         end
