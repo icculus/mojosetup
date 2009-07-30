@@ -1198,9 +1198,12 @@ boolean xdgDesktopMenuItem(const char *action, const char *data)
             char *fname = cpy + ((size_t)(ptr-data));
             const char *argv[] = { action, fname+1, NULL };
             *(fname++) = '\0';
-            chdir(cpy);
-            retval = unix_launchXdgUtil("xdg-desktop-menu", argv);
-            chdir(working_dir);
+            if (chdir(cpy) == 0)
+            {
+                retval = unix_launchXdgUtil("xdg-desktop-menu", argv);
+                if (chdir(working_dir) == -1)  // deep trouble!
+                    fatal("Failed to chdir to '%0'", working_dir);
+            } // if
             free(cpy);
             free(working_dir);
         } // if
