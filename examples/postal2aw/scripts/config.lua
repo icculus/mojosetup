@@ -32,7 +32,7 @@ end
 Setup.Package
 {
     vendor = "runningwithscissors.com",
-    id = "postal2",
+    id = "postal2aw",
     description = _("Postal 2: Apocalypse Weekend"),
     version = "1.0",
     splash = "splash.bmp",
