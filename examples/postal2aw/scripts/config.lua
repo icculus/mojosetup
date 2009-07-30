@@ -8,6 +8,16 @@ local _ = MojoSetup.translate
 --  this behaviour!
 local origdestfn = MojoSetup.gui.destination
 MojoSetup.gui.destination = function(recommend, thisstage, maxstage)
+    -- Trim the game id off of the recommends...
+    local newrec = nil
+    if recommend ~= nil then
+        newrec = {}
+        for i,v in ipairs(recommend) do
+            newrec[i] = string.gsub(recommend[i], "/postal2aw$", "")
+        end
+        recommend = newrec
+    end
+
     while true do
         local rc, dst = origdestfn(recommend, thisstage, maxstage)
         if rc ~= 1 then
