@@ -1,4 +1,4 @@
-local GAME_INSTALL_SIZE = 1401484620;
+local GAME_INSTALL_SIZE = 886535138;
 
 local _ = MojoSetup.translate
 
