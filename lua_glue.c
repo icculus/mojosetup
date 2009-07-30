@@ -1561,7 +1561,7 @@ static int luahook_gui_productkey(lua_State *L)
     char *buf = (char *) xmalloc(fmtlen);
     int cmd = 0;
 
-    assert((defval == NULL) || (strlen(defval) < fmtlen));
+    assert((defval == NULL) || (((int)strlen(defval)) < fmtlen));
     strcpy(buf, (defval == NULL) ? "" : defval);
 
     cmd = GGui->productkey(desc, fmt, buf, fmtlen, can_go_back, can_go_fwd);
