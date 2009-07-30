@@ -2,6 +2,33 @@ local GAME_INSTALL_SIZE = 1401484620;
 
 local _ = MojoSetup.translate
 
+-- We override MojoSetup.gui.destination to make sure we have a real p2:stp
+--  install at that point. This happens to work at the moment, but hooks an
+--  internal, undocumented API. We'll add a formal hook later. Don't emulate
+--  this behaviour!
+local origdestfn = MojoSetup.gui.destination
+MojoSetup.gui.destination = function(recommend, thisstage, maxstage)
+    while true do
+        local rc, dst = origdestfn(recommend, thisstage, maxstage)
+        if rc ~= 1 then
+            return rc, dst
+        end
+
+        if MojoSetup.platform.exists(dst .. "/System/Postal2Game.u") then
+            return rc, dst
+        end
+
+        -- Some versions (Postal 10th Anniversary disc) have several titles
+        --  installed in one base dir.
+        if MojoSetup.platform.exists(dst .. "postal2game/System/Postal2Game.u") then
+            dst = dst .. "/postal2game"
+            return rc, dst
+        end
+
+        MojoSetup.msgbox(_("Wrong path"), _("We don't see a copy of Postal 2: Share the Pain in that directory. You need Share the Pain to install Apocalypse Weekend. Please pick another directory."));
+    end
+end
+
 Setup.Package
 {
     vendor = "runningwithscissors.com",
