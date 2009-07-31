@@ -1290,7 +1290,7 @@ void MojoPlatform_switchBin(const uint8 *img, size_t len)
 #endif
 
 
-void MojoPlatform_spawnTerminal(void)
+boolean MojoPlatform_spawnTerminal(void)
 {
 #if PLATFORM_BEOS
     #error write me.
@@ -1428,6 +1428,8 @@ void MojoPlatform_spawnTerminal(void)
     free(argv);
     free(binpath);
 #endif
+
+    return false;
 } // MojoPlatform_spawnTerminal
 
 

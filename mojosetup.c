@@ -119,18 +119,24 @@ static void trySwitchBinaries(void)
 #endif
 
 
-static void trySpawnTerminal(void)
+static boolean trySpawnTerminalGui(void)
 {
     if (cmdlinestr("notermspawn", "MOJOSETUP_NOTERMSPAWN", NULL) != NULL)
-        return;  // we already spawned or the user is preventing it.
+        return false;  // we already spawned or the user is preventing it.
 
     if (MojoPlatform_istty())  // maybe we can spawn a terminal for stdio?
-        return;  // We're a terminal already, no need to spawn one.
+        return false;  // We're a terminal already, no need to spawn one.
 
     logInfo("No usable GUI found. Trying to spawn a terminal...");
-    MojoPlatform_spawnTerminal();  // no return on success.
-    logError("...Terminal spawning failed.");
-} // trySpawnTerminal
+    if (!MojoPlatform_spawnTerminal())
+    {
+        logError("...Terminal spawning failed.");
+	    return false;
+    } // if
+
+    assert(MojoPlatform_istty());
+    return (MojoGui_initGuiPlugin() != NULL);
+} // trySpawnTerminalGui
 
 
 static boolean initEverything(void)
@@ -152,8 +158,9 @@ static boolean initEverything(void)
 
     if (!MojoGui_initGuiPlugin())
     {
-        trySpawnTerminal();  // may not return.
-        panic("Initial GUI setup failed. Cannot continue.");
+        // This could terminate the process (and relaunch).
+        if (!trySpawnTerminalGui())
+            panic("Initial GUI setup failed. Cannot continue.");
     } // if
 
     else if (!MojoLua_initLua())
@@ -1032,7 +1039,6 @@ int MojoSetup_main(int argc, char **argv)
 
     // Jump into Lua for the heavy lifting.
     MojoLua_runFile("mojosetup_mainline");
-
     deinitEverything();
 
     return 0;

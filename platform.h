@@ -251,9 +251,11 @@ boolean MojoPlatform_uninstallDesktopMenuItem(const char *data);
 void MojoPlatform_switchBin(const uint8 *img, size_t len);
 #endif
 
-// Try to spawn a terminal, and relaunch MojoSetup within it.
-//  Does not return on success (process replaces itself).
-void MojoPlatform_spawnTerminal(void);
+// Try to spawn a terminal, and possibly relaunch MojoSetup within it.
+//  If we can attach to a terminal without relaunching, do so and
+//  return true. false for failure to attach/spawn.
+//  May not return on success (process replaces itself).
+boolean MojoPlatform_spawnTerminal(void);
 
 // Put the calling process to sleep for at least (ticks) milliseconds.
 //  This is meant to yield the CPU while spinning in a loop that is polling

@@ -517,12 +517,33 @@ boolean MojoPlatform_uninstallDesktopMenuItem(const char *data)
 } // MojoPlatform_uninstallDesktopMenuItem
 
 
-void MojoPlatform_spawnTerminal(void)
+boolean MojoPlatform_spawnTerminal(void)
 {
     assert(!MojoPlatform_istty());
-    putenv("MOJOSETUP_WINDOWS_ALLOC_TTY=1");  // WinMain() will allocate a console next time.
-    // !!! FIXME: relaunch binary.
-    exit(0);
+
+    if (AllocConsole())
+    {
+        int hCrt;
+        FILE *hf;
+        hCrt = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT);
+        hf = _fdopen( hCrt, "w" );
+        *stdout = *hf;
+        setvbuf( stdout, NULL, _IONBF, 0 ); 
+
+        hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), _O_TEXT);
+        hf = _fdopen( hCrt, "w" );
+        *stderr = *hf;
+        setvbuf( stderr, NULL, _IONBF, 0 ); 
+
+        hCrt = _open_osfhandle((long) GetStdHandle(STD_INPUT_HANDLE), _O_TEXT);
+        hf = _fdopen( hCrt, "r" );
+        *stdin = *hf;
+        setvbuf( stdin, NULL, _IONBF, 0 ); 
+
+		return true;
+	} // if
+
+    return false;
 } // MojoPlatform_spawnTerminal
 
 
@@ -1517,30 +1538,6 @@ static boolean platformInit(void)
 
     if (!findApiSymbols())
         return false;
-
-    //if (getenv("MOJOSETUP_WINDOWS_ALLOC_TTY") != NULL)
-    {
-        if (AllocConsole())
-        {
-            // !!! FIXME: Get rid of stdio stuff.
-            int hCrt, i;
-            FILE *hf;
-            hCrt = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT);
-            hf = _fdopen( hCrt, "w" );
-            *stdout = *hf;
-            i = setvbuf( stdout, NULL, _IONBF, 0 ); 
-
-            hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), _O_TEXT);
-            hf = _fdopen( hCrt, "w" );
-            *stderr = *hf;
-            i = setvbuf( stderr, NULL, _IONBF, 0 ); 
-
-            hCrt = _open_osfhandle((long) GetStdHandle(STD_INPUT_HANDLE), _O_TEXT);
-            hf = _fdopen( hCrt, "r" );
-            *stdin = *hf;
-            i = setvbuf( stdin, NULL, _IONBF, 0 ); 
-        } // if
-    } // if
 
     return true;
 } // platformInit
