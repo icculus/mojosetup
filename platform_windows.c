@@ -929,7 +929,7 @@ boolean MojoPlatform_exists(const char *dir, const char *fname)
     } // else
 
     UTF8_TO_UNICODE_STACK_MACRO(wpath, fullpath);
-    retval = (pGetFileAttributesW(wpath) == INVALID_FILE_ATTRIBUTES);
+    retval = (pGetFileAttributesW(wpath) != INVALID_FILE_ATTRIBUTES);
     smallFree(wpath);
     free(fullpath);
 
