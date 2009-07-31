@@ -24,6 +24,10 @@
 #include <windows.h>
 #include <shellapi.h>
 
+// !!! FIXME: this is for stdio redirection crap.
+#include <io.h>
+#include <fcntl.h>
+
 // is Win95/Win98/WinME?  (no Unicode, etc)
 static boolean osIsWin9x = false;
 static uint32 osMajorVer = 0;
@@ -515,7 +519,10 @@ boolean MojoPlatform_uninstallDesktopMenuItem(const char *data)
 
 void MojoPlatform_spawnTerminal(void)
 {
-    // unsupported.
+    assert(!MojoPlatform_istty());
+    putenv("MOJOSETUP_WINDOWS_ALLOC_TTY=1");  // WinMain() will allocate a console next time.
+    // !!! FIXME: relaunch binary.
+    exit(0);
 } // MojoPlatform_spawnTerminal
 
 
@@ -1510,6 +1517,30 @@ static boolean platformInit(void)
 
     if (!findApiSymbols())
         return false;
+
+    //if (getenv("MOJOSETUP_WINDOWS_ALLOC_TTY") != NULL)
+    {
+        if (AllocConsole())
+        {
+            // !!! FIXME: Get rid of stdio stuff.
+            int hCrt, i;
+            FILE *hf;
+            hCrt = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT);
+            hf = _fdopen( hCrt, "w" );
+            *stdout = *hf;
+            i = setvbuf( stdout, NULL, _IONBF, 0 ); 
+
+            hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), _O_TEXT);
+            hf = _fdopen( hCrt, "w" );
+            *stderr = *hf;
+            i = setvbuf( stderr, NULL, _IONBF, 0 ); 
+
+            hCrt = _open_osfhandle((long) GetStdHandle(STD_INPUT_HANDLE), _O_TEXT);
+            hf = _fdopen( hCrt, "r" );
+            *stdin = *hf;
+            i = setvbuf( stdin, NULL, _IONBF, 0 ); 
+        } // if
+    } // if
 
     return true;
 } // platformInit
