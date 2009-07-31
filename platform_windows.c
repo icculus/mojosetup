@@ -484,9 +484,7 @@ static boolean findApiSymbols(void)
 
 boolean MojoPlatform_istty(void)
 {
-    // !!! FIXME: this will prevent the stdio plugin from working over
-    // !!! FIXME:  ssh, etc. Check if we're really in a console somehow...
-    return false;  // never a terminal on Windows, always a GUI app.
+    return (GetConsoleWindow() != 0);
 } // MojoPlatform_istty
 
 
