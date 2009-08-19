@@ -1366,7 +1366,8 @@ boolean MojoPlatform_spawnTerminal(void)
     if (!failed)
         exit(0);
 
-    // otherwise, returning at all says we failed.
+    // we'll return false at the end to note we failed.
+
 #else
 
     // urgh
@@ -1384,7 +1385,7 @@ boolean MojoPlatform_spawnTerminal(void)
     int startarg = 0;
 
     if (getenv("DISPLAY") == NULL)
-        return;  // don't bother if we don't have X.
+        return false;  // don't bother if we don't have X.
 
     else if (getenv("GNOME_DESKTOP_SESSION_ID") != NULL)  // this is gnome?
         tryfirst = "gnome-terminal";
