@@ -1062,6 +1062,7 @@ local function install_manifests(desc, key)
         version = MojoSetup.install.version,
         manifest = MojoSetup.manifest,
         splash = MojoSetup.install.splash,
+        splashpos = MojoSetup.install.splashpos,
         desktopmenuitems = MojoSetup.install.desktopmenuitems,
         preuninstall = MojoSetup.install.preuninstall,
         postuninstall = MojoSetup.install.postuninstall
@@ -1227,12 +1228,12 @@ local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest, mani
 end
 
 
-local function start_gui(desc, splashfname)
+local function start_gui(desc, splashfname, splashpos)
     if splashfname ~= nil then
         splashfname = 'meta/' .. splashfname
     end
 
-    if not MojoSetup.gui.start(desc, splashfname) then
+    if not MojoSetup.gui.start(desc, splashfname, splashpos) then
         MojoSetup.fatal(_("GUI failed to start"))
     end
 
@@ -1781,7 +1782,7 @@ local function do_install(install)
     end
 
     -- Now make all this happen.
-    start_gui(install.description, install.splash)
+    start_gui(install.description, install.splash, install.splashpos)
 
     -- Make the stages available elsewhere.
     MojoSetup.stages = stages
@@ -2017,7 +2018,7 @@ local function uninstaller()
     end
 
     if uninstall_permitted then
-        start_gui(package.description, package.splash)
+        start_gui(package.description, package.splash, package.splashpos)
         run_config_defined_hook(package.preuninstall, package)
 
         uninstall_desktop_menu_items(package)

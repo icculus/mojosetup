@@ -1129,7 +1129,8 @@ static int luahook_movefile(lua_State *L)
 } // luahook_movefile
 
 
-static void prepareSplash(MojoGuiSplash *splash, const char *fname)
+static void prepareSplash(MojoGuiSplash *splash, const char *fname,
+                          const char *splashpos)
 {
     MojoInput *io = NULL;
     int64 len = 0;
@@ -1152,8 +1153,29 @@ static void prepareSplash(MojoGuiSplash *splash, const char *fname)
         {
             splash->rgba = decodeImage(data, size, &splash->w, &splash->h);
             if (splash->rgba != NULL)
-                splash->position = (splash->w >= splash->h) ?
-                    MOJOGUI_SPLASH_TOP : MOJOGUI_SPLASH_LEFT;  // !!! FIXME: others?
+            {
+                const uint32 w = splash->w;
+                const uint32 h = splash->h;
+                const MojoGuiSplashPos defpos =
+                    ((w >= h) ? MOJOGUI_SPLASH_TOP : MOJOGUI_SPLASH_LEFT);
+
+                if (splashpos == NULL)
+                    splash->position = defpos;
+                else if ((splashpos == NULL) && (splash->w < splash->h))
+                    splash->position = MOJOGUI_SPLASH_LEFT;
+                else if (strcmp(splashpos, "top") == 0)
+                    splash->position = MOJOGUI_SPLASH_TOP;
+                else if (strcmp(splashpos, "left") == 0)
+                    splash->position = MOJOGUI_SPLASH_LEFT;
+                else if (strcmp(splashpos, "bottom") == 0)
+                    splash->position = MOJOGUI_SPLASH_BOTTOM;
+                else if (strcmp(splashpos, "right") == 0)
+                    splash->position = MOJOGUI_SPLASH_RIGHT;
+                else if (strcmp(splashpos, "background") == 0)
+                    splash->position = MOJOGUI_SPLASH_BACKGROUND;
+                else
+                    splash->position = defpos;  // oh well.
+            } // if
         } // if
         free(data);
     } // if
@@ -1166,10 +1188,11 @@ static int luahook_gui_start(lua_State *L)
 {
     const char *title = luaL_checkstring(L, 1);
     const char *splashfname = lua_tostring(L, 2);
+    const char *splashpos = lua_tostring(L, 3);
     boolean rc = false;
     MojoGuiSplash splash;
 
-    prepareSplash(&splash, splashfname);
+    prepareSplash(&splash, splashfname, splashpos);
     rc = GGui->start(title, &splash);
     if (splash.rgba != NULL)
         free((void *) splash.rgba);

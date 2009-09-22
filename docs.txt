@@ -165,6 +165,8 @@ Here are the elements, and the attributes they can possess.
   mustBeUrl: Error if isn't a string that matches the regexp "^.+://.-/.*".
   mustBePerms: Error if isn't a valid permissions string for the platform.
   mustBeStringOrTableOfStrings: Error if isn't a string or an array of strings.
+  mustBeSplashPosition: Error if isn't a string in the set of "top",
+                        "left", "bottom", "right", or "background".
 
  Attributes that aren't explicitly specified take on their default value. In
   cases without a default, they are effectively set to Lua's "nil" value.
@@ -325,6 +327,14 @@ Here are the elements, and the attributes they can possess.
     and you must build MojoSetup with support for whatever image format you
     used for the file.
     
+
+   splashpos (no default, mustBeSplashPosition)
+
+    This is the location of the splash image that will be used in the GUI.
+    Please note that not all GUIs can show graphics, or handle the position
+    requested, but this makes a best effort. If you specify a splash and no
+    position, the GUI is free to place it wherever it thinks is best.
+
 
    url (no default, mustBeString, cantBeEmpty)
 

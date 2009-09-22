@@ -191,6 +191,13 @@ local function mustBeUrl(fnname, elem, val)
     end
 end
 
+local function mustBeSplashPosition(fnname, elem, val)
+    mustBeString(fnname, elem, val)
+    local valid = (val == nil) or (val == "right") or (val == "bottom") or
+                  (val == "left") or (val == "top") or (val == "background");
+    schema_assert(valid, fnname, elem, _("Splash position is invalid"))
+end
+
 local function mustBePerms(fnname, elem, val)
     mustBeString(fnname, elem, val)
     local valid = MojoSetup.isvalidperms(val)
@@ -298,6 +305,7 @@ function Setup.Package(tab)
         { "preinstall", nil, mustBeFunction },
         { "postinstall", nil, mustBeFunction },
         { "splash", nil, mustBeString, cantBeEmpty },
+        { "splashpos", nil, mustBeSplashPosition },
         { "url", nil, mustBeString, cantBeEmpty },
         { "once", true, mustBeBool },
         { "category", "Games", mustBeString, cantBeEmpty },
