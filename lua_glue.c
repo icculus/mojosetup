@@ -751,7 +751,7 @@ static int luahook_wildcardmatch(lua_State *L)
 
 
 // Do a regular C strcmp(), don't let the locale get in the way like it does
-//  in Lua's string comparison operators.
+//  in Lua's string comparison operators (which uses strcoll()).
 static int luahook_strcmp(lua_State *L)
 {
     const char *a = luaL_checkstring(L, 1);
