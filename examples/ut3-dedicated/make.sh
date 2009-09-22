@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script is not robust for all platforms or situations. Use as a rough
 #  example, but invest effort in what it's trying to do, and what it produces.
