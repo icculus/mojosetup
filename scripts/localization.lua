@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version hg-619:fc9dad6cff85 ...
---  on 2009-02-19 21:12:48-0500
+-- This file was generated with po2localization.pl, version hg-731:d431888dc3f3 ...
+--  on 2009-12-14 03:16:00-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,7 +15,7 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2009-02-20 01:36+0000
+-- X-Launchpad-Export-Date: 2009-12-14 08:00+0000
 -- X-Generator: Launchpad (build Unknown)
 
 MojoSetup.languages = {
@@ -81,6 +81,7 @@ MojoSetup.localization = {
         hu = "ismeretlen hiba",
         id = "galat tidak dikenal",
         it = "errore sconosciuto",
+        ja = "不明なエラー",
         lb = "Onbekannten Fehler",
         nb = "ukjent feil",
         nds = "unbekannter Fehler",
@@ -163,6 +164,8 @@ MojoSetup.localization = {
         hu = "%0 [I/n]: ",
         id = "%0 [Y/t]: ",
         it = "%0 [S/n]: ",
+        ja = "%0 [Y/n]: ",
+        lb = "%0 [J/n] ",
         nb = "%0 [J/n]: ",
         nds = "%0 [J/n] ",
         nl = "%0 [J/n]: ",
@@ -205,7 +208,8 @@ MojoSetup.localization = {
         hu = "%0 [i/N]: ",
         id = "%0 [y/T]: ",
         it = "%0 [s/N]: ",
-        ja = "%0「Y/n」 ",
+        ja = "%0 [y/N]: ",
+        lb = "%0 [j/N] ",
         nb = "%0 [j/N]: ",
         nds = "%0 [j/N] ",
         nl = "%0 [j/N]: ",
@@ -251,6 +255,7 @@ MojoSetup.localization = {
         hu = "%0 [i/n/Mindig/Soha]: ",
         id = "%0 [y/t/Selalu/Tidak Pernah]: ",
         it = "%0 [s/n/Sempre/Mai]: ",
+        lb = "%0 [j/n/Emmer/Nie] ",
         nb = "%0 [j/n/Alltid/Aldri]: ",
         nds = "%0 [j/n/Immer/Niemals] ",
         nl = "%0 [j/n/Altijd/Nooit]: ",
@@ -291,6 +296,7 @@ MojoSetup.localization = {
         id = "Y",
         it = "S",
         ja = "Y",
+        lb = "J",
         nb = "J",
         nds = "J",
         nl = "J",
@@ -331,6 +337,7 @@ MojoSetup.localization = {
         id = "T",
         it = "N",
         ja = "N",
+        lb = "N",
         nb = "N",
         nds = "N",
         nl = "N",
@@ -371,6 +378,7 @@ MojoSetup.localization = {
         hu = "Mindig",
         id = "Selalu",
         it = "Sempre",
+        lb = "Emmer",
         nb = "Alltid",
         nds = "Immer",
         nl = "Altijd",
@@ -378,7 +386,7 @@ MojoSetup.localization = {
         pl = "Zawsze",
         pt = "Sempre",
         pt_BR = "Sempre",
-        ro = "Întotdeauna",
+        ro = "Mereu",
         ru = "Всегда",
         sk = "Vždy",
         sl = "Vedno",
@@ -412,6 +420,7 @@ MojoSetup.localization = {
         hu = "Soha",
         id = "Tidak Pernah",
         it = "Mai",
+        lb = "Nie",
         nb = "Aldri",
         nds = "Niemals",
         nl = "Nooit",
@@ -492,11 +501,11 @@ MojoSetup.localization = {
         nl = "Typ '%0' om terug te gaan.",
         nn = "Skriv '%0' for å gå tilbake.",
         pl = "Wpisz '%0' aby powrócić.",
-        pt = "Escreva '%0' para regressar.",
+        pt = "Tecle '%0' para voltar.",
         pt_BR = "Digite '%0' para voltar.",
         ro = "Tastează '%0' pentru a revenii.",
         ru = "Нажмите '%0' чтобы вернуться.",
-        sk = "Zadajte '%0' pre návrat spať.",
+        sk = "Zadajte '%0' pre návrat späť.",
         sl = "Pritisnite '%0' za korak nazaj.",
         sv = "Skriv '%0' för att gå tillbaka.",
         tr = "Geri dönmek için '%0' yazın.",
@@ -526,12 +535,13 @@ MojoSetup.localization = {
         hu = "vissza",
         id = "kembali",
         it = "indietro",
+        ja = "戻る",
         nb = "tilbake",
         nds = "Zurück",
         nl = "terug",
         nn = "tilbake",
         pl = "tył",
-        pt = "retroceder",
+        pt = "voltar",
         pt_BR = "voltar",
         ro = "înapoi",
         ru = "назад",
@@ -636,6 +646,7 @@ MojoSetup.localization = {
         hu = "%0 (%1%% kész)",
         id = "%0 (jumlah kemajuan: %1%%)",
         it = "%0 (progresso: %1%%))",
+        ja = "%0 (全体の進捗: %1%%)",
         nb = "%0 (total fremgang: %1%%)",
         nds = "%0 (Fortschritt insgesamt: %1%%)",
         nl = "%0 (totale voortgang: %1%%)",
@@ -673,6 +684,7 @@ MojoSetup.localization = {
         hu = "Elfogadja a liszenszt?",
         id = "Terima lisensi ini?",
         it = "Accetti questa licenza?",
+        ja = "ライセンスに同意しますか？",
         nb = "Aksepterer du denne lisensen?",
         nds = "Diese Lizenz akzeptieren?",
         nl = "Accepteert u deze licentie?",
@@ -716,7 +728,7 @@ MojoSetup.localization = {
         pl = "_Zawsze",
         pt = "_Sempre",
         pt_BR = "_Sempre",
-        ro = "Întotdeaun_a",
+        ro = "_Mereu",
         ru = "_Всегда",
         sk = "_Vždy",
         sl = "_Vedno",
@@ -745,12 +757,13 @@ MojoSetup.localization = {
         hu = "Arhív nem található",
         id = "Arsip tidak ditemukan",
         it = "Archivio non presente",
+        ja = "アーカイブが見つかりません",
         nb = "Fant ikke arkiv",
         nds = "Archiv nicht gefunden",
         nl = "Archief niet gevonden",
         nn = "Fant ikkje arkiv",
         pl = "Archiwum nie znalezione",
-        pt = "O Arquivo não foi encontrado",
+        pt = "Arquivo não encontrado",
         pt_BR = "Arquivo não encontrado",
         ro = "Arhiva nu a fost găsită",
         ru = "Архив не найден",
@@ -781,6 +794,7 @@ MojoSetup.localization = {
         hu = "Tényleg megszakítja a telepítést?",
         id = "Apakah Anda yakin ingin membatalkan isntalasii?",
         it = "Sei sicuro di voler annullare l'installazione?",
+        ja = "本当にインストールを中止しますか？",
         nb = "Er du sikker på at du vil avbryte installasjonen?",
         nds = "Sind Sie sicher, dass Sie die Installation abbrechen wollen?",
         nl = "Weet u zeker dat u de installatie wilt afbreken?",
@@ -816,6 +830,7 @@ MojoSetup.localization = {
         hu = "Vissza",
         id = "Kembali",
         it = "Indietro",
+        ja = "戻る",
         nb = "Tilbake",
         nds = "Zurück",
         nl = "Vorige",
@@ -899,7 +914,7 @@ MojoSetup.localization = {
         nl = "BUG: dubbele media id",
         nn = "Programfeil: duplisert media-id",
         pl = "BŁĄD: zduplikowany identyfikator media",
-        pt = "BUG: media id duplicada",
+        pt = "BUG: id de mídia duplicado",
         pt_BR = "BUG: ID da mídia duplicado",
         ro = "EROARE: media id duplicat",
         ru = "Ошибка: дублирование media_id",
@@ -964,6 +979,7 @@ MojoSetup.localization = {
         fi = "BUGI: support_uninstall vaatii write_manifest:n",
         fr = "BOGUE: 'support_uninstall' exige 'write_manifest'",
         he = "באג: support_uninstall דורש את write_manifest",
+        hu = "BUG: support_uninstall igényli a write_manifest -et",
         it = "BUG: support_uninstall richiede write_manifest",
         nb = "Programfeil: support_uninstall krever write_manifest",
         nds = "FEHLER: support_uninstall benötigt write_manifest",
@@ -1077,7 +1093,7 @@ MojoSetup.localization = {
         nl = "BUG: '%0' is geen geldige permissie string",
         nn = "Programfeil: '%0' er ikkje ein gyldig rettighetsstreng",
         pl = "BŁĄD: '%0' nie jest poprawną wartością dostępu",
-        pt = "BUG: '%0' não é uma expressão válida",
+        pt = "BUG: '%0' não é uma expressão de permissões válida",
         pt_BR = "BUG: '%0' não é um texto de permissão válido",
         ro = "EROARE: '%0' nu este un şir de caractere ce desemnează permisiuni valide",
         ru = "Ошибка: '%0' неправильное значение для прав.",
@@ -1113,7 +1129,7 @@ MojoSetup.localization = {
         nl = "BUG: Ongeldige format() string",
         nn = "Programfeil: Ugyldig format()-streng",
         pl = "BŁĄD: Nieprawidłowy ciąg format()",
-        pt = "BUG: format() inválido da expressão",
+        pt = "BUG: Expressão format() inválida",
         pt_BR = "BUG: Texto format() inválido",
         ro = "EROARE: Şir de caractere format() invalid",
         ru = "Ошибка: Некорректная строка format()",
@@ -1248,7 +1264,7 @@ MojoSetup.localization = {
         nl = "BUG: onbekend data type",
         nn = "Programfeil: Uhåndtert datatype",
         pl = "BŁĄD: Nieobsługiwany typ danych",
-        pt = "BUG: tipo sem tratamento",
+        pt = "BUG: Tipo sem tratamento",
         pt_BR = "BUG: tipo de dado não suportado",
         ro = "EROARE: Tip de date invalid",
         ru = "Ошибка: неподдерживаемый тип данных",
@@ -1338,6 +1354,7 @@ MojoSetup.localization = {
         af = "Kewer: Konfigurasie %0 %1",
         ar = "بقة: الإعداد %0 %1",
         cs = "CHYBA: Konfigurační hodnota %0 %1",
+        da = "FEJL: Konfiguration %0 %1",
         de = "FEHLER: Konfiguration %0 %1",
         el = "ΣΦΑΛΜΑ: Παράμετρος %0 %1",
         en_AU = "BUG: Config %0 %1",
@@ -1368,6 +1385,22 @@ MojoSetup.localization = {
 
     -- This is an error string for a buggy config element. See notes above.
     ["invalid string"] = {
+        cs = "není platným řetězcem",
+        de = "ungültige Zeichenkette",
+        en_AU = "invalid string",
+        en_GB = "invalid string",
+        es = "cadena de texto inválida",
+        fr = "chaîne invalide",
+        he = "מחרוזת לא תקינה",
+        it = "Stringa non valida",
+        nds = "ungültige Zeichenkette",
+        nl = "foute string",
+        pt = "expressão inválida",
+        ro = "şir de caractere invalid",
+        sk = "neplatný reťazec",
+        sv = "Felaktig sträng",
+        tr = "geçersiz dizgi",
+        zh_TW = "無效的字串"
     };
 
     -- This is an error string for a buggy config element. See notes above.
@@ -1392,7 +1425,7 @@ MojoSetup.localization = {
         nl = "moet expliciet gespecifieerd worden",
         nn = "må spesifiserast eksplisitt",
         pl = "musi być jasno podany",
-        pt = "Tem que ser especificado explicitamente",
+        pt = "deve ser especificado explicitamente",
         pt_BR = "precisa ser especificado explicitamente",
         ro = "trebuie specific explicit",
         ru = "должна быть указана явно",
@@ -1426,7 +1459,7 @@ MojoSetup.localization = {
         nl = "moet een string of een tabel met strings zijn",
         nn = "må væra streng eller tabell av strengar",
         pl = "musi być ciągiem lub tabelą ciągów",
-        pt = "Tem que ser uma expressão ou uma tabela de expressões",
+        pt = "deve ser uma expressão ou uma tabela de expressões",
         pt_BR = "precisa ser um texto ou uma tabela de textos",
         ro = "trebuie să fie un şir de caractere sau un tabel de şiruri de caractere",
         ru = "должна быть строкой или таблицей строк",
@@ -1460,7 +1493,7 @@ MojoSetup.localization = {
         nl = "moet een string of een nummer zijn",
         nn = "må væra ein streng eller eit nummer",
         pl = "musi być ciągiem lub liczbą",
-        pt = "Tem que ser uma expressão ou um número",
+        pt = "deve ser uma expressão ou número",
         pt_BR = "precisa ser um texto ou um número",
         ro = "trebuie să fie un şir de caractere sau un număr",
         ru = "должна быть строкой или числом",
@@ -1494,7 +1527,7 @@ MojoSetup.localization = {
         nl = "kan geen lege string zijn",
         nn = "kan ikkje væra ein tom streng",
         pl = "nie może być pustym ciągiem",
-        pt = "Não pode ser uma expressão vazia",
+        pt = "não pode ser uma expressão vazia",
         pt_BR = "não pode ser uma string vazia",
         ro = "nu poate fi un şir de caractere gol",
         ru = "не может быть пустой строкой",
@@ -1528,7 +1561,7 @@ MojoSetup.localization = {
         nl = "URL heeft geen protocol",
         nn = "URL har ikkje protokoll",
         pl = "URL nie ma protokołu",
-        pt = "O URL não tem o protocolo",
+        pt = "O URL não contém o protocolo",
         pt_BR = "Não existe protocolo na URL",
         ro = "calea URL nu are protocol",
         ru = "URL не содержит протокол",
@@ -1562,7 +1595,7 @@ MojoSetup.localization = {
         nl = "URL heeft geen host",
         nn = "URL har ikke vert",
         pl = "URL nie ma hosta",
-        pt = "O URL não tem servidor",
+        pt = "O URL não contém o servidor",
         pt_BR = "Não existe host na URL",
         ro = "calea URL nu are gazdă",
         ru = "URL не содержит хост",
@@ -1596,7 +1629,7 @@ MojoSetup.localization = {
         nl = "URL heeft geen pad",
         nn = "URL har ikkje sti",
         pl = "URL nie ma ścieżki",
-        pt = "O URL não tem recurso",
+        pt = "O URL não contém o caminho",
         pt_BR = "Não existe caminho na URL",
         ro = "URL nu are cale",
         ru = "URL не содержит путь",
@@ -2016,7 +2049,7 @@ MojoSetup.localization = {
         nl = "Installatie afbreken?",
         nn = "Avbryt installasjonen",
         pl = "Anuluj Instalację",
-        pt = "Cancelar a instalação",
+        pt = "Cancelar instalação",
         pt_BR = "Cancelar instalação",
         ro = "Anulează instalarea",
         ru = "Отменить установку",
@@ -2373,7 +2406,7 @@ MojoSetup.localization = {
         nl = "Map:",
         nn = "Mappe:",
         pl = "Folder:",
-        pt = "Directoria:",
+        pt = "Directorio",
         pt_BR = "Diretório:",
         ro = "Dosar:",
         ru = "Папка:",
@@ -2450,7 +2483,7 @@ MojoSetup.localization = {
         ru = "Скачиваем",
         sk = "Sťahujem",
         sl = "Prenašanje",
-        sv = "Hämtar",
+        sv = "Laddar ned",
         tr = "İndiriliyor",
         uk = "Завантаження",
         zh_TW = "下載中"
@@ -2514,7 +2547,7 @@ MojoSetup.localization = {
         nl = "laden van bestand \"%0\" mislukt",
         nn = "kunne ikkje lasta fila '%0'",
         pl = "Nie można załadować pliku '%0'",
-        pt = "falhou a carregar o filheiro '%0'",
+        pt = "falhou a carregar o ficheiro '%0'",
         pt_BR = "falha ao carregar o arquivo '%0'",
         ro = "nu s-a putut citi fişierul '%0'",
         ru = "не могу загрузить файл '%0'",
@@ -2623,7 +2656,7 @@ MojoSetup.localization = {
         ru = "Ошибка скачивания файла!",
         sk = "Sťahovanie zlyhalo!",
         sl = "Prenos datoteke ni uspel!",
-        sv = "Hämtning av fil misslyckades!",
+        sv = "Nedladdning av fil misslyckades!",
         tr = "Dosya indirilemedi!",
         uk = "Неможливо завантажити файл!",
         zh_TW = "檔案下載失敗"
@@ -3073,7 +3106,7 @@ MojoSetup.localization = {
         it = "in stallo",
         nb = "stanset",
         nds = "Angehalten",
-        nl = "geen progressie",
+        nl = "staat stil",
         nn = "stanset",
         pl = "wstrzymano",
         pt = "Parado",
@@ -3141,7 +3174,7 @@ MojoSetup.localization = {
         it = "Inserire il prossimo disco",
         nb = "Mediaendring",
         nds = "Medien Wechsel",
-        nl = "Verwissel CD/medium",
+        nl = "Medium wisselen",
         nn = "Mediaendring",
         pl = "Zmiana nośnika",
         pt = "Mudança de media",
@@ -3674,7 +3707,7 @@ MojoSetup.localization = {
         it = "Creazione del collegamento (symlink) fallita!",
         nb = "Kunne ikke lage symbolsk lenke!",
         nds = "Fehler beim Erstellen einer symbolischen Verknüpfung!",
-        nl = "Aanmaken Symlink mislukt!",
+        nl = "Maken van symbolische link mislukt!",
         nn = "Kunne ikkje laga symbolsk lenke!",
         pl = "Nie udało się utworzyć odnośnika symbolicznego!",
         pt = "A criação de uma ligação simbólica falhou!",
@@ -4314,6 +4347,24 @@ MojoSetup.localization = {
     -- This is a prompt to the user to type in their product key (CD key,
     --  authorization code, etc).
     ["Please enter your product key"] = {
+        cs = "Prosím, zadejte klíč produktu",
+        de = "Bitte geben Sie Ihren Produktschlüssel ein",
+        en_AU = "Please enter your product key",
+        en_GB = "Please enter your product key",
+        es = "Por favor, introduzca su código de producto",
+        fr = "Veuillez entrer la clé du produit",
+        he = "יש להכניס את המספר הסידורי שלך",
+        hu = "Kérem adja meg a termékkódot",
+        it = "Inserisci la CD Key",
+        nb = "Skriv inn din produkt nøkkel",
+        nds = "Bitte geben Sie den Produktschlüssel ein",
+        nl = "Voer uw productsleutel in",
+        pt = "Entre com a chave do produto",
+        ro = "Introduceţi cheia produsului",
+        sk = "Prosím vložte váš klúč produktu",
+        sv = "Skriv in din produktnyckel",
+        tr = "Lütfen ürün anahtarını giriniz",
+        zh_TW = "請輸入你的產品序號"
     };
 
     -- The stdio GUI uses this string when we have a default value that can
@@ -4322,40 +4373,91 @@ MojoSetup.localization = {
     --  press the enter key on their keyboard. This is a parenthetical phrase,
     --  as it won't be shown if there's no default available.
     ["(just press enter to use '%0')"] = {
+        cs = "(stiskněte enter pro použití hodnoty '%0')",
+        de = "(drücken Sie Enter, um '%0' zu verwenden)",
+        en_AU = "just press enter to use '%0'",
+        en_GB = "(just press enter to use '%0')",
+        es = "(simplemente presione enter para usar '%0')",
+        fr = "(faites \"entrée\" pour effectuer les opérations suivantes: '%0')",
+        he = "(רק הקש על Enter בכדי להשתמש ב־'%0')",
+        it = "Premere invio per utilizzare '%0'",
+        nb = "(trykk enter for å bruke '%0')",
+        nl = "(druk op enter om '%0' te kiezen)",
+        pt = "(pressione enter para usar '%0')",
+        ro = "(apăsaţi enter pentru a folosi '%0')",
+        sk = "(stlačte enter pre '%0')",
+        sv = "(tryck enter för att använda '%0')",
+        tr = "('%0' yi kullanmak için girişe basınız)",
+        zh_TW = "(請按下 Enter 鍵以使用 '%0')"
     };
 
     -- This is a message box title when informing the user that their product
     --  key (CD key, authorization code, etc) is incorrect, mistyped, or
     --  invalid in some way.
     ["Invalid product key"] = {
+        cs = "Neplatný klíč produktu",
+        de = "Ungültiger Produktschlüssel",
+        en_AU = "Invalid product key",
+        en_GB = "Invalid product key",
+        es = "Código de producto inválido",
+        fr = "La clé du produit est invalide",
+        he = "המספר סידורי אינו תקין",
+        hu = "Valótan termékkód",
+        it = "CD key non valida",
+        nb = "Ugyldig produkt nøkkel",
+        nds = "Ungültiger Produktschlüssel",
+        nl = "Foute productsleutel",
+        pt = "Chave do produto inválida",
+        ro = "Cheia produsului nu este valida",
+        sk = "Neplatný kľúč produktu",
+        sv = "Felaktig produktnyckel",
+        tr = "Geçersiz ürün anahtarı",
+        zh_TW = "無效的產品序號"
     };
 
     -- This is the text of a message box informing the user that their product
     --  key (CD key, authorization code, etc) is incorrect, mistyped, or
     --  invalid in some way, and they should try to type the key again.
     ["That key appears to be invalid. Please try again."] = {
+        cs = "Zadaný klíč nevypadá platně. Zkuste jej prosím zadat znovu.",
+        de = "Dieser Produktschlüssel scheint ungültig zu sein. Versuchen Sie es bitte noch einmal.",
+        en_AU = "That key appears to be invalid. Please try again.",
+        en_GB = "That key appears to be invalid. Please try again.",
+        es = "El código parece inválido. Por favor, inténtelo de nuevo",
+        fr = "La clé du produit est invalide, veuillez la ressaisir",
+        he = "מפתח זה ככל הנראה שגוי, אנא נסה שוב.",
+        it = "La CD key non sembra valida. Sei pregato di riprovare.",
+        nb = "Produkt nøkkelen ser ut til å være ugylidig. Prøv igjen.",
+        nds = "Dieser Schlüssel ist ungültig. Bitte versuchen Sie es nochmals.",
+        nl = "Deze produktsleutel lijkt niet te kloppen. Probeer a.u.b. opnieuw.",
+        pt = "Esta chave do produto parece ser inválida. Por favor tente novamente.",
+        ro = "Acea cheie nu este validă. Vă rugăm încercaţi iarăşi.",
+        sk = "Kľúč produktu je neplatný, prosím zadajte nový.",
+        sv = "Denna produktnyckel verkar felaktig. Försök gärna igen.",
+        tr = "Ürün anahtarı geçersiz görünüyor. Lütfen tekrar deneyin.",
+        zh_TW = "這組序號似乎是無效的，請再輸入一次。"
     };
 
     -- This is the text of the "Window" menu item, on Mac OS X.
-    --  This is a standard top-level menu item that contains subitems like 
+    --  This is a standard top-level menu item that contains subitems like
     --  "Minimize," "Zoom," and "Bring All to Front."
     ["Window"] = {
-        zh_CN = "窗口",
-        zh_TW = "視窗",
-        sv = "Fönster",
-        es = "Ventana",
-        ru = "Окно",
-        pt = "Janela",
-        pl = "Okno",
-        no = "Vindu",
-        ko = "윈도우",
-        jp = "ウインドウ",
-        it = "Finestra",
+        cs = "Okno",
         de = "Fenster",
+        en_AU = "Window",
+        en_GB = "Window",
+        es = "Ventana",
         fr = "Fenêtre",
-        fi = "Ikkuna",
+        he = "חלון",
+        hu = "Ablak",
+        it = "Finestra",
+        nb = "Vindu",
         nl = "Venster",
-        da = "Vindue",
+        pt = "Janela",
+        ro = "Fereastră",
+        sv = "Fönster",
+        tr = "Pencere",
+        zh_TW = "視窗"
     };
 
     -- This is the text of the "About" menu item, on Mac OS X.
@@ -4363,23 +4465,20 @@ MojoSetup.localization = {
     --  "%0" is the name of the application ("MyGame Installer" or whatnot),
     --  which will be replaced at runtime.
     ["About %0"] = {
-        zh_TW = "關於 %0",
-        zh_CN = "关于 %0",
-        sv = "Om %0",
-        es = "Acerca de %0",
-        ru = "О программе %0",
-        pt_PT = "Acerca do %0",
-        pt = "Sobre o %0",
-        pl = "O programie %0…",
-        no = "Om %0",
-        ko = "%0에 관하여",
-        jp = "%0 について",
-        it = "Informazioni su %0",
+        cs = "O %0",
         de = "Über %0",
-        fr = "À propos d’%0",
-        fi = "Tietoja: %0",
+        en_AU = "About %0",
+        en_GB = "About %0",
+        es = "Acerca de %0",
+        fr = "À propos de %0",
+        he = "אודות %0",
+        it = "Informazioni su %0",
         nl = "Over %0",
-        da = "Om %0",
+        pt = "Sobre o %0",
+        ro = "Despre %0",
+        sv = "Om %0",
+        tr = "%0 Hakkında",
+        zh_TW = "關於 %0"
     };
 
     -- This is the text of the "Hide" menu item, on Mac OS X.
@@ -4387,12 +4486,42 @@ MojoSetup.localization = {
     --  "%0" is the name of the application ("MyGame Installer" or whatnot),
     --  which will be replaced at runtime.
     ["Hide %0"] = {
+        cs = "Skrýt %0",
+        de = "Blende %0 aus",
+        en_AU = "Hide %0",
+        en_GB = "Hide %0",
+        es = "Ocultar %0",
+        fr = "Masquer %0",
+        he = "הסתרת %0",
+        it = "Nascondi %0",
+        nb = "Gjem %0",
+        nl = "Verberg %0",
+        pt = "Esconder %0",
+        ro = "Ascunde %0",
+        sv = "Dölj %0",
+        tr = "%0 Gizlensin",
+        zh_TW = "隱藏 %0"
     };
 
     -- This is the text of the "Hide Others" menu item, on Mac OS X.
     --  This menu item makes every application window except MojoSetup's
     --  disappear.
     ["Hide Others"] = {
+        cs = "Skrýt ostatní",
+        de = "Andere ausblenden",
+        en_AU = "Hide Others",
+        en_GB = "Hide Others",
+        es = "Ocultar Otros",
+        fr = "Masquer les autres",
+        he = "הסתרת אחרים",
+        it = "Nascondi le altre",
+        nb = "Skjul andre",
+        nl = "Verberg Anderen",
+        pt = "Ocultar os Outros",
+        ro = "Ascunde-le pe celelalte",
+        sv = "Dölj övriga",
+        tr = "Diğerlerini Gizle",
+        zh_TW = "隱藏其它"
     };
 
     -- This is the text of the "Quit" menu item, on Mac OS X.
@@ -4400,29 +4529,43 @@ MojoSetup.localization = {
     --  "%0" is the name of the application ("MyGame Installer" or whatnot),
     --  which will be replaced at runtime.
     ["Quit %0"] = {
+        cs = "Ukončit %0",
+        de = "Beende %0",
+        en_AU = "Quit %0",
+        en_GB = "Quit %0",
+        es = "Cerrar %0",
+        fr = "Quitter %0",
+        he = "יציאה מ־Quit",
+        hu = "Kilépés %0",
+        it = "Esci da %0",
+        nb = "Avslutt %0",
+        nl = "Sluit %0",
+        pt = "Sair do %0",
+        ro = "Ieşire %0",
+        sv = "Avsluta %0",
+        tr = "%0 Çıkış",
+        zh_TW = "結束 %0"
     };
 
     -- This is the text of the "Show All" menu item, on Mac OS X.
     --  This is a standard menu item that means "redisplay all previously
     --  hidden windows".
     ["Show All"] = {
-        es = "Mostrar todo",
-        zh_TW = "顯示全部",
-        zh_CN = "全部显示",
-        sv = "Visa alla",
-        ru = "Показать все",
-        pt_PT = "Mostrar tudo",
-        pt = "Mostrar Tudo",
-        pl = "Pokaż wszystkie",
-        no = "Vis alle",
-        ko = "모두 보기",
-        jp = "すべてを表示",
-        it = "Mostra tutte",
+        cs = "Zobrazit vše",
         de = "Alle einblenden",
-        fr = "Tout afficher",
-        fi = "Näytä kaikki",
-        nl = "Toon alles",
-        da = "Vis alle",
+        en_AU = "Show All",
+        en_GB = "Show All",
+        es = "Mostrar Todos",
+        fr = "Afficher tout",
+        he = "הצג הכל",
+        it = "Mostra Tutto",
+        nb = "Vis alle",
+        nl = "Alles weergeven",
+        pt = "Mostrar Todos",
+        ro = "Arată tot",
+        sv = "Visa alla",
+        tr = "Hepsini Göster",
+        zh_TW = "顯示全部"
     };
 
     -- This is the text of the "Services" menu item, on Mac OS X.
@@ -4431,74 +4574,86 @@ MojoSetup.localization = {
     --  this menu item with a means to add a email address, copied to the
     --  clipboard, to the user's address book).
     ["Services"] = {
+        cs = "Služby",
+        de = "Dienste",
+        en_AU = "Services",
+        en_GB = "Services",
+        es = "Servicios",
+        fr = "Services",
+        he = "שירותים",
+        hu = "Szolgáltatások",
+        it = "Servizi",
+        nb = "Tjenester",
+        nl = "Voorzieningen",
+        pt = "Serviços",
+        ro = "Servicii",
+        sv = "Tjänster",
+        tr = "Hizmetler",
+        zh_TW = "服務"
     };
 
     -- This is the text of the "Minimize" menu item, on Mac OS X.
     --  This is a standard menu item that shrinks the current window so it's
     --  not on the desktop any more.
     ["Minimize"] = {
-        zh_TW = "縮到最小",
-        zh_CN = "最小化",
-        sv = "Minimera",
+        cs = "Minimalizovat",
+        de = "Minimieren",
+        en_AU = "Minimize",
+        en_GB = "Minimise",
         es = "Minimizar",
-        ru = "Убрать в Dock",
+        fr = "Minimiser",
+        he = "מיזעור",
+        hu = "Minimalizálás",
+        it = "Riduci a icona",
+        nb = "Minimer",
+        nl = "Minimaliseren",
         pt = "Minimizar",
-        pl = "Miniaturka",
-        no = "Minimer",
-        ko = "윈도우 축소",
-        jp = "しまう",
-        it = "Contrai",
-        de = "Im Dock ablegen",
-        fr = "Placer dans le Dock",
-        fi = "Pienennä",
-        nl = "Minimaliseer",
-        da = "Minimer",
+        ro = "Minimizează",
+        sv = "Minimera",
+        tr = "Küçült",
+        zh_TW = "最小化"
     };
 
     -- This is the text of the "Zoom" menu item, on Mac OS X.
     --  This is a standard menu item that means "Maximize" on most platforms;
     --  make the application's current window as large as reasonably possible.
     ["Zoom"] = {
-        zh_TW = "縮放",
-        zh_CN = "缩放",
-        sv = "Zooma",
+        cs = "Maximalizovat",
+        de = "Vergrößern",
+        en_AU = "Zoom",
+        en_GB = "Zoom",
         es = "Zoom",
-        ru = "Изменить масштаб",
-        pt_PT = "Zoom",
-        pt = "Ampliar/Reduzir",
-        pl = "Powiększ",
-        no = "Zoom",
-        ko = "확대/축소",
-        jp = "拡大／縮小",
-        it = "Ridimensiona",
-        de = "Zoomen",
-        fr = "Réduire/agrandir",
-        fi = "Suurenna tai pienennä",
-        nl = "##Vergroot/verklein venster",
-        da = "Zoom",
+        fr = "Zoom",
+        he = "תקריב",
+        hu = "Nagyítás",
+        it = "Massimizza",
+        nb = "Forstørr",
+        nl = "Vergroten",
+        pt = "Ampliar",
+        ro = "Mărire",
+        sv = "Maximera",
+        tr = "Büyüt",
+        zh_TW = "縮放"
     };
 
     -- This is the text of the "Bring All to Front" menu item, on Mac OS X.
     --  This is a standard menu item that brings all MojoSetup application
     --  windows to the top of the desktop's window stack.
     ["Bring All to Front"] = {
-        zh_TW = "將此程式所有視窗移至最前",
-        zh_CN = "前置全部窗口",
-        sv = "Lägg alla överst",
-        es = "Traer todo al frente",
-        ru = "Все окна - на передний план",
-        pt_PT = "Passar tudo para a frente",
-        pt = "Trazer Todas para Frente",
-        pl = "Umieść wszystko na wierzchu",
-        no = "Legg alle øverst",
-        ko = "모두 앞으로 가져오기",
-        jp = "すべてを手前に移動",
-        it = "Porta tutto in primo piano",
-        de = "Alle nach vorne bringen",
+        cs = "Přenést vše do popředí",
+        de = "Alle in den Vordergrund",
+        en_AU = "Bring All to Front",
+        en_GB = "Bring All to Front",
+        es = "Traer Todo al Frente",
         fr = "Tout ramener au premier plan",
-        fi = "Tuo kaikki eteen",
-        nl = "Alles op voorgrond",
-        da = "Anbring alle forrest",
+        he = "קדם הכל לחזית",
+        it = "Porta tutto in primo piano",
+        nb = "Flytt Alt Fram",
+        nl = "Alles op Voorgrond",
+        pt = "Trazer Todos Para a Frente",
+        ro = "Afişează toate în primplan",
+        tr = "Hepsini Öne Getir",
+        zh_TW = "將所有視窗移至最上層"
     };
 };
 
