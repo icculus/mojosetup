@@ -414,6 +414,7 @@ static GtkWidget *create_gtkwindow(const char *title,
     canfwd = TRUE;
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
     gtk_window_set_title(GTK_WINDOW(window), title);
     gtk_container_set_border_width(GTK_CONTAINER(window), 8);
 
