@@ -2,8 +2,11 @@
 Using MojoSetup.
 
 If there are gaps in this documentation, please ask on the MojoSetup mailing
- list: to subscribe, send a blank email to mojosetup-subscribe@icculus.org,
- and then questions can go to mojosetup@icculus.org. This document will
+ list: to subscribe, go here...
+
+   http://icculus.org/mailman/listinfo/mojosetup
+
+ ...and then questions can go to mojosetup@icculus.org. This document will
  be updated as we see what parts are confusing, so feedback is appreciated.
 
 
