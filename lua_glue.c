@@ -63,7 +63,7 @@ static inline void set_cptr(lua_State *L, void *ptr, const char *sym)
 {
     lua_pushlightuserdata(L, ptr);
     lua_setfield(L, -2, sym);
-} // set_cfunc
+} // set_cptr
 
 
 // Sets t[sym]=f, where t is on the top of the Lua stack.
