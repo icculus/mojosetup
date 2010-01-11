@@ -96,6 +96,7 @@ ENDIF(BEOS)
 
 IF(UNIX)
     ADD_DEFINITIONS(-DPLATFORM_UNIX=1)
+    ADD_DEFINITIONS(-DLUA_USE_MKSTEMP=1)  # as opposed to tmpnam(), yuck!
     # No _setjmp/_longjmp in BeOS 5 (or Haiku, at the moment).
     IF(NOT BEOS)
         ADD_DEFINITIONS(-DLUA_USE_ULONGJMP=1)
