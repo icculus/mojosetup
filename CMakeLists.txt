@@ -688,6 +688,7 @@ SET(MOJOSETUP_TARGETS "${MOJOSETUP_TARGETS};mojosetup")
 
 # For cobbling together a skeleton installer...
 
+# !!! FIXME: all of these custom .cmake files are built-in commands in CMake 2.6.(4?) ...!
 ADD_CUSTOM_TARGET(skeleton
     COMMENT "Assembling Skeleton..."
     COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/rm_recurse.cmake
