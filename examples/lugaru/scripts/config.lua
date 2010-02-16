@@ -7,7 +7,7 @@ Setup.Package
     vendor = "wolfire.com",
     id = "lugaru",
     description = _("Lugaru: The Rabbit's Foot"),
-    version = "1.0b",
+    version = "1.0c",
     splash = "splash.bmp",
     superuser = false,
     write_manifest = true,
