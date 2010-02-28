@@ -21,7 +21,17 @@ CREATE_MOJOGUI_ENTRY_POINT(ncurses)
 
 #include <unistd.h>
 #include <ctype.h>
+// CMake searches for a whole bunch of different possible curses includes
+#if defined(HAVE_NCURSESW_NCURSES_H)
+#include <ncursesw/ncurses.h>
+#elif defined(HAVE_NCURSESW_CURSES_H)
 #include <ncursesw/curses.h>
+#elif defined(HAVE_NCURSESW_H)
+#include <ncursesw.h>
+#else
+#error ncurses gui enabled, but no known header file found
+#endif
+
 #include <locale.h>
 
 // This was built to look roughly like dialog(1), but it's not nearly as
