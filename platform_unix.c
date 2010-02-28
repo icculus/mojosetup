@@ -468,7 +468,7 @@ char *MojoPlatform_osType(void)
 char *MojoPlatform_osVersion()
 {
 #if PLATFORM_MACOSX
-    long ver, major, minor, patch;
+    SInt32 ver, major, minor, patch;
     boolean convert = false;
     char *buf = NULL;
     char dummy = 0;
@@ -500,9 +500,10 @@ char *MojoPlatform_osVersion()
         patch = (ver & 0xF);
     } /* if */
 
-    len = snprintf(&dummy, sizeof (dummy), "%ld.%ld.%ld", major, minor, patch);
+    len = snprintf(&dummy, sizeof (dummy), "%d.%d.%d",
+                    (int) major, (int) minor, (int) patch);
     buf = (char *) xmalloc(len+1);
-    snprintf(buf, len+1, "%ld.%ld.%ld", major, minor, patch);
+    snprintf(buf, len+1, "%d.%d.%d", (int) major, (int) minor, (int) patch);
     return buf;
 
 #else
