@@ -96,6 +96,15 @@ MojoArchive *MojoArchive_newFromInput(MojoInput *io, const char *origfname);
 //  zipfiles-in-zipfiles will bog down here, for example).
 MojoInput *MojoInput_newFromArchivePath(MojoArchive *ar, const char *fname);
 
+// Wrap (origio) in a new MojoInput that decompresses a compressed stream
+//  on the fly. Returns NULL on error or if (origio) isn't a supported
+//  compressed format. The returned MojoInput wraps the original input;
+//  closing the returned MojoInput will close (origio), too, and you should
+//  consider origio lost. If this function returns non-NULL, you should not,
+//  under any circumstances, interact directly with origio again, as the
+//  new MojoInput now owns it.
+MojoInput *MojoInput_newCompressedStream(MojoInput *origio);
+
 extern MojoArchive *GBaseArchive;
 extern const char *GBaseArchivePath;
 MojoArchive *MojoArchive_initBaseArchive(void);
