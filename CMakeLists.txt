@@ -65,6 +65,13 @@ INCLUDE(CheckCSourceCompiles)
 INCLUDE(CheckCCompilerFlag)
 INCLUDE(TestBigEndian)
 
+# !!! FIXME: correct this to new policy and bump minimum cmake requirement.
+IF(COMMAND CMAKE_POLICY)
+    # Use old policy when it comes to escaping macros,
+    # Specifically the one in quotes below.
+    CMAKE_POLICY(SET CMP0005 OLD)
+ENDIF(COMMAND CMAKE_POLICY)
+
 ADD_DEFINITIONS(-D__MOJOSETUP__=1)
 ADD_DEFINITIONS(-DAPPID=mojosetup)
 ADD_DEFINITIONS(-DAPPREV="${MOJOSETUP_VERSION}")
