@@ -445,7 +445,7 @@ MojoInput *MojoInput_newCompressedStream(MojoInput *origio)
     //  in a decompressor.
     uint8 magic[4];
     const int64 br = origio->read(origio, magic, sizeof (magic));
-    if ((!origio->seek(origio, 0)) || (br != sizeof (magic)))
+    if ((origio->seek(origio, 0)) && (br == sizeof (magic)))
     {
         #if SUPPORT_GZIP
         if ((magic[0] == 0x1F) && (magic[1] == 0x8B) && (magic[2] == 0x08))
