@@ -238,6 +238,7 @@ SET(MOJOSETUP_SRCS
     archive_zip.c
     archive_tar.c
     archive_uz2.c
+    archive_pck.c
     checksum_crc32.c
     checksum_md5.c
     checksum_sha1.c
@@ -514,6 +515,11 @@ IF(MOJOSETUP_ARCHIVE_UZ2)
     SET(MOJOSETUP_NEED_ZLIB TRUE)
 ENDIF(MOJOSETUP_ARCHIVE_UZ2)
 
+OPTION(MOJOSETUP_ARCHIVE_PCK "Enable PCK support" TRUE)
+IF(MOJOSETUP_ARCHIVE_PCK)
+    ADD_DEFINITIONS(-DSUPPORT_PCK=1)
+	SET(MOJOSETUP_INPUT_GZIP TRUE)
+ENDIF(MOJOSETUP_ARCHIVE_PCK)
 
 # Input decoders...
 
