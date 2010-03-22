@@ -979,11 +979,10 @@ static int MojoGui_www_productkey(const char *desc, const char *fmt,
                                   char *buf, const int buflen,
                                   boolean can_back, boolean can_fwd)
 {
-    const char *prompt = xstrdup(_("Please enter your product key"));
-    char *retval = NULL;
+    char *prompt = xstrdup(_("Please enter your product key"));
+    int retval = -1;
     char *html = NULL;
     size_t len = 0, alloc = 0;
-    boolean checked = true;
     int cancelbutton = -1;
     int backbutton = -1;
     int fwdbutton = -1;
