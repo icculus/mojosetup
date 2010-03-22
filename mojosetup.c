@@ -131,7 +131,7 @@ static boolean trySpawnTerminalGui(void)
     if (!MojoPlatform_spawnTerminal())
     {
         logError("...Terminal spawning failed.");
-	    return false;
+        return false;
     } // if
 
     assert(MojoPlatform_istty());
@@ -1103,7 +1103,66 @@ int MojoSetup_testArchiveCode(int argc, char **argv)
                     if (ent->type == MOJOARCHIVE_ENTRY_FILE)
                     {
                         printf("(file, %d bytes, %o)\n",
-                                (int) ent->filesize, (int) ent->perms);
+                                (int) ent->filesize, ent->perms);
+
+                        MojoInput *input = archive->openCurrentEntry(archive);
+
+                        if(&archive->prevEnum != ent)
+                        {
+                            fprintf(stderr, "Address of MojoArchiveEntry pointer differs\n");
+                            exit(EXIT_FAILURE);
+                        } // if
+
+                        if(!input)
+                        {
+                            fprintf(stderr, "Could not open current entry\n");
+                            exit(EXIT_FAILURE);
+                        } // if
+
+                        if(!input->ready(input))
+                        {
+                            input->close(input);
+                            continue;
+                        } // if
+
+                        uint64 pos = input->tell(input);
+                        if(0 != pos)
+                        {
+                            fprintf(stderr, "position has to be 0 on start, is: %d\n", (int) pos);
+                            exit(EXIT_FAILURE);
+                        } // if
+
+                        int64 filesize = input->length(input);
+                        if(filesize != ent->filesize)
+                        {
+                            fprintf(stderr, "file size mismatch %d != %d\n",
+                            		(int) filesize, (int) ent->filesize);
+                            exit(EXIT_FAILURE);
+                        } // if
+
+                        boolean ret = input->seek(input, filesize - 1);
+                        if(!ret)
+                        {
+                            fprintf(stderr, "seek() has to return 'true'.\n");
+                            exit(EXIT_FAILURE);
+                        } // if
+
+                        ret = input->seek(input, filesize);
+                        if(ret)
+                        {
+                            fprintf(stderr, "seek() has to return 'false'.\n");
+                            exit(EXIT_FAILURE);
+                        } // if
+
+                        pos = input->tell(input);
+                        if(filesize -1  != pos)
+                        {
+                            fprintf(stderr, "position should be %d after seek(), is: %d\n",
+                            		(int) filesize - 1, (int) pos);
+                            exit(EXIT_FAILURE);
+                        } // if
+
+                        input->close(input);
                     } // if
                     else if (ent->type == MOJOARCHIVE_ENTRY_DIR)
                         printf("(dir, %o)\n", ent->perms);
@@ -1113,7 +1172,7 @@ int MojoSetup_testArchiveCode(int argc, char **argv)
                     {
                         printf("(UNKNOWN?!, %d bytes, -> '%s', %o)\n",
                                 (int) ent->filesize, ent->linkdest,
-                                (int) ent->perms);
+                                ent->perms);
                     } // else
                 } // while
             } // else
