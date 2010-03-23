@@ -44,11 +44,10 @@ static boolean MojoInput_pck_ready(MojoInput *io)
 static int64 MojoInput_pck_read(MojoInput *io, void *buf, uint32 bufsize)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
-    const PCKinfo *info = (PCKinfo *) ar->opaque;
-    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
+    const MojoArchiveEntry entry = ar->prevEnum;
     int64 pos = io->tell(io);
-    if ((pos + bufsize) > entry->filesize)
-        bufsize = (uint32) (entry->filesize - pos);
+    if ((pos + bufsize) > entry.filesize)
+        bufsize = (uint32) (entry.filesize - pos);
     return ar->io->read(ar->io, buf, bufsize);
 } // MojoInput_pck_read
 
@@ -56,11 +55,11 @@ static boolean MojoInput_pck_seek(MojoInput *io, uint64 pos)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
     const PCKinfo *info = (PCKinfo *) ar->opaque;
-    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
+    const MojoArchiveEntry entry = ar->prevEnum;
     boolean retval = false;
-    if (pos < ((uint64) entry->filesize))
+    if (pos < ((uint64) entry.filesize))
     {
-        const uint64 newpos = (info->nextFileStart - entry->filesize) + pos;
+        const uint64 newpos = (info->nextFileStart - entry.filesize) + pos;
         retval = ar->io->seek(ar->io, newpos);
     } // if
     return retval;
@@ -70,16 +69,15 @@ static int64 MojoInput_pck_tell(MojoInput *io)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
     const PCKinfo *info = (PCKinfo *) ar->opaque;
-    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
-    return ar->io->tell(ar->io) - (info->nextFileStart - entry->filesize);
+    const MojoArchiveEntry entry = ar->prevEnum;
+    return ar->io->tell(ar->io) - (info->nextFileStart - entry.filesize);
 } // MojoInput_pck_tell
 
 static int64 MojoInput_pck_length(MojoInput *io)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
-    PCKinfo *info = (PCKinfo *) ar->opaque;
-    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
-    return entry->filesize;
+    const MojoArchiveEntry entry = ar->prevEnum;
+    return entry.filesize;
 } // MojoInput_pck_length
 
 static MojoInput *MojoInput_pck_duplicate(MojoInput *io)
@@ -171,7 +169,7 @@ static boolean MojoArchive_pck_enumerate(MojoArchive *ar)
 
     info->fileCount = realFileCount;
     info->archiveEntries = archiveEntries;
-    info->nextEnumPos = -1;
+    info->nextEnumPos = 0;
     info->nextFileStart = dataStart;
 
     return true;
@@ -183,10 +181,10 @@ static const MojoArchiveEntry *MojoArchive_pck_enumNext(MojoArchive *ar)
     PCKinfo *info = (PCKinfo *) ar->opaque;
     const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
 
-    if (info->nextEnumPos + 1 >= info->fileCount)
+    if (info->nextEnumPos >= info->fileCount)
         return NULL;
 
-    if ((info->nextEnumPos > 0) && (!ar->io->seek(ar->io, info->nextFileStart)))
+    if (!ar->io->seek(ar->io, info->nextFileStart))
         return NULL;
 
     info->nextEnumPos++;
