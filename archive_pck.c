@@ -17,15 +17,15 @@ MojoArchive *MojoArchive_createPCK(MojoInput *io) { return NULL; }
 
 typedef struct
 {
-    uint32 Magic;               // 4 bytes, has to be 0x534c4850
+    uint32 Magic;               // 4 bytes, has to be PCK_MAGIC (0x534c4850)
     uint32 StartOfBinaryData;   // 4 bytes, offset to the data
-}PCK_HEADER;
+} PCKheader;
 
 typedef struct
 {
     int8  filename[60];         // 60 bytes, null terminated
     uint32 filesize;            //  4 bytes
-}PCK_FILE_ENTRY;
+} PCKentry;
 
 typedef struct PCKinfo
 {
@@ -33,7 +33,7 @@ typedef struct PCKinfo
     uint64 dataStart;
     uint64 nextFileStart;
     int64 nextEnumPos;
-    MojoArchiveEntry *archiveEntires;
+    MojoArchiveEntry *archiveEntries;
 } PCKinfo;
 
 static boolean MojoInput_pck_ready(MojoInput *io)
@@ -44,35 +44,42 @@ static boolean MojoInput_pck_ready(MojoInput *io)
 static int64 MojoInput_pck_read(MojoInput *io, void *buf, uint32 bufsize)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
-    PCKinfo *info = (PCKinfo *) ar->opaque;
+    const PCKinfo *info = (PCKinfo *) ar->opaque;
+    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
     int64 pos = io->tell(io);
-    if ((pos + bufsize) > info->archiveEntires[info->nextEnumPos].filesize)
-        bufsize = (uint32) (info->archiveEntires[info->nextEnumPos].filesize - pos);
+    if ((pos + bufsize) > entry->filesize)
+        bufsize = (uint32) (entry->filesize - pos);
     return ar->io->read(ar->io, buf, bufsize);
 } // MojoInput_pck_read
 
 static boolean MojoInput_pck_seek(MojoInput *io, uint64 pos)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
-    PCKinfo *info = (PCKinfo *) ar->opaque;
+    const PCKinfo *info = (PCKinfo *) ar->opaque;
+    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
     boolean retval = false;
-    if (pos < ((uint64) info->archiveEntires[info->nextEnumPos].filesize))
-        retval = ar->io->seek(ar->io, (info->nextFileStart - info->archiveEntires[info->nextEnumPos].filesize) + pos);
+    if (pos < ((uint64) entry->filesize))
+    {
+        const uint64 newpos = (info->nextFileStart - entry->filesize) + pos;
+        retval = ar->io->seek(ar->io, newpos);
+    } // if
     return retval;
 } // MojoInput_pck_seek
 
 static int64 MojoInput_pck_tell(MojoInput *io)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
-    PCKinfo *info = (PCKinfo *) ar->opaque;
-    return ar->io->tell(ar->io) - (info->nextFileStart - info->archiveEntires[info->nextEnumPos].filesize);
+    const PCKinfo *info = (PCKinfo *) ar->opaque;
+    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
+    return ar->io->tell(ar->io) - (info->nextFileStart - entry->filesize);
 } // MojoInput_pck_tell
 
 static int64 MojoInput_pck_length(MojoInput *io)
 {
     MojoArchive *ar = (MojoArchive *) io->opaque;
     PCKinfo *info = (PCKinfo *) ar->opaque;
-    return info->archiveEntires[info->nextEnumPos].filesize;
+    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
+    return entry->filesize;
 } // MojoInput_pck_length
 
 static MojoInput *MojoInput_pck_duplicate(MojoInput *io)
@@ -91,69 +98,79 @@ static void MojoInput_pck_close(MojoInput *io)
 
 static boolean MojoArchive_pck_enumerate(MojoArchive *ar)
 {
-    MojoArchive_resetEntry(&ar->prevEnum);
-
+    MojoArchiveEntry *archiveEntries = NULL;
     PCKinfo *info = (PCKinfo *) ar->opaque;
-
-    int dataStart = info->dataStart;
-    int fileCount = dataStart / sizeof(PCK_FILE_ENTRY);
-
-    MojoArchiveEntry *archiveEntries = xmalloc(fileCount *  sizeof(MojoArchiveEntry));
-    PCK_FILE_ENTRY fileEntry;
+    const int dataStart = info->dataStart;
+    const int fileCount = dataStart / sizeof (PCKentry);
+    const size_t len = fileCount * sizeof (MojoArchiveEntry);
+    PCKentry fileEntry;
     uint64 i, realFileCount = 0;
     char directory[256] = {'\0'};
 
-    for(i = 0; i < fileCount; i++)
-    {
-        ar->io->read(ar->io, &fileEntry, sizeof(PCK_FILE_ENTRY));
+    MojoArchive_resetEntry(&ar->prevEnum);
 
-        if(strcmp(fileEntry.filename, "..") != 0 && fileEntry.filesize == 0x80000000)
+    archiveEntries = (MojoArchiveEntry *) xmalloc(len);
+
+    for (i = 0; i < fileCount; i++)
+    {
+        int dotdot;
+
+        ar->io->read(ar->io, &fileEntry, sizeof (PCKentry));
+        dotdot = (strcmp(fileEntry.filename, "..") == 0);
+
+        if ((!dotdot) && (fileEntry.filesize == 0x80000000))
         {
+            MojoArchiveEntry *entry = &archiveEntries[realFileCount];
+
             strcat(directory, fileEntry.filename);
             strcat(directory, "/");
 
-            archiveEntries[realFileCount].filename = xstrdup(directory);
-            archiveEntries[realFileCount].type = MOJOARCHIVE_ENTRY_DIR;
-            archiveEntries[realFileCount].perms = MojoPlatform_defaultDirPerms();
-            archiveEntries[realFileCount].filesize = 0L;
+            entry->filename = xstrdup(directory);
+            entry->type = MOJOARCHIVE_ENTRY_DIR;
+            entry->perms = MojoPlatform_defaultDirPerms();
+            entry->filesize = 0;
             realFileCount++;
-        }
-        else if(strcmp(fileEntry.filename, "..") == 0 && fileEntry.filesize == 0x80000000)
+        } // if
+
+        else if ((dotdot) && (fileEntry.filesize == 0x80000000))
         {
-            //remove trailing path separator
-            size_t strLength = strlen(directory);
+            // remove trailing path separator
+            char *pathSep;
+            const size_t strLength = strlen(directory);
             directory[strLength - 1] = '\0';
 
-            char *pathSep = strrchr(directory, '/');
-
+            pathSep = strrchr(directory, '/');
             if(pathSep != NULL)
             {
                 pathSep++;
                 *pathSep = '\0';
-            }
-        }
+            } // if
+        } // else if
+
         else
         {
-            if(directory[0] == '\0')
-            {
-                archiveEntries[realFileCount].filename = xstrdup(fileEntry.filename);
-            }
+            MojoArchiveEntry *entry = &archiveEntries[realFileCount];
+            if (directory[0] == '\0')
+                entry->filename = xstrdup(fileEntry.filename);
             else
             {
-                archiveEntries[realFileCount].filename = (char *)xmalloc(sizeof(char) * (strlen(directory) + strlen(fileEntry.filename) + 1));
-                strcat(archiveEntries[realFileCount].filename, directory);
-                strcat(archiveEntries[realFileCount].filename, fileEntry.filename);
-            }
+                const size_t len = sizeof (char) * strlen(directory) +
+                                   strlen(fileEntry.filename) + 1;
+                entry->filename = (char *) xmalloc(len);
+                strcat(entry->filename, directory);
+                strcat(entry->filename, fileEntry.filename);
+            } // else
 
-            archiveEntries[realFileCount].perms = MojoPlatform_defaultFilePerms();
-            archiveEntries[realFileCount].type = MOJOARCHIVE_ENTRY_FILE;
-            archiveEntries[realFileCount].filesize = fileEntry.filesize;
+            entry->perms = MojoPlatform_defaultFilePerms();
+            entry->type = MOJOARCHIVE_ENTRY_FILE;
+            entry->filesize = fileEntry.filesize;
+
             realFileCount++;
-        }
-    }
+        } // else
+    } // for
 
     info->fileCount = realFileCount;
-    info->archiveEntires = archiveEntries;
+    info->archiveEntries = archiveEntries;
     info->nextEnumPos = -1;
     info->nextFileStart = dataStart;
 
@@ -164,17 +181,18 @@ static boolean MojoArchive_pck_enumerate(MojoArchive *ar)
 static const MojoArchiveEntry *MojoArchive_pck_enumNext(MojoArchive *ar)
 {
     PCKinfo *info = (PCKinfo *) ar->opaque;
+    const MojoArchiveEntry *entry = &info->archiveEntries[info->nextEnumPos];
 
     if (info->nextEnumPos + 1 >= info->fileCount)
         return NULL;
 
-    if (info->nextEnumPos > 0 && !ar->io->seek(ar->io, info->nextFileStart))
-       return NULL;
+    if ((info->nextEnumPos > 0) && (!ar->io->seek(ar->io, info->nextFileStart)))
+        return NULL;
 
     info->nextEnumPos++;
-    info->nextFileStart += info->archiveEntires[info->nextEnumPos].filesize;
+    info->nextFileStart += entry->filesize;
 
-    ar->prevEnum = info->archiveEntires[info->nextEnumPos];
+    memcpy(&ar->prevEnum, entry, sizeof (ar->prevEnum));
 
     return &ar->prevEnum;
 } // MojoArchive_pck_enumNext
@@ -202,31 +220,31 @@ static void MojoArchive_pck_close(MojoArchive *ar)
     PCKinfo *info = (PCKinfo *) ar->opaque;
     ar->io->close(ar->io);
 
-    for(i = 0; i < info->fileCount; i++)
+    for (i = 0; i < info->fileCount; i++)
     {
-        MojoArchiveEntry entry = info->archiveEntires[i];
+        MojoArchiveEntry entry = info->archiveEntries[i];
         free(entry.filename);
-    }
+    } // for
 
-    free(info->archiveEntires);
+    free(info->archiveEntries);
     free(info);
     free(ar);
 } // MojoArchive_pck_close
 
+
 MojoArchive *MojoArchive_createPCK(MojoInput *io, const char *origfname, const char *origfname23)
 {
     MojoArchive *ar = NULL;
-
-    PCK_HEADER pckHeader;
-
-    const int64 br = io->read(io, &pckHeader, sizeof (PCK_HEADER));
+    PCKinfo *pckInfo = NULL;
+    PCKheader pckHeader;
+    const int64 br = io->read(io, &pckHeader, sizeof (PCKheader));
 
     // Check if this is a *.pck file.
-    if ( (br != sizeof (PCK_HEADER)) || (pckHeader.Magic != PCK_MAGIC) )
+    if ( (br != sizeof (PCKheader)) || (pckHeader.Magic != PCK_MAGIC) )
         return NULL;
 
-    PCKinfo *pckInfo = (PCKinfo *) xmalloc(sizeof (PCKinfo));
-    pckInfo->dataStart = pckHeader.StartOfBinaryData + sizeof(PCK_HEADER);
+    pckInfo = (PCKinfo *) xmalloc(sizeof (PCKinfo));
+    pckInfo->dataStart = pckHeader.StartOfBinaryData + sizeof (PCKheader);
 
     ar = (MojoArchive *) xmalloc(sizeof (MojoArchive));
     ar->opaque = pckInfo;
@@ -242,3 +260,4 @@ MojoArchive *MojoArchive_createPCK(MojoInput *io, const char *origfname, const c
 #endif // SUPPORT_PCK
 
 // end of archive_pck.c ...
+
