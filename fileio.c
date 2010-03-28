@@ -234,7 +234,7 @@ static MojoInput *make_gzip_input(MojoInput *origio)
 
 #if SUPPORT_BZIP2
 
-#include "bzip2-1.0.4/bzlib.h"
+#include "bzip2/bzlib.h"
 
 #define BZIP2_READBUFSIZE (128 * 1024)
 

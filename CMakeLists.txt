@@ -180,7 +180,7 @@ SET(ZLIB_SRCS
     ${ZLIB_DIR}/zutil.c
 )
 
-SET(BZLIB_DIR bzip2-1.0.4)
+SET(BZLIB_DIR bzip2)
 SET(BZLIB_SRCS
     ${BZLIB_DIR}/blocksort.c
     ${BZLIB_DIR}/huffman.c
