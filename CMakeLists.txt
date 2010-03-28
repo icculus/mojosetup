@@ -171,7 +171,6 @@ SET(ZLIB_SRCS
     ${ZLIB_DIR}/compress.c
     ${ZLIB_DIR}/crc32.c
     ${ZLIB_DIR}/deflate.c
-    ${ZLIB_DIR}/gzio.c
     ${ZLIB_DIR}/infback.c
     ${ZLIB_DIR}/inffast.c
     ${ZLIB_DIR}/inflate.c
