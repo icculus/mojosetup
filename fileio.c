@@ -40,7 +40,7 @@ static const MojoArchiveType archives[] =
 
 #if SUPPORT_GZIP
 
-#include "zlib-1.2.3/zlib.h"
+#include "zlib/zlib.h"
 
 #define GZIP_READBUFSIZE (128 * 1024)
 

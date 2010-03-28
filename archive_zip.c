@@ -15,7 +15,7 @@ MojoArchive *MojoArchive_createZIP(MojoInput *io) { return NULL; }
 #include <time.h>
 #include <errno.h>
 
-#include "zlib-1.2.3/zlib.h"
+#include "zlib/zlib.h"
 
 /*
  * ZIP support routines, adapted from PhysicsFS (http://icculus.org/physfs/)
