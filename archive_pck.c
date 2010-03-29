@@ -23,11 +23,11 @@ typedef struct
 
 typedef struct
 {
-    int8  filename[60];         // 60 bytes, null terminated
+    int8 filename[60];          // 60 bytes, null terminated
     uint32 filesize;            //  4 bytes
 } PCKentry;
 
-typedef struct PCKinfo
+typedef struct
 {
     uint64 fileCount;
     uint64 dataStart;
@@ -35,6 +35,17 @@ typedef struct PCKinfo
     int64 nextEnumPos;
     MojoArchiveEntry *archiveEntries;
 } PCKinfo;
+
+
+static boolean readui32(MojoInput *io, uint32 *ui32)
+{
+    uint8 buf[sizeof (uint32)];
+    if (io->read(io, buf, sizeof (buf)) != sizeof (buf))
+        return false;
+
+    *ui32 = (buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24));
+    return true;
+} // readui32
 
 static boolean MojoInput_pck_ready(MojoInput *io)
 {
@@ -104,6 +115,7 @@ static boolean MojoArchive_pck_enumerate(MojoArchive *ar)
     PCKentry fileEntry;
     uint64 i, realFileCount = 0;
     char directory[256] = {'\0'};
+    MojoInput *io = ar->io;
 
     MojoArchive_resetEntry(&ar->prevEnum);
 
@@ -112,8 +124,14 @@ static boolean MojoArchive_pck_enumerate(MojoArchive *ar)
     for (i = 0; i < fileCount; i++)
     {
         int dotdot;
+        int64 br;
 
-        ar->io->read(ar->io, &fileEntry, sizeof (PCKentry));
+        br = io->read(io, fileEntry.filename, sizeof (fileEntry.filename));
+        if (br != sizeof (fileEntry.filename))
+            return false;
+        else if (!readui32(io, &fileEntry.filesize))
+            return false;
+
         dotdot = (strcmp(fileEntry.filename, "..") == 0);
 
         if ((!dotdot) && (fileEntry.filesize == 0x80000000))
@@ -235,10 +253,14 @@ MojoArchive *MojoArchive_createPCK(MojoInput *io)
     MojoArchive *ar = NULL;
     PCKinfo *pckInfo = NULL;
     PCKheader pckHeader;
-    const int64 br = io->read(io, &pckHeader, sizeof (PCKheader));
+
+    if (!readui32(io, &pckHeader.Magic))
+        return NULL;
+    else if (!readui32(io, &pckHeader.StartOfBinaryData))
+        return NULL;
 
     // Check if this is a *.pck file.
-    if ( (br != sizeof (PCKheader)) || (pckHeader.Magic != PCK_MAGIC) )
+    if (pckHeader.Magic != PCK_MAGIC)
         return NULL;
 
     pckInfo = (PCKinfo *) xmalloc(sizeof (PCKinfo));
