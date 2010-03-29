@@ -230,7 +230,7 @@ static void MojoArchive_pck_close(MojoArchive *ar)
 } // MojoArchive_pck_close
 
 
-MojoArchive *MojoArchive_createPCK(MojoInput *io, const char *origfname, const char *origfname23)
+MojoArchive *MojoArchive_createPCK(MojoInput *io)
 {
     MojoArchive *ar = NULL;
     PCKinfo *pckInfo = NULL;
