@@ -1060,6 +1060,17 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
 } // MojoArchive_newFromDirectory
 
 
+boolean readui16(MojoInput *io, uint16 *ui16)
+{
+    uint8 buf[sizeof (uint16)];
+    if (io->read(io, buf, sizeof (buf)) != sizeof (buf))
+        return false;
+
+    *ui16 = (buf[0] | (buf[1] << 8));
+    return true;
+} // readui16
+
+
 boolean readui32(MojoInput *io, uint32 *ui32)
 {
     uint8 buf[sizeof (uint32)];

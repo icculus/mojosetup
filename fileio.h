@@ -118,6 +118,7 @@ boolean MojoInput_toPhysicalFile(MojoInput *in, const char *fname, uint16 perms,
 
 MojoInput *MojoInput_newFromURL(const char *url);
 
+boolean readui16(MojoInput *io, uint16 *ui16);
 boolean readui32(MojoInput *io, uint32 *ui32);
 
 #ifdef __cplusplus

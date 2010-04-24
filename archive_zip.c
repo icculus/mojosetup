@@ -61,20 +61,6 @@ static PHYSFS_Allocator allocator = { 0, 0, mallocWrap, reallocWrap, freeWrap };
 #define fvoid void
 #define dvoid void
 
-#if PLATFORM_BIGENDIAN
-static PHYSFS_uint32 PHYSFS_swapULE32(PHYSFS_uint32 D)
-{
-    return((D<<24)|((D<<8)&0x00FF0000)|((D>>8)&0x0000FF00)|(D>>24));
-}
-static PHYSFS_uint16 PHYSFS_swapULE16(PHYSFS_uint16 D)
-{
-    return((D<<8)|(D>>8));
-}
-#else
-static PHYSFS_uint32 PHYSFS_swapULE32(PHYSFS_uint32 D) { return D; }
-static PHYSFS_uint16 PHYSFS_swapULE16(PHYSFS_uint16 D) { return D; }
-#endif
-
 static PHYSFS_sint64 __PHYSFS_platformRead(void *opaque, void *buffer,
                                     PHYSFS_uint32 size, PHYSFS_uint32 count)
 {
@@ -348,28 +334,30 @@ static int zlib_err(int rc)
 } /* zlib_err */
 
 
+#if !__MOJOSETUP__  /* we have our own readuiXX() functions. */
 /*
  * Read an unsigned 32-bit int and swap to native byte order.
  */
-static int _readui32(void *in, PHYSFS_uint32 *val)
+static int readui32(void *in, PHYSFS_uint32 *val)
 {
     PHYSFS_uint32 v;
     BAIL_IF_MACRO(__PHYSFS_platformRead(in, &v, sizeof (v), 1) != 1, NULL, 0);
     *val = PHYSFS_swapULE32(v);
     return(1);
-} /* _readui32 */
+} /* readui32 */
 
 
 /*
  * Read an unsigned 16-bit int and swap to native byte order.
  */
-static int _readui16(void *in, PHYSFS_uint16 *val)
+static int readui16(void *in, PHYSFS_uint16 *val)
 {
     PHYSFS_uint16 v;
     BAIL_IF_MACRO(__PHYSFS_platformRead(in, &v, sizeof (v), 1) != 1, NULL, 0);
     *val = PHYSFS_swapULE16(v);
     return(1);
-} /* _readui16 */
+} /* readui16 */
+#endif
 
 
 static PHYSFS_sint64 ZIP_read(fvoid *opaque, void *buf,
@@ -650,7 +638,7 @@ static int ZIP_isArchive(const char *filename, int forWriting)
      * The first thing in a zip file might be the signature of the
      *  first local file record, so it makes for a quick determination.
      */
-    if (_readui32(in, &sig))
+    if (readui32(in, &sig))
     {
         retval = (sig == ZIP_LOCAL_FILE_SIG);
         if (!retval)
@@ -923,22 +911,22 @@ static int zip_parse_local(void *in, ZIPentry *entry)
      */
 
     BAIL_IF_MACRO(!__PHYSFS_platformSeek(in, entry->offset), NULL, 0);
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
     BAIL_IF_MACRO(ui32 != ZIP_LOCAL_FILE_SIG, ERR_CORRUPTED, 0);
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);
     BAIL_IF_MACRO(ui16 != entry->version_needed, ERR_CORRUPTED, 0);
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);  /* general bits. */
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);  /* general bits. */
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);
     BAIL_IF_MACRO(ui16 != entry->compression_method, ERR_CORRUPTED, 0);
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);  /* date/time */
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);  /* date/time */
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
     BAIL_IF_MACRO(ui32 && (ui32 != entry->crc), ERR_CORRUPTED, 0);
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
     BAIL_IF_MACRO(ui32 && (ui32 != entry->compressed_size), ERR_CORRUPTED, 0);
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
     BAIL_IF_MACRO(ui32 && (ui32 != entry->uncompressed_size),ERR_CORRUPTED,0);
-    BAIL_IF_MACRO(!_readui16(in, &fnamelen), NULL, 0);
-    BAIL_IF_MACRO(!_readui16(in, &extralen), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &fnamelen), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &extralen), NULL, 0);
 
     entry->offset += fnamelen + extralen + 30;
     return(1);
@@ -1084,26 +1072,26 @@ static int zip_load_entry(void *in, ZIPentry *entry, PHYSFS_uint32 ofs_fixup)
     PHYSFS_sint64 si64;
 
     /* sanity check with central directory signature... */
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
     BAIL_IF_MACRO(ui32 != ZIP_CENTRAL_DIR_SIG, ERR_CORRUPTED, 0);
 
     /* Get the pertinent parts of the record... */
-    BAIL_IF_MACRO(!_readui16(in, &entry->version), NULL, 0);
-    BAIL_IF_MACRO(!_readui16(in, &entry->version_needed), NULL, 0);
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);  /* general bits */
-    BAIL_IF_MACRO(!_readui16(in, &entry->compression_method), NULL, 0);
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &entry->version), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &entry->version_needed), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);  /* general bits */
+    BAIL_IF_MACRO(!readui16(in, &entry->compression_method), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
     entry->last_mod_time = zip_dos_time_to_physfs_time(ui32);
-    BAIL_IF_MACRO(!_readui32(in, &entry->crc), NULL, 0);
-    BAIL_IF_MACRO(!_readui32(in, &entry->compressed_size), NULL, 0);
-    BAIL_IF_MACRO(!_readui32(in, &entry->uncompressed_size), NULL, 0);
-    BAIL_IF_MACRO(!_readui16(in, &fnamelen), NULL, 0);
-    BAIL_IF_MACRO(!_readui16(in, &extralen), NULL, 0);
-    BAIL_IF_MACRO(!_readui16(in, &commentlen), NULL, 0);
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);  /* disk number start */
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);  /* internal file attribs */
-    BAIL_IF_MACRO(!_readui32(in, &external_attr), NULL, 0);
-    BAIL_IF_MACRO(!_readui32(in, &entry->offset), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &entry->crc), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &entry->compressed_size), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &entry->uncompressed_size), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &fnamelen), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &extralen), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &commentlen), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);  /* disk number start */
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);  /* internal file attribs */
+    BAIL_IF_MACRO(!readui32(in, &external_attr), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &entry->offset), NULL, 0);
     entry->offset += ofs_fixup;
 
     #if __MOJOSETUP__
@@ -1205,29 +1193,29 @@ static int zip_parse_end_of_central_dir(void *in, ZIPinfo *info,
     BAIL_IF_MACRO(!__PHYSFS_platformSeek(in, pos), NULL, 0);
 
     /* check signature again, just in case. */
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
     BAIL_IF_MACRO(ui32 != ZIP_END_OF_CENTRAL_DIR_SIG, ERR_NOT_AN_ARCHIVE, 0);
 
     /* number of this disk */
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);
     BAIL_IF_MACRO(ui16 != 0, ERR_UNSUPPORTED_ARCHIVE, 0);
 
     /* number of the disk with the start of the central directory */
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);
     BAIL_IF_MACRO(ui16 != 0, ERR_UNSUPPORTED_ARCHIVE, 0);
 
     /* total number of entries in the central dir on this disk */
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);
 
     /* total number of entries in the central dir */
-    BAIL_IF_MACRO(!_readui16(in, &info->entryCount), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &info->entryCount), NULL, 0);
     BAIL_IF_MACRO(ui16 != info->entryCount, ERR_UNSUPPORTED_ARCHIVE, 0);
 
     /* size of the central directory */
-    BAIL_IF_MACRO(!_readui32(in, &ui32), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
 
     /* offset of central directory */
-    BAIL_IF_MACRO(!_readui32(in, central_dir_ofs), NULL, 0);
+    BAIL_IF_MACRO(!readui32(in, central_dir_ofs), NULL, 0);
     BAIL_IF_MACRO(pos < *central_dir_ofs + ui32, ERR_UNSUPPORTED_ARCHIVE, 0);
 
     /*
@@ -1244,7 +1232,7 @@ static int zip_parse_end_of_central_dir(void *in, ZIPinfo *info,
     *central_dir_ofs += *data_start;
 
     /* zipfile comment length */
-    BAIL_IF_MACRO(!_readui16(in, &ui16), NULL, 0);
+    BAIL_IF_MACRO(!readui16(in, &ui16), NULL, 0);
 
     /*
      * Make sure that the comment length matches to the end of file...
