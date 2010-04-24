@@ -118,7 +118,7 @@ static boolean MojoArchive_pck_enumerate(MojoArchive *ar)
         br = io->read(io, fileEntry.filename, sizeof (fileEntry.filename));
         if (br != sizeof (fileEntry.filename))
             return false;
-        else if (!readui32(io, &fileEntry.filesize))
+        else if (!MojoInput_readui32(io, &fileEntry.filesize))
             return false;
 
         dotdot = (strcmp(fileEntry.filename, "..") == 0);
@@ -243,9 +243,9 @@ MojoArchive *MojoArchive_createPCK(MojoInput *io)
     PCKinfo *pckInfo = NULL;
     PCKheader pckHeader;
 
-    if (!readui32(io, &pckHeader.Magic))
+    if (!MojoInput_readui32(io, &pckHeader.Magic))
         return NULL;
-    else if (!readui32(io, &pckHeader.StartOfBinaryData))
+    else if (!MojoInput_readui32(io, &pckHeader.StartOfBinaryData))
         return NULL;
 
     // Check if this is a *.pck file.

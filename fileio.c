@@ -1060,7 +1060,7 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
 } // MojoArchive_newFromDirectory
 
 
-boolean readui16(MojoInput *io, uint16 *ui16)
+boolean MojoInput_readui16(MojoInput *io, uint16 *ui16)
 {
     uint8 buf[sizeof (uint16)];
     if (io->read(io, buf, sizeof (buf)) != sizeof (buf))
@@ -1068,10 +1068,10 @@ boolean readui16(MojoInput *io, uint16 *ui16)
 
     *ui16 = (buf[0] | (buf[1] << 8));
     return true;
-} // readui16
+} // MojoInput_readui16
 
 
-boolean readui32(MojoInput *io, uint32 *ui32)
+boolean MojoInput_readui32(MojoInput *io, uint32 *ui32)
 {
     uint8 buf[sizeof (uint32)];
     if (io->read(io, buf, sizeof (buf)) != sizeof (buf))
@@ -1079,7 +1079,7 @@ boolean readui32(MojoInput *io, uint32 *ui32)
 
     *ui32 = (buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24));
     return true;
-} // readui32
+} // MojoInput_readui32
 
 
 MojoArchive *GBaseArchive = NULL;

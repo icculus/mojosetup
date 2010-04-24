@@ -61,6 +61,9 @@ static PHYSFS_Allocator allocator = { 0, 0, mallocWrap, reallocWrap, freeWrap };
 #define fvoid void
 #define dvoid void
 
+#define readui16(io, ptr) MojoInput_readui16((MojoInput *) (io), ptr)
+#define readui32(io, ptr) MojoInput_readui32((MojoInput *) (io), ptr)
+
 static PHYSFS_sint64 __PHYSFS_platformRead(void *opaque, void *buffer,
                                     PHYSFS_uint32 size, PHYSFS_uint32 count)
 {
