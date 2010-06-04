@@ -378,6 +378,7 @@ function Setup.Eula(tab)
     {
         { "description", nil, mustExist, mustBeString, cantBeEmpty },
         { "source", nil, mustExist, mustBeString, cantBeEmpty },
+        { "accept_not_needed", nil, mustBeBool },
     })
 end
 

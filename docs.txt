@@ -433,6 +433,11 @@ Here are the elements, and the attributes they can possess.
     the license text. Currently this must be a text file in UTF-8 encoding.
 
 
+   accept_not_needed (false, mustBeBool)
+
+    If true, then the user does not have to explicitly accept the EULA.
+
+
  Setup.Readme:
 
   This element is a child of Setup.Package. It can be used to display a

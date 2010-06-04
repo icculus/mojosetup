@@ -1325,13 +1325,16 @@ local function do_install(install)
         for k,eula in pairs(install.eulas) do
             local desc = eula.description
             local fname = "data/" .. eula.source
+            local accept_needed = not eula.accept_not_needed
 
             -- (desc) and (fname) become upvalues in this function.
             stages[#stages+1] = function (thisstage, maxstage)
                 local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
                 if retval == 1 then
-                    if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
-                        MojoSetup.fatal(_("You must accept the license before you may install"))
+                    if accept_needed then
+                        if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
+                            MojoSetup.fatal(_("You must accept the license before you may install"))
+                        end
                     end
                 end
                 return retval
@@ -1461,14 +1464,17 @@ local function do_install(install)
             for k,eula in pairs(option_eulas) do
                 local desc = eula.description
                 local fname = "data/" .. eula.source
+                local accept_needed = not eula.accept_not_needed
                 local retval = MojoSetup.gui.readme(desc,fname,thisstage,maxstage)
                 if retval == 1 then
-                    if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
-                        -- can't go back? We have to die here instead.
-                        if thisstage == 1 then
-                            MojoSetup.fatal(_("You must accept the license before you may install"))
-                        else
-                            retval = -1  -- just step back a stage.
+                    if accept_needed then
+                        if not MojoSetup.promptyn(desc, _("Accept this license?"), false) then
+                            -- can't go back? We have to die here instead.
+                            if thisstage == 1 then
+                                MojoSetup.fatal(_("You must accept the license before you may install"))
+                            else
+                                retval = -1  -- just step back a stage.
+                            end
                         end
                     end
                 end
