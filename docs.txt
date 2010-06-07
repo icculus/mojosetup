@@ -243,6 +243,13 @@ Here are the elements, and the attributes they can possess.
     the installer will prompt the user, possibly recommmending locations
     to him.
 
+   dataprefix (default: "data/", mustBeString)
+
+    This attribute can be used to force the installer to pull data files
+    from a location other than data/.  The use of the default data/
+    is strongly recommended; use this option only with great care.
+
+
 
    recommended_destinations (no default, mustBeStringOrTableOfStrings)
 
