@@ -524,6 +524,11 @@ int MojoPlatform_exec(const char *cmd)
 } // MojoPlatform_exec
 
 
+int MojoPlatform_runScript(const char *script, boolean devnull, const char **argv)
+{
+    STUBBED("runScript");
+    return 0;
+}
 
 boolean MojoPlatform_spawnTerminal(void)
 {

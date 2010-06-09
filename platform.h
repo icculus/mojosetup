@@ -245,6 +245,9 @@ boolean MojoPlatform_installDesktopMenuItem(const char *data);
 // Returns (true) on success and (false) on failure.
 boolean MojoPlatform_uninstallDesktopMenuItem(const char *data);
 
+// Run a script from the archive in the OS
+int MojoPlatform_runScript(const char *script, boolean devnull, const char **argv);
+
 // Exec a given process name
 int MojoPlatform_exec(const char *cmd);
 

@@ -1056,10 +1056,12 @@ static int runScriptString(const char *str, boolean devnull, const char **_argv)
 
     return retval;
 } // runScriptString
+#endif
 
 
-static int runScript(const char *script, boolean devnull, const char **argv)
+int MojoPlatform_runScript(const char *script, boolean devnull, const char **argv)
 {
+#if !PLATFORM_MACOSX && !PLATFORM_BEOS
     int retval = 127;
     char *str = NULL;
     MojoInput *in = MojoInput_newFromArchivePath(GBaseArchive, script);
@@ -1086,9 +1088,13 @@ static int runScript(const char *script, boolean devnull, const char **argv)
 
     free(str);
     return retval;
+#else
+    STUBBED("runScript");
+#endif
 } // runScript
 
 
+#if !PLATFORM_MACOSX && !PLATFORM_BEOS
 static char *shellEscape(const char *str)
 {
     size_t len = 0;
@@ -1163,7 +1169,7 @@ static boolean unix_launchXdgUtil(const char *util, const char **argv)
     else  // try our fallback copy of xdg-utils in GBaseArchive?
     {
         char *script = format("meta/xdg-utils/%0", util);
-        rc = runScript(script, true, argv);
+        rc = MojoPlatform_runScript(script, true, argv);
         logDebug("internal script '%0' returned %1", script, numstr(rc));
         free(script);
     } // if

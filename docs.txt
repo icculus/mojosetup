@@ -1085,6 +1085,12 @@ Your config file is a Lua script, and as such, has access to all of Lua's
    runtime, as require() won't respect the Base Archive.
 
 
+   runScript (script, devnull, args...)
+
+    Run the given script in a shell.  If devnull is non zero, all stdout
+    and stderr will be directed to /dev/null.
+
+
   MojoSetup.translate(str)
 
    Find the proper translation for the end user's locale in the localization
