@@ -29,6 +29,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <errno.h>
 
 #if MOJOSETUP_HAVE_SYS_UCRED_H
 #  ifdef MOJOSETUP_HAVE_MNTENT_H
@@ -1253,6 +1254,13 @@ boolean MojoPlatform_uninstallDesktopMenuItem(const char *data)
     return xdgDesktopMenuItem("uninstall", data);
 #endif
 } // MojoPlatform_uninstallDesktopMenuItem
+
+
+int MojoPlatform_exec(const char *cmd)
+{
+    execl(cmd, cmd, NULL);
+    return errno;
+} // MojoPlatform_exec
 
 
 #if SUPPORT_MULTIARCH

@@ -517,6 +517,14 @@ boolean MojoPlatform_uninstallDesktopMenuItem(const char *data)
 } // MojoPlatform_uninstallDesktopMenuItem
 
 
+int MojoPlatform_exec(const char *cmd)
+{
+    STUBBED("exec");
+    return 127;
+} // MojoPlatform_exec
+
+
+
 boolean MojoPlatform_spawnTerminal(void)
 {
     assert(!MojoPlatform_istty());

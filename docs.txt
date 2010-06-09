@@ -323,6 +323,13 @@ Here are the elements, and the attributes they can possess.
     hook.
 
 
+   postexec (no default, mustBeString)
+
+    This attribute can be used to chain the installer to another process
+    on a successful installation.  The string can contain $DESTINATION which
+    will be replaced with the installation destination.
+
+
    updateurl (no default, mustBeUrl)
 
     This is written to the manifest files for the aid of external tools, but

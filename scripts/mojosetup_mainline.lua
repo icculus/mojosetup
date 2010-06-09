@@ -1836,7 +1836,6 @@ local function do_install(install)
     -- Done with these things. Make them eligible for garbage collection.
     stages = nil
     MojoSetup.manifest = nil
-    MojoSetup.destination = nil
     MojoSetup.manifestdir = nil
     MojoSetup.metadatadir = nil
     MojoSetup.controldir = nil
@@ -1877,6 +1876,7 @@ end
 
 
 local function installer()
+    local postexec = nil
     MojoSetup.loginfo("Installer starting")
 
     MojoSetup.revertinstall = real_revertinstall   -- replace the stub.
@@ -1890,6 +1890,11 @@ local function installer()
         if not install.disabled then
             saw_an_installer = true
             do_install(install)
+
+            if (install.postexec ~= nil) then
+                postexec = string.gsub(install.postexec, "$DESTINATION", MojoSetup.destination)
+            end
+
             MojoSetup.collectgarbage()  -- nuke all the tables we threw around...
         end
     end
@@ -1897,6 +1902,12 @@ local function installer()
     if not saw_an_installer then
         MojoSetup.fatal(_("Nothing to do!"))
     end
+
+    if postexec ~= nil then
+        MojoSetup.platform.exec(postexec)
+    end
+
+    MojoSetup.destination = nil
 end
 
 
