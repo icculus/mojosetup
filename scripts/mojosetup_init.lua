@@ -318,7 +318,8 @@ function Setup.Package(tab)
         { "support_uninstall", true, mustBeBool },
         { "preuninstall", nil, mustBeFunction },
         { "postuninstall", nil, mustBeFunction },
-        { "postexec", nil, mustBeString}
+        { "postexec", nil, mustBeString},
+        { "delete_error_is_fatal", true, mustBeBool}
     })
 
     if MojoSetup.installs == nil then

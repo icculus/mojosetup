@@ -155,6 +155,8 @@ local function do_delete(fname)
             retval = true
         elseif not MojoSetup.platform.exists(fname) then
             retval = true
+        else
+            MojoSetup.logerror("Deleting '" .. fname .. "'" .. " failed!")
         end
     end
     return retval
@@ -2059,7 +2061,7 @@ local function uninstaller()
         end
 
         local filelist = flatten_manifest(package.manifest, prepend_dest_dir)
-        delete_files(filelist, callback, true)
+        delete_files(filelist, callback, package.delete_error_is_fatal)
         run_config_defined_hook(package.postuninstall, package)
         MojoSetup.gui.final(_("Uninstall complete"))
         stop_gui()

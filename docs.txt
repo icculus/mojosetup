@@ -330,6 +330,13 @@ Here are the elements, and the attributes they can possess.
     will be replaced with the installation destination.
 
 
+   delete_error_is_fatal (default true, mustBeTrue)
+
+    If we cannot exactly delete every file during uninstallation, we will
+    terminate at the very first failure if this is true.  Otherwise, we
+    will delete every file we can.
+
+
    updateurl (no default, mustBeUrl)
 
     This is written to the manifest files for the aid of external tools, but
