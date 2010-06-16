@@ -994,7 +994,6 @@ void MojoPlatform_dlclose(void *lib)
 } // MojoPlatform_dlclose
 
 
-#if !PLATFORM_MACOSX && !PLATFORM_BEOS
 static int runScriptString(const char *str, boolean devnull, const char **_argv)
 {
     int retval = 127;
@@ -1056,14 +1055,11 @@ static int runScriptString(const char *str, boolean devnull, const char **_argv)
 
     return retval;
 } // runScriptString
-#endif
 
 
 int MojoPlatform_runScript(const char *script, boolean devnull, const char **argv)
 {
     int retval = 127;
-
-#if !PLATFORM_MACOSX && !PLATFORM_BEOS
     char *str = NULL;
     MojoInput *in = MojoInput_newFromArchivePath(GBaseArchive, script);
     if (in != NULL)
@@ -1088,9 +1084,6 @@ int MojoPlatform_runScript(const char *script, boolean devnull, const char **arg
         retval = runScriptString(str, devnull, argv);
 
     free(str);
-#else
-    STUBBED("runScript");
-#endif
 
     return retval;
 } // runScript
