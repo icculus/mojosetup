@@ -1061,8 +1061,9 @@ static int runScriptString(const char *str, boolean devnull, const char **_argv)
 
 int MojoPlatform_runScript(const char *script, boolean devnull, const char **argv)
 {
-#if !PLATFORM_MACOSX && !PLATFORM_BEOS
     int retval = 127;
+
+#if !PLATFORM_MACOSX && !PLATFORM_BEOS
     char *str = NULL;
     MojoInput *in = MojoInput_newFromArchivePath(GBaseArchive, script);
     if (in != NULL)
@@ -1087,10 +1088,11 @@ int MojoPlatform_runScript(const char *script, boolean devnull, const char **arg
         retval = runScriptString(str, devnull, argv);
 
     free(str);
-    return retval;
 #else
     STUBBED("runScript");
 #endif
+
+    return retval;
 } // runScript
 
 
