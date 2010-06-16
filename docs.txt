@@ -1064,9 +1064,9 @@ Your config file is a Lua script, and as such, has access to all of Lua's
   MojoSetup.format(fmt, ...)
 
    Format a string, sort of (but not exactly!) like sprintf().
-    The only formatters accepted are %0 through %9 (and %%), which do not
-    have to appear in order in the string, but match the varargs in the
-    order they are passed to the function.
+   The only formatters accepted are %0 through %9 (and %%), which do not
+   have to appear in order in the string, but match the varargs in the
+   order they are passed to the function.
 
    format('%1 %0 %1 %%', 'X', 'Y', 'Z') will return the string: 'Y X Y %'
 
