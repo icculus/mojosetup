@@ -330,7 +330,7 @@ Here are the elements, and the attributes they can possess.
     will be replaced with the installation destination.
 
 
-   delete_error_is_fatal (default true, mustBeTrue)
+   delete_error_is_fatal (default true, mustBeBool)
 
     If we cannot exactly delete every file during uninstallation, we will
     terminate at the very first failure if this is true.  Otherwise, we
