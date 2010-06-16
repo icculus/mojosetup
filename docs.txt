@@ -1092,10 +1092,14 @@ Your config file is a Lua script, and as such, has access to all of Lua's
    runtime, as require() won't respect the Base Archive.
 
 
-   runScript (script, devnull, args...)
+  MojoSetup.runScript(script, devnull, args...)
 
-    Run the given script in a shell.  If devnull is non zero, all stdout
-    and stderr will be directed to /dev/null.
+   Run the given script in a shell. If devnull is true, all stdout
+   and stderr will be suppressed (literally sent to /dev/null on Unix
+   systems). Please note that lots of things can be done through Lua,
+   directly in your config file, so you don't have to worry about the
+   unique quirks of various shells on end user systems. Still, there are
+   times when this is useful.
 
 
   MojoSetup.translate(str)

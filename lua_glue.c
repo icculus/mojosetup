@@ -1114,7 +1114,7 @@ static int luahook_platform_exec(lua_State *L)
 static int luahook_platform_runscript(lua_State *L)
 {
     const char *script = luaL_checkstring(L, 1);
-    const boolean devnull = luaL_checkinteger(L, 2);
+    const boolean devnull = lua_toboolean(L, 2);
     const int argc = lua_gettop(L);
     const char *argv[11];
     int i;
