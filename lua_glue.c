@@ -1111,20 +1111,25 @@ static int luahook_platform_exec(lua_State *L)
     return retvalBoolean(L, 0);
 } // luahook_platform_exec
 
+
 static int luahook_platform_runscript(lua_State *L)
 {
     const char *script = luaL_checkstring(L, 1);
     const boolean devnull = lua_toboolean(L, 2);
-    const int argc = lua_gettop(L);
-    const char *argv[11];
+    const int argc = lua_gettop(L) - 2;
+    const char **argv = (const char **) xmalloc(sizeof (char *) * (argc + 1));
+    int retval = 0;
     int i;
 
-    for (i = 0; i < argc - 2 && i < (sizeof(argv) / sizeof(argv[0]) - 1); i++)
+    for (i = 0; i < argc; i++)
         argv[i] = luaL_checkstring(L, i + 3);
     argv[i] = NULL;
 
-    return retvalNumber(L, MojoPlatform_runScript(script, devnull, argv));
-} // luahook_platform_exec
+    retval = retvalNumber(L, MojoPlatform_runScript(script, devnull, argv));
+    free(argv);
+    return retval;
+} // luahook_platform_runscript
+
 
 static int luahook_movefile(lua_State *L)
 {
