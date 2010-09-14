@@ -1991,7 +1991,7 @@ local function manifest_management()
             end
             MojoSetup.loginfo("Resync '" .. fname .. "' in manifest")
             fname = MojoSetup.destination .. "/" .. fname
-            if not MojoSetup.platform..exists(fname) then
+            if not MojoSetup.platform.exists(fname) then
                 MojoSetup.fatal(MojoSetup.format(_("File %0 not found"), fname))
             end
             manifest_resync(package.manifest, fname)
