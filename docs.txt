@@ -935,6 +935,17 @@ Here are the elements, and the attributes they can possess.
     to mygame.exe, and the user is installing to /home/user/mygame, you should
     specify "%0/mygame.exe" to get "/home/user/mygame/mygame.exe".
 
+   workingdir (no default, mustBeString, cantBeEmpty)
+
+    This is the path that should be set to the current working directory when
+    launching the installed application. The string "%0" is replaced with the
+    install destination, so if you need an absolute path to somedir, and the
+    user is installing to /home/user/mygame, you should specify "%0/somedir"
+    to get "/home/user/mygame/somedir". If not specified, the system will
+    choose a directory for you, which is not what you want if you need a
+    specific path. Non-absolute paths are not recommended unless you know what
+    you're doing.
+
    category (no default, mustExist, mustBeStringOrTableOfStrings)
 
     This is a category (or array of categories) that the menu item applies

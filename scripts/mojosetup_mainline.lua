@@ -1146,6 +1146,10 @@ local function install_freedesktop_menuitem(pkg, idx, item)  -- only for Unix.
         addpair("MimeType", flatten_list(item.mimetype))
     end
 
+    if item.workingdir ~= nil then
+        addpair("Path", MojoSetup.format(item.workingdir, dest))
+    end
+
     t[#t+1] = '\n'
 
     local fname = freedesktop_menuitem_filename(pkg, idx)
