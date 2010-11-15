@@ -23,6 +23,8 @@ typedef struct
     boolean hasMagic;  // can determine file type from contents?
 } MojoArchiveType;
 
+// !!! FIXME: order by archiver, not extension, since most of this is
+// !!! FIXME:  duplicates for .tar
 static const MojoArchiveType archives[] =
 {
     { "zip", MojoArchive_createZIP, true },
