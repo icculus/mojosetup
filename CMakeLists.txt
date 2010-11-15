@@ -26,6 +26,14 @@ ENDIF(NOT BEOS)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.4)
 
+# !!! FIXME: correct this to new policy and bump minimum cmake requirement.
+IF(COMMAND CMAKE_POLICY)
+    # Use old policy when it comes to escaping macros,
+    # Specifically the one in quotes below.
+    CMAKE_POLICY(SET CMP0005 OLD)
+ENDIF(COMMAND CMAKE_POLICY)
+
+
 EXECUTE_PROCESS(
     COMMAND hg tip --template hg-{rev}:{node|short}
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -69,12 +77,23 @@ INCLUDE(CheckCSourceCompiles)
 INCLUDE(CheckCCompilerFlag)
 INCLUDE(TestBigEndian)
 
-# !!! FIXME: correct this to new policy and bump minimum cmake requirement.
-IF(COMMAND CMAKE_POLICY)
-    # Use old policy when it comes to escaping macros,
-    # Specifically the one in quotes below.
-    CMAKE_POLICY(SET CMP0005 OLD)
-ENDIF(COMMAND CMAKE_POLICY)
+# See if C99 "restrict" keyword is available to us.
+CHECK_C_SOURCE_COMPILES(
+    "int test_restrict(const char * restrict ptr); int main(void) { return 0; }"
+    MOJOSETUP_HAVE_RESTRICT_KEYWORD
+)
+IF(NOT MOJOSETUP_HAVE_RESTRICT_KEYWORD)
+    # See if __restrict__ keyword is available to us.
+    CHECK_C_SOURCE_COMPILES(
+        "int test_restrict(const char * __restrict__ ptr); int main(void) { return 0; }"
+        MOJOSETUP_HAVE_GNU_RESTRICT_KEYWORD
+    )
+    #IF(MOJOSETUP_HAVE_GNU_RESTRICT_KEYWORD)
+    #    ADD_DEFINITIONS(-Drestrict=__restrict__)
+    #ELSE(MOJOSETUP_HAVE_GNU_RESTRICT_KEYWORD)
+        ADD_DEFINITIONS("-Drestrict=\"\"")
+    #ENDIF(MOJOSETUP_HAVE_GNU_RESTRICT_KEYWORD)
+ENDIF(NOT MOJOSETUP_HAVE_RESTRICT_KEYWORD)
 
 ADD_DEFINITIONS(-D__MOJOSETUP__=1)
 ADD_DEFINITIONS(-DAPPID=mojosetup)
