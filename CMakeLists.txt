@@ -210,6 +210,44 @@ SET(BZLIB_SRCS
     ${BZLIB_DIR}/bzlib.c
 )
 
+SET(LIBLZMA_DIR liblzma)
+SET(LIBLZMA_SRCS
+    ${LIBLZMA_DIR}/check/check.c
+    ${LIBLZMA_DIR}/common/block_buffer_decoder.c
+    ${LIBLZMA_DIR}/common/block_decoder.c
+    ${LIBLZMA_DIR}/common/block_header_decoder.c
+    ${LIBLZMA_DIR}/common/block_util.c
+    ${LIBLZMA_DIR}/common/common.c
+    ${LIBLZMA_DIR}/common/easy_decoder_memusage.c
+    ${LIBLZMA_DIR}/common/easy_preset.c
+    ${LIBLZMA_DIR}/common/filter_buffer_decoder.c
+    ${LIBLZMA_DIR}/common/filter_common.c
+    ${LIBLZMA_DIR}/common/filter_decoder.c
+    ${LIBLZMA_DIR}/common/filter_flags_decoder.c
+    ${LIBLZMA_DIR}/common/index.c
+    ${LIBLZMA_DIR}/common/index_decoder.c
+    ${LIBLZMA_DIR}/common/index_hash.c
+    ${LIBLZMA_DIR}/common/stream_decoder.c
+    ${LIBLZMA_DIR}/common/stream_flags_common.c
+    ${LIBLZMA_DIR}/common/stream_flags_decoder.c
+    ${LIBLZMA_DIR}/common/vli_decoder.c
+    ${LIBLZMA_DIR}/common/vli_size.c
+    ${LIBLZMA_DIR}/delta/delta_common.c
+    ${LIBLZMA_DIR}/delta/delta_decoder.c
+    ${LIBLZMA_DIR}/lz/lz_decoder.c
+    ${LIBLZMA_DIR}/lzma/lzma2_decoder.c
+    ${LIBLZMA_DIR}/lzma/lzma_decoder.c
+    ${LIBLZMA_DIR}/lzma/lzma_encoder_presets.c
+    ${LIBLZMA_DIR}/simple/arm.c
+    ${LIBLZMA_DIR}/simple/armthumb.c
+    ${LIBLZMA_DIR}/simple/ia64.c
+    ${LIBLZMA_DIR}/simple/powerpc.c
+    ${LIBLZMA_DIR}/simple/simple_coder.c
+    ${LIBLZMA_DIR}/simple/simple_decoder.c
+    ${LIBLZMA_DIR}/simple/sparc.c
+    ${LIBLZMA_DIR}/simple/x86.c
+)
+
 SET(LIBFETCH_DIR libfetch)
 SET(LIBFETCH_SRCS
     ${LIBFETCH_DIR}/fetch.c
@@ -515,6 +553,8 @@ ENDIF(MOJOSETUP_ARCHIVE_ZIP)
 # BINARY SIZE += 2
 OPTION(MOJOSETUP_ARCHIVE_TAR "Enable TAR support" TRUE)
 IF(MOJOSETUP_ARCHIVE_TAR)
+    # !!! FIXME: the gzip/bzip2/xz support doesn't require .tar archives now.
+    # !!! FIXME: Maybe not ask here, so the questions look the same everywhere.
     ADD_DEFINITIONS(-DSUPPORT_TAR=1)
     OPTION(MOJOSETUP_ARCHIVE_TAR_GZ "Enable TAR.GZ support" TRUE)
     IF(MOJOSETUP_ARCHIVE_TAR_GZ)
@@ -525,6 +565,11 @@ IF(MOJOSETUP_ARCHIVE_TAR)
     IF(MOJOSETUP_ARCHIVE_TAR_BZ2)
         SET(MOJOSETUP_INPUT_BZIP2 TRUE)
     ENDIF(MOJOSETUP_ARCHIVE_TAR_BZ2)
+
+    OPTION(MOJOSETUP_ARCHIVE_TAR_XZ "Enable TAR.XZ support" TRUE)
+    IF(MOJOSETUP_ARCHIVE_TAR_XZ)
+        SET(MOJOSETUP_INPUT_XZ TRUE)
+    ENDIF(MOJOSETUP_ARCHIVE_TAR_XZ)
 ENDIF(MOJOSETUP_ARCHIVE_TAR)
 
 OPTION(MOJOSETUP_ARCHIVE_UZ2 "Enable UZ2 support" FALSE)
@@ -562,6 +607,15 @@ IF(MOJOSETUP_INPUT_BZIP2)
     SET(MOJOSETUP_NEED_BZLIB TRUE)
 ENDIF(MOJOSETUP_INPUT_BZIP2)
 
+# BINARY SIZE += ???
+IF(NOT MOJOSETUP_INPUT_XZ)  # optional if something didn't force it.
+    OPTION(MOJOSETUP_INPUT_XZ "Enable XZ support" FALSE)
+ENDIF(NOT MOJOSETUP_INPUT_XZ)
+
+IF(MOJOSETUP_INPUT_XZ)
+    ADD_DEFINITIONS(-DSUPPORT_XZ=1)
+    SET(MOJOSETUP_NEED_LIBLZMA TRUE)
+ENDIF(MOJOSETUP_INPUT_XZ)
 
 
 # Image decoders for GUIs...
@@ -696,6 +750,39 @@ IF(MOJOSETUP_NEED_BZLIB)
         SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} bz2)
     ENDIF(MOJOSETUP_INTERNAL_BZLIB)
 ENDIF(MOJOSETUP_NEED_BZLIB)
+
+IF(MOJOSETUP_NEED_LIBLZMA)
+    SET(HAVE_SYSTEM_LIBLZMA FALSE)
+    CHECK_INCLUDE_FILE(lzma.h HAVE_LZMA_H)
+    IF(HAVE_LZMA_H)
+        CHECK_LIBRARY_EXISTS("lzma" "lzma_stream_decoder" "" HAVE_LIBLZMA)
+        IF(HAVE_LIBLZMA)
+            SET(HAVE_SYSTEM_LIBLZMA TRUE)
+        ENDIF(HAVE_LIBLZMA)
+    ENDIF(HAVE_LZMA_H)
+
+    IF(HAVE_SYSTEM_LIBLZMA)
+        OPTION(MOJOSETUP_INTERNAL_LIBLZMA "Link own liblzma instead of system library" FALSE)
+    ELSE(HAVE_SYSTEM_LIBLZMA)
+        SET(MOJOSETUP_INTERNAL_LIBLZMA TRUE)
+    ENDIF(HAVE_SYSTEM_LIBLZMA)
+
+    # BINARY SIZE += ???
+    IF(MOJOSETUP_INTERNAL_LIBLZMA)
+        ADD_DEFINITIONS(-DMOJOSETUP_INTERNAL_LIBLZMA=1)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/api)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/common)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/check)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/delta)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/lz)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/lzma)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/rangecoder)
+        INCLUDE_DIRECTORIES(${LIBLZMA_DIR}/simple)
+        SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LIBLZMA_SRCS})
+    ELSE(MOJOSETUP_INTERNAL_LIBLZMA)
+        SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} lzma)
+    ENDIF(MOJOSETUP_INTERNAL_LIBLZMA)
+ENDIF(MOJOSETUP_NEED_LIBLZMA)
 
 IF(UNIX)
     CHECK_INCLUDE_FILE(sys/ucred.h HAVE_UCRED_H)
