@@ -136,45 +136,41 @@ static int64 MojoInput_gzip_read(MojoInput *io, void *buf, uint32 bufsize)
 
     if (bufsize == 0)
         return 0;    // quick rejection.
-    else
+
+    info->stream.next_out = buf;
+    info->stream.avail_out = bufsize;
+
+    while (retval < ((int64) bufsize))
     {
-        info->stream.next_out = buf;
-        info->stream.avail_out = bufsize;
+        const uint32 before = info->stream.total_out;
+        int rc;
 
-        while (retval < ((int64) bufsize))
+        if (info->stream.avail_in == 0)
         {
-            const uint32 before = info->stream.total_out;
-            int rc;
-
-            if (info->stream.avail_in == 0)
+            int64 br = origio->length(origio) - origio->tell(origio);
+            if (br > 0)
             {
-                int64 br;
+                if (br > GZIP_READBUFSIZE)
+                    br = GZIP_READBUFSIZE;
 
-                br = origio->length(origio) - origio->tell(origio);
-                if (br > 0)
-                {
-                    if (br > GZIP_READBUFSIZE)
-                        br = GZIP_READBUFSIZE;
+                br = origio->read(origio, info->buffer, (uint32) br);
+                if (br <= 0)
+                    return -1;
 
-                    br = origio->read(origio, info->buffer, (uint32) br);
-                    if (br <= 0)
-                        return -1;
-
-                    info->stream.next_in = info->buffer;
-                    info->stream.avail_in = (uint32) br;
-                } // if
+                info->stream.next_in = info->buffer;
+                info->stream.avail_in = (uint32) br;
             } // if
+        } // if
 
-            rc = inflate(&info->stream, Z_SYNC_FLUSH);
-            retval += (info->stream.total_out - before);
+        rc = inflate(&info->stream, Z_SYNC_FLUSH);
+        retval += (info->stream.total_out - before);
 
-            if (rc != Z_OK)
-                return -1;
-        } // while
-    } // else
+        if (rc != Z_OK)  // !!! FIXME: Z_STREAM_END?
+            return -1;
+    } // while
 
-    if (retval > 0)
-        info->uncompressed_position += (uint32) retval;
+    assert(retval >= 0);
+    info->uncompressed_position += (uint32) retval;
 
     return retval;
 } // MojoInput_gzip_read
@@ -342,44 +338,40 @@ static int64 MojoInput_bzip2_read(MojoInput *io, void *buf, uint32 bufsize)
 
     if (bufsize == 0)
         return 0;    // quick rejection.
-    else
+
+    info->stream.next_out = buf;
+    info->stream.avail_out = bufsize;
+
+    while (retval < ((int64) bufsize))
     {
-        info->stream.next_out = buf;
-        info->stream.avail_out = bufsize;
+        const uint32 before = info->stream.total_out_lo32;
+        int rc;
 
-        while (retval < ((int64) bufsize))
+        if (info->stream.avail_in == 0)
         {
-            const uint32 before = info->stream.total_out_lo32;
-            int rc;
-
-            if (info->stream.avail_in == 0)
+            int64 br = origio->length(origio) - origio->tell(origio);
+            if (br > 0)
             {
-                int64 br;
+                if (br > BZIP2_READBUFSIZE)
+                    br = BZIP2_READBUFSIZE;
 
-                br = origio->length(origio) - origio->tell(origio);
-                if (br > 0)
-                {
-                    if (br > BZIP2_READBUFSIZE)
-                        br = BZIP2_READBUFSIZE;
+                br = origio->read(origio, info->buffer, (uint32) br);
+                if (br <= 0)
+                    return -1;
 
-                    br = origio->read(origio, info->buffer, (uint32) br);
-                    if (br <= 0)
-                        return -1;
-
-                    info->stream.next_in = (char *) info->buffer;
-                    info->stream.avail_in = (uint32) br;
-                } // if
+                info->stream.next_in = (char *) info->buffer;
+                info->stream.avail_in = (uint32) br;
             } // if
+        } // if
 
-            rc = BZ2_bzDecompress(&info->stream);
-            retval += (info->stream.total_out_lo32 - before);
-            if (rc != BZ_OK)
-                return -1;
-        } // while
-    } // else
+        rc = BZ2_bzDecompress(&info->stream);
+        retval += (info->stream.total_out_lo32 - before);
+        if (rc != BZ_OK)
+            return -1;
+    } // while
 
-    if (retval > 0)
-        info->uncompressed_position += (uint32) retval;
+    assert(retval >= 0);
+    info->uncompressed_position += (uint32) retval;
 
     return retval;
 } // MojoInput_bzip2_read
