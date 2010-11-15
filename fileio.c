@@ -52,7 +52,7 @@ typedef struct GZIPinfo
 {
     MojoInput *origio;
     uint64 uncompressed_position;
-    uint8 *buffer;
+    uint8 buffer[GZIP_READBUFSIZE];
     z_stream stream;
 } GZIPinfo;
 
@@ -199,7 +199,6 @@ static void MojoInput_gzip_close(MojoInput *io)
     if (info->origio != NULL)
         info->origio->close(info->origio);
     inflateEnd(&info->stream);
-    free(info->buffer);
     free(info);
     free(io);
 } // MojoInput_gzip_close
@@ -217,7 +216,6 @@ static MojoInput *make_gzip_input(MojoInput *origio)
     } // if
 
     info->origio = origio;
-    info->buffer = (uint8 *) xmalloc(GZIP_READBUFSIZE);
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
     io->ready = MojoInput_gzip_ready;
@@ -246,7 +244,7 @@ typedef struct BZIP2info
 {
     MojoInput *origio;
     uint64 uncompressed_position;
-    uint8 *buffer;
+    uint8 buffer[BZIP2_READBUFSIZE];
     bz_stream stream;
 } BZIP2info;
 
@@ -406,7 +404,6 @@ static void MojoInput_bzip2_close(MojoInput *io)
     if (info->origio != NULL)
         info->origio->close(info->origio);
     BZ2_bzDecompressEnd(&info->stream);
-    free(info->buffer);
     free(info);
     free(io);
 } // MojoInput_bzip2_close
@@ -424,7 +421,6 @@ static MojoInput *make_bzip2_input(MojoInput *origio)
     } // if
 
     info->origio = origio;
-    info->buffer = (uint8 *) xmalloc(BZIP2_READBUFSIZE);
 
     io = (MojoInput *) xmalloc(sizeof (MojoInput));
     io->ready = MojoInput_bzip2_ready;
