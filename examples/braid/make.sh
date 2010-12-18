@@ -13,8 +13,8 @@ if [ "$1" = "--debug" ]; then
     DEBUG=1
 fi
 
-if [ ! -f data/data/package0.zip ]; then
-    echo "We don't see data/data/package0.zip ..."
+if [ ! -f data/gamedata/data/package0.zip ]; then
+    echo "We don't see data/gamedata/data/package0.zip ..."
     echo " Either you're in the wrong directory, or you didn't copy the"
     echo " install data into here (it's unreasonably big to store it in"
     echo " revision control for no good reason)."
