@@ -4,8 +4,11 @@ local AMD64_INSTALL_SIZE = 20224358
 
 local _ = MojoSetup.translate
 
--- grumble.
+-- If we decide you have a 32-bit machine, we don't give you the install
+--  choice. If we think you're on 64-bit, we'll ask which you want, defaulting
+--  to 64.
 local is32bit =
+        MojoSetup.cmdline("32bit") or
         MojoSetup.info.machine == "x86" or
         MojoSetup.info.machine == "i386" or
         MojoSetup.info.machine == "i586" or
