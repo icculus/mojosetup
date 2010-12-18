@@ -466,7 +466,7 @@ char *MojoPlatform_osType(void)
 } // MojoPlatform_ostype
 
 
-char *MojoPlatform_osVersion()
+char *MojoPlatform_osVersion(void)
 {
 #if PLATFORM_MACOSX
     SInt32 ver, major, minor, patch;
@@ -518,6 +518,15 @@ char *MojoPlatform_osVersion()
 
     return NULL;
 } // MojoPlatform_osversion
+
+
+char *MojoPlatform_osMachine(void)
+{
+    struct utsname un;
+    if (uname(&un) == 0)
+        return xstrdup(un.machine);
+    return NULL;
+} // MojoPlatform_osMachine
 
 
 void MojoPlatform_sleep(uint32 ticks)

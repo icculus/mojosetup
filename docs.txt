@@ -1280,6 +1280,21 @@ Your config file is a Lua script, and as such, has access to all of Lua's
 
     Please note that this is the arch of the installer binary...you can run
     a 32-bit binary on an amd64 chip, in which case it will report "x86"!
+    You may have better luck with MojoSetup.info.machine. Maybe.
+
+
+  MojoSetup.info.machine
+
+    This is a string (not a function!) of the current platform's machine type.
+    This string is arbitrary and platform specific, so it's only useful if
+    you know what you're looking for on a specific subset of your target
+    audience.
+
+    For Unix-like systems, this string is the output of "uname -m".
+
+    Please note that modern Intel Mac OS X systems can run 64-bit binaries
+    but may report themselves as "i386" here, for example, and also
+    seemlessly run PowerPC apps in an emulator.
 
 
   MojoSetup.info.ostype
