@@ -1322,25 +1322,28 @@ MojoArchive *MojoArchive_initBaseArchive(void)
     else
     {
         basepath = MojoPlatform_appBinaryPath();
-        io = MojoInput_newFromFile(basepath);
-
-        if (io != NULL)
-            GBaseArchive = MojoArchive_newFromInput(io, basepath);
-
-        if (GBaseArchive == NULL)
+        if (basepath != NULL)
         {
-            // Just use the same directory as the binary instead.
-            char *ptr = strrchr(basepath, '/');
-            if (ptr != NULL)
-                *ptr = '\0';
-            else
-            {
-                free(basepath);  // oh well, try cwd.
-                basepath = MojoPlatform_currentWorkingDir();
-            } // else
-            GBaseArchive = MojoArchive_newFromDirectory(basepath);
+            io = MojoInput_newFromFile(basepath);
 
-            // !!! FIXME: failing this, maybe default.mojosetup?
+            if (io != NULL)
+                GBaseArchive = MojoArchive_newFromInput(io, basepath);
+
+            if (GBaseArchive == NULL)
+            {
+                // Just use the same directory as the binary instead.
+                char *ptr = strrchr(basepath, '/');
+                if (ptr != NULL)
+                    *ptr = '\0';
+                else
+                {
+                    free(basepath);  // oh well, try cwd.
+                    basepath = MojoPlatform_currentWorkingDir();
+                } // else
+                GBaseArchive = MojoArchive_newFromDirectory(basepath);
+
+                // !!! FIXME: failing this, maybe default.mojosetup?
+            } // if
         } // if
     } // else
 
