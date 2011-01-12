@@ -356,7 +356,9 @@ char *MojoPlatform_appBinaryPath(void)
     const char *argv0 = GArgv[0];
     char *retval = NULL;
 
-    if (strchr(argv0, '/') != NULL)  
+    // !!! FIXME: try /proc/$PID/exe here?
+
+    if (strchr(argv0, '/') != NULL)
         retval = MojoPlatform_realpath(argv0); // argv[0] contains a path?
     else  // slow path...have to search the whole $PATH for this one...
     {
