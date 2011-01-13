@@ -497,7 +497,7 @@ IF(NOT MACOSX)
 #PKGCONFIG(libgtk-2.0 LIBGTK_INCLUDE_DIR LIBGTK_LINK_DIR LIBGTK_LINK_FLAGS LIBGTK_CFLAGS)
 # !!! FIXME
 SET(LIBGTK_LINK_FLAGS "-lgtk-x11-2.0")
-SET(LIBGTK_CFLAGS "-DPNG_NO_MMX_CODE -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12")
+SET(LIBGTK_CFLAGS "-DPNG_NO_MMX_CODE -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12")
 IF(NOT LIBGTK_LINK_FLAGS)
     MESSAGE(STATUS "Can't find GTK+v2 headers/libraries. Can't build GTK+ GUI.")
 ELSE(NOT LIBGTK_LINK_FLAGS)
