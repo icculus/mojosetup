@@ -134,6 +134,12 @@ boolean MojoInput_readui16(MojoInput *io, uint16 *ui16);
 //  value into (*ui32), false on i/o error or EOF.
 boolean MojoInput_readui32(MojoInput *io, uint32 *ui32);
 
+// Read a littleendian, unsigned 64-bit integer from (io), swapping it to
+//  the correct byteorder for the platform, and moving the file pointer
+//  ahead 8 bytes. Returns true on successful read and fills the swapped
+//  value into (*ui64), false on i/o error or EOF.
+boolean MojoInput_readui64(MojoInput *io, uint64 *ui64);
+
 // (Please note that there are not bigendian versions of MojoInput_readuiXX()
 //  at the moment, as we don't need them for our current feature set. However,
 //  they could be added easily enough.)
