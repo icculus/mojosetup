@@ -44,8 +44,11 @@ struct MojoInput
     void *opaque;
 };
 
-// This copies the memory, so you may free (ptr) after this function returns.
+// If constant == 0, then this copies the memory, so you may free (ptr) after
+//  this function returns in that case.
 MojoInput *MojoInput_newFromMemory(const uint8 *ptr, uint32 len, int constant);
+
+// Get a MojoInput for a real file in the physical filesystem.
 MojoInput *MojoInput_newFromFile(const char *fname);
 
 
