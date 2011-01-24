@@ -1046,7 +1046,7 @@ Now you have a MojoSetup binary and a directory tree containing your data, GUI
  self-extracting, zip your directory tree up and append it to the binary:
 
      zip -9r mydata.zip data guis scripts
-     cat mydata.zip >> mojosetup
+     ./make_self_extracting ./mojosetup mydata.zip
 
 Now rename "mojosetup" to something meaningful (mygame-1.0-linux-x86.bin or
  whatever), and you've got an installer.

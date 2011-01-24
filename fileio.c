@@ -1469,7 +1469,29 @@ MojoArchive *MojoArchive_initBaseArchive(void)
             io = MojoInput_newFromFile(basepath);
 
             if (io != NULL)
+            {
+                // See if there's a MOJOBASE signature at the end of the
+                //  file. This means we appended an archive to the executable,
+                //  for a self-extracting installer. This method works with
+                //  any archive type, even if it wasn't specifically designed
+                //  to be appended.
+                uint8 buf[8];
+                uint64 size = 0;
+                const int64 flen = io->length(io) - 16;
+                if ( (flen > 0) && (io->seek(io, flen)) &&
+                     (io->read(io, buf, 8) == 8) &&
+                     (memcmp(buf, "MOJOBASE", 8) == 0) &&
+                     (MojoInput_readui64(io, &size)) &&
+                     (size < flen) )
+                {
+                    MojoInput *newio;
+                    newio = MojoInput_newFromSubset(io, flen - size, flen);
+                    if (newio != NULL)
+                        io = newio;
+                } // if
+
                 GBaseArchive = MojoArchive_newFromInput(io, basepath);
+            } // if
 
             if (GBaseArchive == NULL)
             {

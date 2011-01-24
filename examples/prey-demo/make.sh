@@ -180,7 +180,7 @@ cd ..
 rm -rf image
 
 # Append the .zip archive to the mojosetup binary, so it's "self-extracting."
-cat pdata.zip >> ./$pkgbin
+../../cmake-build/make_self_extracting pdata.zip ./$pkgbin
 rm -f pdata.zip
 
 # ...and that's that.

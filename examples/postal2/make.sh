@@ -181,7 +181,7 @@ else
     cd ..
     rm -rf image
     # Append the .zip archive to the mojosetup binary, so it's "self-extracting."
-    cat pdata.zip >> ./postal2-installer
+    ../../cmake-build/make_self_extracting pdata.zip ./postal2-installer
     rm -f pdata.zip
 fi
 

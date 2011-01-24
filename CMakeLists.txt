@@ -835,6 +835,8 @@ GET_TARGET_PROPERTY(MOJOSETUP_BINARY_LOCATION mojosetup LOCATION)
 TARGET_LINK_LIBRARIES(mojosetup ${OPTIONAL_LIBS})
 SET(MOJOSETUP_TARGETS "${MOJOSETUP_TARGETS};mojosetup")
 
+ADD_EXECUTABLE(make_self_extracting misc/make_self_extracting.c)
+
 # For cobbling together a skeleton installer...
 
 # !!! FIXME: all of these custom .cmake files are built-in commands in CMake 2.6.(4?) ...!
