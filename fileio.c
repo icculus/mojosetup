@@ -1061,6 +1061,125 @@ MojoInput *MojoInput_newFromMemory(const uint8 *ptr, uint32 len, int constant)
 } // MojoInput_newFromMemory
 
 
+// Put a limit on the range of an existing MojoInput.
+
+typedef struct
+{
+    MojoInput *io;  // original io we're a subset of.
+    uint64 pos;
+    uint64 start;
+    uint64 end;
+} MojoInputSubsetInstance;
+
+static boolean MojoInput_subset_ready(MojoInput *io)
+{
+    MojoInputSubsetInstance *inst = (MojoInputSubsetInstance *) io->opaque;
+    return inst->io->ready(inst->io);
+} // MojoInput_subset_ready
+
+static int64 MojoInput_subset_read(MojoInput *io, void *buf, uint32 bufsize)
+{
+    MojoInputSubsetInstance *inst = (MojoInputSubsetInstance *) io->opaque;
+    const uint32 avail = inst->end - inst->pos;
+    int64 rc;
+
+    assert(inst->pos < inst->end);
+    if (bufsize > avail)
+        bufsize = avail;
+    rc = inst->io->read(inst->io, buf, bufsize);
+    if (rc > 0)
+        inst->pos += rc;
+    return rc;
+} // MojoInput_subset_read
+
+static boolean MojoInput_subset_seek(MojoInput *io, uint64 pos)
+{
+    MojoInputSubsetInstance *inst = (MojoInputSubsetInstance *) io->opaque;
+    if (pos > (inst->end - inst->start))
+        return false;
+    else if (!inst->io->seek(inst->io, pos + inst->start))
+        return false;
+    inst->pos = pos;
+    return true;
+} // MojoInput_subset_seek
+
+static int64 MojoInput_subset_tell(MojoInput *io)
+{
+    MojoInputSubsetInstance *inst = (MojoInputSubsetInstance *) io->opaque;
+    return (int64) inst->pos;
+} // MojoInput_subset_tell
+
+static int64 MojoInput_subset_length(MojoInput *io)
+{
+    MojoInputSubsetInstance *inst = (MojoInputSubsetInstance *) io->opaque;
+    return (int64) (inst->end - inst->start);
+} // MojoInput_subset_length
+
+static MojoInput *MojoInput_subset_duplicate(MojoInput *io)
+{
+    MojoInputSubsetInstance *srcinst = (MojoInputSubsetInstance *) io->opaque;
+    MojoInput *dupio = io->duplicate(io);
+    MojoInput *retval = NULL;
+    MojoInputSubsetInstance *inst = NULL;
+
+    if (dupio == NULL)
+        return NULL;
+
+    if (!dupio->seek(dupio, 0))
+    {
+        dupio->close(dupio);
+        return NULL;
+    } // if
+
+    inst = (MojoInputSubsetInstance*) xmalloc(sizeof (MojoInputSubsetInstance));
+    memcpy(inst, srcinst, sizeof (MojoInputSubsetInstance));
+    inst->io = dupio;
+    inst->pos = 0;
+
+    retval = (MojoInput *) xmalloc(sizeof (MojoInput));
+    memcpy(retval, io, sizeof (MojoInput));
+    retval->opaque = inst;
+
+    return retval;
+} // MojoInput_subset_duplicate
+
+static void MojoInput_subset_close(MojoInput *io)
+{
+    MojoInputSubsetInstance *inst = (MojoInputSubsetInstance *) io->opaque;
+    inst->io->close(inst->io);
+    free(inst);
+    free(io);
+} // MojoInput_subset_close
+
+MojoInput *MojoInput_newFromSubset(MojoInput *_io, const uint64 start,
+                                   const uint64 end)
+{
+    MojoInput *io;
+    MojoInputSubsetInstance *inst;
+
+    assert(end > start);
+    if (!_io->seek(_io, start))
+        return NULL;
+
+    io = (MojoInput *) xmalloc(sizeof (MojoInput));
+    inst = (MojoInputSubsetInstance*)xmalloc(sizeof (MojoInputSubsetInstance));
+
+    inst->io = _io;
+    inst->pos = 0;
+    inst->start = start;
+    inst->end = end;
+
+    io->ready = MojoInput_subset_ready;
+    io->read = MojoInput_subset_read;
+    io->seek = MojoInput_subset_seek;
+    io->tell = MojoInput_subset_tell;
+    io->length = MojoInput_subset_length;
+    io->duplicate = MojoInput_subset_duplicate;
+    io->close = MojoInput_subset_close;
+    io->opaque = inst;
+
+    return io;
+} // MojoInput_newFromSubset
 
 
 // MojoArchives from directories on the OS filesystem.

@@ -51,6 +51,11 @@ MojoInput *MojoInput_newFromMemory(const uint8 *ptr, uint32 len, int constant);
 // Get a MojoInput for a real file in the physical filesystem.
 MojoInput *MojoInput_newFromFile(const char *fname);
 
+// Make a subset range of (io) look like the entire file. This will take over
+//  control of (io), closing it when done, so never reference (io) directly
+//  again, if this call succeeds.
+MojoInput *MojoInput_newFromSubset(MojoInput *io, const uint64 start,
+                                   const uint64 end);
 
 typedef enum
 {
