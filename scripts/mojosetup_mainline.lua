@@ -1270,6 +1270,7 @@ local function do_install(install)
     local skipeulas = MojoSetup.cmdline("i-agree-to-all-licenses")
     local skipreadmes = MojoSetup.cmdline("noreadme")
     local skipoptions = MojoSetup.cmdline("nooptions")
+    local skipprompt = MojoSetup.cmdline("noprompt")
 
     -- !!! FIXME: try to sanity check everything we can here
     -- !!! FIXME:  (unsupported URLs, bogus media IDs, etc.)
@@ -1792,9 +1793,11 @@ local function do_install(install)
     end
 
     -- Next stage: show results gui
-    stages[#stages+1] = function(thisstage, maxstage)
-        MojoSetup.gui.final(_("Installation was successful."))
-        return 1  -- go forward.
+    if not skipprompt then
+        stages[#stages+1] = function(thisstage, maxstage)
+            MojoSetup.gui.final(_("Installation was successful."))
+            return 1  -- go forward.
+        end
     end
 
     -- Now make all this happen.
