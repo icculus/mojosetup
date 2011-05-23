@@ -2074,7 +2074,9 @@ local function uninstaller()
         local filelist = flatten_manifest(package.manifest, prepend_dest_dir)
         delete_files(filelist, callback, package.delete_error_is_fatal)
         run_config_defined_hook(package.postuninstall, package)
-        MojoSetup.gui.final(_("Uninstall complete"))
+        if not MojoSetup.cmdline("noprompt") then
+            MojoSetup.gui.final(_("Uninstall complete"))
+        end
         stop_gui()
     end
 
