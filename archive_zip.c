@@ -797,6 +797,7 @@ static void zip_expand_symlink_path(char *path)
         else
         {
             prevptr = ptr;
+            ptr++;
         } /* else */
     } /* while */
 } /* zip_expand_symlink_path */
