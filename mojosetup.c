@@ -764,6 +764,7 @@ uint32 utf8codepoint(const char **_str)
 
     else  // six octets
     {
+        (*_str)++;  // advance at least one byte in case of an error
         octet = (uint32) ((uint8) *(++str));
         if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
@@ -784,7 +785,7 @@ uint32 utf8codepoint(const char **_str)
         if ((octet & (128+64)) != 128)  // Format isn't 10xxxxxx?
             return UNICODE_BOGUS_CHAR_VALUE;
 
-        *_str += 6;  // skip to next possible start of codepoint.
+        *_str += 5;  // skip to next possible start of codepoint.
         return UNICODE_BOGUS_CHAR_VALUE;
     } // else if
 
