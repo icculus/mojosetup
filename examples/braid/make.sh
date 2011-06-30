@@ -181,7 +181,7 @@ else
     cd ..
     rm -rf image
     # Append the .zip archive to the mojosetup binary, so it's "self-extracting."
-    ../../cmake-build/make_self_extracting pdata.zip ./braid-installer
+    ../../cmake-build/make_self_extracting ./braid-installer pdata.zip
     rm -f pdata.zip
 fi
 
