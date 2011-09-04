@@ -167,7 +167,9 @@ static int64 MojoInput_gzip_read(MojoInput *io, void *buf, uint32 bufsize)
         rc = inflate(&info->stream, Z_SYNC_FLUSH);
         retval += (info->stream.total_out - before);
 
-        if (rc != Z_OK)  // !!! FIXME: Z_STREAM_END?
+        if ((rc == Z_STREAM_END) && (retval == 0))
+            return 0;
+        else if ((rc != Z_OK) && (rc != Z_STREAM_END))
             return -1;
     } // while
 
