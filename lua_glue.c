@@ -885,9 +885,10 @@ static int luahook_copyfile(lua_State *L)
 
 static int luahook_stringtofile(lua_State *L)
 {
-    const char *str = luaL_checkstring(L, 1);
+    const char *str = NULL;
     MojoInput *in = NULL;
     size_t len = 0;
+    luaL_checkstring(L, 1);
     str = lua_tolstring(L, 1, &len);
     in = MojoInput_newFromMemory((const uint8 *) str, (uint32) len, 1);
     assert(in != NULL);  // xmalloc() would fatal(), should not return NULL.
