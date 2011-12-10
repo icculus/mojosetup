@@ -1069,6 +1069,19 @@ static int luahook_platform_symlink(lua_State *L)
     return retvalBoolean(L, MojoPlatform_symlink(src, dst));
 } // luahook_platform_symlink
 
+static int luahook_platform_readlink(lua_State *L)
+{
+    const char *ln = luaL_checkstring(L, 1);
+    char *ret = NULL;
+    char *str = MojoPlatform_readlink(ln);
+    if (str)
+    {
+        ret = xstrncpy((char*) scratchbuf_128k, str, sizeof (scratchbuf_128k));
+        free(str);
+    } // if
+
+    return retvalString(L, ret);
+} // luahook_platform_readlink
 
 static int luahook_platform_mkdir(lua_State *L)
 {
@@ -1839,6 +1852,7 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_platform_issymlink, "issymlink");
             set_cfunc(luaState, luahook_platform_isfile, "isfile");
             set_cfunc(luaState, luahook_platform_symlink, "symlink");
+            set_cfunc(luaState, luahook_platform_readlink, "readlink");
             set_cfunc(luaState, luahook_platform_mkdir, "mkdir");
             set_cfunc(luaState, luahook_platform_installdesktopmenuitem, "installdesktopmenuitem");
             set_cfunc(luaState, luahook_platform_uninstalldesktopmenuitem, "uninstalldesktopmenuitem");
