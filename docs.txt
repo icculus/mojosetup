@@ -1103,7 +1103,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
    runtime, as require() won't respect the Base Archive.
 
 
-  MojoSetup.runScript(script, devnull, args...)
+  MojoSetup.runscript(script, devnull, args...)
 
    Run the given script in a shell. If devnull is true, all stdout
    and stderr will be suppressed (literally sent to /dev/null on Unix
