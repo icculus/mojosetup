@@ -2079,8 +2079,6 @@ local function uninstaller()
         end
         stop_gui()
     end
-
-    -- !!! FIXME: postuninstall hook?
 end
 
 
