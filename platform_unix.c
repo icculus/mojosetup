@@ -124,7 +124,7 @@ char *MojoPlatform_readlink(const char *linkname)
             buf[len] = '\0';  // readlink() doesn't null-terminate!
             retval = xrealloc(buf, (size_t) (len+1));  // shrink it down.
         } // if
-    } while (len >= (alloclen-1));  // loop if we need a bigger buffer.
+    } while (len >= (((ssize_t)alloclen)-1));  // loop if we need bigger buf.
 
     return retval;  // caller must free() this.
 } // MojoPlatform_readlink
