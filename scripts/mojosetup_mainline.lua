@@ -956,9 +956,12 @@ local function install_control_app(desc, key)
         end
     end
 
-    local perms = "0755"  -- !!! FIXME
-    install_parent_dirs(dst, key)
-    install_file_from_filesystem(dst, src, perms, desc, key, maxbytes)
+    -- don't overwrite preexisting stuff.
+    if not MojoSetup.platform.exists(dst) then
+        local perms = "0755"  -- !!! FIXME
+        install_parent_dirs(dst, key)
+        install_file_from_filesystem(dst, src, perms, desc, key, maxbytes)
+    end
 
     -- Okay, now we need all the support files.
     if not MojoSetup.archive.enumerate(base) then
