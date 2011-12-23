@@ -138,7 +138,7 @@ void MojoSha1_append(MojoSha1 *context, const uint8 *data, uint32 len)
 
 void MojoSha1_finish(MojoSha1 *context, uint8 digest[20])
 {
-    uint32 i, j;
+    uint32 i;
     uint8 finalcount[8];
 
     for (i = 0; i < 8; i++) {
