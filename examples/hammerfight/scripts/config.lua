@@ -1,4 +1,4 @@
-local TOTAL_INSTALL_SIZE = 122128125;
+local TOTAL_INSTALL_SIZE = 126978833;
 
 local _ = MojoSetup.translate
 

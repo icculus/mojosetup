@@ -574,7 +574,7 @@ static int luahook_format(lua_State *L)
 //  Doesn't actually return.
 static int luahook_fatal(lua_State *L)
 {
-    const char *errstr = lua_tostring(L, 1);
+    const char *errstr = lua_tostring(L, -1);
     if (errstr == NULL)
         return fatal(NULL);  // doesn't actually return.
     return fatal("%0", errstr);  // doesn't actually return.
