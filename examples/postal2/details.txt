@@ -1,0 +1,2 @@
+APPTITLE="Postal 2: Share the Pain Installer"
+DATAFILE="data/System/postal2-bin"

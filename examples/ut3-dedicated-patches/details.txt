@@ -1,0 +1,3 @@
+APPTITLE="Unreal Tournament 3 Dedicated Server Updater"
+DATAFILE="data/UTGame/Config/DefaultCompat.ini"
+MINIMAL=1

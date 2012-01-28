@@ -1,4 +1,4 @@
-local GAME_INSTALL_SIZE = 886535138;
+local TOTAL_INSTALL_SIZE = 886535138;
 
 local _ = MojoSetup.translate
 
@@ -73,7 +73,7 @@ Setup.Package
         value = true,
         required = true,
         disabled = false,
-        bytes = GAME_INSTALL_SIZE,
+        bytes = TOTAL_INSTALL_SIZE,
         description = _("Postal 2: Apocalypse Weekend"),
 
         Setup.File

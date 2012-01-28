@@ -1,0 +1,2 @@
+APPTITLE="Braid Installer"
+DATAFILE="data/gamedata/data/package0.zip"

@@ -1,0 +1,3 @@
+APPTITLE="Prey Installer"
+DATAFILE="data/prey-linux-data/base/guis/mainmenu/mainmenu_credits.guifragment"
+

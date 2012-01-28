@@ -1,0 +1,2 @@
+APPTITLE="Hammerfight Installer"
+DATAFILE="data/Objects/Weapons/blade_hisaian.seria"

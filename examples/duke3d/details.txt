@@ -1,0 +1,4 @@
+APPTITLE="Duke Nukem 3D Installer"
+DATAFILE="data/duke3d.png"
+NEEDHTTP=1
+

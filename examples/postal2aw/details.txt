@@ -1,0 +1,2 @@
+APPTITLE="Postal 2: Apocalypse Weekend Installer"
+DATAFILE="data/ApocalypseWeekend/System/AW7FX.u"

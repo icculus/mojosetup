@@ -1,0 +1,3 @@
+APPTITLE="Super Meat Boy Installer"
+DATAFILE="data/Fonts/Chinese.fnt"
+

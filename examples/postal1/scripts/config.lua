@@ -1,4 +1,4 @@
-local GAME_INSTALL_SIZE = 245613846;
+local TOTAL_INSTALL_SIZE = 245613846;
 
 local _ = MojoSetup.translate
 
@@ -34,7 +34,7 @@ Setup.Package
         value = true,
         required = true,
         disabled = false,
-        bytes = GAME_INSTALL_SIZE,
+        bytes = TOTAL_INSTALL_SIZE,
         description = _("Postal 1"),
 
         Setup.File

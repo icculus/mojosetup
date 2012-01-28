@@ -1,0 +1,3 @@
+APPTITLE="Prey Demo Installer"
+DATAFILE="data/prey-demo-linux-data/libNvidiaVidMemTest.so"
+

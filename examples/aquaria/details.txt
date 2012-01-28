@@ -1,0 +1,2 @@
+APPTITLE="Aquaria Installer"
+DATAFILE="data/_mods/jukebox.xml"

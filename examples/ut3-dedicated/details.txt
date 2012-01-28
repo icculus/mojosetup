@@ -1,0 +1,3 @@
+APPTITLE="Unreal Tournament 3 Dedicated Server Installer"
+DATAFILE="data/UTGame/CookedPC/Private/Maps/CTF-Coret.ut3"
+MINIMAL=1

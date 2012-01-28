@@ -1,0 +1,2 @@
+APPTITLE="Cogs Installer"
+DATAFILE="data/data/pipes/pipe01i-valve.strip"

@@ -1,0 +1,2 @@
+APPTITLE="Lugaru Installer"
+DATAFILE="data/Data/Animations/Rabbitkick"

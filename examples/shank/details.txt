@@ -1,0 +1,2 @@
+APPTITLE="Shank Installer"
+DATAFILE="data/data-pc/bootstrap/movies/introscee.ogv"

@@ -1,4 +1,4 @@
-local GAME_INSTALL_SIZE = 29967957;
+local TOTAL_INSTALL_SIZE = 29967957;
 
 local _ = MojoSetup.translate
 
@@ -30,7 +30,7 @@ Setup.Package
         value = true,
         required = true,
         disabled = false,
-        bytes = GAME_INSTALL_SIZE,
+        bytes = TOTAL_INSTALL_SIZE,
         description = _("Lugaru: The Rabbit's Foot"),
 
         Setup.File

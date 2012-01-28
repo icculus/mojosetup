@@ -1,0 +1,2 @@
+APPTITLE="Postal 1 Installer"
+DATAFILE="data/res/hoods/ghetto.sak"
