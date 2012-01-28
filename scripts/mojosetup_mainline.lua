@@ -876,7 +876,7 @@ local function serialize(obj, prefix, postfix)
         elseif objtype == "string" then
             addstr(string.format("%q", obj))
         elseif objtype == "function" then
-            addstr("loadstring(")
+            addstr("load(")
             addstr(string.format("%q", string.dump(obj)))
             addstr(")")
         elseif objtype == "table" then

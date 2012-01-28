@@ -279,6 +279,7 @@ SET(LUA_SRCS
     ${LUA_DIR}/src/lbaselib.c
     ${LUA_DIR}/src/lstrlib.c
     ${LUA_DIR}/src/ltablib.c
+    ${LUA_DIR}/src/lctype.c
 )
 
 SET(LUA_PARSER_SRCS
@@ -315,12 +316,14 @@ SET(MOJOLUAC_SRCS
     ${LUA_SRCS}
     ${LUA_PARSER_SRCS}
     ${LUA_DIR}/src/luac.c
-    ${LUA_DIR}/src/print.c
     ${LUA_DIR}/src/linit.c
+    ${LUA_DIR}/src/lctype.c
     ${LUA_DIR}/src/ldblib.c
     ${LUA_DIR}/src/liolib.c
     ${LUA_DIR}/src/lmathlib.c
     ${LUA_DIR}/src/loslib.c
+    ${LUA_DIR}/src/lbitlib.c
+    ${LUA_DIR}/src/lcorolib.c
     ${LUA_DIR}/src/loadlib.c
 )
 
@@ -398,6 +401,22 @@ IF(MOJOSETUP_LUALIB_PACKAGE)
     ADD_DEFINITIONS(-DSUPPORT_LUALIB_PACKAGE=1)
     SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/loadlib.c)
 ENDIF(MOJOSETUP_LUALIB_PACKAGE)
+
+# BINARY SIZE += ?
+OPTION(MOJOSETUP_LUALIB_BIT "Add Lua 'bit' library" TRUE)
+MARK_AS_ADVANCED(MOJOSETUP_LUALIB_BIT)
+IF(MOJOSETUP_LUALIB_BIT)
+    ADD_DEFINITIONS(-DSUPPORT_LUALIB_BIT=1)
+    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/lbitlib.c)
+ENDIF(MOJOSETUP_LUALIB_BIT)
+
+# BINARY SIZE += ?
+OPTION(MOJOSETUP_LUALIB_CORO "Add Lua 'coro' library" TRUE)
+MARK_AS_ADVANCED(MOJOSETUP_LUALIB_CORO)
+IF(MOJOSETUP_LUALIB_CORO)
+    ADD_DEFINITIONS(-DSUPPORT_LUALIB_CORO=1)
+    SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} ${LUA_DIR}/src/lcorolib.c)
+ENDIF(MOJOSETUP_LUALIB_CORO)
 
 
 # Checksums...

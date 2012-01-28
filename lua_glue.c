@@ -441,7 +441,7 @@ boolean MojoLua_runFileFromDir(const char *dir, const char *name)
         char *realfname = (char *) xmalloc(strlen(entinfo->filename) + 2);
         sprintf(realfname, "@%s", entinfo->filename);
         lua_pushcfunction(luaState, luahook_stackwalk);
-        rc = lua_load(luaState, MojoLua_reader, io, realfname);
+        rc = lua_load(luaState, MojoLua_reader, io, realfname, NULL);
         free(realfname);
         io->close(io);
 
@@ -1378,7 +1378,7 @@ static GuiOptions *build_one_gui_option(lua_State *L, GuiOptions *opts,
             lua_getfield(L, -1, "bytes");
             newopt->size = (int64) lua_tonumber(L, -1);
             lua_pop(L, 1);
-            newopt->opaque = ((int) lua_objlen(L, 4)) + 1;
+            newopt->opaque = ((int) lua_rawlen(L, 4)) + 1;
             lua_pushinteger(L, newopt->opaque);
             lua_pushvalue(L, -2);
             lua_settable(L, 4);  // position #4 is our local lookup table.
@@ -1561,7 +1561,7 @@ static int luahook_gui_destination(lua_State *L)
 
     if (lua_istable(L, 1))
     {
-        reccount = lua_objlen(L, 1);
+        reccount = lua_rawlen(L, 1);
         recommend = (char **) xmalloc(reccount * sizeof (char *));
         for (i = 0; i < reccount; i++)
         {
@@ -1699,7 +1699,7 @@ static void registerLuaLibs(lua_State *L)
     //  few we could trim). The rest you can compile in if you want/need them.
     int i;
     static const luaL_Reg lualibs[] = {
-        {"", luaopen_base},
+        {"_G", luaopen_base},
         {LUA_STRLIBNAME, luaopen_string},
         {LUA_TABLIBNAME, luaopen_table},
         #if SUPPORT_LUALIB_PACKAGE
@@ -1717,13 +1717,18 @@ static void registerLuaLibs(lua_State *L)
         #if SUPPORT_LUALIB_DB
         {LUA_DBLIBNAME, luaopen_debug},
         #endif
+        #if SUPPORT_LUALIB_BIT
+        {LUA_BITLIBNAME, luaopen_bit32},
+        #endif
+        #if SUPPORT_LUALIB_CORO
+        {LUA_COLIBNAME, luaopen_coroutine},
+        #endif
     };
 
     for (i = 0; i < STATICARRAYLEN(lualibs); i++)
     {
-        lua_pushcfunction(L, lualibs[i].func);
-        lua_pushstring(L, lualibs[i].name);
-        lua_call(L, 1, 0);
+        luaL_requiref(L, lualibs[i].name, lualibs[i].func, 1);
+        lua_pop(L, 1);  // remove lib
     } // for
 } // registerLuaLibs
 
