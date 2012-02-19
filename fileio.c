@@ -15,6 +15,7 @@ MojoArchive *MojoArchive_createZIP(MojoInput *io);
 MojoArchive *MojoArchive_createTAR(MojoInput *io);
 MojoArchive *MojoArchive_createUZ2(MojoInput *io);
 MojoArchive *MojoArchive_createPCK(MojoInput *io);
+MojoArchive *MojoArchive_createPKG(MojoInput *io);
 
 typedef struct
 {
@@ -39,6 +40,7 @@ static const MojoArchiveType archives[] =
     { "txz", MojoArchive_createTAR, true },
     { "uz2", MojoArchive_createUZ2, false },
     { "pck", MojoArchive_createPCK, true },
+    { "pkg", MojoArchive_createPKG, true },
 };
 
 
