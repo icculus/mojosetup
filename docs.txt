@@ -240,7 +240,7 @@ Here are the elements, and the attributes they can possess.
     location in the physical filesystem. Unless you are building something
     very specific (like device drivers for a well-defined platform), you
     probably should not use this attribute. If destination isn't forced,
-    the installer will prompt the user, possibly recommmending locations
+    the installer will prompt the user, possibly recommending locations
     to him.
 
    dataprefix (default: "data/", mustBeString)
@@ -1258,7 +1258,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
   MojoSetup.info.locale
 
     This is a string (not a function!) of the current locale, in the format
-    xx_YY, where "xx" is the language code (en for english, de for German, etc)
+    xx_YY, where "xx" is the language code (en for English, de for German, etc)
     and "YY" is the country code: "en_US" for American English, fr_CA for
     Canadian French, etc.
 
@@ -1294,7 +1294,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
 
     Please note that modern Intel Mac OS X systems can run 64-bit binaries
     but may report themselves as "i386" here, for example, and also
-    seemlessly run PowerPC apps in an emulator.
+    seamlessly run PowerPC apps in an emulator.
 
 
   MojoSetup.info.ostype
