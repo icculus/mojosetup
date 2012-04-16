@@ -18,7 +18,7 @@ MojoArchive *MojoArchive_createPKG(MojoInput *io) { return NULL; }
 typedef struct
 {
     uint32 magic;       // 4 bytes, has to be PKG_MAGIC (0x4f504b47)
-    uint32 fileCount;   // 4 bytes, offset to the data
+    uint32 fileCount;   // 4 bytes, number of files in the archive
 } PKGheader;
 
 typedef struct
