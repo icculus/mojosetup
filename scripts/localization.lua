@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version hg-830:7987cf8de5df ...
---  on 2011-12-06 12:50:36-0500
+-- This file was generated with po2localization.pl, version hg-850:9239b5723dfd ...
+--  on 2012-06-01 17:31:55-0400
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,8 +15,8 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2011-12-06 17:40+0000
--- X-Generator: Launchpad (build 14435)
+-- X-Launchpad-Export-Date: 2012-06-01 21:28+0000
+-- X-Generator: Launchpad (build 15342)
 
 MojoSetup.languages = {
     en_US = "English (United States)",
@@ -106,7 +106,6 @@ MojoSetup.localization = {
     --  key that is normally used to complete a line of text at a terminal's
     --  prompt.
     ["NOTICE: %0\n[hit enter]"] = {
-        af = "KENNIS: %0",
         ar = "ملحوظة:%0\n[اضغط enter]",
         cs = "UPOZORNĚNÍ: %0\n[stiskněte enter]",
         da = "NB: %0\n[tryk enter]",
@@ -1465,6 +1464,7 @@ MojoSetup.localization = {
         ro = "şir de caractere invalid",
         ru = "некорректная строка",
         sk = "neplatný reťazec",
+        sl = "neveljaven niz",
         sv = "Felaktig sträng",
         tr = "geçersiz dizgi",
         zh_TW = "無效的字串"
@@ -3785,7 +3785,7 @@ MojoSetup.localization = {
         en_AU = "Shutting down...",
         en_CA = "Shutting down...",
         en_GB = "Shutting down...",
-        es = "Cerrando ...",
+        es = "Cerrando...",
         et = "Süsteemi sulgemine...",
         fi = "Ajetaan alas...",
         fr = "Fermeture en cours...",
@@ -3821,7 +3821,7 @@ MojoSetup.localization = {
         en_AU = "You can close this browser now.",
         en_CA = "You can close this browser now.",
         en_GB = "You can close this browser now.",
-        es = "Ya puedes cerrar el navegador.",
+        es = "Ya puede cerrar el navegador.",
         et = "Võid selle brauseri sulgeda.",
         fi = "Voit sulkea tämän selaimen.",
         fr = "Vous pouvez maintenant fermer ce navigateur",
@@ -4545,6 +4545,7 @@ MojoSetup.localization = {
         ro = "Introduceţi cheia produsului",
         ru = "Пожалуйста, введите ключ продукта",
         sk = "Prosím vložte váš klúč produktu",
+        sl = "Vnesite vaš ključ izdelka",
         sv = "Skriv in din produktnyckel",
         tr = "Lütfen ürün anahtarını giriniz",
         zh_TW = "請輸入你的產品序號"
@@ -4577,6 +4578,7 @@ MojoSetup.localization = {
         ro = "(apăsaţi enter pentru a folosi '%0')",
         ru = "(просто нажмите ввод для использования '%0')",
         sk = "(stlačte enter pre '%0')",
+        sl = "(pritisnite enter, da uporabite '%0')",
         sv = "(tryck enter för att använda '%0')",
         tr = "('%0' yi kullanmak için girişe basınız)",
         zh_TW = "(請按下 Enter 鍵以使用 '%0')"
@@ -4608,6 +4610,7 @@ MojoSetup.localization = {
         ro = "Cheia produsului nu este valida",
         ru = "Неправильный ключ продукта",
         sk = "Neplatný kľúč produktu",
+        sl = "Neveljaven ključ izdelka",
         sv = "Felaktig produktnyckel",
         tr = "Geçersiz ürün anahtarı",
         zh_TW = "無效的產品序號"
@@ -4639,6 +4642,7 @@ MojoSetup.localization = {
         ro = "Acea cheie nu este validă. Vă rugăm încercaţi iarăşi.",
         ru = "Этот ключ оказался неправильным. Пожалуйста, попробуйте ещё раз.",
         sk = "Kľúč produktu je neplatný, prosím zadajte nový.",
+        sl = "Ključ ni veljaven. Prosimo, poizkusite ponovno.",
         sv = "Denna produktnyckel verkar felaktig. Försök gärna igen.",
         tr = "Ürün anahtarı geçersiz görünüyor. Lütfen tekrar deneyin.",
         zh_TW = "這組序號似乎是無效的，請再輸入一次。"
@@ -4669,6 +4673,7 @@ MojoSetup.localization = {
         pt_BR = "Janela",
         ro = "Fereastră",
         ru = "Окно",
+        sl = "Okno",
         sv = "Fönster",
         tr = "Pencere",
         zh_TW = "視窗"
@@ -4700,6 +4705,7 @@ MojoSetup.localization = {
         pt_BR = "Sobre %0",
         ro = "Despre %0",
         ru = "О %0",
+        sl = "O %0",
         sv = "Om %0",
         tr = "%0 Hakkında",
         zh_TW = "關於 %0"
@@ -4731,6 +4737,7 @@ MojoSetup.localization = {
         pt_BR = "Esconder %0",
         ro = "Ascunde %0",
         ru = "Скрыть %0",
+        sl = "Skrij %0",
         sv = "Dölj %0",
         tr = "%0 Gizlensin",
         zh_TW = "隱藏 %0"
@@ -4761,6 +4768,7 @@ MojoSetup.localization = {
         pt_BR = "Esconder os outros",
         ro = "Ascunde-le pe celelalte",
         ru = "Скрыть остальные",
+        sl = "Skrij ostale",
         sv = "Dölj övriga",
         tr = "Diğerlerini Gizle",
         zh_TW = "隱藏其它"
@@ -4792,6 +4800,7 @@ MojoSetup.localization = {
         pt_BR = "Sair do %0",
         ro = "Ieşire %0",
         ru = "Выйти из %0",
+        sl = "Zapri %0",
         sv = "Avsluta %0",
         tr = "%0 Çıkış",
         zh_TW = "結束 %0"
@@ -4822,6 +4831,7 @@ MojoSetup.localization = {
         pt_BR = "Mostrar tudo",
         ro = "Arată tot",
         ru = "Показать все",
+        sl = "Prikaži vse",
         sv = "Visa alla",
         tr = "Hepsini Göster",
         zh_TW = "顯示全部"
@@ -4854,6 +4864,7 @@ MojoSetup.localization = {
         pt_BR = "Serviços",
         ro = "Servicii",
         ru = "Службы",
+        sl = "Storitve",
         sv = "Tjänster",
         tr = "Hizmetler",
         zh_TW = "服務"
@@ -4884,6 +4895,7 @@ MojoSetup.localization = {
         pt_BR = "Minimizar",
         ro = "Minimizează",
         ru = "Свернуть",
+        sl = "Pomanjšaj",
         sv = "Minimera",
         tr = "Küçült",
         zh_TW = "最小化"
@@ -4914,6 +4926,7 @@ MojoSetup.localization = {
         pt_BR = "Aumentar",
         ro = "Mărire",
         ru = "Масштабирование",
+        sl = "Povečaj",
         sv = "Maximera",
         tr = "Büyüt",
         zh_TW = "縮放"
@@ -4944,6 +4957,7 @@ MojoSetup.localization = {
         pt_BR = "Trazer tudo para a frente",
         ro = "Afişează toate în primplan",
         ru = "Вынести всё на передний план",
+        sl = "Prenesi vse v ospredje",
         sv = "Ta fram alla",
         tr = "Hepsini Öne Getir",
         zh_TW = "將所有視窗移至最上層"
