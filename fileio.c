@@ -541,13 +541,11 @@ static int64 MojoInput_xz_read(MojoInput *io, void *buf, uint32 bufsize)
         const uint32 before = info->stream.total_out;
         lzma_ret rc;
 
-        lzma_action action = LZMA_FINISH;
         if (info->stream.avail_in == 0)
         {
             int64 br = origio->length(origio) - origio->tell(origio);
             if (br > 0)
             {
-                action = LZMA_RUN;
                 if (br > XZ_READBUFSIZE)
                     br = XZ_READBUFSIZE;
 

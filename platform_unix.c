@@ -955,8 +955,9 @@ void *MojoPlatform_dlopen(const uint8 *img, size_t len)
     void *retval = NULL;
     int i = 0;
 
-    if (dlopen == NULL)   // weak symbol on older Mac OS X
-        return NULL;
+    #if PLATFORM_MACOSX
+    if (dlopen == NULL) return NULL;  // weak symbol on older Mac OS X
+    #endif
 
     #ifndef P_tmpdir  // glibc defines this, maybe others.
     #define P_tmpdir NULL
