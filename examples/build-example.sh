@@ -188,9 +188,11 @@ done
 rm -f "$BASEDIR/image/scripts/config.luac"
 ./mojoluac $LUASTRIPOPT -o "$BASEDIR/image/scripts/config.luac" "$BASEDIR/scripts/config.lua"
 
-# Don't want the example app_localization...use our's instead.
-rm -f "$BASEDIR/image/scripts/app_localization.luac"
-./mojoluac $LUASTRIPOPT -o "$BASEDIR/image/scripts/app_localization.luac" "$BASEDIR/scripts/app_localization.lua"
+# Don't want the example app_localization...use ours instead if it exists.
+if [ -f "$BASEDIR/scripts/app_localization.lua" ]; then
+    rm -f "$BASEDIR/image/scripts/app_localization.luac"
+    ./mojoluac $LUASTRIPOPT -o "$BASEDIR/image/scripts/app_localization.luac" "$BASEDIR/scripts/app_localization.lua"
+fi
 
 # Fill in the rest of the Base Archive...
 cd "$BASEDIR"
