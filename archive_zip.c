@@ -173,7 +173,8 @@ void __PHYSFS_sort(void *entries, size_t max,
      * Quicksort w/ Bubblesort fallback algorithm inspired by code from here:
      *   http://www.cs.ubc.ca/spider/harrison/Java/sorting-demo.html
      */
-    __PHYSFS_quick_sort(entries, 0, max - 1, cmpfn, swapfn);
+    if (max > 0)
+        __PHYSFS_quick_sort(entries, 0, max - 1, cmpfn, swapfn);
 } /* __PHYSFS_sort */
 
 
@@ -1513,6 +1514,8 @@ static int zip_parse_end_of_central_dir(void *in, ZIPinfo *info,
     /* total number of entries in the central dir */
     BAIL_IF_MACRO(!readui16(in, &entryCount16), ERRPASS, 0);
     BAIL_IF_MACRO(ui16 != entryCount16, PHYSFS_ERR_CORRUPT, 0);
+
+    info->entryCount = entryCount16;
 
     /* size of the central directory */
     BAIL_IF_MACRO(!readui32(in, &ui32), NULL, 0);
