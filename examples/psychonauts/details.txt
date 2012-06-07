@@ -1,0 +1,2 @@
+APPTITLE="Psychonauts Installer"
+DATAFILE="data/PsychonautsData2.pkg"
