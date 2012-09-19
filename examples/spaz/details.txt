@@ -1,0 +1,3 @@
+APPTITLE="Space Pirates and Zombies Installer"
+DATAFILE="data/game/data/audio/chatter.zom"
+
