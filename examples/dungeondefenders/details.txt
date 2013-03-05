@@ -1,0 +1,3 @@
+APPTITLE="Dungeon Defenders Installer"
+DATAFILE="data/UDKGame/Config/DefaultDunDef.ini"
+
