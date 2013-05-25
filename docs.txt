@@ -804,19 +804,39 @@ Here are the elements, and the attributes they can possess.
 
    filter (no default, mustBeFunction)
 
-    This is a function that takes one argument, a string that represents the
-    path of a single file relative to the root of the installation destination.
+    This is a function that takes two arguments, a string that represents the
+    path of a single file relative to the root of the installation destination
+    and a table with additional information about the file.
+
+    The table has the following fields:
+
+    type (string)
+    The type of the file.
+    Valid types are "file", "dir", "symlink" and "unknown".
+
+    filesize (number)
+    The size of the file in bytes.
+
+    linkdest (string)
+    The destination of the symbolic link if the file is of type "symlink" otherwise it's nil.
+    
+    filename (string)
+    The file name.
+    
     This function may return nil to choose not to install this file, which is
     useful for culling files from an archive, or a string that represents a
     new destination for the file, which is useful for renaming some files
     on-the-fly:
 
-         filter = function(dest)
+         filter = function(dest, ent)
             if string.match(dest, ".exe$") then
                 return nil   -- skip Windows .exe files on Unix.
             end
             if dest == "SOMEFILE.TXT" then
                 return "somefile.txt"  -- force this to lowercase.
+            end
+            if ent.type == "dir" then
+                return dest, "0755" -- make sure directories are created with the proper permission
             end
             return dest    -- everything else can go through as-is.
          end
