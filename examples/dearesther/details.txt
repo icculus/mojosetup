@@ -1,0 +1,4 @@
+APPTITLE="Dear Esther Installer"
+DATAFILE="data/dearesther/dearesther.fgd"
+
+
