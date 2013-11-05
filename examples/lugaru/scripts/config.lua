@@ -1,4 +1,4 @@
-local TOTAL_INSTALL_SIZE = 29967957;
+local TOTAL_INSTALL_SIZE = 37997185;
 
 local _ = MojoSetup.translate
 
@@ -7,7 +7,7 @@ Setup.Package
     vendor = "wolfire.com",
     id = "lugaru",
     description = _("Lugaru: The Rabbit's Foot"),
-    version = "1.0c",
+    version = "1.0d",
     splash = "splash.bmp",
     superuser = false,
     write_manifest = true,
