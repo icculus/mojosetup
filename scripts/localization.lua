@@ -3,8 +3,8 @@
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version hg-861:f45ed64c9217 ...
---  on 2013-06-08 13:13:39-0400
+-- This file was generated with po2localization.pl, version hg-867:3499b0a751e0 ...
+--  on 2013-11-05 14:46:20-0500
 --
 -- Your own installer's localizations go into app_localization.lua instead.
 -- If you want to add strings to be translated to this file, contact Ryan
@@ -15,8 +15,8 @@
 --
 -- ...and that work eventually ends up in this file.
 --
--- X-Launchpad-Export-Date: 2013-06-08 17:12+0000
--- X-Generator: Launchpad (build 16667)
+-- X-Launchpad-Export-Date: 2013-11-05 19:40+0000
+-- X-Generator: Launchpad (build 16820)
 
 MojoSetup.languages = {
     en_US = "English (United States)",
@@ -127,7 +127,7 @@ MojoSetup.localization = {
         nds = "HINWEIS: %0",
         nl = "OPMERKING: %0\n[Toets enter]",
         nn = "Notis: %0\n[trykk enter]",
-        pl = "UWAGA: %0",
+        pl = "UWAGA: %0\n[wciśnij enter]",
         pt = "AVISO: %0\n[pressione enter]",
         pt_BR = "AVISO: %0\n[pressione enter]",
         ro = "ATENŢIE: %0\n[apasă enter]",
