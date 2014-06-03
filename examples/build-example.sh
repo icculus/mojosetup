@@ -113,7 +113,7 @@ fi
 cd "$BASEDIR"
 
 # this is a little nasty, but it works!
-TOTALINSTALL=`du -sb data |perl -w -pi -e 's/\A(\d+)\s+data\Z/$1/;'`
+TOTALINSTALL=`du -sb data |perl -w -p -e 's/\A(\d+)\s+data\Z/$1/;'`
 perl -w -pi -e "s/\A\s*(local TOTAL_INSTALL_SIZE)\s*\=\s*\d+\s*;\s*\Z/\$1 = $TOTALINSTALL;\n/;" scripts/config.lua
 
 # Clean up previous run, build fresh dirs for Base Archive.
