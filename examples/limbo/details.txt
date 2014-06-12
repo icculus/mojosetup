@@ -1,0 +1,4 @@
+APPTITLE="LIMBO Installer"
+DATAFILE="data/limbo_mac_runtime.pkg"
+
+
