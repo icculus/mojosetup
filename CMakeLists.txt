@@ -24,7 +24,7 @@ ELSE(NOT BEOS)
     PROJECT(MojoSetup CXX)
 ENDIF(NOT BEOS)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
 
 # !!! FIXME: correct this to new policy and bump minimum cmake requirement.
 IF(COMMAND CMAKE_POLICY)
