@@ -835,7 +835,7 @@ ADD_CUSTOM_TARGET(skeleton
     COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/guis -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
     COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/data -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
     COMMAND ${CMAKE_COMMAND} -DFROM=${CMAKE_SOURCE_DIR}/scripts/*.lua -DTO=${CMAKE_BINARY_DIR}/skeleton/scripts -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
-    COMMAND ${CMAKE_COMMAND} -DFROM=${CMAKE_SOURCE_DIR}/*mojosetupgui*.* -DTO=${CMAKE_BINARY_DIR}/skeleton/guis -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
+    COMMAND ${CMAKE_COMMAND} -DFROM=${CMAKE_BINARY_DIR}/*mojosetupgui*.* -DTO=${CMAKE_BINARY_DIR}/skeleton/guis -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
     COMMAND ${CMAKE_COMMAND} -DFROM=${MOJOSETUP_BINARY_LOCATION} -DTO=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
 )
 
