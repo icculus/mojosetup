@@ -826,17 +826,17 @@ ADD_EXECUTABLE(make_self_extracting misc/make_self_extracting.c)
 
 # For cobbling together a skeleton installer...
 
-# !!! FIXME: all of these custom .cmake files are built-in commands in CMake 2.6.(4?) ...!
+# !!! FIXME: get rid of the custom misc/cp.cmake file, if CMake ever adds wildcard support for the 'copy' command
 ADD_CUSTOM_TARGET(skeleton
     COMMENT "Assembling Skeleton..."
-    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/rm_recurse.cmake
-    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
-    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/scripts -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
-    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/guis -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
-    COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_BINARY_DIR}/skeleton/data -P ${CMAKE_SOURCE_DIR}/misc/mkdir.cmake
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/skeleton
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/skeleton
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/skeleton/scripts
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/skeleton/guis
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/skeleton/data
     COMMAND ${CMAKE_COMMAND} -DFROM=${CMAKE_SOURCE_DIR}/scripts/*.lua -DTO=${CMAKE_BINARY_DIR}/skeleton/scripts -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
     COMMAND ${CMAKE_COMMAND} -DFROM=${CMAKE_BINARY_DIR}/*mojosetupgui*.* -DTO=${CMAKE_BINARY_DIR}/skeleton/guis -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
-    COMMAND ${CMAKE_COMMAND} -DFROM=${MOJOSETUP_BINARY_LOCATION} -DTO=${CMAKE_BINARY_DIR}/skeleton -P ${CMAKE_SOURCE_DIR}/misc/cp.cmake
+    COMMAND ${CMAKE_COMMAND} -E copy ${MOJOSETUP_BINARY_LOCATION} ${CMAKE_BINARY_DIR}/skeleton
 )
 
 ADD_DEPENDENCIES(skeleton ${MOJOSETUP_TARGETS})
