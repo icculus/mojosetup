@@ -303,7 +303,6 @@ SET(MOJOLUAC_SRCS
     ${LUA_PARSER_SRCS}
     ${LUA_DIR}/src/luac.c
     ${LUA_DIR}/src/linit.c
-    ${LUA_DIR}/src/lctype.c
     ${LUA_DIR}/src/ldblib.c
     ${LUA_DIR}/src/liolib.c
     ${LUA_DIR}/src/lmathlib.c
