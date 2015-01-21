@@ -1161,7 +1161,7 @@ int MojoSetup_testArchiveCode(int argc, char **argv)
                         } // if
 
                         pos = input->tell(input);
-                        if(filesize -1  != pos)
+                        if(filesize -1 != pos)
                         {
                             fprintf(stderr, "position should be %d after seek(), is: %d\n",
                             		(int) filesize - 1, (int) pos);
