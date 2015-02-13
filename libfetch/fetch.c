@@ -85,9 +85,9 @@ FILE *
 #endif
 fetchXGet(struct url *URL, struct url_stat *us, const char *flags)
 {
-	int direct;
+	//int direct;
 
-	direct = CHECK_FLAG('d');
+	//direct = CHECK_FLAG('d');
 	if (us != NULL) {
 		us->size = -1;
 		us->atime = us->mtime = 0;
@@ -137,9 +137,9 @@ fetchGet(struct url *URL, const char *flags)
 FILE *
 fetchPut(struct url *URL, const char *flags)
 {
-	int direct;
+	//int direct;
 
-	direct = CHECK_FLAG('d');
+	//direct = CHECK_FLAG('d');
 	if (strcasecmp(URL->scheme, SCHEME_FILE) == 0)
 		return (fetchPutFile(URL, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
@@ -159,9 +159,9 @@ fetchPut(struct url *URL, const char *flags)
 int
 fetchStat(struct url *URL, struct url_stat *us, const char *flags)
 {
-	int direct;
+	//int direct;
 
-	direct = CHECK_FLAG('d');
+	//direct = CHECK_FLAG('d');
 	if (us != NULL) {
 		us->size = -1;
 		us->atime = us->mtime = 0;
@@ -185,9 +185,9 @@ fetchStat(struct url *URL, struct url_stat *us, const char *flags)
 struct url_ent *
 fetchList(struct url *URL, const char *flags)
 {
-	int direct;
+	//int direct;
 
-	direct = CHECK_FLAG('d');
+	//direct = CHECK_FLAG('d');
 	if (strcasecmp(URL->scheme, SCHEME_FILE) == 0)
 		return (fetchListFile(URL, flags));
 	else if (strcasecmp(URL->scheme, SCHEME_FTP) == 0)
