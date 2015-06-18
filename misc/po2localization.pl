@@ -37,6 +37,7 @@ foreach (@ARGV) {
 
     my $comment = '';
     my $currentlang = '';
+    my $fuzzy;
 
     while (<POIO>) {
         chomp;
@@ -50,6 +51,10 @@ foreach (@ARGV) {
                 $txt = " $txt" if ($comment ne '');
                 $comment .= "    -- $txt\n";
             }
+            next;
+        }
+        if (/\A\#,.*\bfuzzy\b/) {
+            $fuzzy = 1;
             next;
         }
 
@@ -108,6 +113,7 @@ foreach (@ARGV) {
                         die("unexpected line: $_\n");
                     }
                 }
+                $msgstr = '' if ($fuzzy);
 
                 if ($template) {
                     push @strings, $msgid;  # This is a list, to keep original order.
@@ -117,6 +123,7 @@ foreach (@ARGV) {
                     $msgstrs{$currentlang}{$msgid} = $msgstr;
                 }
             }
+            $fuzzy = undef;
         }
     }
 
