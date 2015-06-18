@@ -3370,7 +3370,7 @@ static stbi_uc *psd_load(int *x, int *y, int *comp, int req_comp)
 		//     Else if n is 128, noop.
 		// Endloop
 
-		// The RLE-compressed data is preceeded by a 2-byte data count for each row in the data,
+		// The RLE-compressed data is preceded by a 2-byte data count for each row in the data,
 		// which we're going to just skip.
 		skip( h * channelCount * 2 );
 

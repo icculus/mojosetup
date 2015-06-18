@@ -290,7 +290,7 @@ const MojoGui *MojoGuiPlugin_gtkplus2(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_www(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_cocoa(int rev, const MojoSetupEntryPoints *e);
 
-// !!! FIXME: Qt? KDE? Gnome? Console? wxWidgets?
+// !!! FIXME: Qt? KDE? GNOME? Console? wxWidgets?
 
 #ifdef __cplusplus
 }

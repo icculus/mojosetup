@@ -89,7 +89,7 @@ install
     name of the directory file is used to identify the submenu.
 
     If multiple directory files are provided each file will represent a submenu
-    within the menu that preceeds it, creating a nested menu hierarchy
+    within the menu that precedes it, creating a nested menu hierarchy
     (sub-sub-menus). The menu entries themselves will be added to the last
     submenu.
 
@@ -538,7 +538,7 @@ check_vendor_prefix()
 
 check_output_file()
 {
-    # if the file exists, check if it is writeable
+    # if the file exists, check if it is writable
     # if it does not exists, check if we are allowed to write on the directory
     if [ -e "$1" ]; then
         if [ ! -w "$1" ]; then
@@ -776,7 +776,7 @@ update_submenu()
     fi
 
     if [ -z "$menu_file" ] ; then
-        # Work around for SUSE/gnome 2.12 to pick up new ~/.local/share/applications
+        # Workaround for SUSE/GNOME 2.12 to pick up new ~/.local/share/applications
         save_umask=`umask`
         umask $my_umask
 
@@ -788,7 +788,7 @@ update_submenu()
     fi
 
     if [ $action = "install" -a -f "/etc/xdg/menus/gnome-applications.menu" ] ; then
-        # Work around for Debian Gnome
+        # Workaround for Debian GNOME
         gnome_xdg_dir=`echo "$xdg_dir" | sed -e 's^/applications-merged^/gnome-applications-merged^'`
         if [ ! -e "$gnome_xdg_dir" ] ; then
             DEBUG 1 "Debian Workaround: Link '$xdg_dir' to '$gnome_xdg_dir'"
@@ -797,7 +797,7 @@ update_submenu()
         fi
     fi
     if [ $action = "install" -a -f "/etc/mandrake-release" ] ; then
-        # Work around for Mandriva 2006
+        # Workaround for Mandriva 2006
         mandrake_xdg_dir=`echo "$xdg_dir" | sed -e 's^/applications-merged^/applications-mdk-merged^'`
         if [ ! -e "$mandrake_xdg_dir" ] ; then
             DEBUG 1 "Mandriva Workaround: Link '$xdg_dir' to '$mandrake_xdg_dir'"
@@ -806,7 +806,7 @@ update_submenu()
         fi
     fi
     if [ $action = "install" -a x"$mode" = x"user" -a -d "/etc/xdg/menus/kde-applications-merged" ] ; then
-        # Work around for Fedora Core 5 + patched KDE
+        # Workaround for Fedora Core 5 + patched KDE
         kde_xdg_dir=`echo "$xdg_dir" | sed -e 's^/applications-merged^/kde-applications-merged^'`
         if [ ! -e "$kde_xdg_dir" ] ; then
             DEBUG 1 "Fedora Workaround: Link '$xdg_dir' to '$kde_xdg_dir'"
@@ -815,7 +815,7 @@ update_submenu()
         fi
     fi        
     if [ $action = "install" -a x"$mode" = x"system" -a -d "/etc/xdg/menus/kde-applications-merged" -a ! -d "/etc/xdg/menus/applications-merged" ] ; then
-        # Work around for Kubuntu 6.06
+        # Workaround for Kubuntu 6.06
         kde_xdg_dir=`echo "$xdg_dir" | sed -e 's^/applications-merged^/kde-applications-merged^'`
         DEBUG 1 "Kubuntu Workaround: Link '$xdg_dir' to 'kde-applications-merged'"
         eval 'ln -s "kde-applications-merged" "$xdg_dir"'$xdg_redirect_output
@@ -1021,7 +1021,7 @@ while [ $# -gt 0 ] ; do
         case "$parm" in
            *.directory)
               if [ -n "$desktop_files" ] ; then
-                  exit_failure_syntax "'$parm' must preceed any *.desktop file"
+                  exit_failure_syntax "'$parm' must precede any *.desktop file"
               fi
               directory_files="$directory_files $parm"
               ;;
@@ -1087,7 +1087,7 @@ if [ -n "$menu_name" ] ; then
         update_submenu "$menu_name.menu"
     fi
 else
-    # Work around for SUSE/gnome 2.12 to pick up new ~/.local/share/applications
+    # Workaround for SUSE/GNOME 2.12 to pick up new ~/.local/share/applications
     if [ x"$mode" = x"user" ] ; then
         update_submenu
     fi

@@ -433,7 +433,7 @@ Modding:
   defaultproperties because otherwise autodownloaded mods have no
   way for their localized/config variables to work.
 - Added Get/SetSpecialValue() stubs to Object to allow mods to
-  expose values that can be modified without creating a dependancy.
+  expose values that can be modified without creating a dependency.
 - Added support for custom gametypes showing up on their own
   in the server browser. The game class needs to implement
   UpdateGameSettings() and call GameSettings.SetStringSettingValue() to

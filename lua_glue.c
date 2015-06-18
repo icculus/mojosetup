@@ -568,7 +568,7 @@ static int luahook_format(lua_State *L)
 
 
 // Use this instead of Lua's error() function if you don't have a
-//  programatic error, so you don't get stack callback stuff:
+//  programmatic error, so you don't get stack callback stuff:
 // MojoSetup.fatal("You need the base game to install this expansion pack.")
 //  This will also handle cleanup of half-written installations.
 //  Doesn't actually return.

@@ -12,7 +12,7 @@
  *  have to rebuild...this file's checksum changes every time you build it
  *  due to the __DATE__ and __TIME__ macros.
  *
- * The makefile will rebuild this file everytime it relinks an executable
+ * The makefile will rebuild this file every time it relinks an executable
  *  so that we'll always have a unique build string.
  *
  * APPNAME and APPREV need to be predefined in the build system.

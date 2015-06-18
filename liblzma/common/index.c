@@ -166,7 +166,7 @@ struct lzma_index_s {
 	lzma_vli index_list_size;
 
 	/// How many Records to allocate at once in lzma_index_append().
-	/// This defaults to INDEX_GROUP_SIZE but can be overriden with
+	/// This defaults to INDEX_GROUP_SIZE but can be overridden with
 	/// lzma_index_prealloc().
 	size_t prealloc;
 
@@ -1220,7 +1220,7 @@ lzma_index_iter_locate(lzma_index_iter *iter, lzma_vli target)
 
 	// Use binary search to locate the exact Record. It is the first
 	// Record whose uncompressed_sum is greater than target.
-	// This is because we want the rightmost Record that fullfills the
+	// This is because we want the rightmost Record that fulfills the
 	// search criterion. It is possible that there are empty Blocks;
 	// we don't want to return them.
 	size_t left = 0;

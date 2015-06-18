@@ -1020,7 +1020,7 @@ static int zip_version_does_symlinks(PHYSFS_uint32 version)
     switch (hosttype)
     {
             /*
-             * These are the platforms that can NOT build an archive with
+             * These are the platforms that CANNOT build an archive with
              *  symlinks, according to the Info-ZIP project.
              */
         case 0:  /* FS_FAT_  */
@@ -1671,7 +1671,7 @@ static PHYSFS_sint64 zip_find_start_of_dir(ZIPinfo *info, const char *path,
                 rc = 1;
             else 
             {
-                if (stop_on_first_find) /* Just checking dir's existance? */
+                if (stop_on_first_find) /* Just checking dir's existence? */
                     return(middle);
 
                 if (name[dlen + 1] == '\0') /* Skip initial dir entry. */
@@ -1694,7 +1694,7 @@ static PHYSFS_sint64 zip_find_start_of_dir(ZIPinfo *info, const char *path,
 
 
 /*
- * Moved to seperate function so we can use alloca then immediately throw
+ * Moved to separate function so we can use alloca then immediately throw
  *  away the allocated stack space...
  */
 static void doEnumCallback(PHYSFS_EnumFilesCallback cb, void *callbackdata,

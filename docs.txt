@@ -899,7 +899,7 @@ Here are the elements, and the attributes they can possess.
  Setup.DesktopMenuItem:
 
   This element specifies a menu item that will be installed in the system
-  desktop menu: this might be the "Applications" dropdown in the Gnome panel,
+  desktop menu: this might be the "Applications" dropdown in the GNOME panel,
   or the "Start" bar on Windows, for example. This can be a child of
   Setup.Option (in which case it is only considered for installation if the
   option itself is too), or Setup.Package (in which case it is always
@@ -1203,7 +1203,7 @@ Your config file is a Lua script, and as such, has access to all of Lua's
     either a "YES", "NO", "ALWAYS" or "NEVER" button. Returns the string
     "yes", "no", "always", or "never". (title) is the message box's title.
     (defval) is an optional boolean value: whether the default action should
-    be "YES" or "NO" ... "always" and "never" can not be the default, since
+    be "YES" or "NO" ... "always" and "never" cannot be the default, since
     these tend to be destructive actions that the user should consciously
     choose to do. If (defval) isn't specified, it defaults to false.
 

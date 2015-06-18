@@ -68,7 +68,7 @@ boolean MojoPlatform_rename(const char *src, const char *dst);
 
 // Determine if dir/fname exists in the native filesystem. It doesn't matter
 //  if it's a directory, file, symlink, etc, we're just looking for the
-//  existance of the entry itself. (fname) may be NULL, in which case,
+//  existence of the entry itself. (fname) may be NULL, in which case,
 //  (dir) contains the whole path, otherwise, the platform layer needs to
 //  build the path: (on Unix: dir/path, on Windows: dir\\path, etc).
 //  This is a convenience thing for the caller.
@@ -268,7 +268,7 @@ boolean MojoPlatform_spawnTerminal(void);
 //  for input, etc. Pumping the GUI event queue happens elsewhere, not here.
 void MojoPlatform_sleep(uint32 ticks);
 
-// Put a line of text to the the system log, whatever that might be on a
+// Put a line of text to the system log, whatever that might be on a
 //  given platform. (str) is a complete line, but won't end with any newline
 //  characters. You should supply if needed.
 void MojoPlatform_log(const char *str);

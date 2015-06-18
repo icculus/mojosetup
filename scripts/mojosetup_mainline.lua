@@ -938,7 +938,7 @@ end
 local function install_control_app(desc, key)
     local dst, src
 
-    -- We copy the installer binary itself, and any auxillary files it needs,
+    -- We copy the installer binary itself, and any auxiliary files it needs,
     --  like this Lua script, to a metadata directory in the installation.
     -- Unfortunately, the binary might be a self-extracting installer that
     --  has gigabytes of now-unnecessary data appended to it, so we need to
@@ -1197,7 +1197,7 @@ local function get_productkey(thisstage, maxstage, desc, fmt, verify, dest, mani
     local retval = nil
 
     -- Retrieve the previous entry, in case we're stepping back over a stage.
-    --  This lets the user edit it or jsut move forward without typing the
+    --  This lets the user edit it or just move forward without typing the
     --  whole thing again.
     if MojoSetup.productkeys[desc] ~= nil then
         userkey = MojoSetup.productkeys[desc].user_productkey

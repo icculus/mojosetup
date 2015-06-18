@@ -255,7 +255,7 @@ typedef enum {
 		 * Encoder: Encode as much input as possible. Some internal
 		 * buffering will probably be done (depends on the filter
 		 * chain in use), which causes latency: the input used won't
-		 * usually be decodeable from the output of the same
+		 * usually be decodable from the output of the same
 		 * lzma_code() call.
 		 *
 		 * Decoder: Decode as much input as possible and produce as
