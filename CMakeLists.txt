@@ -497,7 +497,7 @@ ENDIF(MACOSX)
 IF(UNIX)
 IF(NOT BEOS)
 IF(NOT MACOSX)
-FIND_PACKAGE(GTK2 REQUIRED gtk)
+FIND_PACKAGE(GTK2 gtk)
 # In order to reduce the GTK2 library dependencies at link time, we only link against 'gtk-x11-2.0'.
 # This is more portable, as the dynamic linker/loader will take care of the other library dependencies at run time.
 SET(LIBGTK_LINK_FLAGS "-lgtk-x11-2.0")
