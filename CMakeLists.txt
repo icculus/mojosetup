@@ -498,12 +498,12 @@ IF(UNIX)
 IF(NOT BEOS)
 IF(NOT MACOSX)
 FIND_PACKAGE(GTK2 COMPONENTS gtk)
-# In order to reduce the GTK2 library dependencies at link time, we only link against 'gtk-x11-2.0'.
-# This is more portable, as the dynamic linker/loader will take care of the other library dependencies at run time.
-SET(LIBGTK_LINK_FLAGS "-lgtk-x11-2.0")
 IF(NOT GTK2_FOUND)
     MESSAGE(STATUS "Can't find GTK+v2 headers/libraries. Can't build GTK+ GUI.")
 ELSE(NOT GTK2_FOUND)
+    # In order to reduce the GTK2 library dependencies at link time, we only link against 'gtk-x11-2.0'.
+    # This is more portable, as the dynamic linker/loader will take care of the other library dependencies at run time.
+    SET(LIBGTK_LINK_FLAGS "-lgtk-x11-2.0")
     OPTION(MOJOSETUP_GUI_GTKPLUS2 "Enable GTK+ 2.0 GUI" TRUE)
     IF(MOJOSETUP_GUI_GTKPLUS2)
         ADD_DEFINITIONS(-DSUPPORT_GUI_GTKPLUS2=1)
