@@ -157,6 +157,8 @@ static boolean MojoArchive_tar_enumerate(MojoArchive *ar)
 #define TAR_TYPE_BLOCKDEV '4'
 #define TAR_TYPE_DIRECTORY '5'
 #define TAR_TYPE_FIFO '6'
+#define TAR_TYPE_LONGLINK 'K'
+#define TAR_TYPE_LONGNAME 'L'
 
 static boolean is_ustar(const uint8 *block)
 {
@@ -205,12 +207,15 @@ static const MojoArchiveEntry *MojoArchive_tar_enumNext(MojoArchive *ar)
     if (info->input != NULL)
         fatal("BUG: tar entry still open on new enumeration");
 
+get_next_block:
+
     if (!ar->io->seek(ar->io, info->nextEnumPos))
         return NULL;
 
     // Find a non-zero block of data. Tarballs have two 512 blocks filled with
     //  null bytes at the end of the archive, but you can cat tarballs
     //  together, so you can't treat them as EOF indicators. Just skip them.
+    zeroes = true;
     while (zeroes)
     {
         if (ar->io->read(ar->io, block, sizeof (block)) != sizeof (block))
@@ -222,25 +227,50 @@ static const MojoArchiveEntry *MojoArchive_tar_enumNext(MojoArchive *ar)
 
     ustar = is_ustar(block);
 
+    type = block[TAR_TYPE];
+
+    if ((type == TAR_TYPE_LONGNAME) || (type == TAR_TYPE_LONGLINK))
+    {
+        int64 filenameLength = octal_convert(&block[TAR_SIZE], TAR_SIZELEN);
+        char* filename = (char *) xmalloc(filenameLength + 1);
+        if (!ar->io->read(ar->io, filename, filenameLength))
+            return NULL;
+        filename[filenameLength] = '\0';
+
+        if (type == TAR_TYPE_LONGLINK)
+            ar->prevEnum.linkdest = filename;
+        else
+            ar->prevEnum.filename = filename;
+
+        info->nextEnumPos += 512 + filenameLength;
+        if (filenameLength % 512)
+            info->nextEnumPos += 512 - (filenameLength % 512);
+
+        goto get_next_block;
+    }
+
+    if (!ar->prevEnum.filename)
+    {
+        // We count on (scratch) being zeroed out here!
+        // prefix of filename is at the end for legacy compat.
+        if (ustar)
+            memcpy(scratch, &block[TAR_FNAMEPRE], TAR_FNAMEPRELEN);
+        fnamelen = strlen((const char *) scratch);
+        memcpy(&scratch[fnamelen], &block[TAR_FNAME], TAR_FNAMELEN);
+        fnamelen += strlen((const char *) &scratch[fnamelen]);
+
+        if (fnamelen == 0)
+            return NULL;   // corrupt file.  !!! FIXME: fatal() ?
+
+        ar->prevEnum.filename = xstrdup((const char *) scratch);
+    }
+
     ar->prevEnum.perms = (uint16) octal_convert(&block[TAR_MODE], TAR_MODELEN);
     ar->prevEnum.filesize = octal_convert(&block[TAR_SIZE], TAR_SIZELEN);
     info->curFileStart = info->nextEnumPos + 512;
     info->nextEnumPos += 512 + ar->prevEnum.filesize;
     if (ar->prevEnum.filesize % 512)
         info->nextEnumPos += 512 - (ar->prevEnum.filesize % 512);
-
-    // We count on (scratch) being zeroed out here!
-    // prefix of filename is at the end for legacy compat.
-    if (ustar)
-        memcpy(scratch, &block[TAR_FNAMEPRE], TAR_FNAMEPRELEN);
-    fnamelen = strlen((const char *) scratch);
-    memcpy(&scratch[fnamelen], &block[TAR_FNAME], TAR_FNAMELEN);
-    fnamelen += strlen((const char *) &scratch[fnamelen]);
-
-    if (fnamelen == 0)
-        return NULL;   // corrupt file.  !!! FIXME: fatal() ?
-
-    ar->prevEnum.filename = xstrdup((const char *) scratch);
 
     type = block[TAR_TYPE];
     if (type == 0)  // some archivers do the file type as 0 instead of '0'.
@@ -265,9 +295,12 @@ static const MojoArchiveEntry *MojoArchive_tar_enumNext(MojoArchive *ar)
     else if (type == TAR_TYPE_SYMLINK)
     {
         ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
-        memcpy(scratch, &block[TAR_LINKNAME], TAR_LINKNAMELEN);
-        scratch[TAR_LINKNAMELEN] = '\0';  // just in case.
-        ar->prevEnum.linkdest = xstrdup((const char *) scratch);
+        if(!ar->prevEnum.linkdest)
+        {
+            memcpy(scratch, &block[TAR_LINKNAME], TAR_LINKNAMELEN);
+            scratch[TAR_LINKNAMELEN] = '\0';  // just in case.
+            ar->prevEnum.linkdest = xstrdup((const char *) scratch);
+        }
     } // else if
 
     return &ar->prevEnum;
