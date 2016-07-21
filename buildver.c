@@ -27,7 +27,11 @@
 #error Please define APPREV in the build system.
 #endif
 
-#if (defined __GNUC__)
+#if (defined __clang__)
+#   define VERSTR2(x) #x
+#   define VERSTR(x) VERSTR2(x)
+#   define COMPILERVER " " VERSTR(__clang_major__) "." VERSTR(__clang_minor__) "." VERSTR(__clang_patchlevel__)
+#elif (defined __GNUC__)
 #   define VERSTR2(x) #x
 #   define VERSTR(x) VERSTR2(x)
 #   define COMPILERVER " " VERSTR(__GNUC__) "." VERSTR(__GNUC_MINOR__) "." VERSTR(__GNUC_PATCHLEVEL__)
@@ -50,7 +54,11 @@
 #endif
 
 #ifndef COMPILER
-  #if (defined __GNUC__)
+  #if (defined __clang__) && defined(__apple_build_version__)  // Apple reports version differently than LLVM Clang, note difference here.
+    #define COMPILER "Apple Clang"
+  #elif (defined __clang__)
+    #define COMPILER "Clang"
+  #elif (defined __GNUC__)
     #define COMPILER "GCC"
   #elif (defined _MSC_VER)
     #define COMPILER "Visual Studio"
