@@ -372,7 +372,7 @@ typedef struct MojoSetupEntryPoints
     char **(*splitText)(const char *text, int scrw, int *_count, int *_w);
     boolean (*isValidProductKey)(const char *f, const char *k);
 } MojoSetupEntryPoints;
-extern MojoSetupEntryPoints GEntryPoints;
+extern const MojoSetupEntryPoints GEntryPoints;
 
 
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS

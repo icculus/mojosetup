@@ -25,7 +25,7 @@ int MojoSetup_testNetworkCode(int argc, char **argv);
 
 
 uint8 scratchbuf_128k[128 * 1024];
-MojoSetupEntryPoints GEntryPoints =
+const MojoSetupEntryPoints GEntryPoints =
 {
     xmalloc,
     xrealloc,
