@@ -5,6 +5,8 @@
 #  This file written by Ryan C. Gordon.
 
 
+# !!! FIXME: modernize this file.
+
 
 # The "BINARY SIZE +=" comments note about how much bulk, in kilobytes, a
 #  given option adds to the binary on x86 Linux (built with gcc 3.3.6
@@ -501,26 +503,61 @@ IF(NOT BEOS)
 IF(NOT MACOSX)
 FIND_PACKAGE(GTK2 COMPONENTS gtk)
 IF(NOT GTK2_FOUND)
-    MESSAGE(STATUS "Can't find GTK+v2 headers/libraries. Can't build GTK+ GUI.")
+    MESSAGE(STATUS "Can't find GTK+v2 headers/libraries. Can't build GTK+-2.0 GUI.")
 ELSE(NOT GTK2_FOUND)
     # In order to reduce the GTK2 library dependencies at link time, we only link against 'gtk-x11-2.0'.
     # This is more portable, as the dynamic linker/loader will take care of the other library dependencies at run time.
-    SET(LIBGTK_LINK_FLAGS "-lgtk-x11-2.0")
+    SET(LIBGTK2_LINK_FLAGS "-lgtk-x11-2.0")
     OPTION(MOJOSETUP_GUI_GTKPLUS2 "Enable GTK+ 2.0 GUI" TRUE)
     IF(MOJOSETUP_GUI_GTKPLUS2)
         ADD_DEFINITIONS(-DSUPPORT_GUI_GTKPLUS2=1)
-        INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
-        OPTION(MOJOSETUP_GUI_GTKPLUS2_STATIC "Statically link GTK+ GUI" FALSE)
+        OPTION(MOJOSETUP_GUI_GTKPLUS2_STATIC "Statically link GTK+ 2.0 GUI" FALSE)
         IF(MOJOSETUP_GUI_GTKPLUS2_STATIC)
+            INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
             ADD_DEFINITIONS(-DGUI_STATIC_LINK_GTKPLUS2=1)
             SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_gtkplus2.c)
-            SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${LIBGTK_LINK_FLAGS})
+            SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${LIBGTK2_LINK_FLAGS})
         ELSE(MOJOSETUP_GUI_GTKPLUS2_STATIC)
             MOJOSETUP_ADD_LIBRARY(mojosetupgui_gtkplus2 gui_gtkplus2.c)
-            TARGET_LINK_LIBRARIES(mojosetupgui_gtkplus2 ${LIBGTK_LINK_FLAGS})
+            TARGET_LINK_LIBRARIES(mojosetupgui_gtkplus2 ${LIBGTK2_LINK_FLAGS})
+            TARGET_INCLUDE_DIRECTORIES(mojosetupgui_gtkplus2 PUBLIC ${GTK2_INCLUDE_DIRS})
         ENDIF(MOJOSETUP_GUI_GTKPLUS2_STATIC)
     ENDIF(MOJOSETUP_GUI_GTKPLUS2)
 ENDIF(NOT GTK2_FOUND)
+
+FIND_PACKAGE(PkgConfig)
+IF(NOT PkgConfig_FOUND)
+    MESSAGE(STATUS "Can't find pkgconfig. Can't build GTK+-3.0 GUI.")
+ELSE(NOT PkgConfig_FOUND)
+    PKG_CHECK_MODULES(GTK3 gtk+-3.0)
+    IF(NOT GTK3_FOUND)
+        MESSAGE(STATUS "Can't find GTK+v3 headers/libraries. Can't build GTK+-3.0 GUI.")
+    ELSE(NOT GTK3_FOUND)
+        # In order to reduce the GTK3 library dependencies at link time, we only link against 'gtk-3.0'.
+        # This is more portable, as the dynamic linker/loader will take care of the other library dependencies at run time.
+        SET(LIBGTK3_LINK_FLAGS "-lgtk-3")
+        OPTION(MOJOSETUP_GUI_GTKPLUS3 "Enable GTK+ 3.0 GUI" TRUE)
+        IF(MOJOSETUP_GUI_GTKPLUS3)
+            ADD_DEFINITIONS(-DSUPPORT_GUI_GTKPLUS3=1)
+            OPTION(MOJOSETUP_GUI_GTKPLUS3_STATIC "Statically link GTK+ 3.0 GUI" FALSE)
+            IF(MOJOSETUP_GUI_GTKPLUS3_STATIC)
+                INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
+                ADD_DEFINITIONS(-DGUI_STATIC_LINK_GTKPLUS3=1)
+                SET(OPTIONAL_SRCS ${OPTIONAL_SRCS} gui_gtkplus3.c)
+                SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${LIBGTK3_LINK_FLAGS})
+            ELSE(MOJOSETUP_GUI_GTKPLUS3_STATIC)
+                MOJOSETUP_ADD_LIBRARY(mojosetupgui_gtkplus3 gui_gtkplus3.c)
+                TARGET_LINK_LIBRARIES(mojosetupgui_gtkplus3 ${LIBGTK3_LINK_FLAGS})
+                TARGET_INCLUDE_DIRECTORIES(mojosetupgui_gtkplus3 PUBLIC ${GTK3_INCLUDE_DIRS})
+            ENDIF(MOJOSETUP_GUI_GTKPLUS3_STATIC)
+        ENDIF(MOJOSETUP_GUI_GTKPLUS3)
+    ENDIF(NOT GTK3_FOUND)
+ENDIF(NOT PkgConfig_FOUND)
+
+IF(MOJOSETUP_GUI_GTKPLUS2_STATIC AND MOJOSETUP_GUI_GTKPLUS3_STATIC)
+    MESSAGE(FATAL_ERROR "You can't statically link both GTK+2 and GTK+3 support.")
+ENDIF(MOJOSETUP_GUI_GTKPLUS2_STATIC AND MOJOSETUP_GUI_GTKPLUS3_STATIC)
+
 ENDIF(NOT MACOSX)
 ENDIF(NOT BEOS)
 ENDIF(UNIX)
