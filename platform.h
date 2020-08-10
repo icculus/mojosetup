@@ -10,6 +10,7 @@
 #define _INCL_PLATFORM_H_
 
 #include "universal.h"
+#include "gui.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,6 +18,10 @@ extern "C" {
 
 // this is called by your mainline.
 int MojoSetup_main(int argc, char **argv);
+
+// Loads the specified dynamic plugin and returns its library handle (see
+//  MojoPlatform_dlopen()) and GUI entry point table.
+const MojoGui *MojoSetup_loadGuiPlugin(const uint8 *img, uint32 imglen, void **lib);
 
 // Caller must free returned string!
 char *MojoPlatform_appBinaryPath(void);
@@ -224,6 +229,11 @@ uint16 MojoPlatform_defaultDirPerms(void);
 void *MojoPlatform_dlopen(const uint8 *img, size_t len);
 void *MojoPlatform_dlsym(void *lib, const char *sym);
 void MojoPlatform_dlclose(void *lib);
+
+// Temporarily load a GUI plugin (see MojoPlatform_dlopen()) and returns its
+//  priority. This may be called many times and, if necessary, steps should
+//  be taken so the plugins don't interfere with each other.
+MojoGuiPluginPriority MojoPlatform_getGuiPriority(const uint8 *img, size_t len);
 
 // Launch the user's preferred browser to view the URL (url).
 //  Returns true if the browser launched, false otherwise. We can't know

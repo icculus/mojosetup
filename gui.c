@@ -76,6 +76,21 @@ static MojoGuiPluginPriority calcGuiPriority(const MojoGui *gui)
 } // calcGuiPriority
 
 
+const MojoGui *MojoSetup_loadGuiPlugin(const uint8 *img, uint32 len, void **lib)
+{
+    *lib = MojoPlatform_dlopen(img, len);
+    if (*lib != NULL)
+    {
+        void *addr = MojoPlatform_dlsym(*lib, MOJOGUI_ENTRY_POINT_STR);
+        MojoGuiEntryPoint entry = (MojoGuiEntryPoint) addr;
+        if (entry != NULL)
+            return entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
+    } // if
+
+    return NULL;
+} // MojoSetup_loadGuiPlugin
+
+
 static PluginList *initGuiPluginsByPriority(PluginList *plugins)
 {
     MojoGuiPluginPriority p;
@@ -88,16 +103,7 @@ static PluginList *initGuiPluginsByPriority(PluginList *plugins)
                 continue;
 
             if (i->img != NULL)
-            {
-                i->lib = MojoPlatform_dlopen(i->img, i->imglen);
-                if (i->lib != NULL)
-                {
-                    void *addr = MojoPlatform_dlsym(i->lib, MOJOGUI_ENTRY_POINT_STR);
-                    MojoGuiEntryPoint entry = (MojoGuiEntryPoint) addr;
-                    if (entry != NULL)
-                        i->gui = entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
-                } // if
-            } // if
+                i->gui = MojoSetup_loadGuiPlugin(i->img, i->imglen, &i->lib);
 
             if (i->gui && i->gui->init())
             {
@@ -132,22 +138,17 @@ static void deleteGuiPlugin(PluginList *plugin)
 } // deleteGuiPlugin
 
 
-static PluginList *tryGuiPlugin(PluginList *plugins, MojoGuiEntryPoint entry)
+static PluginList *addGuiPlugin(PluginList *plugins, const MojoGui *gui, MojoGuiPluginPriority priority)
 {
-    PluginList *plug = NULL;
-    const MojoGui *gui = entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
-    if (gui != NULL)
-    {
-        plug = xmalloc(sizeof (PluginList));
-        plug->lib = NULL;
-        plug->gui = gui;
-        plug->priority = calcGuiPriority(gui);
-        plug->next = plugins->next;
-        plugins->next = plug;
-    } // if
+    PluginList *plug = xmalloc(sizeof (PluginList));
+    plug->lib = NULL;
+    plug->gui = gui;
+    plug->priority = priority;
+    plug->next = plugins->next;
+    plugins->next = plug;
 
     return plug;
-} // tryGuiPlugin
+} // addGuiPlugin
 
 
 static void loadStaticGuiPlugins(PluginList *plugins)
@@ -155,8 +156,11 @@ static void loadStaticGuiPlugins(PluginList *plugins)
     int i;
     for (i = 0; staticGui[i].entry != NULL; i++)
     {
+        const MojoGui *gui;
         logInfo("Testing static GUI plugin %0", staticGui[i].name);
-        tryGuiPlugin(plugins, staticGui[i].entry);
+         gui = staticGui[i].entry(MOJOGUI_INTERFACE_REVISION, &GEntryPoints);
+        if (gui != NULL)
+            addGuiPlugin(plugins, gui, calcGuiPriority(gui));
     }
 } // loadStaticGuiPlugins
 
@@ -167,37 +171,21 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
     MojoInput *io = ar->openCurrentEntry(ar);
     if (io != NULL)
     {
-        void *lib = NULL;
         const uint32 imglen = (uint32) io->length(io);
         uint8 *img = (uint8 *) xmalloc(imglen);
         const uint32 br = (uint32) io->read(io, img, imglen);
         io->close(io);
         if (br == imglen)
         {
-            lib = MojoPlatform_dlopen(img, imglen);
-            if (lib != NULL)
+            MojoGuiPluginPriority priority;
+            priority = MojoPlatform_getGuiPriority(img, imglen);
+            if (priority != MOJOGUI_PRIORITY_NEVER_TRY)
             {
-                void *addr = MojoPlatform_dlsym(lib, MOJOGUI_ENTRY_POINT_STR);
-                MojoGuiEntryPoint entry = (MojoGuiEntryPoint) addr;
-                if (entry != NULL)
-                {
-                    plug = tryGuiPlugin(plugins, entry);
-                    if (plug)
-                    {
-                        plug->img = img;
-                        plug->imglen = imglen;
-                    } // if
-                } // if
-
-                // always close, because GTK+2 and GTK+3 can't coexist.
-                //  we'll reload them when trying them!
-                MojoPlatform_dlclose(lib);
-                plug->gui = NULL;
-            } // if
+                plug = addGuiPlugin(plugins, NULL, priority);
+                plug->img = img;
+                plug->imglen = imglen;
+            }
         } // if
-
-        if (!plug)
-            free(img);
     } // if
 
     return plug != NULL;
