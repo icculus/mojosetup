@@ -992,8 +992,9 @@ local function install_control_app(desc, key)
         end
     end
 
-    -- don't overwrite preexisting stuff.
-    if not MojoSetup.platform.exists(dst) then
+    -- Always update the MojoSetup binary because the uninstall script may
+    -- need features that only it provides (e.g. load(string, ...)).
+    if permit_write(dst, MojoSetup.metadatadirname .. "/" .. MojoSetup.controlappname, "file", nil) then
         local perms = "0755"  -- !!! FIXME
         install_parent_dirs(dst, key)
         install_file_from_filesystem(dst, src, perms, desc, key, maxbytes)
@@ -1023,8 +1024,7 @@ local function install_control_app(desc, key)
 
         if should_write then
             dst = MojoSetup.controldir .. "/" .. ent.filename
-            -- don't overwrite preexisting stuff.
-            if not MojoSetup.platform.exists(dst) then
+            if permit_write(dst, MojoSetup.metadatadirname .. "/" .. ent.filename, ent.type, nil) then
                 install_archive_entity(dst, ent, base, desc, key, perms)
             end
         end
