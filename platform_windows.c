@@ -1511,6 +1511,17 @@ void MojoPlatform_dlclose(void *_lib)
     } // if
 } // MojoPlatform_dlclose
 
+MojoGuiPluginPriority MojoPlatform_getGuiPriority(const uint8 *img, size_t len)
+{
+    void *lib;
+    MojoGui *gui = MojoSetup_loadGuiPlugin(img, len, &lib);
+    MojoGuiPluginPriority priority = MOJOGUI_PRIORITY_NEVER_TRY;
+    if (gui)
+        priority = gui->priority(MojoPlatform_istty());
+    if (lib)
+        MojoSetup_dlclose(lib);
+    return priority;
+} // MojoPlatform_getGuiPriority
 
 uint64 MojoPlatform_getuid(void)
 {

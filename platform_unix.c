@@ -62,7 +62,6 @@ void beos_usleep(unsigned long ticks);
 #endif
 
 #include "platform.h"
-#include "gui.h"
 #include "fileio.h"
 
 static struct timeval startup_time;
@@ -1002,6 +1001,42 @@ void MojoPlatform_dlclose(void *lib)
     dlclose(lib);
 } // MojoPlatform_dlclose
 
+MojoGuiPluginPriority MojoPlatform_getGuiPriority(const uint8 *img, size_t len)
+{
+    MojoGuiPluginPriority priority = MOJOGUI_PRIORITY_NEVER_TRY;
+
+    // GTK+2 and GTK+3 cannot coexist in the same process so the corresponding
+    //  plugins must be unloaded as soon as we have their priority. But even
+    //  unloading + reloading GTK+2 or GTK+3 can lead to random crashes.
+    //  So hold the GUI plugin tryouts in a subprocess.
+    pid_t pid = fork();
+    if (pid == 0)
+    {
+        void *lib;
+        const MojoGui *gui = MojoSetup_loadGuiPlugin(img, len, &lib);
+        if (gui)
+            priority = gui->priority(MojoPlatform_istty());
+        // some libraries react badly to dlclose() so don't bother before
+        // exit()
+        exit(priority);
+    }
+    else if (pid == -1)  // -1 == fork() failed.
+        logError("Unable to fork the test child: %0", strerror(errno));
+    else
+    {
+        int status;
+        pid_t rc;
+        rc = waitpid(pid, &status, 0);
+        if (rc <= 0)
+            logError("Unable to wait for the test child: %0", strerror(errno));
+        else if (rc == pid && WIFEXITED(status))
+            priority = WEXITSTATUS(status);
+        else
+            logInfo("The test child failed");
+    }
+
+    return priority;
+} // MojoPlatform_getGuiPriority
 
 static int runScriptString(const char *str, boolean devnull, const char **_argv)
 {
