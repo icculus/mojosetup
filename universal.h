@@ -397,7 +397,7 @@ do { \
     if (!seen_this) \
     { \
         seen_this = true; \
-        prelog logDebug("STUBBED: %0 at %1 (%2:%3)\n", x, __FUNCTION__, \
+        prelog logDebug("STUBBED: %0 at %1 (%2:%3)", x, __FUNCTION__, \
                __FILE__, DEFINE_TO_STR(__LINE__)); \
     } \
 } while (false)
