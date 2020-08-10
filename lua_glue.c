@@ -1675,6 +1675,12 @@ static int luahook_gui_progress(lua_State *L)
     return retvalBoolean(L, rc);
 } // luahook_gui_progress
 
+static int luahook_gui_pump(lua_State *L)
+{
+    GGui->pump();
+    return 0;
+} // luahook_gui_pump
+
 
 static int luahook_gui_final(lua_State *L)
 {
@@ -1880,6 +1886,7 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_gui_insertmedia, "insertmedia");
             set_cfunc(luaState, luahook_gui_progressitem, "progressitem");
             set_cfunc(luaState, luahook_gui_progress, "progress");
+            set_cfunc(luaState, luahook_gui_pump, "pump");
             set_cfunc(luaState, luahook_gui_final, "final");
             set_cfunc(luaState, luahook_gui_stop, "stop");
         lua_setfield(luaState, -2, "gui");

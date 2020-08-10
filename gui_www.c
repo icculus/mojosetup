@@ -1107,6 +1107,12 @@ static boolean MojoGui_www_progress(const char *type, const char *component,
 } // MojoGui_www_progress
 
 
+static void MojoGui_www_pump(void)
+{
+    // no-op in this UI target.
+} // MojoGui_www_pump
+
+
 static void MojoGui_www_final(const char *msg)
 {
     MojoGui_www_msgbox(_("Finish"), msg);

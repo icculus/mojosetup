@@ -622,6 +622,12 @@ static boolean MojoGui_stdio_progress(const char *type, const char *component,
 } // MojoGui_stdio_progress
 
 
+static void MojoGui_stdio_pump(void)
+{
+    // no-op in this UI target.
+} // MojoGui_stdio_pump
+
+
 static void MojoGui_stdio_final(const char *msg)
 {
     printf("%s\n\n", msg);

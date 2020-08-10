@@ -788,6 +788,13 @@ printf("progress\n");
 } // MojoGui_cocoa_progress
 
 
+static void MojoGui_cocoa_pump(void)
+{
+printf("pump\n");
+    // FIXME: Stub
+} // MojoGui_cocoa_pump
+
+
 static void MojoGui_cocoa_final(const char *msg)
 {
 printf("final\n");

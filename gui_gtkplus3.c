@@ -863,6 +863,13 @@ static boolean MojoGui_gtkplus3_progress(const char *type, const char *component
 } // MojoGui_gtkplus3_progress
 
 
+static void MojoGui_gtkplus3_pump(void)
+{
+    while (gtk_events_pending())
+        gtk_main_iteration();
+} // MojoGui_gtkplus3_pump
+
+
 static void MojoGui_gtkplus3_final(const char *msg)
 {
     gtk_widget_hide(next);

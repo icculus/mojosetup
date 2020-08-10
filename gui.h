@@ -106,6 +106,7 @@ struct MojoGui
     void (*progressitem)(void);
     boolean (*progress)(const char *type, const char *component,
                         int percent, const char *item, boolean can_cancel);
+    void (*pump)(void);
     void (*final)(const char *msg);
 };
 
@@ -155,6 +156,7 @@ static void MojoGui_##module##_progressitem(void); \
 static boolean MojoGui_##module##_progress(const char *typ, const char *comp, \
                                            int percent, const char *item, \
                                            boolean can_cancel); \
+static void MojoGui_##module##_pump(void); \
 static void MojoGui_##module##_final(const char *msg); \
 const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
 { \
@@ -176,6 +178,7 @@ const MojoGui *MojoGuiPlugin_##module(int rev, const MojoSetupEntryPoints *e) \
             MojoGui_##module##_insertmedia, \
             MojoGui_##module##_progressitem, \
             MojoGui_##module##_progress, \
+            MojoGui_##module##_pump, \
             MojoGui_##module##_final, \
         }; \
         entry = e; \
