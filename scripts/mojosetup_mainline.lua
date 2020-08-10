@@ -102,6 +102,10 @@ local function manifest_add(man, fname, _key, ftype, mode, sums, lndest)
             checksums = sums,
             linkdest = lndest
         }
+
+        if MojoSetup.oldfiles[fname] ~= nil then
+            MojoSetup.oldfiles[fname].seen = true
+        end
     end
 end
 
@@ -1262,6 +1266,35 @@ local function stop_gui()
 end
 
 
+local function load_oldpackage()
+    local filename = MojoSetup.metadatadir .. "/manifest/" .. MojoSetup.install.id .. ".lua"
+    local fh, err = io.open(filename, "r")
+    if not fh then
+        MojoSetup.logerror("could not open '" .. filename .. "' for reading: " .. err)
+        return {}
+    end
+    local data = fh:read("*all")
+    fh:close()
+
+    -- This execution environment does not provide any function for the
+    -- loaded code to call. So define a stub load() function, and also a
+    -- loadstring() one for pre-Lua 5.2 manifest files.
+    local env = {MojoSetup = {}}
+    local lua_func, err = load("function load() end\nfunction loadstring() end\n" .. data, nil, "t", env)
+    if not lua_func then
+        MojoSetup.logerror("could not parse '" .. filename .. "': " .. err)
+        return {}
+    end
+
+    local ran, err = pcall(lua_func)
+    if not ran then
+        MojoSetup.logerror("could not run '" .. filename .. "' " .. err)
+        return {}
+    end
+    return env.MojoSetup.package
+end
+
+
 local function do_install(install)
     MojoSetup.forceoverwrite = nil
     MojoSetup.written = 0
@@ -1566,6 +1599,16 @@ local function do_install(install)
     --  This is not a GUI stage, it just needs to run between them.
     --  This gets a little hairy.
     stages[#stages+1] = function(thisstage, maxstage)
+        -- Load the previous installation's list of files
+        --  (empty if this is a first time install)
+        MojoSetup.oldpackage = load_oldpackage()
+        MojoSetup.oldfiles = {}
+        if MojoSetup.oldpackage ~= nil and MojoSetup.oldpackage.manifest ~= nil then
+            for path,file in pairs(MojoSetup.oldpackage.manifest) do
+                MojoSetup.oldfiles[path] = file
+            end
+        end
+
         -- Make sure we install the destination dir, so it's in the manifest.
         if not MojoSetup.platform.exists(MojoSetup.destination) then
             install_parent_dirs(MojoSetup.destination, MojoSetup.metadatakey)
@@ -1798,6 +1841,20 @@ local function do_install(install)
 
         install_product_keys(MojoSetup.productkeys)
 
+        -- Move away obsolete files so they get deleted
+        --  Note that this will obsolete the control app and the manifests but
+        --  that's ok because we will recreate them if the installation
+        --  succeeds, and restore them if it fails.
+        for path,file in pairs(MojoSetup.oldfiles) do
+            if file.seen == nil and (file.type == 'file' or file.type == 'symlink') then
+                local fullpath = MojoSetup.destination .. "/" .. path
+                if MojoSetup.platform.exists(fullpath) or MojoSetup.platform.issymlink(fullpath) then
+                    MojoSetup.loginfo("Obsoleting " .. file.type .. " '" .. path .. "'")
+                    backup_file(fullpath)
+                end
+            end
+        end
+
         run_config_defined_hook(install.postinstall, install)
 
         if install.write_manifest then
@@ -1856,6 +1913,17 @@ local function do_install(install)
     delete_files(MojoSetup.downloads)
     delete_scratchdirs()
 
+    -- Delete obsolete directories
+    table.sort(MojoSetup.oldfiles, function(a,b) return MojoSetup.strcmp(a,b) < 0 end)
+    for path,file in pairs(MojoSetup.oldfiles) do
+        if file.seen == nil and file.type == 'directory' then
+            MojoSetup.loginfo("Obsoleting directory '" .. path .. "'")
+            -- It's ok if this fails. Most likely it just means the directory
+            --  is not empty.
+            MojoSetup.platform.unlink(MojoSetup.destination .. "/" .. path)
+        end
+    end
+
     -- Don't let future errors delete files from successful installs...
     MojoSetup.downloads = nil
     MojoSetup.rollbacks = nil
@@ -1865,6 +1933,8 @@ local function do_install(install)
     -- Done with these things. Make them eligible for garbage collection.
     stages = nil
     MojoSetup.manifest = nil
+    MojoSetup.oldpackage = nil
+    MojoSetup.oldfiles = nil
     MojoSetup.manifestdir = nil
     MojoSetup.metadatadir = nil
     MojoSetup.controldir = nil
