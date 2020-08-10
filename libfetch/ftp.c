@@ -745,7 +745,7 @@ _ftp_transfer(conn_t *conn, const char *oper, const char *file,
 	const char *bindaddr;
 	const char *filename;
 	int filenamelen, type;
-	int low, pasv, verbose;
+	int pasv, verbose;
 	int e, sd = -1;
 	socklen_t l;
 	char *s;
@@ -756,7 +756,6 @@ _ftp_transfer(conn_t *conn, const char *oper, const char *file,
 #endif
 
 	/* check flags */
-	low = CHECK_FLAG('l');
 	pasv = CHECK_FLAG('p');
 	verbose = CHECK_FLAG('v');
 
@@ -928,13 +927,14 @@ _ftp_transfer(conn_t *conn, const char *oper, const char *file,
 	} else {
 		u_int32_t a;
 		u_short p;
-		int arg, d;
+		int d;
 		char *ap;
 		char hname[INET6_ADDRSTRLEN];
 
 #if __MOJOSETUP__
-		arg = 0;
 #if FREEBSD
+		int low = CHECK_FLAG('l');
+		int arg = 0;
 		switch (sa.ss_family) {
 		case AF_INET6:
 			((struct sockaddr_in6 *)&sa)->sin6_port = 0;
