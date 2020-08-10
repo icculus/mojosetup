@@ -628,12 +628,8 @@ static fpos_t
 _ftp_seekfn(void *v, fpos_t pos __unused, int whence __unused)
 #endif
 {
-	struct ftpio *io;
-
-#if __MOJOSETUP__
-	io = (struct ftpio *)v->opaque;
-#else
-	io = (struct ftpio *)v;
+#if ! __MOJOSETUP__
+	struct ftpio *io = (struct ftpio *)v;
 	if (io == NULL) {
 		errno = EBADF;
 		return (-1);
