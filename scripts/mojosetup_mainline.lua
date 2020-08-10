@@ -199,14 +199,16 @@ local function do_rollbacks()
         return
     end
 
+    local warned = false
     local max = #MojoSetup.rollbacks
     for id = max,1,-1 do
         local src = MojoSetup.rollbackdir .. "/" .. id
         local dest = MojoSetup.rollbacks[id]
-        if not MojoSetup.movefile(src, dest) then
+        if not MojoSetup.movefile(src, dest) and not warned then
             -- we're already in fatal(), so we can only throw up a msgbox...
             MojoSetup.msgbox(_("Serious problem"),
                              _("Couldn't restore some files. Your existing installation is likely damaged."))
+            warned = true
         end
         MojoSetup.loginfo("Restored rollback #" .. id .. ": '" .. src .. "' -> '" .. dest .. "'")
     end
