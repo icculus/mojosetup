@@ -500,7 +500,7 @@ void MojoLog_initLogging(void)
         logFile = MojoPlatform_stdout();
     else if (fname != NULL)
     {
-        const uint32 flags = MOJOFILE_WRITE|MOJOFILE_CREATE|MOJOFILE_TRUNCATE;
+        const uint32 flags = MOJOFILE_WRITE|MOJOFILE_CREATE|MOJOFILE_TRUNCATE|MOJOFILE_APPEND;
         const uint16 mode = MojoPlatform_defaultFilePerms();
         logFile = MojoPlatform_open(fname, flags, mode);
     } // if
