@@ -1450,7 +1450,7 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
         free(buf);
         wrefresh(win);
 
-        percentTicks = now + 1000;
+        percentTicks = now + 100;
     } // if
 
     // !!! FIXME: check for input here for cancel button, resize, etc...
