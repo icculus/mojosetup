@@ -109,6 +109,7 @@ static PluginList *initGuiPluginsByPriority(PluginList *plugins)
             {
                 MojoPlatform_dlclose(i->lib);
                 i->lib = NULL;
+                i->gui = NULL;
             } // if
         } // for
     } // for
@@ -191,6 +192,7 @@ static boolean loadDynamicGuiPlugin(PluginList *plugins, MojoArchive *ar)
                 // always close, because GTK+2 and GTK+3 can't coexist.
                 //  we'll reload them when trying them!
                 MojoPlatform_dlclose(lib);
+                plug->gui = NULL;
             } // if
         } // if
 
