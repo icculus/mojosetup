@@ -1082,21 +1082,23 @@ static int runScriptString(const char *str, boolean devnull, const char **_argv)
 
     else  // we're the parent (pid == child process id).
     {
-        int status = 0;
         size_t len = strlen(str);
         boolean failed = false;
         close(pipes[0]);  // close the reading end.
         failed |= (write(pipes[1], str, len) != len);
         failed |= (close(pipes[1]) == -1);
 
-        // !!! FIXME: we need a GGui->pump() or something here if we'll block.
-        failed |= (waitpid(pid, &status, 0) == -1);
-
-        if (!failed)
+        while (!failed)
         {
-            if (WIFEXITED(status))
+            int status;
+            pid_t rc = waitpid(pid, &status, WNOHANG);
+            if (rc == pid && WIFEXITED(status))
                 retval = WEXITSTATUS(status);
-        } // if
+            if (rc != 0)
+                break;
+            if (GGui) GGui->pump();
+            usleep(100000);
+        }
     } // else
 
     return retval;

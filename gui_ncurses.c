@@ -1473,6 +1473,12 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
 } // MojoGui_ncurses_progress
 
 
+static void MojoGui_ncurses_pump(void)
+{
+    // no-op in this UI target.
+} // MojoGui_ncurses_pump
+
+
 static void MojoGui_ncurses_final(const char *msg)
 {
     char *title = xstrdup(_("Finish"));
