@@ -527,7 +527,9 @@ local function permit_write(dest, entinfo, file)
         if entinfo.type == "dir" then
             allowoverwrite = true
         else
-            if MojoSetup.forceoverwrite ~= nil then
+            if MojoSetup.oldfiles[entinfo.filename] ~= nil then
+                allowoverwrite = true
+            elseif MojoSetup.forceoverwrite ~= nil then
                 allowoverwrite = MojoSetup.forceoverwrite
             else
                 -- !!! FIXME: option/package-wide overwrite?
