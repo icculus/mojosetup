@@ -905,13 +905,13 @@ _ftp_transfer(conn_t *conn, const char *oper, const char *file,
 		    _fetch_bind(sd, sa.ss_family, bindaddr) != 0)
 			goto sysouch;
 #if __MOJOSETUP__
-        {
-            int socklen = sizeof (struct sockaddr_in);
-            if (sa.ss_family == AF_INET6)
-                socklen = sizeof (struct sockaddr_in6);
-    		if (connect(sd, (struct sockaddr *)&sa, socklen) == -1)
-    			goto sysouch;
-        }
+		{
+			int socklen = sizeof (struct sockaddr_in);
+			if (sa.ss_family == AF_INET6)
+				socklen = sizeof (struct sockaddr_in6);
+			if (connect(sd, (struct sockaddr *)&sa, socklen) == -1)
+				goto sysouch;
+		}
 #else
 		if (connect(sd, (struct sockaddr *)&sa, sa.ss_len) == -1)
 			goto sysouch;
