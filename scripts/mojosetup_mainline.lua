@@ -229,7 +229,10 @@ local function flatten_manifest(man, postprocess)
     end
     if man ~= nil then
         for fname,items in pairs(man) do
-            files[#files+1] = postprocess(fname)
+            fname = postprocess(fname)
+            if fname ~= nil then
+                files[#files+1] = fname
+            end
         end
     end
 
@@ -476,7 +479,10 @@ local function install_directory(dest, perms, manifestkey)
     -- Chop any '/' chars from the end of the string...
     dest = string.gsub(dest, "/+$", "")
 
-    if not MojoSetup.platform.mkdir(dest, perms) then
+    -- The directory may already exist in case of an upgrade.
+    -- !!! FIXME: We should set the permissions (e.g. 0555) after filling up
+    -- !!! FIXME:  the directory, including if it already exists (upgrade).
+    if not MojoSetup.platform.mkdir(dest, perms) and not MojoSetup.platform.isdir(dest) then
         MojoSetup.logerror("Failed to create dir '" .. dest .. "'")
         MojoSetup.fatal(_("Directory creation failed"))
     end
@@ -518,9 +524,8 @@ end
 local function permit_write(dest, entinfo, file)
     local allowoverwrite = true
     if MojoSetup.platform.exists(dest) or MojoSetup.platform.issymlink(dest) then
-        -- never "permit" existing dirs, so they don't rollback.
         if entinfo.type == "dir" then
-            allowoverwrite = false
+            allowoverwrite = true
         else
             if MojoSetup.forceoverwrite ~= nil then
                 allowoverwrite = MojoSetup.forceoverwrite
@@ -1968,7 +1973,17 @@ local function real_revertinstall()
     end
 
     delete_files(MojoSetup.downloads)
-    delete_files(flatten_manifest(MojoSetup.manifest, prepend_dest_dir))
+
+    local function filter_manifest(fname)
+        if MojoSetup.manifest[fname].type == 'directory' and MojoSetup.oldfiles[fname] ~= nil then
+            -- Don't delete directories that were created by the version we
+            --  were upgrading.
+            return nil
+        end
+        return prepend_dest_dir(fname)
+    end
+    delete_files(flatten_manifest(MojoSetup.manifest, filter_manifest))
+
     do_rollbacks()
     delete_scratchdirs()
 end
