@@ -736,7 +736,9 @@ end
 local function run_config_defined_hook(func, pkg)
     if func ~= nil then
         local errstr = func(pkg)
-        if errstr ~= nil then
+        if errstr == "" then
+            MojoSetup.fatal(nil)
+        elseif errstr ~= nil then
             MojoSetup.fatal(errstr)
         end
     end
