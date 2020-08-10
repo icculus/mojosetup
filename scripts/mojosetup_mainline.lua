@@ -1399,9 +1399,20 @@ local function do_install(install)
 
             recommend = {}
             for i,v in ipairs(recommended_cfg) do
-                if MojoSetup.platform.isdir(v) then
-                    if MojoSetup.platform.writable(v) then
-                        recommend[#recommend+1] = v .. "/" .. install.id
+                local dir = v
+                while true do
+                    if MojoSetup.platform.isdir(dir) then
+                        if MojoSetup.platform.writable(dir) then
+                            recommend[#recommend+1] = v .. "/" .. install.id
+                        end
+                        break
+                    end
+                    dir = string.gsub(dir, "/[^/]*$", "", 1)
+                    if dir == "" then
+                        if MojoSetup.platform.writable("/") then
+                            recommend[#recommend+1] = v .. "/" .. install.id
+                        end
+                        break
                     end
                 end
             end
