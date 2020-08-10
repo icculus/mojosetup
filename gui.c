@@ -23,28 +23,36 @@ typedef struct S_PLUGINLIST
 const MojoGui *GGui = NULL;
 static PluginList *pluginDetails = NULL;
 
-static const MojoGuiEntryPoint staticGui[] =
+typedef struct StaticGuiPlugin
+{
+    const char* name;
+    const MojoGuiEntryPoint entry;
+} StaticGuiPlugin;
+
+#define STATIC_GUI_PLUGIN(name) {#name, MojoGuiPlugin_##name}
+static StaticGuiPlugin staticGui[] =
 {
 #if GUI_STATIC_LINK_STDIO
-    MojoGuiPlugin_stdio,
+    STATIC_GUI_PLUGIN(stdio),
 #endif
 #if GUI_STATIC_LINK_COCOA
-    MojoGuiPlugin_cocoa,
+    STATIC_GUI_PLUGIN(cocoa),
 #endif
 #if GUI_STATIC_LINK_GTKPLUS3
-    MojoGuiPlugin_gtkplus3,
+    STATIC_GUI_PLUGIN(gtkplus3),
 #endif
 #if GUI_STATIC_LINK_GTKPLUS2
-    MojoGuiPlugin_gtkplus2,
+    STATIC_GUI_PLUGIN(gtkplus2),
 #endif
 #if GUI_STATIC_LINK_WWW
-    MojoGuiPlugin_www,
+    STATIC_GUI_PLUGIN(www),
 #endif
 #if GUI_STATIC_LINK_NCURSES
-    MojoGuiPlugin_ncurses,
+    STATIC_GUI_PLUGIN(ncurses),
 #endif
-    NULL
+    {NULL, NULL}
 };
+#undef STATIC_GUI_PLUGIN
 
 
 static MojoGuiPluginPriority calcGuiPriority(const MojoGui *gui)
@@ -144,8 +152,11 @@ static PluginList *tryGuiPlugin(PluginList *plugins, MojoGuiEntryPoint entry)
 static void loadStaticGuiPlugins(PluginList *plugins)
 {
     int i;
-    for (i = 0; staticGui[i] != NULL; i++)
-        tryGuiPlugin(plugins, staticGui[i]);
+    for (i = 0; staticGui[i].entry != NULL; i++)
+    {
+        logInfo("Testing static GUI plugin %0", staticGui[i].name);
+        tryGuiPlugin(plugins, staticGui[i].entry);
+    }
 } // loadStaticGuiPlugins
 
 
@@ -203,6 +214,7 @@ static void loadDynamicGuiPlugins(PluginList *plugins)
             else if (strncmp(entinfo->filename, "guis/", 5) != 0)
                 continue;
 
+            logInfo("Testing dynamic GUI plugin %0", entinfo->filename);
             loadDynamicGuiPlugin(plugins, GBaseArchive);
         } // while
     } // if
