@@ -464,6 +464,8 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_widget_set_size_request(notebook,
                                 (gint) (((float) gdk_screen_width()) * 0.4),
                                 (gint) (((float) gdk_screen_height()) * 0.4));
+    gtk_widget_set_vexpand(notebook, TRUE);
+    gtk_widget_set_hexpand(notebook, TRUE);
 
     widget = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_widget_show(widget);
