@@ -25,6 +25,33 @@ int MojoSetup_testNetworkCode(int argc, char **argv);
 
 
 uint8 scratchbuf_128k[128 * 1024];
+uint8 *scratchbuf_pos = scratchbuf_128k;
+
+uint8* get_scratch(int64 *size)
+{
+    uint8 *scratch;
+    if (scratchbuf_pos + *size > scratchbuf_128k + sizeof(scratchbuf_128k))
+    {
+        scratchbuf_pos = scratchbuf_128k;
+        // if necessary reduce size to avoid overflows
+        if (*size > sizeof(scratchbuf_128k))
+            *size = sizeof(scratchbuf_128k);
+    }
+    scratch = scratchbuf_pos;
+
+    // always leave scratchbuf_pos in a place with usable space
+    scratchbuf_pos += *size;
+    if (scratchbuf_pos >= scratchbuf_128k + sizeof(scratchbuf_128k))
+        scratchbuf_pos = scratchbuf_128k;
+
+    return scratch;
+}
+
+int get_scratch_size(void)
+{
+    return scratchbuf_128k + sizeof(scratchbuf_128k) - scratchbuf_pos;
+}
+
 const MojoSetupEntryPoints GEntryPoints =
 {
     xmalloc,
@@ -348,11 +375,10 @@ boolean wildcardMatch(const char *str, const char *pattern)
 
 const char *numstr(int val)
 {
-    static int pos = 0;
-    char *ptr = ((char *) scratchbuf_128k) + (pos * 128);
-    snprintf(ptr, 128, "%d", val);
-    pos = (pos + 1) % 1000;
-    return ptr;
+    int64 size = 12;
+    char *str = (char*)get_scratch(&size);
+    snprintf(str, size, "%d", val);
+    return str;
 } // numstr
 
 
