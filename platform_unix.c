@@ -612,7 +612,7 @@ boolean MojoPlatform_isdir(const char *dir)
 {
     boolean retval = false;
     struct stat statbuf;
-    if (lstat(dir, &statbuf) != -1)
+    if (stat(dir, &statbuf) != -1)
     {
         if (S_ISDIR(statbuf.st_mode))
             retval = true;
@@ -638,7 +638,7 @@ boolean MojoPlatform_isfile(const char *dir)
 {
     boolean retval = false;
     struct stat statbuf;
-    if (lstat(dir, &statbuf) != -1)
+    if (stat(dir, &statbuf) != -1)
     {
         if (S_ISREG(statbuf.st_mode))
             retval = true;
