@@ -499,6 +499,18 @@ local function install_parent_dirs(path, manifestkey)
 end
 
 
+local function backup_file(path)
+    local id = #MojoSetup.rollbacks + 1
+    local f = MojoSetup.rollbackdir .. "/" .. id
+    install_parent_dirs(f, MojoSetup.metadatakey)
+    MojoSetup.rollbacks[id] = path
+    if not MojoSetup.movefile(path, f) then
+        MojoSetup.fatal(MojoSetup.format(_("Couldn't backup '%0' to '%1' for rollback"), path, f))
+    end
+    MojoSetup.loginfo("Created rollback #" .. id .. ": '" .. path .. "'")
+end
+
+
 local function permit_write(dest, entinfo, file)
     local allowoverwrite = true
     if MojoSetup.platform.exists(dest) then
@@ -532,15 +544,7 @@ local function permit_write(dest, entinfo, file)
             -- !!! FIXME: Setup.File.mustoverwrite to override "never"?
 
             if allowoverwrite then
-                local id = #MojoSetup.rollbacks + 1
-                local f = MojoSetup.rollbackdir .. "/" .. id
-                install_parent_dirs(f, MojoSetup.metadatakey)
-                MojoSetup.rollbacks[id] = dest
-                if not MojoSetup.movefile(dest, f) then
-                    MojoSetup.fatal(_("Couldn't backup file for rollback"))
-                end
-                MojoSetup.loginfo("Created rollback #" .. id .. ": '" .. dest .. "'")
-
+                backup_file(dest)
                 -- Make sure this isn't already in the manifest...
                 if MojoSetup.manifest[dest] ~= nil then
                     manifest_delete(MojoSetup.manifest, dest)
