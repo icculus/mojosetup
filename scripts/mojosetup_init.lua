@@ -303,6 +303,7 @@ function Setup.Package(tab)
         { "recommended_destinations", nil, mustBeStringOrTableOfStrings },
         { "recommended_full_destinations", nil, mustBeStringOrTableOfStrings },
         { "precheck", nil, mustBeFunction },
+        { "checkdst", nil, mustBeFunction },
         { "preflight", nil, mustBeFunction },
         { "preinstall", nil, mustBeFunction },
         { "postinstall", nil, mustBeFunction },

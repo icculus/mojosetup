@@ -1496,12 +1496,36 @@ local function do_install(install)
     if recommend ~= nil then
         -- (recommend) becomes an upvalue in this function.
         stages[#stages+1] = function(thisstage, maxstage)
-            local rc, dst
-            rc, dst = MojoSetup.gui.destination(recommend, thisstage, maxstage)
-            if rc == 1 then
-                set_destination(dst)
+            while true do
+                local rc, dst
+                rc, dst = MojoSetup.gui.destination(recommend, thisstage, maxstage)
+                if rc ~= 1 then
+                    return rc
+                end
+                if install.checkdst == nil then
+                    set_destination(dst)
+                    return 1
+                end
+                local errstr = install.checkdst(install, dst)
+                if errstr == nil then
+                    set_destination(dst)
+                    return 1
+                elseif errstr ~= "" then
+                    MojoSetup.msgbox(_("Invalid destination directory"), errstr)
+                end
+                if recommend[1] ~= dst then
+                    -- Make sure the last directory entered by the user is the
+                    -- first in the list
+                    for i, dir in ipairs(recommend) do
+                        if dir == dst then
+                            table.remove(recommend, i)
+                            break
+                        end
+                    end
+                    table.insert(recommend, 1, dst)
+                end
             end
-            return rc
+            return 0
         end
     end
 
