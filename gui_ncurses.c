@@ -107,9 +107,9 @@ static void drawButton(MojoBox *mojobox, int button)
     int borderattr = 0;
     WINDOW *win = mojobox->buttons[button];
     const char *str = mojobox->buttontext[button];
-    int w, h;
-    getmaxyx(win, h, w);
+    int w;
 
+    w = getmaxx(win);
     if (!hover)
         wbkgdset(win, COLOR_PAIR(MOJOCOLOR_BUTTONNORMAL));
     else
@@ -165,8 +165,8 @@ static void drawBackground(WINDOW *win)
     wclear(win);
     if (title != NULL)
     {
-        int w, h;
-        getmaxyx(win, h, w);
+        int w;
+        w = getmaxx(win);
         wattron(win, COLOR_PAIR(MOJOCOLOR_BACKGROUND) | A_BOLD);
         mvwaddstr(win, 0, 0, title);
         mvwhline(win, 1, 1, ACS_HLINE, w-2);
@@ -407,7 +407,7 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
     static boolean justResized = false;
     MEVENT mevt;
     int i;
-    int w, h;
+    int h;
     MojoBox *mojobox = *_mojobox;
     if (mojobox == NULL)
         return -2;
@@ -443,7 +443,7 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
             return -1;
 
         case KEY_DOWN:
-            getmaxyx(mojobox->textwin, h, w);
+            h = getmaxy(mojobox->textwin);
             if (mojobox->textpos < (mojobox->textlinecount-h))
             {
                 mojobox->textpos++;
@@ -455,7 +455,7 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
         case KEY_PPAGE:
             if (mojobox->textpos > 0)
             {
-                getmaxyx(mojobox->textwin, h, w);
+                h = getmaxy(mojobox->textwin);
                 mojobox->textpos -= h;
                 if (mojobox->textpos < 0)
                     mojobox->textpos = 0;
@@ -465,7 +465,7 @@ static int upkeepBox(MojoBox **_mojobox, int ch)
             return -1;
 
         case KEY_NPAGE:
-            getmaxyx(mojobox->textwin, h, w);
+            h = getmaxy(mojobox->textwin);
             if (mojobox->textpos < (mojobox->textlinecount-h))
             {
                 mojobox->textpos += h;
@@ -970,9 +970,9 @@ static int optionBox(const char *title, MojoGuiSetupOptions *opts,
             if (selected > 0)
             {
                 WINDOW *win = mojobox->textwin;
-                int maxw, maxh;
+                int maxw;
                 int y = --selected - mojobox->textpos;
-                getmaxyx(win, maxh, maxw);
+                maxw = getmaxx(win);
                 if (selected < mojobox->textpos)
                 {
                     upkeepBox(&mojobox, ch);  // upkeepBox does scrolling
@@ -1072,7 +1072,7 @@ static char *inputBox(const char *prompt, int *command, boolean can_back,
                       const char *defval)
 {
     char *text = NULL;
-    int w, h;
+    int w;
     int i;
     int ch;
     int rc = -1;
@@ -1110,8 +1110,7 @@ static char *inputBox(const char *prompt, int *command, boolean can_back,
     cancelbutton = bcount++;
     buttons[cancelbutton] = xstrdup(_("Cancel"));
 
-    getmaxyx(stdscr, h, w);
-    w -= 10;
+    w = getmaxx(stdscr) - 10;
     text = (char *) xmalloc(w+4);
     text[0] = '\n';
     memset(text+1, ' ', w);
@@ -1124,8 +1123,7 @@ static char *inputBox(const char *prompt, int *command, boolean can_back,
 
     do
     {
-        getmaxyx(mojobox->textwin, h, w);
-        w -= 2;
+        w = getmaxx(mojobox->textwin) - 2;
 
         if (drawpos >= retvallen)
             drawpos = 0;
@@ -1159,8 +1157,7 @@ static char *inputBox(const char *prompt, int *command, boolean can_back,
         else if (ch == KEY_RESIZE)
         {
             wrefresh(stdscr);
-            getmaxyx(stdscr, h, w);
-            w -= 10;
+            w = getmaxx(stdscr) - 10;
             text = (char *) xrealloc(mojobox->text, w+4);
             text[0] = '\n';
             memset(text+1, ' ', w);
@@ -1386,14 +1383,13 @@ static boolean MojoGui_ncurses_progress(const char *type, const char *component,
 
     if (rebuild)
     {
-        int w, h;
+        int w;
         char *text = NULL;
         char *localized_cancel = (can_cancel) ? xstrdup(_("Cancel")) : NULL;
         char *buttons[] = { localized_cancel };
         const int buttoncount = (can_cancel) ? 1 : 0;
         char *spacebuf = NULL;
-        getmaxyx(stdscr, h, w);
-        w -= 10;
+        w = getmaxx(stdscr) - 10;
         text = (char *) xmalloc((w * 3) + 16);
         if (snprintf(text, w, "%s", component) > (w-4))
             strcpy((text+w)-4, "...");  // !!! FIXME: Unicode problem.
