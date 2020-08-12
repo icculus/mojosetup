@@ -78,7 +78,7 @@ foreach (@ARGV) {
                     s/\A\s+//;
                     s/\s+\Z//;
                     last if ($_ eq '');
-                    if (/\A\"Language: (.*?)\\n"\Z/) {
+                    if (!$currentlang and /\A\"Language: ([a-z]{2,3}(?:_[A-Z]{2})?)\\n"\Z/) {
                         $currentlang = $1;
                     } elsif (/\A\"Language-Team: (.*?) <.*?>\\n"\Z/) {
                         $langname = $1;
