@@ -23,6 +23,13 @@ my $saw_template = 0;
 my $exportdate = '';
 my $generator = '';
 
+my $app_mode;
+if ($ARGV[0] eq "--app")
+{
+    shift @ARGV;
+    $app_mode=1
+}
+
 foreach (@ARGV) {
     my $fname = $_;
     my $template = /\.pot\Z/;
@@ -133,7 +140,18 @@ foreach (@ARGV) {
 die("no template seen\n") if (not $saw_template);
 
 
-print <<__EOF__;
+if ($app_mode)
+{
+    print <<__EOF__;
+-- DO NOT EDIT BY HAND.
+-- This file was generated with po2localization.pl, version $hgver ...
+--  on $now
+
+__EOF__
+}
+else
+{
+    print <<__EOF__;
 -- MojoSetup; a portable, flexible installation application.
 --
 -- Please see the file LICENSE.txt in the source's root directory.
@@ -156,15 +174,24 @@ print <<__EOF__;
 
 MojoSetup.languages = {
 __EOF__
+    print "    en_US = \"English (United States)\"";
 
-print "    en_US = \"English (United States)\"";
-
-foreach (sort keys %languages) {
-    my $k = $_;
-    my $v = $languages{$k};
-    print ",\n    $k = \"$v\""
+    foreach (sort keys %languages) {
+        my $k = $_;
+        my $v = $languages{$k};
+        print ",\n    $k = \"$v\""
+    }
+    print "\n};\n\n";
 }
-print "\n};\n\nMojoSetup.localization = {";
+
+if ($app_mode)
+{
+    print "MojoSetup.applocalization = {";
+}
+else
+{
+    print "MojoSetup.localization = {";
+}
 
 foreach (@strings) {
     my $msgid = $_;
@@ -183,7 +210,8 @@ foreach (@strings) {
     print "\n    };\n";
 }
 
-print "};\n\n-- end of localization.lua ...\n\n";
+print "};\n";
+print "\n-- end of localization.lua ...\n" if (not $app_mode);
 
 # end of po2localization.pl ...
 
