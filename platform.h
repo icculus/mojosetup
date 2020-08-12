@@ -258,6 +258,9 @@ boolean MojoPlatform_uninstallDesktopMenuItem(const char *data);
 // Run a script from the archive in the OS
 int MojoPlatform_runScript(const char *script, boolean devnull, const char **argv);
 
+// Sets or deletes the specified environment variable.
+boolean MojoPlatform_setEnv(const char *name, const char *value);
+
 // Exec a given process name
 int MojoPlatform_exec(const char *cmd);
 

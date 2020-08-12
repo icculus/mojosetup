@@ -1174,6 +1174,13 @@ static int luahook_platform_runscript(lua_State *L)
     return retval;
 } // luahook_platform_runscript
 
+static int luahook_platform_setenv(lua_State *L)
+{
+    const char *name = luaL_checkstring(L, 1);
+    const char *value = lua_tostring(L, 2);
+    return retvalBoolean(L, MojoPlatform_setEnv(name, value));
+} // luahook_platform_runscript
+
 
 static int luahook_movefile(lua_State *L)
 {
@@ -1902,6 +1909,7 @@ boolean MojoLua_initLua(void)
             set_cfunc(luaState, luahook_platform_uninstalldesktopmenuitem, "uninstalldesktopmenuitem");
             set_cfunc(luaState, luahook_platform_exec, "exec");
             set_cfunc(luaState, luahook_platform_runscript, "runscript");
+            set_cfunc(luaState, luahook_platform_setenv, "setenv");
         lua_setfield(luaState, -2, "platform");
 
         // Set the GUI functions...
