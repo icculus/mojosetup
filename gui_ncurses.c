@@ -606,7 +606,6 @@ static void MojoGui_ncurses_deinit(void)
     progressBox = NULL;
     endwin();
     delwin(stdscr);  // not sure if this is safe, but valgrind said it leaks.
-    stdscr = NULL;
     free(title);
     title = NULL;
     free(lastComponent);
