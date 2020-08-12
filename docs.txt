@@ -296,6 +296,16 @@ Here are the elements, and the attributes they can possess.
     Setup.Package table as a parameter.
 
 
+   checkdst (no default, mustBeFunction)
+
+    If this attribute is defined, it is called by the installer to validate
+    the user provided install path. It gets the finalized Setup.Package table
+    and the just entered destination path as parameters. If it returns nil
+    the destination path is accepted. Otherwise an error message must be
+    returned. If it is not empty it will be displayed in a message box before
+    giving the user a chance to change the install path.
+
+
    preflight (no default, mustBeFunction)
 
     If this attribute is defined, it is called by the installer after the
