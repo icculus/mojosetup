@@ -541,19 +541,22 @@ local function backup_file(path)
 end
 
 
-local function permit_write(dest, entinfo, file)
+local function permit_write(dest, filename, type, file)
     local allowoverwrite = true
     if MojoSetup.platform.exists(dest) or MojoSetup.platform.issymlink(dest) then
-        if entinfo.type == "dir" then
+        if type == "dir" then
             allowoverwrite = true
         else
-            if MojoSetup.oldfiles[entinfo.filename] ~= nil then
+            if MojoSetup.oldfiles[filename] ~= nil then
                 allowoverwrite = true
             elseif MojoSetup.forceoverwrite ~= nil then
                 allowoverwrite = MojoSetup.forceoverwrite
             else
                 -- !!! FIXME: option/package-wide overwrite?
-                allowoverwrite = file.allowoverwrite
+                allowoverwrite = false
+                if file ~= nil then
+                    allowoverwrite = file.allowoverwrite
+                end
                 if not allowoverwrite then
                     MojoSetup.loginfo("File '" .. dest .. "' already exists.")
                     local text = MojoSetup.format(_("File '%0' already exists! Replace?"), dest)
@@ -627,7 +630,7 @@ local function install_archive_entry(archive, ent, file, option)
 
     if dest ~= nil then  -- Only install if file wasn't filtered out
         dest = MojoSetup.destination .. "/" .. dest
-        if permit_write(dest, ent, file) then
+        if permit_write(dest, ent.filename, ent.type, file) then
             local desc = option.description
             install_archive_entity(dest, ent, archive, desc, desc, perms)
         end
