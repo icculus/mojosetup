@@ -1049,7 +1049,7 @@ boolean MojoPlatform_issymlink(const char *fname)
 
 boolean MojoPlatform_isfile(const char *dir)
 {
-    return ((!MojoPlatform_isdir(dir)) && (!MojoPlatform_issymlink(dir)));
+    return (!MojoPlatform_isdir(dir));
 } // MojoPlatform_isfile
 
 

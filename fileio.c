@@ -1287,13 +1287,7 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
     //MojoPlatform_perms(fullpath, &perms);
     ar->prevEnum.perms = perms;
 
-    if (MojoPlatform_isfile(fullpath))
-    {
-        ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
-        ar->prevEnum.filesize = MojoPlatform_filesize(fullpath);
-    } // if
-
-    else if (MojoPlatform_issymlink(fullpath))
+    if (MojoPlatform_issymlink(fullpath))
     {
         ar->prevEnum.type = MOJOARCHIVE_ENTRY_SYMLINK;
         ar->prevEnum.linkdest = MojoPlatform_readlink(fullpath);
@@ -1302,6 +1296,12 @@ static const MojoArchiveEntry *MojoArchive_dir_enumNext(MojoArchive *ar)
             free(fullpath);
             return MojoArchive_dir_enumNext(ar);
         } // if
+    } // if
+
+    else if (MojoPlatform_isfile(fullpath))
+    {
+        ar->prevEnum.type = MOJOARCHIVE_ENTRY_FILE;
+        ar->prevEnum.filesize = MojoPlatform_filesize(fullpath);
     } // else if
 
     else if (MojoPlatform_isdir(fullpath))
@@ -1366,10 +1366,7 @@ MojoArchive *MojoArchive_newFromDirectory(const char *dirname)
     if (real == NULL)
         return NULL;
 
-    if (!MojoPlatform_exists(real, NULL))
-        return NULL;
-
-    if (!MojoPlatform_isdir(real))
+    if (MojoPlatform_issymlink(real) || !MojoPlatform_isdir(real))
         return NULL;
 
     inst = (MojoArchiveDirInstance *) xmalloc(sizeof (MojoArchiveDirInstance));
@@ -1447,7 +1444,7 @@ MojoArchive *MojoArchive_initBaseArchive(void)
         char *real = MojoPlatform_realpath(cmd);
         if (real != NULL)
         {
-            if (MojoPlatform_isdir(real))
+            if (!MojoPlatform_issymlink(real) && MojoPlatform_isdir(real))
                 GBaseArchive = MojoArchive_newFromDirectory(real);
             else
             {
