@@ -96,6 +96,9 @@ extern const char *GBuildVer;
 
 // Static, non-stack memory for scratch work...not thread safe!
 extern uint8 scratchbuf_128k[128 * 1024];
+extern uint8 *scratchbuf_pos;
+uint8* get_scratch(int64 *size);
+int get_scratch_size(void);
 
 
 #define UNICODE_BOGUS_CHAR_VALUE 0xFFFFFFFF

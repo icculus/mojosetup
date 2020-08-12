@@ -35,13 +35,15 @@ static void *MojoLua_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 static const char *MojoLua_reader(lua_State *L, void *data, size_t *size)
 {
     MojoInput *in = (MojoInput *) data;
-    char *retval = (char *) scratchbuf_128k;
-    int64 br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
+    char *retval = (char *) scratchbuf_pos;
+    int64 br = in->read(in, scratchbuf_pos, get_scratch_size());
     if (br <= 0)  // eof or error? (lua doesn't care which?!)
     {
         br = 0;
         retval = NULL;
     } // if
+    else
+        get_scratch(&br); // reserve only the space we really use
 
     *size = (size_t) br;
     return retval;
@@ -522,9 +524,9 @@ const char *translate(const char *str)
                     tr = lua_tostring(luaState, -1);
                     if (tr != NULL)  // translated for this locale?
                     {
-                        char *dst = (char *) scratchbuf_128k;
-                        xstrncpy(dst, tr, sizeof(scratchbuf_128k));
-                        retval = dst;
+                        int64 size = strlen(tr) + 1;
+                        char *retval = (char*)get_scratch(&size);
+                        xstrncpy(retval, tr, size);
                     } // if
                 } // if
             } // if
@@ -917,10 +919,11 @@ static int do_checksum(lua_State *L, MojoInput *in)
 
     while (1)
     {
-        br = in->read(in, scratchbuf_128k, sizeof (scratchbuf_128k));
+        br = in->read(in, scratchbuf_pos, get_scratch_size());
         if (br <= 0)
             break;
-        MojoChecksum_append(&ctx, scratchbuf_128k, (uint32) br);
+        MojoChecksum_append(&ctx, scratchbuf_pos, (uint32) br);
+        get_scratch(&br); // reserve only the space we really use
     } // while
 
     MojoChecksum_finish(&ctx, &sums);
@@ -1076,7 +1079,9 @@ static int luahook_platform_readlink(lua_State *L)
     char *str = MojoPlatform_readlink(ln);
     if (str)
     {
-        ret = xstrncpy((char*) scratchbuf_128k, str, sizeof (scratchbuf_128k));
+        int64 size = strlen(str) + 1;
+        ret = (char*)get_scratch(&size);
+        xstrncpy(ret, str, size);
         free(str);
     } // if
 
