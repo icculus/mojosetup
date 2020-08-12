@@ -1136,6 +1136,16 @@ int MojoPlatform_runScript(const char *script, boolean devnull, const char **arg
     return retval;
 } // runScript
 
+boolean MojoPlatform_setEnv(const char *name, const char *value)
+{
+    int rc;
+    if (value)
+        rc = setenv(name, value, 1);
+    else
+        rc = unsetenv(name);
+    return (rc ? false : true);
+}
+
 
 #if !PLATFORM_MACOSX && !PLATFORM_BEOS
 static char *shellEscape(const char *str)

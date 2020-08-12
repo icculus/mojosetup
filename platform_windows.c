@@ -530,6 +530,13 @@ int MojoPlatform_runScript(const char *script, boolean devnull, const char **arg
     return 0;
 }
 
+boolean MojoPlatform_setEnv(const char *name, const char *value)
+{
+    if (SetEnvironmentVariable(name, value))
+        return true;
+    return false;
+}
+
 boolean MojoPlatform_spawnTerminal(void)
 {
     assert(!MojoPlatform_istty());
