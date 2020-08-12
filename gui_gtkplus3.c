@@ -95,12 +95,8 @@ static int wait_event(void)
     gtk_main_iteration();
     if (click_value == CLICK_CANCEL)
     {
-        char *title = xstrdup(_("Cancel installation"));
-        char *text = xstrdup(_("Are you sure you want to cancel installation?"));
-        if (!MojoGui_gtkplus3_promptyn(title, text, false))
+        if (!MojoGui_gtkplus3_promptyn(_("Cancel installation"), _("Are you sure you want to cancel installation?"), false))
             click_value = CLICK_NONE;
-        free(title);
-        free(text);
     } // if
 
     assert(click_value <= CLICK_NONE);
@@ -304,17 +300,12 @@ static boolean MojoGui_gtkplus3_promptyn(const char *title, const char *text,
 
 static void promptynanButtonCallback(GtkWidget *_msgbox)
 {
-    char *always = xstrdup(_("_Always"));
-    char *never = xstrdup(_("N_ever"));
     gtk_dialog_add_buttons(GTK_DIALOG(_msgbox),
                            _("Yes"), GTK_RESPONSE_YES,
                            _("No"), GTK_RESPONSE_NO,
-                           always, 1,
-                           never, 0,
+                           _("_Always"), 1,
+                           _("N_ever"), 0,
                            NULL);
-
-    free(always);
-    free(never);
 } // promptynanButtonCallback
 
 
@@ -824,16 +815,11 @@ static boolean MojoGui_gtkplus3_insertmedia(const char *medianame)
 {
     gint rc = 0;
     // !!! FIXME: Use stock GTK icon for "media"?
-    // !!! FIXME: better text.
-    const char *title = xstrdup(_("Media change"));
-    // !!! FIXME: better text.
-    const char *fmt = xstrdup(_("Please insert '%0'"));
-    const char *text = format(fmt, medianame);
-    rc = do_msgbox(title, text, GTK_MESSAGE_WARNING,
+    // !!! FIXME: improve the title and text wording?
+    const char *text = format(_("Please insert '%0'"), medianame);
+    rc = do_msgbox(_("Media change"), text, GTK_MESSAGE_WARNING,
                    GTK_BUTTONS_OK_CANCEL, GTK_RESPONSE_OK, NULL);
     free((void *) text);
-    free((void *) fmt);
-    free((void *) title);
     return (rc == GTK_RESPONSE_OK);
 } // MojoGui_gtkplus3_insertmedia
 
