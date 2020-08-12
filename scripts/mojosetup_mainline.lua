@@ -210,7 +210,7 @@ local function do_rollbacks()
                              _("Couldn't restore some files. Your existing installation is likely damaged."))
             warned = true
         end
-        MojoSetup.loginfo("Restored rollback #" .. id .. ": '" .. src .. "' -> '" .. dest .. "'")
+        MojoSetup.loginfo("Restored rollback #" .. id .. ": '" .. dest .. "'")
     end
 
     MojoSetup.rollbacks = {}   -- just in case this gets called again...
@@ -539,7 +539,7 @@ local function permit_write(dest, entinfo, file)
                 if not MojoSetup.movefile(dest, f) then
                     MojoSetup.fatal(_("Couldn't backup file for rollback"))
                 end
-                MojoSetup.loginfo("Moved rollback #" .. id .. ": '" .. dest .. "' -> '" .. f .. "'")
+                MojoSetup.loginfo("Created rollback #" .. id .. ": '" .. dest .. "'")
 
                 -- Make sure this isn't already in the manifest...
                 if MojoSetup.manifest[dest] ~= nil then
