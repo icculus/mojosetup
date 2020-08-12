@@ -69,28 +69,38 @@ foreach (@ARGV) {
 
         if (s/msgid\s*\"(.*?)\"\Z/$1/) {
             if (($_ eq '') and ($currentlang eq '')) {   # initial string.
+                # Provide a default value in case the 'Language' field is
+                # missing
+                $currentlang=$1 if ($fname =~ /\b([a-z]{2,3}(?:_[A-Z]{2})?)\.po$/);
+                my $langname;
                 while (<POIO>) {  # Skip most of the metadata.
                     chomp;
                     s/\A\s+//;
                     s/\s+\Z//;
                     last if ($_ eq '');
-                    if (/\A\"Language-Team: (.*?) \<(.*?)\@.*?\>\\n"\Z/) {
-                        $currentlang = $2;
-                        if (defined $languages{$currentlang}) {
-                            die("Same language twice: $currentlang\n");
-                        } elsif ($currentlang eq 'en') {
-                            die("Found an 'en' translation.\n");
-                        } elsif ($currentlang eq 'en_US') {
-                            die("Found an 'en_US' translation.\n");
-                        }
-                        $languages{$currentlang} = $1 if (not $template);
+                    if (/\A\"Language: (.*?)\\n"\Z/) {
+                        $currentlang = $1;
+                    } elsif (/\A\"Language-Team: (.*?) <.*?>\\n"\Z/) {
+                        $langname = $1;
                     } elsif (s/\A\"(X-Launchpad-Export-Date: .*?)\\n\"/$1/) {
                         $exportdate = $_ if ($template);
                     } elsif (s/\A"(X-Generator: .*?)\\n\"\Z/$1/) {
                         $generator = $_ if ($template);
                     }
                 }
-            } elsif ($currentlang eq '') {
+                if (not $template) {
+                    if ($currentlang eq '') {
+                        die("could not determine the language of '$fname'\n");
+                    } elsif (exists $languages{$currentlang}) {
+                        die("Same language twice: $currentlang\n");
+                    } elsif ($currentlang eq 'en') {
+                        die("Found an 'en' translation.\n");
+                    } elsif ($currentlang eq 'en_US') {
+                        die("Found an 'en_US' translation.\n");
+                    }
+                    $languages{$currentlang} = $langname;
+                }
+            } elsif ($currentlang eq '' and not $template) {
                 die("No current language!\n");
             } else {  # new string
                 my $msgstr = '';
