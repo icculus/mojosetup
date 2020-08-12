@@ -260,11 +260,30 @@ Here are the elements, and the attributes they can possess.
             ...or...
         recommended_destinations = { "/usr/local/games", "/opt/games" },
 
-    These strings are presented in the UI to the user when selecting a
+    These strings are presented in the UI to the user when selecting an
     install destination, but they can override them with their own choice.
     The "id" attribute is appended to these before displaying to the end
     user, so they'll see, for example, "/usr/local/games/mygame" and
     "/opt/games/mygame" ... if a listed directory is determined to be
+    unwritable to the user (lack of permissions), it will be removed from the
+    list before presentation to the user.
+
+
+
+   recommended_full_destinations (no default, mustBeStringOrTableOfStrings)
+
+    This attribute lets you define some favorable places to install the
+    package. You can have a table of strings or a single string:
+
+        recommended_full_destinations = MojoSetup.info.homedir .. "/mygame",
+            ...or...
+        recommended_full_destinations = { "/usr/local/games/mygame",
+                                          "/opt/games/mygame" },
+
+    These strings are presented in the UI to the user when selecting an
+    install destination, but they can override them with their own choice.
+    Unlike for the recommended_destinations attribute, the "id" attribute
+    is not appended to these. If a listed directory is determined to be
     unwritable to the user (lack of permissions), it will be removed from the
     list before presentation to the user.
 
