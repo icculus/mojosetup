@@ -416,6 +416,7 @@ static GtkWidget *create_gtkwindow(const char *title,
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
     gtk_window_set_title(GTK_WINDOW(window), title);
+    gtk_window_set_default_size(GTK_WINDOW(window), 700, 550);
     gtk_container_set_border_width(GTK_CONTAINER(window), 8);
 
     GdkPixbuf *icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
@@ -470,9 +471,6 @@ static GtkWidget *create_gtkwindow(const char *title,
     gtk_box_pack_start(GTK_BOX(box), notebook, TRUE, TRUE, 0);
     gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), FALSE);
     gtk_notebook_set_show_border(GTK_NOTEBOOK(notebook), FALSE);
-    gtk_widget_set_size_request(notebook,
-                                (gint) (((float) gdk_screen_width()) * 0.4),
-                                (gint) (((float) gdk_screen_height()) * 0.4));
 
     widget = gtk_hbutton_box_new();
     gtk_widget_show(widget);
