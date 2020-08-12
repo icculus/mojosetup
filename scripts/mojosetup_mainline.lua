@@ -1453,13 +1453,19 @@ local function do_install(install)
     --  The config file can force a destination if it has a really good reason
     --  (system drivers that have to go in a specific place, for example),
     --  but really really shouldn't in 99% of the cases.
+    local recommend = nil
     local destcmdline = MojoSetup.cmdlinestr("destination")
     if install.destination ~= nil then
         set_destination(install.destination)
     elseif destcmdline ~= nil then
         set_destination(destcmdline)
+    elseif install.recommended_full_destinations ~= nil then
+        if type(install.recommended_full_destinations) == "string" then
+            recommend = { install.recommended_full_destinations }
+        else
+            recommend = install.recommended_full_destinations
+        end
     else
-        local recommend = nil
         local recommended_cfg = install.recommended_destinations
         if recommended_cfg ~= nil then
             if type(recommended_cfg) == "string" then
@@ -1485,12 +1491,9 @@ local function do_install(install)
                     end
                 end
             end
-
-            if #recommend == 0 then
-                recommend = nil
-            end
         end
-
+    end
+    if recommend ~= nil then
         -- (recommend) becomes an upvalue in this function.
         stages[#stages+1] = function(thisstage, maxstage)
             local rc, dst

@@ -301,6 +301,7 @@ function Setup.Package(tab)
         { "destination", nil, mustBeString, cantBeEmpty },
         { "dataprefix", "data/", mustBeString},
         { "recommended_destinations", nil, mustBeStringOrTableOfStrings },
+        { "recommended_full_destinations", nil, mustBeStringOrTableOfStrings },
         { "precheck", nil, mustBeFunction },
         { "preflight", nil, mustBeFunction },
         { "preinstall", nil, mustBeFunction },
