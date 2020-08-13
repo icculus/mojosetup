@@ -62,7 +62,7 @@ MojoSetup.languages = {
     tr = "Turkish",
     uk = "Ukrainian",
     vi = "Vietnamese",
-    zh_CN = "Chinese (Simplified)",
+    zh_CN = "Simplified Chinese",
     zh_TW = "Traditional Chinese"
 };
 
@@ -111,7 +111,7 @@ MojoSetup.localization = {
         sv = "okänt fel",
         tr = "bilinmeyen hata",
         uk = "невідома помилка",
-        zh_CN = "未知错误",
+        zh_CN = "未知的错误",
         zh_TW = "未知的錯誤"
     };
 
@@ -152,6 +152,7 @@ MojoSetup.localization = {
         sv = "NOTERA: %0\n[tryck enter]",
         tr = "UYARI: %0\n[giriş tuşuna basınız]",
         uk = "ДО УВАГИ: %0",
+        zh_CN = "注意：%0",
         zh_TW = "提醒：%0"
     };
 
@@ -925,7 +926,7 @@ MojoSetup.localization = {
         sv = "Hittade inte arkivet",
         tr = "Arşiv bulunamadı",
         uk = "Архів не знайдено",
-        zh_CN = "未找到归档",
+        zh_CN = "找不到归档文件",
         zh_TW = "找不到檔案包"
     };
 
@@ -2077,7 +2078,7 @@ MojoSetup.localization = {
         sv = "Rättighetssträngen är ogiltig",
         tr = "İzin dizgisi geçersiz",
         uk = "Рядок із правами не є коректним",
-        zh_CN = "无效权限",
+        zh_CN = "无效的归档文件权限设定",
         zh_TW = "無效的檔案權限設定"
     };
 
@@ -2119,7 +2120,7 @@ MojoSetup.localization = {
         sv = "är inte ett giltigt attribut",
         tr = "geçerli bir özellik değil",
         uk = "не є коректним атрибутом",
-        zh_CN = "为无效设置",
+        zh_CN = "无效设置",
         zh_TW = "並不是有效設定"
     };
 
@@ -2243,7 +2244,7 @@ MojoSetup.localization = {
         sv = "boolskt värde",
         tr = "mantıksal değer",
         uk = "булеве",
-        zh_CN = "布尔型",
+        zh_CN = "布尔值",
         zh_TW = "布林值"
     };
 
@@ -2618,6 +2619,7 @@ MojoSetup.localization = {
         sv = "Välj sökväg för installationen efter nummer (tryck enter för #1), eller skriv in din egen.",
         tr = "Kurulum yerini sayı yardımıyla seçiniz (#1 için girişe basınız), ya da kendiniz belirtiniz",
         uk = "Оберіть призначення за номером (натисніть enter для вибору №1), або введіть власне.",
+        zh_CN = "请依数字选择欲安装的目标位置（按 [Enter] 键可直接选取默认选项），或者自行输入位置。",
         zh_TW = "請依數字選擇欲安裝的目標位置（按 [Enter] 鍵可直接選取預設選項），或者自行輸入位置。"
     };
 
@@ -2660,6 +2662,7 @@ MojoSetup.localization = {
         sv = "Välj nummer som skall ändras.",
         tr = "Değiştirmek için bir sayı seçiniz",
         uk = "Оберіть номер для зміни",
+        zh_CN = "选择数值以更改",
         zh_TW = "選擇數字以更改"
     };
 
@@ -2702,7 +2705,7 @@ MojoSetup.localization = {
         sv = "Konflikt!",
         tr = "Çakışma!",
         uk = "Конфлікт!",
-        zh_CN = "选择数值以更改",
+        zh_CN = "冲突！",
         zh_TW = "衝突！"
     };
 
@@ -2827,6 +2830,7 @@ MojoSetup.localization = {
         sv = "Några filer kunde inte återskapas. Den existerande installationen är troligtvis skadad.",
         tr = "Bazı dosyalar onarılamadı. Varolan kurulumunuz büyük olasılıkla zarar görmüş",
         uk = "Неможливо відновити деякі файли. Вашу існуючу копію скоріш за все пошкоджено.",
+        zh_CN = "一些文件无法复原，现有的安装内容似乎已损毁。",
         zh_TW = "一些檔案無法復原，現有的安裝內容似乎已損毀。"
     };
 
@@ -2912,7 +2916,7 @@ MojoSetup.localization = {
         sv = "Katalog:",
         tr = "Klasör:",
         uk = "Тека:",
-        zh_CN = "文件夹:",
+        zh_CN = "文件夹：",
         zh_TW = "資料夾："
     };
 
@@ -2954,7 +2958,7 @@ MojoSetup.localization = {
         sv = "Mål",
         tr = "Hedef",
         uk = "Призначення",
-        zh_CN = "目标位置",
+        zh_CN = "安装目录",
         zh_TW = "目的地"
     };
 
@@ -3375,7 +3379,7 @@ MojoSetup.localization = {
         sv = "Ofullständig installation. Återställning av alla gjorda ändringar utförs.",
         tr = "Eksik kurulum. Yaptığımız tüm değişiklikleri geri alacağız.",
         uk = "Незавершене встановлення. Усі зміни буде відкачено.",
-        zh_CN = "安装程序未完成，任何改动都将被复原。",
+        zh_CN = "安装程序未完成，任何改动都将被复原",
         zh_TW = "安裝程序未完成，任何更動將會被復原"
     };
 
@@ -3416,6 +3420,7 @@ MojoSetup.localization = {
         sv = "Installationen lyckades.",
         tr = "Kurulum başarılı oldu.",
         uk = "Встановлення успішне.",
+        zh_CN = "安装程序完成。",
         zh_TW = "安裝程序完成。"
     };
 
@@ -3544,6 +3549,7 @@ MojoSetup.localization = {
         sv = "(Jag vill skriva in en egen sökväg.)",
         tr = "(Bir yol belirtmek istiyorum.)",
         uk = "(Я хочу вказати шлях.)",
+        zh_CN = "（我想要指定路径）",
         zh_TW = "（我想要指定路徑）"
     };
 
@@ -4134,7 +4140,7 @@ MojoSetup.localization = {
         sv = "Ingenting att göra!",
         tr = "Yapılacak bir iş yok!",
         uk = "Нема чого робити!",
-        zh_CN = "无事可做！",
+        zh_CN = "没有需要执行的程序",
         zh_TW = "沒有需要執行的程序"
     };
 
@@ -4221,7 +4227,7 @@ MojoSetup.localization = {
         sv = "PANIK",
         tr = "PANİK",
         uk = "ПАНІКА!!!",
-        zh_CN = "严重错误！",
+        zh_CN = "严重错误",
         zh_TW = "嚴重錯誤"
     };
 
@@ -4305,7 +4311,7 @@ MojoSetup.localization = {
         sv = "Tryck enter för att fortsätta.",
         tr = "Devam etmek için giriş tuşuna basınız.",
         uk = "Для продовження натисніть Enter.",
-        zh_CN = "按 [Enter] 键继续。",
+        zh_CN = "请按 [Enter] 键继续",
         zh_TW = "請按 [Enter] 鍵繼續。"
     };
 
@@ -4472,7 +4478,7 @@ MojoSetup.localization = {
         sv = "Kunde inte skapa symbolisk länk!",
         tr = "Sembolik bağ oluşturulamadı!",
         uk = "Неможливо створити символьне посилання!",
-        zh_CN = "无法建立链接！",
+        zh_CN = "无法建立链接",
         zh_TW = "無法建立連結"
     };
 
@@ -4514,7 +4520,7 @@ MojoSetup.localization = {
         sv = "Installationsprogrammet blev stoppat av systemet.",
         tr = "Kurulum programı sistem tarafından durduruldu.",
         uk = "Інсталятор зупинено системою.",
-        zh_CN = "安装程序已被系统终止。",
+        zh_CN = "安装程序已被系统终止",
         zh_TW = "安裝程式已被系統終止"
     };
 
@@ -4556,7 +4562,7 @@ MojoSetup.localization = {
         sv = "Installationsprogrammet kraschade pga. ett fel.",
         tr = "Kurulum bir hata yüzünden çöktü.",
         uk = "Інсталятор завершив роботу через помилку.",
-        zh_CN = "安装程序因错误而终止。",
+        zh_CN = "安装程序因错误而终止",
         zh_TW = "安裝程式因臭蟲而終止"
     };
 
@@ -4771,7 +4777,7 @@ MojoSetup.localization = {
         sv = "Ogiltigt kommando",
         tr = "Geçersiz komut satırı",
         uk = "Некоректні параметри у командному рядку",
-        zh_CN = "无效的命令行",
+        zh_CN = "无效命令行",
         zh_TW = "無效的命令"
     };
 
@@ -4941,7 +4947,7 @@ MojoSetup.localization = {
         tr = "'%0' paketini kaldırmak istediğinizden emin misiniz?",
         uk = "Ви впевнені що хочете деінсталювати '%0'?",
         zh_CN = "您确定要删除 ‘%0’？",
-        zh_TW = "你確定要移除 '%0'"
+        zh_TW = "你確定要移除 '%0'？"
     };
 
     -- This is a window title, shown while the actual uninstall is in process
@@ -5743,7 +5749,7 @@ MojoSetup.localization = {
         sl = "Prenesi vse v ospredje",
         sv = "Ta fram alla",
         tr = "Hepsini Öne Getir",
-        zh_CN = "前置全部窗口",
+        zh_CN = "将所有窗口移至最上层",
         zh_TW = "將所有視窗移至最上層"
     };
 };
