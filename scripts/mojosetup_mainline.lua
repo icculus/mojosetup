@@ -177,7 +177,7 @@ local function delete_files(filelist, callback, error_is_fatal)
     end
 end
 
-local function delete_rollbacks()
+local function delete_rollbacks(callback)
     if MojoSetup.rollbacks == nil then
         return
     end
@@ -187,7 +187,7 @@ local function delete_rollbacks()
         fnames[id] = MojoSetup.rollbackdir .. "/" .. id
     end
     MojoSetup.rollbacks = {}   -- just in case this gets called again...
-    delete_files(fnames)  -- !!! FIXME: callback for gui queue pump?
+    delete_files(fnames, callback)
 end
 
 local function delete_scratchdirs()
@@ -1897,6 +1897,34 @@ local function do_install(install)
     -- Next stage: show results gui
     if not skipprompt then
         stages[#stages+1] = function(thisstage, maxstage)
+            local ptype = _("Installing")
+            local component = _("Cleaning up")
+            local callback = function(fname, _current, _total)
+                MojoSetup.gui.progressitem()
+                MojoSetup.gui.progress(ptype, component, 100, fname, false)
+            end
+            -- Successful install, so delete conflicts we no longer need to
+            -- rollback.
+            delete_rollbacks(callback)
+            delete_files(MojoSetup.downloads, callback)
+            delete_scratchdirs()
+
+            -- Delete obsolete directories
+            table.sort(MojoSetup.oldfiles, function(a,b) return MojoSetup.strcmp(a,b) < 0 end)
+            for path,file in pairs(MojoSetup.oldfiles) do
+                if file.seen == nil and file.type == 'directory' then
+                    MojoSetup.loginfo("Obsoleting directory '" .. path .. "'")
+                    callback(path, nil, nil)
+                    -- It's ok if this fails. Most likely it just means the
+                    -- directory is not empty.
+                    MojoSetup.platform.unlink(MojoSetup.destination .. "/" .. path)
+                end
+            end
+
+            -- Don't let future errors delete files from successful installs...
+            MojoSetup.downloads = nil
+            MojoSetup.rollbacks = nil
+
             MojoSetup.gui.final(_("Installation was successful."))
             return 1  -- go forward.
         end
@@ -1936,26 +1964,6 @@ local function do_install(install)
             MojoSetup.fatal(_("BUG: stage returned wrong value"))
         end
     end
-
-    -- Successful install, so delete conflicts we no longer need to rollback.
-    delete_rollbacks()
-    delete_files(MojoSetup.downloads)
-    delete_scratchdirs()
-
-    -- Delete obsolete directories
-    table.sort(MojoSetup.oldfiles, function(a,b) return MojoSetup.strcmp(a,b) < 0 end)
-    for path,file in pairs(MojoSetup.oldfiles) do
-        if file.seen == nil and file.type == 'directory' then
-            MojoSetup.loginfo("Obsoleting directory '" .. path .. "'")
-            -- It's ok if this fails. Most likely it just means the directory
-            --  is not empty.
-            MojoSetup.platform.unlink(MojoSetup.destination .. "/" .. path)
-        end
-    end
-
-    -- Don't let future errors delete files from successful installs...
-    MojoSetup.downloads = nil
-    MojoSetup.rollbacks = nil
 
     stop_gui()
 
