@@ -510,12 +510,32 @@ end
 
 
 local function backup_file(path)
+    if MojoSetup.platform.isdir(path) and
+        not MojoSetup.platform.issymlink(path) then
+        -- We must first create rollbacks for all the files and directories
+        -- contained in this directory
+        local dir = MojoSetup.platform.opendir(path)
+        local dentry = MojoSetup.platform.readdir(dir)
+        while dentry ~= nil do
+            backup_file(path .. "/" .. dentry)
+            dentry = MojoSetup.platform.readdir(dir)
+        end
+        MojoSetup.platform.closedir(dir)
+    end
+
     local id = #MojoSetup.rollbacks + 1
     local f = MojoSetup.rollbackdir .. "/" .. id
     install_parent_dirs(f, MojoSetup.metadatakey)
     MojoSetup.rollbacks[id] = path
     if not MojoSetup.movefile(path, f) then
         MojoSetup.fatal(MojoSetup.format(_("Couldn't backup '%0' to '%1' for rollback"), path, f))
+    end
+    local relpath = make_relative(path, MojoSetup.destination)
+    if MojoSetup.oldfiles[relpath] ~= nil then
+        MojoSetup.oldfiles[relpath].seen = 1
+        MojoSetup.loginfo("marked '" .. relpath .. "' as seen")
+    else
+        MojoSetup.loginfo(relpath .. " is not an old file")
     end
     MojoSetup.loginfo("Created rollback #" .. id .. ": '" .. path .. "'")
 end
