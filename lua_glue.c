@@ -1022,6 +1022,31 @@ static int luahook_archive_offsetofstart(lua_State *L)
 } // luahook_archive_offsetofstart
 
 
+static int luahook_platform_opendir(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    return retvalLightUserData(L, MojoPlatform_opendir(path));
+} // luahook_platform_opendir
+
+
+static int luahook_platform_readdir(lua_State *L)
+{
+    void *dir = lua_touserdata(L, 1);
+    char *dent = MojoPlatform_readdir(dir);
+    int retval = retvalString(L, dent);
+    free(dent);
+    return retval;
+} // luahook_platform_readdir
+
+
+static int luahook_platform_closedir(lua_State *L)
+{
+    void *dir = lua_touserdata(L, 1);
+    MojoPlatform_closedir(dir);
+    return retvalBoolean(L, 0);
+} // luahook_platform_closedir
+
+
 static int luahook_platform_unlink(lua_State *L)
 {
     const char *path = luaL_checkstring(L, 1);
@@ -1861,6 +1886,9 @@ boolean MojoLua_initLua(void)
 
         // Set the platform functions...
         lua_newtable(luaState);
+            set_cfunc(luaState, luahook_platform_opendir, "opendir");
+            set_cfunc(luaState, luahook_platform_readdir, "readdir");
+            set_cfunc(luaState, luahook_platform_closedir, "closedir");
             set_cfunc(luaState, luahook_platform_unlink, "unlink");
             set_cfunc(luaState, luahook_platform_exists, "exists");
             set_cfunc(luaState, luahook_platform_writable, "writable");
