@@ -161,17 +161,24 @@ local function do_delete(fname)
 end
 
 
-local function delete_files(filelist, callback, error_is_fatal)
+local function delete_files(rootdir, filelist, callback, error_is_fatal)
     if filelist ~= nil then
         local max = #filelist
         for i = max,1,-1 do
-            local fname = filelist[i]
+            local fname
+            if rootdir == nil then
+                fname = filelist[i]
+            elseif filelist[i] == "" then
+                fname = rootdir
+            else
+                fname = rootdir .. "/" .. filelist[i]
+            end
             if not do_delete(fname) and error_is_fatal then
                 MojoSetup.fatal(_("Deletion failed!"))
             end
 
             if callback ~= nil then
-                callback(fname, i, max)
+                callback(filelist[i], i, max)
             end
         end
     end
@@ -184,10 +191,10 @@ local function delete_rollbacks(callback)
     local fnames = {}
     local max = #MojoSetup.rollbacks
     for id = 1,max,1 do
-        fnames[id] = MojoSetup.rollbackdir .. "/" .. id
+        fnames[id] = id
     end
     MojoSetup.rollbacks = {}   -- just in case this gets called again...
-    delete_files(fnames, callback)
+    delete_files(MojoSetup.rollbackdir, fnames, callback)
 end
 
 local function delete_scratchdirs()
@@ -238,14 +245,6 @@ local function flatten_manifest(man, postprocess)
 
     table.sort(files, function(a,b) return MojoSetup.strcmp(a,b) < 0 end)
     return files
-end
-
-
-local function prepend_dest_dir(fname)
-    if fname == "" then
-        return MojoSetup.destination
-    end
-    return MojoSetup.destination .. "/" .. fname
 end
 
 
@@ -1933,7 +1932,7 @@ local function do_install(install)
             -- Successful install, so delete conflicts we no longer need to
             -- rollback.
             delete_rollbacks(callback)
-            delete_files(MojoSetup.downloads, callback)
+            delete_files(nil, MojoSetup.downloads, callback)
             delete_scratchdirs()
 
             -- Delete obsolete directories
@@ -2031,7 +2030,7 @@ local function real_revertinstall()
         uninstall_desktop_menu_items(MojoSetup.install)
     end
 
-    delete_files(MojoSetup.downloads)
+    delete_files(nil, MojoSetup.downloads)
 
     local function filter_manifest(fname)
         if MojoSetup.manifest[fname].type == 'directory' and MojoSetup.oldfiles[fname] ~= nil then
@@ -2039,9 +2038,9 @@ local function real_revertinstall()
             --  were upgrading.
             return nil
         end
-        return prepend_dest_dir(fname)
+        return fname
     end
-    delete_files(flatten_manifest(MojoSetup.manifest, filter_manifest))
+    delete_files(MojoSetup.destination, flatten_manifest(MojoSetup.manifest, filter_manifest))
 
     do_rollbacks()
     delete_scratchdirs()
@@ -2183,7 +2182,7 @@ local function manifest_management()
     MojoSetup.loginfo("rebuilding manifests...")
 
     -- !!! FIXME: rollback!
-    delete_files({lua_fname, xml_fname, txt_fname}, nil, false)
+    delete_files(nil, {lua_fname, xml_fname, txt_fname}, nil, false)
     MojoSetup.stringtabletofile(build_lua_manifest(package), lua_fname, perms, nil, nil)
     MojoSetup.stringtabletofile(build_xml_manifest(package), xml_fname, perms, nil, nil)
     MojoSetup.stringtabletofile(build_txt_manifest(package), txt_fname, perms, nil, nil)
@@ -2231,8 +2230,8 @@ local function uninstaller()
             return true  -- !!! FIXME: need to disable cancel button in UI...
         end
 
-        local filelist = flatten_manifest(package.manifest, prepend_dest_dir)
-        delete_files(filelist, callback, package.delete_error_is_fatal)
+        local filelist = flatten_manifest(package.manifest)
+        delete_files(MojoSetup.destination, filelist, callback, package.delete_error_is_fatal)
         run_config_defined_hook(package.postuninstall, package)
         if not MojoSetup.cmdline("noprompt") then
             MojoSetup.gui.final(_("Uninstall complete"))
