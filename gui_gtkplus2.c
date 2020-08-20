@@ -139,7 +139,10 @@ static int run_wizard(const char *name, WizardPages page,
 
 static gboolean signal_delete(GtkWidget *w, GdkEvent *evt, gpointer data)
 {
-    click_value = CLICK_CANCEL;
+    if (gtk_widget_get_visible(finish))
+        click_value = CLICK_NEXT;
+    else
+        click_value = CLICK_CANCEL;
     return TRUE;  /* eat event: default handler destroys window! */
 } // signal_delete
 
