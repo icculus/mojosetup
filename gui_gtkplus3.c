@@ -841,9 +841,11 @@ static boolean MojoGui_gtkplus3_progress(const char *type, const char *component
     const uint32 ticks = ticks();
     int rc;
 
-    if ((ticks - lastTicks) > 200)  // just not to spam this...
+    GtkProgressBar *progress = GTK_PROGRESS_BAR(progressbar);
+    const char *ptext = gtk_progress_bar_get_text(progress);
+    // only update once in a while or if the component changed...
+    if ((ticks - lastTicks) > 200 || ptext == NULL || strcmp(ptext, component) != 0)
     {
-        GtkProgressBar *progress = GTK_PROGRESS_BAR(progressbar);
         if (percent < 0)
             gtk_progress_bar_pulse(progress);
         else
