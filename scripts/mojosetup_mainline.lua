@@ -459,9 +459,13 @@ local function install_file_from_filesystem(dest, src, perms, desc, manifestkey,
 end
 
 
--- !!! FIXME: we should probably pump the GUI queue here, in case there are
--- !!! FIXME:  thousands of symlinks in a row or something.
-local function install_symlink(dest, lndest, manifestkey)
+local function install_symlink(dest, lndest, desc, manifestkey)
+    MojoSetup.gui.progressitem()
+    -- The size of a symbolic link is the length of the path it points to
+    MojoSetup.written = MojoSetup.written + string.len(lndest)
+    local percent = calc_percent(MojoSetup.written, MojoSetup.totalwrite)
+    MojoSetup.gui.progress(_("Installing"), desc, percent, dest, true)
+
     if not MojoSetup.platform.symlink(dest, lndest) then
         MojoSetup.logerror("Failed to create symlink '" .. dest .. "'")
         MojoSetup.fatal(_("Symlink creation failed!"))
@@ -472,11 +476,16 @@ local function install_symlink(dest, lndest, manifestkey)
 end
 
 
--- !!! FIXME: we should probably pump the GUI queue here, in case there are
--- !!! FIXME:  thousands of dirs in a row or something.
-local function install_directory(dest, perms, manifestkey)
+local function install_directory(dest, perms, desc, manifestkey)
     -- Chop any '/' chars from the end of the string...
     dest = string.gsub(dest, "/+$", "")
+
+    if desc ~= nil then
+        MojoSetup.gui.progressitem()
+        -- Preserve the current completion percentage
+        local percent = calc_percent(MojoSetup.written, MojoSetup.totalwrite)
+        MojoSetup.gui.progress(_("Installing"), desc, percent, dest, true)
+    end
 
     -- The directory may already exist in case of an upgrade.
     -- !!! FIXME: We should set the permissions (e.g. 0555) after filling up
@@ -501,7 +510,7 @@ local function install_parent_dirs(path, manifestkey)
         if item ~= "" then
             fullpath = fullpath .. "/" .. item
             if not MojoSetup.platform.exists(fullpath) then
-                install_directory(fullpath, nil, manifestkey)
+                install_directory(fullpath, nil, nil, manifestkey)
             end
         end
     end
@@ -595,9 +604,9 @@ local function install_archive_entity(dest, ent, archive, desc, manifestkey, per
     if ent.type == "file" then
         install_file_from_archive(dest, archive, perms, desc, manifestkey)
     elseif ent.type == "dir" then
-        install_directory(dest, perms, manifestkey)
+        install_directory(dest, perms, desc, manifestkey)
     elseif ent.type == "symlink" then
-        install_symlink(dest, ent.linkdest, manifestkey)
+        install_symlink(dest, ent.linkdest, desc, manifestkey)
     else  -- !!! FIXME: device nodes, etc...
         -- !!! FIXME: should this be fatal?
         MojoSetup.fatal(_("Unknown file type in archive"))
@@ -1668,7 +1677,7 @@ local function do_install(install)
         -- Make sure we install the destination dir, so it's in the manifest
         -- and thus gets uninstalled.
         install_parent_dirs(MojoSetup.destination, MojoSetup.metadatakey)
-        install_directory(MojoSetup.destination, nil, MojoSetup.metadatakey)
+        install_directory(MojoSetup.destination, nil, nil, MojoSetup.metadatakey)
 
         local function process_file(option, file)
             -- !!! FIXME: what happens if a file shows up in multiple options?
