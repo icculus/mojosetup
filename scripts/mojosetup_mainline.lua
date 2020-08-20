@@ -89,10 +89,7 @@ end
 
 local function manifest_add(man, fname, _key, ftype, mode, sums, lndest)
     if (fname ~= nil) and (_key ~= nil) then
-        local destlen = string.len(MojoSetup.destination)
-        if string.sub(fname, 0, destlen) == MojoSetup.destination then
-            fname = string.sub(fname, destlen+2)  -- make it relative.
-        end
+        fname = make_relative(fname, MojoSetup.destination)
 
         if man[fname] ~= nil then
             MojoSetup.logwarning("Overwriting file '" .. fname .. "' in manifest!")
@@ -111,10 +108,7 @@ end
 
 local function manifest_delete(man, fname)
     if fname ~= nil then
-        local destlen = string.len(MojoSetup.destination)
-        if string.sub(fname, 0, destlen) == MojoSetup.destination then
-            fname = string.sub(fname, destlen+2)  -- make it relative.
-        end
+        fname = make_relative(fname, MojoSetup.destination)
 
         if man[fname] == nil then
             MojoSetup.logwarning("Deleting unknown file '" .. fname .. "' from manifest!")
