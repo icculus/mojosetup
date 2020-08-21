@@ -517,7 +517,7 @@ end
 
 local function permit_write(dest, entinfo, file)
     local allowoverwrite = true
-    if MojoSetup.platform.exists(dest) then
+    if MojoSetup.platform.exists(dest) or MojoSetup.platform.issymlink(dest) then
         -- never "permit" existing dirs, so they don't rollback.
         if entinfo.type == "dir" then
             allowoverwrite = false
