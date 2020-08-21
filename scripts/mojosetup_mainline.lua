@@ -1639,11 +1639,10 @@ local function do_install(install)
             end
         end
 
-        -- Make sure we install the destination dir, so it's in the manifest.
-        if not MojoSetup.platform.exists(MojoSetup.destination) then
-            install_parent_dirs(MojoSetup.destination, MojoSetup.metadatakey)
-            install_directory(MojoSetup.destination, nil, MojoSetup.metadatakey)
-        end
+        -- Make sure we install the destination dir, so it's in the manifest
+        -- and thus gets uninstalled.
+        install_parent_dirs(MojoSetup.destination, MojoSetup.metadatakey)
+        install_directory(MojoSetup.destination, nil, MojoSetup.metadatakey)
 
         local function process_file(option, file)
             -- !!! FIXME: what happens if a file shows up in multiple options?
