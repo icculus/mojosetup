@@ -27,7 +27,7 @@ while (<STDIN>) {
         $generator = $_;
         next;
     }
-    last if (/MojoSetup.localization = {/);
+    last if (/MojoSetup.localization = \{/);
 }
 
 
@@ -94,7 +94,7 @@ while (<STDIN>) {
         next if $looking_for_end;
     }
 
-    if (s/\A\[(\".*?\")\] = {\Z/msgid $1\nmsgstr ""\n/) {
+    if (s/\A\[(\".*?\")\] = \{\Z/msgid $1\nmsgstr ""\n/) {
         print("$_\n");
         $looking_for_end = 1;
     } elsif (s/\A--\s+(.*?)\Z/#. $1/) {
