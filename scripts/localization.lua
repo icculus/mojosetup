@@ -583,7 +583,7 @@ MojoSetup.localization = {
         fa = "برای بازگشت به مرحله‌ی قبلی، %0 را تایپ کنید.",
         fi = "Kirjoita '%0' palataksesi edelliseen osioon.",
         fr = "Tapez '%0' pour revenir en arrière.",
-        ga = "Clóscríobh '% 0' dul ar ais.",
+        ga = "Clóscríobh '%0' dul ar ais.",
         he = "הקלד '%0' כדי לחזור חזרה.",
         hr = "Unesi '%0' za povratak.",
         hu = "Üss '%0'-t a visszalépéshez",
@@ -1312,7 +1312,7 @@ MojoSetup.localization = {
         fa = "باگ: '%0' یک رشته‌ی نامعتبر برای دسترسی است",
         fi = "OHJELMOINTIVIRHE: \"%0\" ei ole kelvollinen oikeuksia määrittävä merkkijono",
         fr = "BUG \"%0\" n'est pas une chaîne de permission valide",
-        ga = "FABHT:Níl '0%' ar shraith cead bailí",
+        ga = "FABHT:Níl '%0' ar shraith cead bailí",
         he = "באג: '%0' אינו מחרוזת הרשאה תקנית",
         hu = "BUG: '%0' nem érvényes jogosultság sztring",
         it = "BUG: '%0' non è una stringa valida di permessi",
@@ -1330,7 +1330,7 @@ MojoSetup.localization = {
         sl = "NAPAKA: '%0' ni velaven niz za dovoljenja",
         sv = "FEL: '%0' är inte en giltig rättighetssträng",
         tr = "HATA: '%0' geçerli bir izin dizgisi değil",
-        uk = "Помилка: '% 0' неправильне значення для прав.",
+        uk = "Помилка: '%0' неправильне значення для прав.",
         zh_TW = "臭蟲：'%0' 並不是有效的檔案權限設定"
     };
 
