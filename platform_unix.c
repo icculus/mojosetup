@@ -8,8 +8,11 @@
 
 #if PLATFORM_UNIX
 
+#define panic NOT_MOJOSETUP_panic
+
 #if PLATFORM_MACOSX
 #include <Carbon/Carbon.h>
+#undef panic
 #undef true
 #undef false
 #endif
@@ -60,6 +63,8 @@ void beos_usleep(unsigned long ticks);
 #include <dlfcn.h>
 #define DLOPEN_ARGS (RTLD_NOW | RTLD_GLOBAL)
 #endif
+
+#undef panic
 
 #include "platform.h"
 #include "fileio.h"
