@@ -11,7 +11,7 @@ jobs:
         platform:
         - { name: Linux,   os: ubuntu-20.04, flags: -GNinja }
         #- { name: Windows, os: windows-latest }
-        - { name: MacOS,   os: macos-latest }
+        #- { name: MacOS,   os: macos-latest }
     steps:
     - name: Setup Linux dependencies
       if: runner.os == 'Linux'
