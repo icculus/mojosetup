@@ -352,6 +352,8 @@ uint64 MojoPlatform_getgid(void);
 #define PLATFORM_ARCH "x86-64"
 #elif defined(__X86__) || defined(__i386__) || defined(i386) || defined (_M_IX86) || defined(__386__)
 #define PLATFORM_ARCH "x86"
+#elif defined(__arm__) && defined(__ARM_PCS_VFP)
+#define PLATFORM_ARCH "armhf"
 #else
 #error Unknown processor architecture.
 #endif
