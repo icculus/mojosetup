@@ -14,7 +14,7 @@
 #  and even on the original test system, become incorrect over time.
 # Only choose options you want/need to squeeze every byte off the download.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 
 # !!! FIXME: this is stupid.
 IF(NOT BEOS)
