@@ -14,6 +14,7 @@
 #  and even on the original test system, become incorrect over time.
 # Only choose options you want/need to squeeze every byte off the download.
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0)
 
 # !!! FIXME: this is stupid.
 IF(NOT BEOS)
@@ -25,8 +26,6 @@ IF(NOT BEOS)
 ELSE(NOT BEOS)
     PROJECT(MojoSetup CXX)
 ENDIF(NOT BEOS)
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0)
 
 # !!! FIXME: correct this to new policy and bump minimum cmake requirement.
 IF(COMMAND CMAKE_POLICY)
