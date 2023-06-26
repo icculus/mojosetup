@@ -12,8 +12,8 @@ binmode(STDERR, ":utf8");
 my $now = `date '+%Y-%m-%d %H:%M:%S%z'`;
 chomp($now);
 
-my $hgver = `hg tip --template 'hg-{rev}:{node|short}' 2>/dev/null`;
-$hgver = '???' if ($hgver eq '');
+my $gitver = `git describe --always --dirty 2>/dev/null`;
+$gitver = '???' if ($gitver eq '');
 
 my %languages;
 my %comments;
@@ -154,7 +154,7 @@ if ($app_mode)
 {
     print <<__EOF__;
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version $hgver ...
+-- This file was generated with po2localization.pl, version $gitver ...
 --  on $now
 
 __EOF__
@@ -167,7 +167,7 @@ else
 -- Please see the file LICENSE.txt in the source's root directory.
 --
 -- DO NOT EDIT BY HAND.
--- This file was generated with po2localization.pl, version $hgver ...
+-- This file was generated with po2localization.pl, version $gitver ...
 --  on $now
 --
 -- Your own installer's localizations go into app_localization.lua instead.

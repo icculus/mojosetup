@@ -4,7 +4,7 @@ Using MojoSetup.
 If there are gaps in this documentation, please ask on the MojoSetup mailing
  list. To subscribe to the list, go here...
 
-   http://icculus.org/mailman/listinfo/mojosetup
+   https://icculus.org/mailman/listinfo/mojosetup
 
  ...and then questions can go to mojosetup@icculus.org. This document will
  be updated as we see what parts are confusing, so feedback is appreciated.
@@ -24,13 +24,13 @@ Each step has a lot of details, but all installers basically follow those same
 Compile the software:
 
 You will need some tools. First, you'll need your platform's favorite build
- tools. You'll also need CMake (http://www.cmake.org/), and a Mercurial
- (http://www.selenic.com/mercurial/) client. These are all available for most
+ tools. You'll also need CMake (https://www.cmake.org/), and a Git
+ (https://git-scm.com/) client. These are all available for most
  popular operating systems, and some not-so-popular ones.
 
-Get the latest version of MojoSetup from Mercurial:
+Get the latest version of MojoSetup from Git:
 
-     hg clone http://hg.icculus.org/icculus/mojosetup
+     git clone https://github.com/icculus/mojosetup.git
 
 
 Then you'll need to point CMake at it:
@@ -114,7 +114,7 @@ This is the complicated part, and where most of your effort will be spent.
  of things we haven't even considered yet.
 
 Configuration files are Lua scripts. The Lua language and runtime library is
- documented at http://www.lua.org/, and they sell an excellent book called
+ documented at https://www.lua.org/, and they sell an excellent book called
  "Programming in Lua" which is a fast read and will demonstrate all manners
  of wild and interesting features of the language. That being said, most
  people rolling config files don't need any significant Lua expertise, and
