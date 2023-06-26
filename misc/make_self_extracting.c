@@ -75,7 +75,10 @@ static off_t get_file_size(const char *fname)
     else if ((retval = ftello(io)) == -1)
         FAIL("ftello");
     else if (fclose(io) == EOF)
+    {
+        io = NULL;
         FAIL("fclose");
+    } // else if
     #undef FAIL
 
     return retval;
