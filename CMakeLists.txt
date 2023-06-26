@@ -28,17 +28,17 @@ ELSE(NOT BEOS)
 ENDIF(NOT BEOS)
 
 EXECUTE_PROCESS(
-    COMMAND hg tip --template hg-{rev}:{node|short}
+    COMMAND git describe --always --dirty
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    RESULT_VARIABLE HGVERSION_RC
+    RESULT_VARIABLE GITVERSION_RC
     OUTPUT_VARIABLE MOJOSETUP_VERSION
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-IF(HGVERSION_RC)
+IF(GITVERSION_RC)
     SET(MOJOSETUP_VERSION "???")
-ENDIF(HGVERSION_RC)
+ENDIF(GITVERSION_RC)
 
 # !!! FIXME: ditch this when Gary's curses patches go into a formal CMake
 # !!! FIXME:  release, and just bump the minimum required version to it.
