@@ -19,6 +19,9 @@ MOJOGUI_PLUGIN(ncurses)
 CREATE_MOJOGUI_ENTRY_POINT(ncurses)
 #endif
 
+// ncurses headers use 'format' in an __attribute__, undefine ours for now.
+#undef format
+
 #include <unistd.h>
 #include <ctype.h>
 // CMake searches for a whole bunch of different possible curses includes
@@ -35,6 +38,10 @@ CREATE_MOJOGUI_ENTRY_POINT(ncurses)
 #endif
 
 #include <locale.h>
+
+// restore the format define from gui.h now that the ncurses headers are done.
+#define format entry->format
+
 
 // This was built to look roughly like dialog(1), but it's not nearly as
 //  robust. Also, I didn't use any of dialog's code, as it is GPL/LGPL,
