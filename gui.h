@@ -291,6 +291,7 @@ const MojoGui *MojoGuiPlugin_stdio(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_ncurses(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_gtkplus2(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_gtkplus3(int rev, const MojoSetupEntryPoints *e);
+const MojoGui *MojoGuiPlugin_gtk4(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_www(int rev, const MojoSetupEntryPoints *e);
 const MojoGui *MojoGuiPlugin_cocoa(int rev, const MojoSetupEntryPoints *e);
 

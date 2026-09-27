@@ -38,6 +38,9 @@ static StaticGuiPlugin staticGui[] =
 #if GUI_STATIC_LINK_COCOA
     STATIC_GUI_PLUGIN(cocoa),
 #endif
+#if GUI_STATIC_LINK_GTK4
+    STATIC_GUI_PLUGIN(gtk4),
+#endif
 #if GUI_STATIC_LINK_GTKPLUS3
     STATIC_GUI_PLUGIN(gtkplus3),
 #endif
